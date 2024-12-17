@@ -1,0 +1,10 @@
+*.exe linguist-generated
+*.pkg linguist-generated
+*.toc linguist-generated
+*.zip linguist-generated
+
+*.ui linguist-vendored
+*.db linguist-vendored
+*.xlsx linguist-vendored
+
+*.py linguist-language=Python
