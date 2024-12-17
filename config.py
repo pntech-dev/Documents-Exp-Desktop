@@ -1,9 +1,42 @@
-# Table of Contents
-KD_DOCUMENT_PATH = r'_internal\КД.docx'
-OP_DOCUMENT_PATH = r'_internal\ОП.docx'
-STP_DOCUMENT_PATH = r'_internal\СТП.docx'
-TD_DOCUMENT_PATH = r'_internal\ТД.docx'
-TY_DOCUMENT_PATH = r'_internal\ТУ.docx'
+# Progress bar
+MIN_PROGRESS = 0
+MAX_PROGRESS = 100
 
-# Databeses
-LISTS = r"\\CEH19TT\_shared access\Databases\DocExp\list.db"
+PATH_TO_GROUPS = [r"\\SRV\PNDatabases\DocumentsExp", r"F:\PNDatabases\DocumentsExp"]
+CURRENT_PATH_TO_GROUPS = None
+CURRENT_VERSION_PATH = r"\\SRV\PNPrograms\Documents Exp"
+CURRENT_DIRECTORY_PATH = None
+
+CHANGES = False
+
+"""App"""
+CATEGORY_BUTTON_HEIGHT = 70
+CATEGORY_BUTTON_FONT_SIZE = 20
+
+TABLEVIEW_FIRST_COLUMN_WIDTH = 70
+
+"""Settings"""
+"""Add tab"""
+# Add group
+ADD_GROUP_PROGRESS_BAR_STEPS = 3
+
+# Add categories
+ADD_CATEGORIES_PROGRESS_BAR_STEPS = 4
+
+# Add lists
+ADD_LISTS_PROGRESS_BAR_STEPS = 5
+
+"""Delete tab"""
+# Delete group
+DELETE_GROUP_PROGRESS_BAR_STEPS = 2
+
+# Delete categorie
+DELETE_CATEGORIE_PROGRESS_BAR_STEPS = 2
+
+# Delete list
+DELETE_LIST_PROGRESS_BAR_STEPS = 5
+
+"""Templates tab"""
+PATH_TO_TEMPLATES = r"\\SRV\PNDatabases\DocumentsExp"
+
+TEMPLATES_PROGRESS_BAR_STEPS = 2
