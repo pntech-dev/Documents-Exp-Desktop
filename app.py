@@ -23,10 +23,13 @@ class MyWindow(QtWidgets.QMainWindow):
 
         self.ui.groups_group.setAlignment(QtCore.Qt.AlignLeft)
         self.ui.tableView.verticalHeader().setVisible(False)
+        self.ui.tableView.viewport().installEventFilter(self)
 
         self.check_program_version(version_label=self.ui.actionsGroup_version)
 
         self.is_in_group = False
+        self.is_mouse_pressed = False
+        self.last_mouse_position = None
 
         # Groups
         self.last_checked_group = None
@@ -335,6 +338,27 @@ class MyWindow(QtWidgets.QMainWindow):
             else:
                 cleanup_temp_folder()
                 sys.exit()
+
+    def eventFilter(self, source, event):
+        if source == self.ui.tableView.viewport():
+            if event.type() == QtCore.QEvent.MouseButtonPress and event.button() == QtCore.Qt.LeftButton:
+                self.is_mouse_pressed = True
+                self.last_mouse_position = event.pos()
+                return True
+
+            elif event.type() == QtCore.QEvent.MouseMove and self.is_mouse_pressed:
+                delta = event.pos() - self.last_mouse_position
+                self.last_mouse_position = event.pos()
+
+                scrollbar = self.ui.tableView.verticalScrollBar()
+                scrollbar.setValue(scrollbar.value() - delta.y())
+                return True
+
+            elif event.type() == QtCore.QEvent.MouseButtonRelease and event.button() == QtCore.Qt.LeftButton:
+                self.is_mouse_pressed = False
+                return True
+
+        return super(MyWindow, self).eventFilter(source, event)
 
 def create_temp_folder():
     is_create = False

@@ -19,6 +19,9 @@
   <property name="windowTitle">
    <string>Documents Exp</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <property name="minimumSize">
     <size>
@@ -175,23 +178,64 @@
            <widget class="QPushButton" name="searchGroup_pushButton">
             <property name="minimumSize">
              <size>
-              <width>20</width>
-              <height>20</height>
+              <width>25</width>
+              <height>25</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
-              <width>30</width>
-              <height>27</height>
+              <width>25</width>
+              <height>25</height>
              </size>
             </property>
             <property name="font">
              <font>
-              <pointsize>16</pointsize>
+              <family>Arial</family>
+              <pointsize>12</pointsize>
              </font>
+            </property>
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="toolTipDuration">
+             <number>-1</number>
             </property>
             <property name="text">
              <string>X</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="go_back">
+            <property name="minimumSize">
+             <size>
+              <width>25</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>70</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Arial</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="toolTipDuration">
+             <number>-1</number>
+            </property>
+            <property name="autoFillBackground">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>Назад</string>
             </property>
            </widget>
           </item>
@@ -231,25 +275,6 @@
             </property>
             <property name="text">
              <string>Документ:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="go_back">
-            <property name="maximumSize">
-             <size>
-              <width>70</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="font">
-             <font>
-              <family>Arial</family>
-              <pointsize>12</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>Назад</string>
             </property>
            </widget>
           </item>
@@ -300,36 +325,78 @@
            <height>16777215</height>
           </size>
          </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="toolTip">
+          <string comment="иваиваи"/>
+         </property>
+         <property name="toolTipDuration">
+          <number>1</number>
+         </property>
          <property name="text">
           <string>Настройки</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="actionsGroup_name">
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
+        <widget class="QFrame" name="frame_3">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
          </property>
-         <property name="text">
-          <string>Documents Exp</string>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="actionsGroup_version">
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Version 2.0.0</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="actionsGroup_version">
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Version 2.1.0</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="actionsGroup_name">
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Documents Exp</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>
