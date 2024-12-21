@@ -189,10 +189,16 @@ class MyWindow(QtWidgets.QMainWindow):
                 pass
         
     def update_table_view(self, data):
+        sorted_table = sorted(data, key=lambda table_name: self.extract_numbers(table_name[0]))
+
         self.table_model.removeRows(0, self.table_model.rowCount())
-        for table in data:
+        for table in sorted_table:
             if len(table) == 2:
                 self.table_model.appendRow([QtGui.QStandardItem(table[0]), QtGui.QStandardItem(table[1])])
+
+    def extract_numbers(self, string):
+        numbers = re.findall(r'\d+', string)
+        return tuple(map(int, numbers))
 
     def double_clicked(self, index):
         self.slider_value = self.ui.tableView.verticalScrollBar().value()

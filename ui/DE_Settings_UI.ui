@@ -445,7 +445,7 @@
               </font>
              </property>
              <property name="text">
-              <string>Добавить перечни в категорию</string>
+              <string>Добавить перечни в папки категории</string>
              </property>
             </widget>
            </item>
@@ -1073,7 +1073,7 @@
               </font>
              </property>
              <property name="text">
-              <string>Удалить перечень в категории</string>
+              <string>Удалить папку в категории</string>
              </property>
             </widget>
            </item>
@@ -1559,57 +1559,6 @@
         </item>
        </layout>
       </widget>
-     </widget>
-    </item>
-    <item>
-     <widget class="QFrame" name="name_version_labels">
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="QLabel" name="name_label">
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Documents Exp</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="version_label">
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Version 2.0.0</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-      </layout>
      </widget>
     </item>
    </layout>

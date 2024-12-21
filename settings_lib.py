@@ -137,14 +137,14 @@ class Tab:
                 cursor.close()
                 conn.close()
 
-                sorted_tables = sorted(db_data, key=lambda name: self.extract_number(name[0].split("+")[0]))
+                sorted_tables = sorted(db_data, key=lambda name: self.extract_numbers(name[0].split("+")[0]))
 
                 for name in sorted_tables:
                     data.append(name[0].split("+"))
 
         return data
     
-    def extract_number(self, string):
+    def extract_numbers(self, string):
         """
         A function that returns a tuple of numbers of all found numbers\n
         string - a string with numbers
@@ -352,7 +352,7 @@ class AddTab(Tab):
                 tables_rows.append(row_data)
 
         if any(len(row) != 3 for row in tables_rows):
-            QtWidgets.QMessageBox.warning(None, "Неверный формат данных", f"Не правильный формат данных в файле {file_path}. Все таблицы должны содержать ровно 3 колонки.")
+            QtWidgets.QMessageBox.warning(None, "Неверный формат данных", f"Не правильный формат данных в файле {file_path}")
             return
 
         categorie_path = f"{os.path.join(config.CURRENT_PATH_TO_GROUPS, group, categorie)}.db"
@@ -373,14 +373,20 @@ class AddTab(Tab):
         for table in db_tables:
             table_name = table.split("+")[0]
 
+            query = f"""SELECT * FROM [{table}]"""
+            cursor.execute(query)
+            table_data = [" ".join(table_rows).replace("\n", " ") for table_rows in cursor.fetchall()]
+
             for row in tables_rows:
+                table_row = " ".join([row[0], row[1]]).replace("\n", " ")
                 if row[2] == table_name:
-                    query = f"""
-                    INSERT INTO [{table}] ("Обозначение", "Наименование") 
-                    VALUES (?, ?);
-                    """
-                    params = (row[0], row[1])
-                    cursor.execute(query, params)
+                    if table_row not in table_data:
+                        query = f"""
+                        INSERT INTO [{table}] ("Обозначение", "Наименование") 
+                        VALUES (?, ?);
+                        """
+                        params = (row[0], row[1])
+                        cursor.execute(query, params)
 
         self.progress_bar_update(progressBar=self.progressBar, progress_step=progress_step)
 
