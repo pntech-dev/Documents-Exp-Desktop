@@ -144,7 +144,7 @@ class MyWindow(QtWidgets.QMainWindow):
         else:
             database_path = f"{os.path.join(config.CURRENT_PATH_TO_GROUPS, self.last_checked_group.text(), self.last_clicked_category.text())}.db"
 
-            label_text = f"{self.ui.label.text()[0:9].strip()}"
+            label_text = f"Папка:"
             self.ui.label.setText(label_text)
             self.is_document_label = False
 
@@ -293,7 +293,7 @@ class MyWindow(QtWidgets.QMainWindow):
                 try:
                     database_path = f"{os.path.join(config.CURRENT_PATH_TO_GROUPS, self.last_checked_group.text(), self.last_clicked_category.text())}.db"
 
-                    label_text = f"{self.ui.label.text()[0:9].strip()}"
+                    label_text = f"Папка:"
                     self.ui.label.setText(label_text)
                     self.is_document_label = False
 
