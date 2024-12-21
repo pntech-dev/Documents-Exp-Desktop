@@ -344,18 +344,33 @@ class MyWindow(QtWidgets.QMainWindow):
             if event.type() == QtCore.QEvent.MouseButtonPress and event.button() == QtCore.Qt.LeftButton:
                 self.is_mouse_pressed = True
                 self.last_mouse_position = event.pos()
+                
+                self.start_mouse_position = event.pos()
+                
+                index = self.ui.tableView.indexAt(event.pos())
+                if index.isValid():
+                    self.ui.tableView.selectRow(index.row())
+                
                 return True
 
             elif event.type() == QtCore.QEvent.MouseMove and self.is_mouse_pressed:
-                delta = event.pos() - self.last_mouse_position
-                self.last_mouse_position = event.pos()
-
-                scrollbar = self.ui.tableView.verticalScrollBar()
-                scrollbar.setValue(scrollbar.value() - delta.y())
+                delta = event.pos() - self.start_mouse_position
+                
+                if abs(delta.y()) > 5:
+                    scrollbar = self.ui.tableView.verticalScrollBar()
+                    scrollbar.setValue(scrollbar.value() - (event.pos() - self.last_mouse_position).y())
+                    self.last_mouse_position = event.pos()
+                
                 return True
 
             elif event.type() == QtCore.QEvent.MouseButtonRelease and event.button() == QtCore.Qt.LeftButton:
                 self.is_mouse_pressed = False
+                return True
+
+            elif event.type() == QtCore.QEvent.MouseButtonDblClick and event.button() == QtCore.Qt.LeftButton:
+                index = self.ui.tableView.indexAt(event.pos())
+                if index.isValid():
+                    self.double_clicked(index)
                 return True
 
         return super(MyWindow, self).eventFilter(source, event)

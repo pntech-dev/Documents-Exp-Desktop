@@ -374,7 +374,7 @@
              </font>
             </property>
             <property name="text">
-             <string>Version 2.1.0</string>
+             <string>Version 2.1.1</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

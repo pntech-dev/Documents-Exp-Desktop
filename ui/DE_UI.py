@@ -185,5 +185,5 @@ class Ui_MainWindow(object):
         self.go_back.setText(_translate("MainWindow", "Назад"))
         self.label.setText(_translate("MainWindow", "Документ:"))
         self.actionsGroup_pushButton.setText(_translate("MainWindow", "Настройки"))
-        self.actionsGroup_version.setText(_translate("MainWindow", "Version 2.1.0"))
+        self.actionsGroup_version.setText(_translate("MainWindow", "Version 2.1.1"))
         self.actionsGroup_name.setText(_translate("MainWindow", "Documents Exp"))
