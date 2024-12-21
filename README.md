@@ -1,11 +1,11 @@
-# DocumentsExp: 2.1.0
+# DocumentsExp: 2.1.1
 
 **DocumentsExp** is a powerful software solution designed to automate the management and processing of folder lists. It provides an efficient way to work with a database of folders, display different types of folders, and search through them.
 
-## What's New in Version 2.1.0
+## What's New in Version 2.1.1
 
 ### Functional Enhancements
-- **Mouse Drag Scrolling**: Added the ability to scroll through tables by dragging while holding down the mouse button for smoother navigation.
+- **Fixed a bug with a double-click**
 
 ## What's New in Version 2.0.0
 
