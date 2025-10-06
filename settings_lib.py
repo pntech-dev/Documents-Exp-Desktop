@@ -264,7 +264,7 @@ class AddTab(Tab):
                     for table in doc.tables:
                         for row in table.rows:
                             row_data = [cell.text.strip() for cell in row.cells]
-                            if len(row_data) == 2:
+                            if len(row_data) == 2 and any(row_data):
                                 table_name = f"{row_data[0].replace(' ', '')}+{row_data[1]}"
                                 query_create = f"""
                                 CREATE TABLE IF NOT EXISTS [{table_name}] (
@@ -286,7 +286,7 @@ class AddTab(Tab):
                     doc = Document(docx=docx_file_path)
                     expected_tables = {
                         f"{row.cells[0].text.strip().replace(' ', '')}+{row.cells[1].text.strip()}"
-                        for table in doc.tables for row in table.rows
+                        for table in doc.tables for row in table.rows if len(row.cells) == 2 and any(cell.text.strip() for cell in row.cells)
                     }
 
                     conn = sql.connect(db_path)
@@ -315,11 +315,10 @@ class AddTab(Tab):
                         conn.close()
 
                         QtWidgets.QMessageBox.information(None, "Данные обновлены", f"Категория: {category} обновлена")
+                        config.CHANGES = True
+                        self.write_changelog(command=f"CHANGES_IN_CATEGORY <{group}> <{category}>")
                     elif expected_tables == existing_tables:
                         QtWidgets.QMessageBox.information(None, "Категория существует", f"Категория: {category} уже существует")
-
-                    config.CHANGES = True
-                    self.write_changelog(command=f"CREATE_CATEGORY <{group}> <{category}>")
 
                 self.progressBar.setValue(index * progress_step)
 
@@ -337,58 +336,61 @@ class AddTab(Tab):
         file_path - The path to the file with the lists.
         """
         self.progressBar.setValue(config.MIN_PROGRESS)
-        progress_step = int(config.MAX_PROGRESS / config.ADD_LISTS_PROGRESS_BAR_STEPS)
 
-        tables_rows = []
         try:
             doc = Document(docx=file_path)
         except Exception as e:
             QtWidgets.QMessageBox.warning(None, "Ошибка", f"Не удалось открыть файл {file_path}: {str(e)}")
             return
 
+        doc_data = {}
         for table in doc.tables:
             for row in table.rows:
                 row_data = [cell.text.strip() for cell in row.cells]
-                tables_rows.append(row_data)
+                if len(row_data) == 3 and any(row_data):
+                    table_name = row_data[2]
+                    if table_name not in doc_data:
+                        doc_data[table_name] = set()
+                    doc_data[table_name].add((row_data[0], row_data[1]))
 
-        if any(len(row) != 3 for row in tables_rows):
+        if not doc_data:
             QtWidgets.QMessageBox.warning(None, "Неверный формат данных", f"Не правильный формат данных в файле {file_path}")
             return
 
         categorie_path = f"{os.path.join(config.CURRENT_PATH_TO_GROUPS, group, categorie)}.db"
-
-        self.progress_bar_update(progressBar=self.progressBar, progress_step=progress_step)
+        if not os.path.exists(categorie_path):
+            QtWidgets.QMessageBox.warning(None, "Ошибка", f"База данных для категории {categorie} не найдена.")
+            return
 
         conn = sql.connect(database=categorie_path)
         cursor = conn.cursor()
 
-        self.progress_bar_update(progressBar=self.progressBar, progress_step=progress_step)
-
         query = "SELECT name FROM sqlite_master WHERE type='table';"
         cursor.execute(query)
-        db_tables = [row[0] for row in cursor.fetchall()]
+        db_tables = {row[0].split('+')[0]: row[0] for row in cursor.fetchall()}
 
-        self.progress_bar_update(progressBar=self.progressBar, progress_step=progress_step)
+        progress_step = config.MAX_PROGRESS // (len(doc_data) + len(db_tables))
 
-        for table in db_tables:
-            table_name = table.split("+")[0]
+        for doc_table_name, doc_rows in doc_data.items():
+            if doc_table_name in db_tables:
+                full_table_name = db_tables[doc_table_name]
+                
+                query = f'SELECT "Обозначение", "Наименование" FROM [{full_table_name}]'
+                cursor.execute(query)
+                db_rows = set(cursor.fetchall())
 
-            query = f"""SELECT * FROM [{table}]"""
-            cursor.execute(query)
-            table_data = [" ".join(table_rows).replace("\n", " ") for table_rows in cursor.fetchall()]
+                rows_to_add = doc_rows - db_rows
+                rows_to_delete = db_rows - doc_rows
 
-            for row in tables_rows:
-                table_row = " ".join([row[0], row[1]]).replace("\n", " ")
-                if row[2] == table_name:
-                    if table_row not in table_data:
-                        query = f"""
-                        INSERT INTO [{table}] ("Обозначение", "Наименование") 
-                        VALUES (?, ?);
-                        """
-                        params = (row[0], row[1])
-                        cursor.execute(query, params)
+                if rows_to_add:
+                    query = f'INSERT INTO [{full_table_name}] ("Обозначение", "Наименование") VALUES (?, ?)'
+                    cursor.executemany(query, list(rows_to_add))
 
-        self.progress_bar_update(progressBar=self.progressBar, progress_step=progress_step)
+                if rows_to_delete:
+                    query = f'DELETE FROM [{full_table_name}] WHERE "Обозначение" = ? AND "Наименование" = ?'
+                    cursor.executemany(query, list(rows_to_delete))
+            
+            self.progress_bar_update(progressBar=self.progressBar, progress_step=progress_step)
 
         conn.commit()
         cursor.close()
@@ -569,14 +571,23 @@ class TemplatesTab(Tab):
         file = file_label[15:].strip()
         template_path = os.path.join(config.PATH_TO_TEMPLATES, file)
 
+        if not os.path.isfile(template_path):
+            QtWidgets.QMessageBox.warning(None, "Ошибка", f"Файл шаблона не найден по пути: {template_path}")
+            return
+
         if not line_edit:
-            save_path = f"{os.path.join(os.path.expanduser("~"), "Desktop")}/{file}" 
+            save_path = os.path.join(os.path.expanduser('~'), 'Desktop', file)
         else:
-            save_path = f"{line_edit}/{file}"
+            save_path = os.path.join(line_edit, file)
 
         self.progress_bar_update(progressBar=self.progressBar, progress_step=progress_step)
 
-        shutil.copy(template_path, save_path)
+        try:
+            shutil.copy(template_path, save_path)
+        except Exception as e:
+            QtWidgets.QMessageBox.warning(None, "Ошибка", f"Не удалось скопировать файл: {e}")
+            self.progressBar.setValue(config.MIN_PROGRESS)
+            return
 
         self.progressBar.setValue(config.MAX_PROGRESS)
         QtCore.QTimer.singleShot(1000, lambda: self.progressBar.setValue(config.MIN_PROGRESS))

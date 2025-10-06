@@ -85,9 +85,14 @@ class MyWindow(QtWidgets.QMainWindow):
             self.categories_objects = self.add_categories(group_name=self.last_checked_group.text())
             if self.categories_objects:
                 self.last_clicked_category = self.categories_objects[0]
+            else:
+                self.last_clicked_category = None
 
             for push_button in self.categories_objects:
                 push_button.clicked.connect(lambda _, pb=push_button: self.category_button_clicked(button=pb))
+
+            # Refresh the table
+            self.setup_table_view(headers=["№", "Наименование"])
 
     def add_groups(self):
         groups = os.listdir(config.CURRENT_PATH_TO_GROUPS)
@@ -223,7 +228,7 @@ class MyWindow(QtWidgets.QMainWindow):
                         cursor.execute(query)
                         table_row_data = [" ".join(i.replace("\n", " ") for i in row) for row in cursor.fetchall()]
 
-                        label_text = f"{self.ui.label.text()[0:9].strip()} {" - ".join(i for i in table_name.split("+"))}"
+                        label_text = f"{self.ui.label.text()[0:9].strip()} {' - '.join(i for i in table_name.split('+'))}"
                         self.ui.label.setText(label_text)
                         self.ui.searchGroup_lineEdit.setEnabled(False)
                             
@@ -332,7 +337,7 @@ class MyWindow(QtWidgets.QMainWindow):
             button_yes = message_box.addButton("Обновить сейчас", QtWidgets.QMessageBox.AcceptRole)
             button_no = message_box.addButton("Закрыть", QtWidgets.QMessageBox.RejectRole)
 
-            message_box.exec()
+            message_box.exec_()
 
             if message_box.clickedButton() == button_yes:
                 current_directory = os.getcwd()
@@ -405,7 +410,7 @@ def cleanup_temp_folder():
 def merge_temp_folder():
     for main_path in config.PATH_TO_GROUPS:
         if os.path.exists(main_path):
-            with open(f"{config.CURRENT_DIRECTORY_PATH}\\CHANGELOG.txt", "r+", encoding="utf-8") as changelog_file:
+            with open(f"{config.CURRENT_DIRECTORY_PATH}\CHANGELOG.txt", "r+", encoding="utf-8") as changelog_file:
                 lines = changelog_file.readlines()
                 lines = [line.strip().replace("\n", "") for line in lines]
 
@@ -447,7 +452,7 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication([])
     application = MyWindow()
     application.show()
-    exit_code = app.exec()
+    exit_code = app.exec_()
 
     if config.CHANGES:
         merge_temp_folder()

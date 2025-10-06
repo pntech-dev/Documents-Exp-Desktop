@@ -2,6 +2,3 @@
 dist/
 build/
 __pycache__/
-
-# Files
-*.spec
