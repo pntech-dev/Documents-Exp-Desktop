@@ -1,15 +1,11 @@
-# DocumentsExp: 2.1.3
+# DocumentsExp: 2.1.4
 
 **DocumentsExp** is a powerful software solution designed to automate the management and processing of folder lists. It provides an efficient way to work with a database of folders, display different types of folders, and search through them.
 
-## Changes in version 2.1.3
+## Changes in version 2.1.4
 
 ### Functional Enhancements
-- **Fixed a bug that caused an empty row to appear when adding a category.**
-- **Fixed a bug that caused rows to not be added or deleted when adding lists.**
-- **Fixed an error that caused the application to close while downloading the template.**
-- **Fixed a bug that caused tables to not be updated after making changes.**
-- **Other smaller bugs have also been fixed.**
+- **Fixed a bug of incorrect writing of data and word to the database.**
 
 ## What's New in Version 2
 

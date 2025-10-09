@@ -268,6 +268,7 @@ class AddTab(Tab):
                                 table_name = f"{row_data[0].replace(' ', '')}+{row_data[1]}"
                                 query_create = f"""
                                 CREATE TABLE IF NOT EXISTS [{table_name}] (
+                                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                                     Обозначение TEXT,
                                     Наименование TEXT
                                 );
@@ -305,6 +306,7 @@ class AddTab(Tab):
                         for table_name in missing_tables:
                             query_create = f"""
                             CREATE TABLE IF NOT EXISTS [{table_name}] (
+                                id INTEGER PRIMARY KEY AUTOINCREMENT,
                                 Обозначение TEXT,
                                 Наименование TEXT
                             );
@@ -350,8 +352,8 @@ class AddTab(Tab):
                 if len(row_data) == 3 and any(row_data):
                     table_name = row_data[2]
                     if table_name not in doc_data:
-                        doc_data[table_name] = set()
-                    doc_data[table_name].add((row_data[0], row_data[1]))
+                        doc_data[table_name] = []
+                    doc_data[table_name].append((row_data[0], row_data[1]))
 
         if not doc_data:
             QtWidgets.QMessageBox.warning(None, "Неверный формат данных", f"Не правильный формат данных в файле {file_path}")
@@ -374,21 +376,37 @@ class AddTab(Tab):
         for doc_table_name, doc_rows in doc_data.items():
             if doc_table_name in db_tables:
                 full_table_name = db_tables[doc_table_name]
-                
+
+                # Check if id column exists
+                cursor.execute(f"PRAGMA table_info([{full_table_name}])")
+                columns = [info[1] for info in cursor.fetchall()]
+                if 'id' not in columns:
+                    # Migrate table
+                    cursor.execute(f'SELECT * FROM [{full_table_name}]')
+                    old_data = cursor.fetchall()
+                    
+                    cursor.execute(f'DROP TABLE [{full_table_name}]')
+
+                    query_create = f"""
+                    CREATE TABLE IF NOT EXISTS [{full_table_name}] (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Обозначение TEXT,
+                        Наименование TEXT
+                    );
+                    """
+                    cursor.execute(query_create)
+
+                    cursor.executemany(f'INSERT INTO [{full_table_name}] (Обозначение, Наименование) VALUES (?, ?)', old_data)
+
                 query = f'SELECT "Обозначение", "Наименование" FROM [{full_table_name}]'
                 cursor.execute(query)
                 db_rows = set(cursor.fetchall())
 
-                rows_to_add = doc_rows - db_rows
-                rows_to_delete = db_rows - doc_rows
+                rows_to_add = [row for row in doc_rows if row not in db_rows]
 
                 if rows_to_add:
                     query = f'INSERT INTO [{full_table_name}] ("Обозначение", "Наименование") VALUES (?, ?)'
-                    cursor.executemany(query, list(rows_to_add))
-
-                if rows_to_delete:
-                    query = f'DELETE FROM [{full_table_name}] WHERE "Обозначение" = ? AND "Наименование" = ?'
-                    cursor.executemany(query, list(rows_to_delete))
+                    cursor.executemany(query, rows_to_add)
             
             self.progress_bar_update(progressBar=self.progressBar, progress_step=progress_step)
 

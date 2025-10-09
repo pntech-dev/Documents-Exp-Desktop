@@ -193,8 +193,11 @@ class MyWindow(QtWidgets.QMainWindow):
             except:
                 pass
         
-    def update_table_view(self, data):
-        sorted_table = sorted(data, key=lambda table_name: self.extract_numbers(table_name[0]))
+    def update_table_view(self, data, sort_by_number=True):
+        if sort_by_number:
+            sorted_table = sorted(data, key=lambda table_name: self.extract_numbers(table_name[0]))
+        else:
+            sorted_table = data
 
         self.table_model.removeRows(0, self.table_model.rowCount())
         for table in sorted_table:
@@ -206,6 +209,7 @@ class MyWindow(QtWidgets.QMainWindow):
         return tuple(map(int, numbers))
 
     def double_clicked(self, index):
+        
         self.slider_value = self.ui.tableView.verticalScrollBar().value()
 
         row_data = []
@@ -222,11 +226,19 @@ class MyWindow(QtWidgets.QMainWindow):
                 query = f"SELECT name FROM sqlite_master WHERE type='table';"
                 cursor.execute(query)
                 tables_names = [table[0] for table in cursor.fetchall()]
+                table_row_data = None
                 for table_name in tables_names:
                     if row_data[0] == table_name.split("+")[0]:
-                        query = f"SELECT * FROM [{table_name}]"
+                        # Check if id column exists
+                        cursor.execute(f'PRAGMA table_info([{table_name}])')
+                        columns = [info[1] for info in cursor.fetchall()]
+                        if 'id' in columns:
+                            query = f"SELECT * FROM [{table_name}] ORDER BY id"
+                        else:
+                            query = f"SELECT * FROM [{table_name}]"
+                        
                         cursor.execute(query)
-                        table_row_data = [" ".join(i.replace("\n", " ") for i in row) for row in cursor.fetchall()]
+                        table_row_data = cursor.fetchall()
 
                         label_text = f"{self.ui.label.text()[0:9].strip()} {' - '.join(i for i in table_name.split('+'))}"
                         self.ui.label.setText(label_text)
@@ -235,13 +247,17 @@ class MyWindow(QtWidgets.QMainWindow):
                 if table_row_data:
                     data = []
                     for row in table_row_data:
-                        data.append([row_data[0], row])
+                        # Adjust for id column
+                        if len(row) == 3:
+                            row = row[1:]
+                        data.append([row_data[0], " ".join(str(i).replace("\n", " ") for i in row)])
 
-                    self.update_table_view(data=data)
+                    self.update_table_view(data=data, sort_by_number=False)
 
                 cursor.close()
                 conn.close()
-            except:
+            except Exception as e:
+                print(e)
                 pass
 
     def search(self):
@@ -275,7 +291,7 @@ class MyWindow(QtWidgets.QMainWindow):
                                     if all(word in row.lower() for word in search_text):
                                         data.append([table_name.split("+")[0], row])
                     
-                    self.update_table_view(data=data)
+                    self.update_table_view(data=data, sort_by_number=False)
 
                     cursor.close()
                     conn.close()
