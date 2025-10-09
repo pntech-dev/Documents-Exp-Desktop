@@ -6,6 +6,7 @@
 
 ### Functional Enhancements
 - **Fixed a bug of incorrect writing of data and word to the database.**
+- **Fixing a bug that caused the search to fail**
 
 ## What's New in Version 2
 

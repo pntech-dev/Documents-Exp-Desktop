@@ -280,9 +280,16 @@ class MyWindow(QtWidgets.QMainWindow):
                             data.append(table_name.split("+"))
 
                     for table_name in tables_names:
-                        query = f"SELECT * FROM [{table_name}]"
+                        # Check if id column exists
+                        cursor.execute(f'PRAGMA table_info([{table_name}])')
+                        columns = [info[1] for info in cursor.fetchall()]
+                        if 'id' in columns:
+                            query = f"SELECT Обозначение, Наименование FROM [{table_name}]"
+                        else:
+                            query = f"SELECT * FROM [{table_name}]"
+                        
                         cursor.execute(query)
-                        table_row_data = [" ".join(i.replace("\n", " ") for i in row) for row in cursor.fetchall()]
+                        table_row_data = [" ".join(str(i).replace("\n", " ") for i in row) for row in cursor.fetchall()]
                         
                         if table_row_data:
                             self.is_in_group = False
@@ -290,12 +297,13 @@ class MyWindow(QtWidgets.QMainWindow):
                                 if row:
                                     if all(word in row.lower() for word in search_text):
                                         data.append([table_name.split("+")[0], row])
-                    
+
                     self.update_table_view(data=data, sort_by_number=False)
 
                     cursor.close()
                     conn.close()
-                except:
+                except Exception as e:
+                    print(e)
                     pass
         else:
             self.setup_table_view(headers=["№", "Наименование"])
