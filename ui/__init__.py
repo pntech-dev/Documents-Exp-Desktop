@@ -1,0 +1,1 @@
+from .auth import Ui_MainWindow as AuthWindow_UI
