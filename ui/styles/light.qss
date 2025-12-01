@@ -1,0 +1,26 @@
+QWidget {
+	background-color: #FFFFFF;
+}
+
+
+/* Logo */
+QLabel#logo_lable {
+	background-image: url(:/light/logo_light.svg);
+	background-repeat: no-repeat;
+    background-position: left;
+}
+
+
+/* Buttons */
+QPushButton {
+	border: 1px solid rgb(0, 0, 0);
+	border-radius: 8px;
+}
+
+/* Theme button */
+QPushButton#theme_button {
+	border: 0px;
+	background-image: url(:/theme/light/theme/light/default.svg);
+	background-repeat: no-repeat;
+    background-position: left;
+}

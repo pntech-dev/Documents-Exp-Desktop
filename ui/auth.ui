@@ -102,24 +102,49 @@
           </property>
           <item>
            <widget class="QLabel" name="logo_lable">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
             <property name="text">
              <string/>
-            </property>
-            <property name="pixmap">
-             <pixmap resource="../resources/resources.qrc">:/logo_light/logo/logo_light.svg</pixmap>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="theme_label">
-            <property name="maximumSize">
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
              <size>
-              <width>36</width>
-              <height>36</height>
+              <width>40</width>
+              <height>20</height>
              </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="theme_button">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
             </property>
             <property name="text">
              <string/>
+            </property>
+            <property name="flat">
+             <bool>false</bool>
             </property>
            </widget>
           </item>
@@ -169,6 +194,9 @@
              <font>
               <pointsize>18</pointsize>
              </font>
+            </property>
+            <property name="acceptDrops">
+             <bool>false</bool>
             </property>
             <property name="text">
              <string>Войдите в аккаунт:</string>
@@ -546,7 +574,8 @@
   </widget>
  </widget>
  <resources>
-  <include location="../resources/resources.qrc"/>
+  <include location="../resources/logo/logo_resources.qrc"/>
+  <include location="../resources/icons/icons_resources.qrc"/>
  </resources>
  <connections/>
 </ui>

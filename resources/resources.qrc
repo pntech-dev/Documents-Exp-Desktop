@@ -1,8 +1,0 @@
-<RCC>
-  <qresource prefix="logo_light">
-    <file>logo/logo_light.svg</file>
-  </qresource>
-  <qresource prefix="logo_dark">
-    <file>logo/logo_dark.svg</file>
-  </qresource>
-</RCC>

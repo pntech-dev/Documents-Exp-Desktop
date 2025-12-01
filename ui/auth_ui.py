@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/auth.ui'
+# Form implementation generated from reading ui file 'e:\Python Projects\Documents Exp\Documents-Exp-Desktop\ui\auth.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -265,5 +265,5 @@ class Ui_MainWindow(object):
         self.login_pushButton.setText(_translate("MainWindow", "Войти"))
         self.guest_pushButton.setText(_translate("MainWindow", "Войти как Гость"))
         self.fogot_password_label.setText(_translate("MainWindow", "Забыли пароль?"))
-import resources.logo.logo_resources_rc
-import resources.icons.icons_resources_rc
+import icons_resources_rc
+import logo_resources_rc
