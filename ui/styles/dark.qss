@@ -13,7 +13,8 @@ QLabel#logo_lable {
 
 /* Buttons */
 QPushButton {
-	border: 1px solid #FFFFFF;
+	border: 1px solid #333333;
+	color: #999999;
 	border-radius: 8px;
 }
 
@@ -23,4 +24,16 @@ QPushButton#theme_button {
 	background-image: url(:/theme/dark/theme/dark/default.svg);
 	background-repeat: no-repeat;
     background-position: left;
+}
+
+QPushButton#theme_button:hover {
+	background-image: url(:/theme/dark/theme/dark/hover.svg);
+}
+
+QPushButton#theme_button:pressed {
+	background-image: url(:/theme/dark/theme/dark/clicked.svg);
+}
+
+QPushButton#theme_button:disabled {
+	background-image: url(:/theme/dark/theme/dark/disabled.svg);
 }

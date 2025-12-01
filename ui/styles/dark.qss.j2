@@ -1,11 +1,11 @@
 QWidget {
-	background-color: #FFFFFF;
+	background-color: {{ neutral_100 }};
 }
 
 
 /* Logo */
 QLabel#logo_lable {
-	background-image: url(:/light/logo_light.svg);
+	background-image: url(:/dark/logo_dark.svg);
 	background-repeat: no-repeat;
     background-position: left;
 }
@@ -13,27 +13,27 @@ QLabel#logo_lable {
 
 /* Buttons */
 QPushButton {
-	border: 1px solid #F2F2F2;
-	color: #666666;
+	border: 1px solid {{ neutral_200 }};
+	color: {{ neutral_600 }};
 	border-radius: 8px;
 }
 
 /* Theme button */
 QPushButton#theme_button {
 	border: 0px;
-	background-image: url(:/theme/light/theme/light/default.svg);
+	background-image: url(:/theme/dark/theme/dark/default.svg);
 	background-repeat: no-repeat;
     background-position: left;
 }
 
 QPushButton#theme_button:hover {
-	background-image: url(:/theme/light/theme/light/hover.svg);
+	background-image: url(:/theme/dark/theme/dark/hover.svg);
 }
 
 QPushButton#theme_button:pressed {
-	background-image: url(:/theme/light/theme/light/clicked.svg);
+	background-image: url(:/theme/dark/theme/dark/clicked.svg);
 }
 
 QPushButton#theme_button:disabled {
-	background-image: url(:/theme/light/theme/light/disabled.svg);
+	background-image: url(:/theme/dark/theme/dark/disabled.svg);
 }

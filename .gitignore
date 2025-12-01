@@ -19,5 +19,4 @@ env/
 .idea/
 
 # Secret files
-config.yaml
 *.key

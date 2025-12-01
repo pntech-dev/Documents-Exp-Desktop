@@ -2,7 +2,7 @@ from ui import AuthWindow_UI
 from utils import ThemeManager
 from .auth_mvc import AuthModel, AuthView, AuthController
 
-from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5.QtWidgets import QMainWindow
 
 
 class AuthWindow(QMainWindow):
@@ -15,7 +15,7 @@ class AuthWindow(QMainWindow):
 
         # Set theme
         self.theme_manager = ThemeManager()
-        self.theme_manager.switch_theme(theme="light")
+        self.theme_manager.switch_theme()
 
         # MVC Initialization
         self.model = AuthModel()
