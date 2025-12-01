@@ -251,4 +251,4 @@ class Ui_MainWindow(object):
         self.login_pushButton.setText(_translate("MainWindow", "Войти"))
         self.guest_pushButton.setText(_translate("MainWindow", "Войти как Гость"))
         self.fogot_password_label.setText(_translate("MainWindow", "Забыли пароль?"))
-import resources_rc
+import resources.resources_rc

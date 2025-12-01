@@ -1,9 +1,7 @@
-import sys
-
 from ui import AuthWindow_UI
-from auth_mvc import AuthModel, AuthView, AuthController
+from .auth_mvc import AuthModel, AuthView, AuthController
 
-from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5.QtWidgets import QMainWindow
 
 
 
@@ -15,11 +13,3 @@ class AuthWindow(QMainWindow):
         self.ui.setupUi(self)
 
         print("Auth opened")
-
-
-
-if __name__ == "__main__":
-    app = QApplication(sys)
-    application = AuthWindow()
-    application.show()
-    sys.exit(app.exec_())
