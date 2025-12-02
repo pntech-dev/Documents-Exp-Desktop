@@ -130,3 +130,57 @@ QLabel#fogot_password_label:pressed {
 QLabel#fogot_password_label:disabled {
 	color: #5D1717;
 }
+
+/* Checkbox */
+QCheckBox {
+	spacing: 8px;
+	color: #999999;
+}
+
+QCheckBox:hover {
+	color: #CCCCCC;
+}
+
+QCheckBox:disabled {
+	color: #333333;
+}
+
+QCheckBox:checked {
+	color: #E6E6E6;
+}
+
+QCheckBox:checked:disabled {
+	color: #404040;
+}
+
+QCheckBox::indicator {
+	width: 18px;
+	height: 18px;
+	border: 1px solid #808080;
+	border-radius: 4px;
+	background-color: #262626;
+}
+
+QCheckBox::indicator:hover {
+	border: 1px solid #B3B3B3;
+}
+
+QCheckBox::indicator:disabled {
+	border: 1px solid #333333;
+}
+
+QCheckBox::indicator:checked {
+	width: 20px;
+	height: 20px;
+	border: 0px;
+	background-color: #C43A3A;
+	image: url(:/theme/light/check/light/check_light.svg);
+}
+
+QCheckBox::indicator:checked:hover {
+	background-color: #D65A5A;
+}
+
+QCheckBox::indicator:checked:disabled {
+	background-color: #5D1717;
+}

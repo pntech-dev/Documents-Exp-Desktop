@@ -1,11 +1,14 @@
 <RCC>
   <qresource prefix="/theme/light">
+    <file>check/light/check_light.svg</file>
     <file>theme/light/clicked.svg</file>
     <file>theme/light/default.svg</file>
     <file>theme/light/disabled.svg</file>
     <file>theme/light/hover.svg</file>
   </qresource>
   <qresource prefix="/theme/dark">
+    <file>check/dark/check_dark.svg</file>
+    <file>check/dark/check_dark_disabled.svg</file>
     <file>theme/dark/clicked.svg</file>
     <file>theme/dark/default.svg</file>
     <file>theme/dark/disabled.svg</file>
