@@ -112,3 +112,20 @@ QPushButton:disabled {
 	color: #F2F2F2;
 	background-color: #FFFFFF;
 }
+
+/* Text button */
+QLabel#fogot_password_label {
+	color: #CC3333;
+}
+
+QLabel#fogot_password_label:hover {
+	color: #A32929;
+}
+
+QLabel#fogot_password_label:pressed {
+	color: #D65C5C;
+}
+
+QLabel#fogot_password_label:disabled {
+	color: #F5D6D6;
+}
