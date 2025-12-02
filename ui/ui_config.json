@@ -1,4 +1,14 @@
-{
+{   
+    "paths": {
+        "themes_path": "ui/styles/themes/",
+        "templates_path": "ui/styles/templates/"
+    },
+
+    "themes": {
+        "0": "light",
+        "1": "dark"
+    },
+
     "tokens": {
         "light_theme": {
             "accent": {
