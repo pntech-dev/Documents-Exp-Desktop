@@ -11,10 +11,14 @@ QLabel#logo_lable {
 }
 
 
+/* QLabel */
+QLabel {
+	color: #1A1A1A;
+}
+
+
 /* Buttons */
 QPushButton {
-	border: 1px solid #F2F2F2;
-	color: #666666;
 	border-radius: 8px;
 }
 
@@ -28,12 +32,83 @@ QPushButton#theme_button {
 
 QPushButton#theme_button:hover {
 	background-image: url(:/theme/light/theme/light/hover.svg);
+	background-color: #FFFFFF;
 }
 
 QPushButton#theme_button:pressed {
 	background-image: url(:/theme/light/theme/light/clicked.svg);
+	background-color: #FFFFFF;
 }
 
 QPushButton#theme_button:disabled {
 	background-image: url(:/theme/light/theme/light/disabled.svg);
+	background-color: #FFFFFF;
+}
+
+/* Primary button */
+QPushButton#login_pushButton {
+	border: 0px;
+	color: #FFFFFF;
+	background-color: #CC3333;
+}
+
+QPushButton#login_pushButton:hover {
+	background-color: #A32929;
+}
+
+QPushButton#login_pushButton:pressed {
+	background-color: #D65C5C;
+}
+
+QPushButton#login_pushButton:disabled {
+	background-color: #F2F2F2;
+}
+
+/* Secondary button */
+/* QPushButton {
+	border: 1px solid #E6E6E6;
+	color: #666666;
+	background-color: #F2F2F2;
+}
+
+QPushButton:hover {
+	border: 1px solid #CCCCCC;
+	color: #4D4D4D;
+	background-color: #D9D9D9;
+}
+
+QPushButton:pressed {
+	border: 1px solid #B3B3B3;
+	color: #333333;
+	background-color: #CCCCCC;
+}
+
+QPushButton:disabled {
+	border: 1px solid #F2F2F2;
+	color: #F2F2F2;
+	background-color: #FFFFFF;
+} */
+
+/* Tertiary button */
+QPushButton {
+	border: 1px solid #F2F2F2;
+	color: #666666;
+}
+
+QPushButton:hover {
+	border: 1px solid #E6E6E6;
+	color: #4D4D4D;
+	background-color: #F2F2F2;
+}
+
+QPushButton:pressed {
+	border: 1px solid #D9D9D9;
+	color: #333333;
+	background-color: #E6E6E6;
+}
+
+QPushButton:disabled {
+	border: 1px solid #F2F2F2;
+	color: #F2F2F2;
+	background-color: #FFFFFF;
 }

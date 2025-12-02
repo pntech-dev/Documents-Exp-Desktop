@@ -1,5 +1,5 @@
 QWidget {
-	background-color: {{ neutral.neutral_0 }};
+	background-color: {{ neutral.neutral_100 }};
 }
 
 
@@ -11,10 +11,14 @@ QLabel#logo_lable {
 }
 
 
+/* QLabel */
+QLabel {
+	color: {{ neutral.neutral_900 }};
+}
+
+
 /* Buttons */
 QPushButton {
-	border: 1px solid {{ neutral.neutral_50 }};
-	color: {{ neutral.neutral_600 }};
 	border-radius: 8px;
 }
 
@@ -28,12 +32,83 @@ QPushButton#theme_button {
 
 QPushButton#theme_button:hover {
 	background-image: url(:/theme/light/theme/light/hover.svg);
+	background-color: {{ neutral.neutral_0 }};
 }
 
 QPushButton#theme_button:pressed {
 	background-image: url(:/theme/light/theme/light/clicked.svg);
+	background-color: {{ neutral.neutral_0 }};
 }
 
 QPushButton#theme_button:disabled {
 	background-image: url(:/theme/light/theme/light/disabled.svg);
+	background-color: {{ neutral.neutral_0 }};
+}
+
+/* Primary button */
+QPushButton#login_pushButton {
+	border: 0px;
+	color: neutral.neutral_0;
+	background-color: {{ accent.accent_500 }};
+}
+
+QPushButton#login_pushButton:hover {
+	background-color: {{ accent.accent_600 }};
+}
+
+QPushButton#login_pushButton:pressed {
+	background-color: {{ accent.accent_400 }};
+}
+
+QPushButton#login_pushButton:disabled {
+	background-color: {{ neutral.neutral_50 }};
+}
+
+/* Secondary button */
+/* QPushButton {
+	border: 1px solid {{ neutral.neutral_100 }};
+	color: {{ neutral.neutral_600 }};
+	background-color: {{ neutral.neutral_50 }};
+}
+
+QPushButton:hover {
+	border: 1px solid {{ neutral.neutral_200 }};
+	color: {{ neutral.neutral_700 }};
+	background-color: {{ neutral.neutral_150 }};
+}
+
+QPushButton:pressed {
+	border: 1px solid {{ neutral.neutral_300 }};
+	color: {{ neutral.neutral_800 }};
+	background-color: {{ neutral.neutral_200 }};
+}
+
+QPushButton:disabled {
+	border: 1px solid {{ neutral.neutral_50 }};
+	color: {{ neutral.neutral_50 }};
+	background-color: {{ neutral.neutral_0 }};
+} */
+
+/* Tertiary button */
+QPushButton {
+	border: 1px solid {{ neutral.neutral_50 }};
+	color: {{ neutral.neutral_600 }};
+}
+
+QPushButton:hover {
+	border: 1px solid {{ neutral.neutral_100 }};
+	color: {{ neutral.neutral_700 }};
+	background-color: {{ neutral.neutral_50 }};
+}
+
+QPushButton:pressed {
+	border: 1px solid {{ neutral.neutral_150 }};
+	color: {{ neutral.neutral_800 }};
+	background-color: {{ neutral.neutral_100 }};
+}
+
+QPushButton:disabled {
+	border: 1px solid {{ neutral.neutral_50 }};
+	color: {{ neutral.neutral_50 }};
+	background-color: {{ neutral.neutral_0 }};
 }

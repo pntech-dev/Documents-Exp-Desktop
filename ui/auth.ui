@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>939</width>
-    <height>638</height>
+    <height>640</height>
    </rect>
   </property>
   <property name="font">
@@ -52,6 +52,12 @@
         <height>600</height>
        </size>
       </property>
+      <property name="maximumSize">
+       <size>
+        <width>400</width>
+        <height>16777215</height>
+       </size>
+      </property>
       <property name="font">
        <font>
         <pointsize>12</pointsize>
@@ -81,6 +87,18 @@
        </property>
        <item>
         <widget class="QFrame" name="logo_theme_frame">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>56</height>
+          </size>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -156,10 +174,13 @@
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Expanding</enum>
+         </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>20</width>
-           <height>70</height>
+           <width>0</width>
+           <height>0</height>
           </size>
          </property>
         </spacer>
@@ -174,7 +195,7 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_6">
           <property name="spacing">
-           <number>32</number>
+           <number>56</number>
           </property>
           <property name="leftMargin">
            <number>0</number>
@@ -453,24 +474,6 @@
                     <number>0</number>
                    </property>
                    <item>
-                    <widget class="QPushButton" name="no_account_pushButton">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>42</height>
-                      </size>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <pointsize>14</pointsize>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>Нет аккаунта</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
                     <widget class="QPushButton" name="login_pushButton">
                      <property name="minimumSize">
                       <size>
@@ -488,11 +491,29 @@
                      </property>
                     </widget>
                    </item>
+                   <item>
+                    <widget class="QPushButton" name="guest_pushButton">
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>42</height>
+                      </size>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <pointsize>14</pointsize>
+                      </font>
+                     </property>
+                     <property name="text">
+                      <string>Гость</string>
+                     </property>
+                    </widget>
+                   </item>
                   </layout>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="guest_pushButton">
+                 <widget class="QPushButton" name="no_account_pushButton">
                   <property name="minimumSize">
                    <size>
                     <width>0</width>
@@ -505,7 +526,7 @@
                    </font>
                   </property>
                   <property name="text">
-                   <string>Войти как Гость</string>
+                   <string>Нет аккаунта</string>
                   </property>
                  </widget>
                 </item>
@@ -525,8 +546,8 @@
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>20</width>
-           <height>69</height>
+           <width>0</width>
+           <height>0</height>
           </size>
          </property>
         </spacer>
@@ -557,7 +578,7 @@
       <property name="minimumSize">
        <size>
         <width>500</width>
-        <height>600</height>
+        <height>640</height>
        </size>
       </property>
       <property name="currentIndex">
