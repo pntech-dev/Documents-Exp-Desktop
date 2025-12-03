@@ -205,11 +205,6 @@ QLineEdit:focus {
 	color: #E6E6E6;
 }
 
-QLineEdit:!focus {
-	border: 1px solid #595959;
-	color: #999999;
-}
-
 QLineEdit:disabled {
 	border: 1px solid #333333;
 	color: #333333;
