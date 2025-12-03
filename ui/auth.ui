@@ -354,6 +354,9 @@
                         <property name="placeholderText">
                          <string>Введите почту...</string>
                         </property>
+                        <property name="clearButtonEnabled">
+                         <bool>false</bool>
+                        </property>
                        </widget>
                       </item>
                      </layout>
@@ -390,8 +393,14 @@
                        <pointsize>14</pointsize>
                       </font>
                      </property>
+                     <property name="echoMode">
+                      <enum>QLineEdit::Password</enum>
+                     </property>
                      <property name="placeholderText">
                       <string>Введите пароль...</string>
+                     </property>
+                     <property name="clearButtonEnabled">
+                      <bool>false</bool>
                      </property>
                     </widget>
                    </item>

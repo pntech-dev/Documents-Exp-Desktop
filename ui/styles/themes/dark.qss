@@ -25,23 +25,23 @@ QPushButton {
 /* Theme button */
 QPushButton#theme_button {
 	border: 0px;
-	background-image: url(:/theme/dark/theme/dark/default.svg);
+	background-image: url(:/icons/dark/theme/dark/default.svg);
 	background-repeat: no-repeat;
     background-position: left;
 }
 
 QPushButton#theme_button:hover {
-	background-image: url(:/theme/dark/theme/dark/hover.svg);
+	background-image: url(:/icons/dark/theme/dark/hover.svg);
 	background-color: #262626;
 }
 
 QPushButton#theme_button:pressed {
-	background-image: url(:/theme/dark/theme/dark/clicked.svg);
+	background-image: url(:/icons/dark/theme/dark/clicked.svg);
 	background-color: #262626;
 }
 
 QPushButton#theme_button:disabled {
-	background-image: url(:/theme/dark/theme/dark/disabled.svg);
+	background-image: url(:/icons/dark/theme/dark/disabled.svg);
 	background-color: #262626;
 }
 
@@ -174,7 +174,7 @@ QCheckBox::indicator:checked {
 	height: 20px;
 	border: 0px;
 	background-color: #C43A3A;
-	image: url(:/theme/light/check/light/check_light.svg);
+	image: url(:/icons/light/check/light/check_light.svg);
 }
 
 QCheckBox::indicator:checked:hover {
@@ -183,4 +183,34 @@ QCheckBox::indicator:checked:hover {
 
 QCheckBox::indicator:checked:disabled {
 	background-color: #5D1717;
+}
+
+
+/* LineEdits */
+QLineEdit {
+	border-radius: 8px;
+	border: 1px solid #404040;
+	background-color: #262626;
+	color: #999999;
+	padding: 0px 16px;
+}
+
+QLineEdit:hover {
+	border: 1px solid #4D4D4D;
+	color: #B3B3B3;
+}
+
+QLineEdit:focus {
+	border: 1px solid #C43A3A;
+	color: #E6E6E6;
+}
+
+QLineEdit:!focus {
+	border: 1px solid #595959;
+	color: #999999;
+}
+
+QLineEdit:disabled {
+	border: 1px solid #333333;
+	color: #333333;
 }

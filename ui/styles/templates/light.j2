@@ -20,28 +20,30 @@ QLabel {
 /* Buttons */
 QPushButton {
 	border-radius: 8px;
+	border: 1px solid {{ neutral.neutral_50 }};
+	color: {{ neutral.neutral_600 }};
 }
 
 /* Theme button */
 QPushButton#theme_button {
 	border: 0px;
-	background-image: url(:/theme/light/theme/light/default.svg);
+	background-image: url(:/icons/light/theme/light/default.svg);
 	background-repeat: no-repeat;
     background-position: left;
 }
 
 QPushButton#theme_button:hover {
-	background-image: url(:/theme/light/theme/light/hover.svg);
+	background-image: url(:/icons/light/theme/light/hover.svg);
 	background-color: {{ neutral.neutral_0 }};
 }
 
 QPushButton#theme_button:pressed {
-	background-image: url(:/theme/light/theme/light/clicked.svg);
+	background-image: url(:/icons/light/theme/light/clicked.svg);
 	background-color: {{ neutral.neutral_0 }};
 }
 
 QPushButton#theme_button:disabled {
-	background-image: url(:/theme/light/theme/light/disabled.svg);
+	background-image: url(:/icons/light/theme/light/disabled.svg);
 	background-color: {{ neutral.neutral_0 }};
 }
 
@@ -90,11 +92,6 @@ QPushButton:disabled {
 } */
 
 /* Tertiary button */
-QPushButton {
-	border: 1px solid {{ neutral.neutral_50 }};
-	color: {{ neutral.neutral_600 }};
-}
-
 QPushButton:hover {
 	border: 1px solid {{ neutral.neutral_100 }};
 	color: {{ neutral.neutral_700 }};
@@ -128,4 +125,89 @@ QLabel#fogot_password_label:pressed {
 
 QLabel#fogot_password_label:disabled {
 	color: {{ accent.accent_100 }};
+}
+
+
+/* CheckBox */
+QCheckBox {
+	spacing: 8px;
+	color: {{ neutral.neutral_600 }};
+}
+
+QCheckBox:hover {
+	color: {{ neutral.neutral_800 }};
+}
+
+QCheckBox:disabled {
+	color: {{ neutral.neutral_50 }};
+}
+
+QCheckBox:checked {
+	color: {{ neutral.neutral_900 }};
+}
+
+QCheckBox:checked:disabled {
+	color: {{ neutral.neutral_100 }};
+}
+
+QCheckBox::indicator {
+	width: 18px;
+	height: 18px;
+	border: 1px solid {{ neutral.neutral_500 }};
+	border-radius: 4px;
+	background-color: {{ neutral.neutral_0 }};
+}
+
+QCheckBox::indicator:hover {
+	border: 1px solid {{ neutral.neutral_700 }};
+}
+
+QCheckBox::indicator:disabled {
+	border: 1px solid {{ neutral.neutral_50 }};
+}
+
+QCheckBox::indicator:checked {
+	width: 20px;
+	height: 20px;
+	border: 0px;
+	background-color: {{ accent.accent_500 }};
+	image: url(:/icons/light/check/light/check_light.svg);
+}
+
+QCheckBox::indicator:checked:hover {
+	background-color: {{ accent.accent_600 }};
+}
+
+QCheckBox::indicator:checked:disabled {
+	background-color: {{ accent.accent_100 }};
+}
+
+
+/* LineEdits */
+QLineEdit {
+	border-radius: 8px;
+	border: 1px solid {{ neutral.neutral_100 }};
+	background-color: {{ neutral.neutral_0 }};
+	color: {{ neutral.neutral_500 }};
+	padding: 0px 16px;
+}
+
+QLineEdit:hover {
+	border: 1px solid {{ neutral.neutral_150 }};
+	color: {{ neutral.neutral_700 }};
+}
+
+QLineEdit:focus {
+	border: 1px solid {{ accent.accent_500 }};
+	color: {{ neutral.neutral_900 }};
+}
+
+QLineEdit:!focus {
+	border: 1px solid {{ neutral.neutral_200 }};
+	color: {{ neutral.neutral_900 }};
+}
+
+QLineEdit:disabled {
+	border: 1px solid {{ neutral.neutral_50 }};
+	color: {{ neutral.neutral_900 }};
 }
