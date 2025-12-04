@@ -4,10 +4,7 @@ QWidget {
 
 
 /* Logo */
-QLabel#logo_lable,
-QLabel#logo_lable_2,
-QLabel#logo_lable_3,
-QLabel#logo_lable_4 {
+LogoLabel {
 	background-image: url(:/light/logo_light.svg);
 	background-repeat: no-repeat;
     background-position: left;
@@ -20,8 +17,7 @@ QLabel {
 }
 
 /* Info label */
-QLabel#info_change_password_label,
-QLabel#info_change_password_label_2 {
+InfoLabel {
 	color: #4D4D4D;
 }
 
@@ -29,134 +25,113 @@ QLabel#info_change_password_label_2 {
 /* Buttons */
 QPushButton {
 	border-radius: 8px;
-	border: 1px solid #F2F2F2;
-	color: #666666;
 }
 
 /* Theme button */
-QPushButton#theme_button,
-QPushButton#theme_button_2,
-QPushButton#theme_button_3,
-QPushButton#theme_button_4 {
+ThemeButton {
 	border: 0px;
 	background-image: url(:/icons/light/theme/light/default.svg);
 	background-repeat: no-repeat;
     background-position: left;
 }
 
-QPushButton#theme_button:pressed,
-QPushButton#theme_button_2:pressed,
-QPushButton#theme_button_3:pressed,
-QPushButton#theme_button_4:pressed {
+ThemeButton:pressed {
 	background-image: url(:/icons/light/theme/light/hover.svg);
 	background-color: #FFFFFF;
 }
 
-QPushButton#theme_button:pressed,
-QPushButton#theme_button_2:pressed,
-QPushButton#theme_button_3:pressed,
-QPushButton#theme_button_4:pressed {
+ThemeButton:pressed {
 	background-image: url(:/icons/light/theme/light/clicked.svg);
 	background-color: #FFFFFF;
 }
 
-QPushButton#theme_button:disabled,
-QPushButton#theme_button_2:disabled,
-QPushButton#theme_button_3:disabled,
-QPushButton#theme_button_4:disabled {
+ThemeButton:disabled {
 	background-image: url(:/icons/light/theme/light/disabled.svg);
 	background-color: #FFFFFF;
 }
 
 /* Primary button */
-QPushButton#login_pushButton,
-QPushButton#create_pushButton,
-QPushButton#accept_pushButton,
-QPushButton#change_pushButton {
+PrimaryButton {
 	border: 0px;
 	color: #FFFFFF;
 	background-color: #CC3333;
 }
 
-QPushButton#login_pushButton:hover,
-QPushButton#create_pushButton:hover,
-QPushButton#accept_pushButton:hover,
-QPushButton#change_pushButton:hover {
+PrimaryButton:hover {
 	background-color: #A32929;
 }
 
-QPushButton#login_pushButton:pressed,
-QPushButton#create_pushButton:pressed,
-QPushButton#accept_pushButton:pressed,
-QPushButton#change_pushButton:pressed {
+PrimaryButton:pressed {
 	background-color: #D65C5C;
 }
 
-QPushButton#login_pushButton:disabled,
-QPushButton#create_pushButton:disabled,
-QPushButton#accept_pushButton:disabled,
-QPushButton#change_pushButton:disabled {
+PrimaryButton:disabled {
 	background-color: #F2F2F2;
 }
 
 /* Secondary button */
-/* QPushButton {
+SecondaryButton {
 	border: 1px solid #E6E6E6;
 	color: #666666;
 	background-color: #F2F2F2;
 }
 
-QPushButton:hover {
+SecondaryButton:hover {
 	border: 1px solid #CCCCCC;
 	color: #4D4D4D;
 	background-color: #D9D9D9;
 }
 
-QPushButton:pressed {
+SecondaryButton:pressed {
 	border: 1px solid #B3B3B3;
 	color: #333333;
 	background-color: #CCCCCC;
 }
 
-QPushButton:disabled {
+SecondaryButton:disabled {
 	border: 1px solid #F2F2F2;
 	color: #F2F2F2;
 	background-color: #FFFFFF;
-} */
+}
 
 /* Tertiary button */
-QPushButton:hover {
+TertiaryButton {
+	border: 1px solid #F2F2F2;
+	color: #4D4D4D;
+}
+
+TertiaryButton:hover {
 	border: 1px solid #E6E6E6;
 	color: #4D4D4D;
 	background-color: #F2F2F2;
 }
 
-QPushButton:pressed {
+TertiaryButton:pressed {
 	border: 1px solid #D9D9D9;
 	color: #333333;
 	background-color: #E6E6E6;
 }
 
-QPushButton:disabled {
+TertiaryButton:disabled {
 	border: 1px solid #F2F2F2;
 	color: #F2F2F2;
 	background-color: #FFFFFF;
 }
 
 /* Text button */
-QLabel#fogot_password_label {
+TextButton {
 	color: #CC3333;
 }
 
-QLabel#fogot_password_label:hover {
+TextButton:hover {
 	color: #A32929;
 }
 
-QLabel#fogot_password_label:pressed {
+TextButton:pressed {
 	color: #D65C5C;
 }
 
-QLabel#fogot_password_label:disabled {
+TextButton:disabled {
 	color: #F5D6D6;
 }
 

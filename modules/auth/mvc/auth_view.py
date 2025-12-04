@@ -16,6 +16,14 @@ class AuthView:
             "change_password_change_page": self.ui.change_password_confirm_page
         }
 
+        # Theme buttons list
+        self.theme_buttons = [
+            self.ui.theme_button,
+            self.ui.theme_button_2,
+            self.ui.theme_button_3,
+            self.ui.theme_button_4
+        ]
+
 
     def set_theme(self) -> None:
         """Set theme"""
@@ -30,7 +38,8 @@ class AuthView:
 
     def theme_switcher_clicked(self, handler) -> None:
         """Switch theme on click theme switcher button"""
-        self.ui.theme_button.clicked.connect(handler)
+        for theme_button in self.theme_buttons:
+            theme_button.clicked.connect(handler)
 
     # Login page
 

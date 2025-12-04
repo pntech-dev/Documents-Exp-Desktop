@@ -4,19 +4,10 @@ QWidget {
 
 
 /* Logo */
-QLabel#logo_lable,
-QLabel#logo_lable_2,
-QLabel#logo_lable_3,
-QLabel#logo_lable_4 {
+LogoLabel {
 	background-image: url(:/light/logo_light.svg);
 	background-repeat: no-repeat;
     background-position: left;
-}
-
-/* Info label */
-QLabel#info_change_password_label,
-QLabel#info_change_password_label_2 {
-	color: {{ neutral.neutral_700 }};
 }
 
 
@@ -25,138 +16,122 @@ QLabel {
 	color: {{ neutral.neutral_900 }};
 }
 
+/* Info label */
+InfoLabel {
+	color: {{ neutral.neutral_700 }};
+}
+
 
 /* Buttons */
 QPushButton {
 	border-radius: 8px;
-	border: 1px solid {{ neutral.neutral_50 }};
-	color: {{ neutral.neutral_600 }};
 }
 
 /* Theme button */
-QPushButton#theme_button,
-QPushButton#theme_button_2,
-QPushButton#theme_button_3,
-QPushButton#theme_button_4 {
+ThemeButton {
 	border: 0px;
 	background-image: url(:/icons/light/theme/light/default.svg);
 	background-repeat: no-repeat;
     background-position: left;
 }
 
-QPushButton#theme_button:pressed,
-QPushButton#theme_button_2:pressed,
-QPushButton#theme_button_3:pressed,
-QPushButton#theme_button_4:pressed {
+ThemeButton {
 	background-image: url(:/icons/light/theme/light/hover.svg);
 	background-color: {{ neutral.neutral_0 }};
 }
 
-QPushButton#theme_button:pressed,
-QPushButton#theme_button_2:pressed,
-QPushButton#theme_button_3:pressed,
-QPushButton#theme_button_4:pressed {
+ThemeButton {
 	background-image: url(:/icons/light/theme/light/clicked.svg);
 	background-color: {{ neutral.neutral_0 }};
 }
 
-QPushButton#theme_button:disabled,
-QPushButton#theme_button_2:disabled,
-QPushButton#theme_button_3:disabled,
-QPushButton#theme_button_4:disabled {
+ThemeButtonPrimaryButton {
 	background-image: url(:/icons/light/theme/light/disabled.svg);
 	background-color: {{ neutral.neutral_0 }};
 }
 
 /* Primary button */
-QPushButton#login_pushButton,
-QPushButton#create_pushButton,
-QPushButton#accept_pushButton,
-QPushButton#change_pushButton {
+PrimaryButton {
 	border: 0px;
 	color: neutral.neutral_0;
 	background-color: {{ accent.accent_500 }};
 }
 
-QPushButton#login_pushButton:hover,
-QPushButton#create_pushButton:hover,
-QPushButton#accept_pushButton:hover,
-QPushButton#change_pushButton:hover {
+PrimaryButton:hover {
 	background-color: {{ accent.accent_600 }};
 }
 
-QPushButton#login_pushButton:pressed,
-QPushButton#create_pushButton:pressed,
-QPushButton#accept_pushButton:pressed,
-QPushButton#change_pushButton:pressed {
+PrimaryButton:pressed {
 	background-color: {{ accent.accent_400 }};
 }
 
-QPushButton#login_pushButton:disabled,
-QPushButton#create_pushButton:disabled,
-QPushButton#accept_pushButton:disabled,
-QPushButton#change_pushButton:disabled {
+PrimaryButton:disabled {
 	background-color: {{ neutral.neutral_50 }};
 }
 
 /* Secondary button */
-/* QPushButton {
+SecondaryButton {
 	border: 1px solid {{ neutral.neutral_100 }};
 	color: {{ neutral.neutral_600 }};
 	background-color: {{ neutral.neutral_50 }};
 }
 
-QPushButton:hover {
+SecondaryButton:hover {
 	border: 1px solid {{ neutral.neutral_200 }};
 	color: {{ neutral.neutral_700 }};
 	background-color: {{ neutral.neutral_150 }};
 }
 
-QPushButton:pressed {
+SecondaryButton:pressed {
 	border: 1px solid {{ neutral.neutral_300 }};
 	color: {{ neutral.neutral_800 }};
 	background-color: {{ neutral.neutral_200 }};
 }
 
-QPushButton:disabled {
+SecondaryButton:disabled {
 	border: 1px solid {{ neutral.neutral_50 }};
 	color: {{ neutral.neutral_50 }};
 	background-color: {{ neutral.neutral_0 }};
-} */
+}
 
 /* Tertiary button */
-QPushButton:hover {
+TertiaryButton {
+	border: 1px solid {{ neutral.neutral_50 }};
+	color: {{ neutral.neutral_700 }};
+}
+
+TertiaryButton:hover {
 	border: 1px solid {{ neutral.neutral_100 }};
 	color: {{ neutral.neutral_700 }};
 	background-color: {{ neutral.neutral_50 }};
 }
 
-QPushButton:pressed {
+TertiaryButton:pressed {
 	border: 1px solid {{ neutral.neutral_150 }};
 	color: {{ neutral.neutral_800 }};
 	background-color: {{ neutral.neutral_100 }};
 }
 
-QPushButton:disabled {
+TertiaryButton:disabled {
 	border: 1px solid {{ neutral.neutral_50 }};
 	color: {{ neutral.neutral_50 }};
 	background-color: {{ neutral.neutral_0 }};
 }
 
 /* Text button */
-QLabel#fogot_password_label {
+TextButton {
 	color: {{ accent.accent_500 }};
 }
 
-QLabel#fogot_password_label:hover {
+TextButton:hover {
 	color: {{ accent.accent_600 }};
 }
 
-QLabel#fogot_password_label:pressed {
+TextButton:pressed {
 	color: {{ accent.accent_400 }};
 }
 
-QLabel#fogot_password_label:disabled {
+TextButton:disabled {
 	color: {{ accent.accent_100 }};
 }
 
