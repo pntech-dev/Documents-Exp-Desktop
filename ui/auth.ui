@@ -45,7 +45,7 @@
      <number>0</number>
     </property>
     <item>
-     <widget class="QStackedWidget" name="Pages">
+     <widget class="QStackedWidget" name="pages">
       <property name="minimumSize">
        <size>
         <width>400</width>
@@ -1865,7 +1865,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QStackedWidget" name="Slider">
+     <widget class="QStackedWidget" name="slider">
       <property name="minimumSize">
        <size>
         <width>500</width>
