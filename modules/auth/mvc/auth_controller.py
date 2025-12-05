@@ -3,13 +3,27 @@ from .auth_view import AuthView
 
 from core.worker import APIWorker
 
+from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtCore import pyqtSignal, QObject
 
-class AuthController:
-    def __init__(self, model: AuthModel, view: AuthView):
+
+class AuthController(QObject):
+
+    login_successful = pyqtSignal()
+
+    def __init__(
+            self, 
+            model: AuthModel, 
+            view: AuthView, 
+            window: QMainWindow
+    ) -> None:
+        
+        super().__init__()
         self.model = model
         self.view = view
+        self.auth_window = window
 
-        self.worker = None
+        self.api_worker = None # API worker (Thread)
 
 
         """=== Handlers ==="""
@@ -34,7 +48,12 @@ class AuthController:
 
 
     def login_user(self, user_data: dict) -> None:
-        print(user_data)
+        # Save user data
+        auto_login = self.view.get_auto_login()
+        self.model.save_user(user_data=user_data, auto_login=auto_login)
+
+        self.login_successful.emit()
+        self.auth_window.close()
 
 
     def error_login(self, exception):
@@ -55,12 +74,12 @@ class AuthController:
         password = self.view.get_password_login()
 
         # Create worker
-        self.worker = APIWorker(self.model.login, email=email, password=password)
+        self.api_worker = APIWorker(self.model.login, email=email, password=password)
 
-        self.worker.finished.connect(lambda data: self.login_user(user_data=data))
-        self.worker.error.connect(lambda e: self.error_login(exception=e))
+        self.api_worker.finished.connect(lambda data: self.login_user(user_data=data))
+        self.api_worker.error.connect(lambda e: self.error_login(exception=e))
 
-        self.worker.start()
+        self.api_worker.start()
 
     
     def on_guest_login_page_button_clicked(self) -> None:

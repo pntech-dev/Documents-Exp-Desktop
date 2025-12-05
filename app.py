@@ -1,32 +1,48 @@
 import sys
 
-from ui import MainWindow_UI
-from utils import ThemeManager
-from modules.main.mvc import MainModel, MainView, MainController
+from PyQt5.QtWidgets import QApplication
 
-from PyQt5.QtWidgets import QMainWindow, QApplication
+from modules import AuthWindow
+from modules.main.main_module import MainWindow
+from modules.auth.mvc.auth_model import AuthModel
 
+class Application:
+    def __init__(self):
+        self.app = QApplication(sys.argv)
+        self.main_window = None
+        self.auth_window = None
 
-class MainWindow(QMainWindow):
-    def __init__(self) -> None:
-        super().__init__()
+        auth_model = AuthModel()
+        if auth_model.get_auto_login_state():
+            self.show_main_window()
+        else:
+            self.show_auth_window()
 
-        # UI Initialization
-        self.ui = MainWindow_UI()
-        self.ui.setupUi(self)
+    def show_auth_window(self):
+        self.auth_window = AuthWindow()
+        self.auth_window.controller.login_successful.connect(self.on_login_successful)
+        self.auth_window.show()
 
-        # Set theme
-        self.theme_manager = ThemeManager()
-        self.theme_manager.switch_theme(theme=0)
+    def show_main_window(self):
+        self.main_window = MainWindow()
+        self.main_window.controller.logout_requested.connect(self.on_logout_requested)
+        self.main_window.show()
 
-        # MVC Initialization
-        self.model = MainModel()
-        self.view = MainView(ui=self.ui)
-        self.controller = MainController(model=self.model, view=self.view, window=self)
+    def on_login_successful(self):
+        if self.auth_window:
+            self.auth_window.close()
+            self.auth_window = None
+        self.show_main_window()
 
+    def on_logout_requested(self):
+        if self.main_window:
+            self.main_window.close()
+            self.main_window = None
+        self.show_auth_window()
+
+    def run(self):
+        sys.exit(self.app.exec_())
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    main_window = MainWindow()
-    main_window.show()
-    sys.exit(app.exec_())
+    app = Application()
+    app.run()

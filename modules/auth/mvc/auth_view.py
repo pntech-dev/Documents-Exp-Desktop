@@ -49,6 +49,10 @@ class AuthView:
 
     def get_password_login(self) -> str:
         return self.ui.password_lineEdit.text()
+    
+
+    def get_auto_login(self) -> bool:
+        return self.ui.auto_login_checkBox.isChecked()
 
 
     def login_login_page_button_clicked(self, handler) -> None:
