@@ -43,8 +43,17 @@ class AuthView:
 
 
     # Log In page
+    def get_email_login(self) -> str:
+        return self.ui.email_lineEdit.text()
+    
+
+    def get_password_login(self) -> str:
+        return self.ui.password_lineEdit.text()
+
+
     def login_login_page_button_clicked(self, handler) -> None:
         self.ui.login_pushButton.clicked.connect(handler)
+
 
     def guest_login_page_button_clicked(self, handler) -> None:
         self.ui.guest_pushButton.clicked.connect(handler)

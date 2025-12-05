@@ -1,11 +1,15 @@
 from .auth_model import AuthModel
 from .auth_view import AuthView
 
+from core.worker import APIWorker
+
 
 class AuthController:
     def __init__(self, model: AuthModel, view: AuthView):
         self.model = model
         self.view = view
+
+        self.worker = None
 
 
         """=== Handlers ==="""
@@ -29,6 +33,14 @@ class AuthController:
         self.view.do_not_change_password_button_clicked(self.on_do_not_change_password_button_clicked)
 
 
+    def login_user(self, user_data: dict) -> None:
+        print(user_data)
+
+
+    def error_login(self, exception):
+        print(exception)
+
+
     """=== Handlers ==="""
 
     def on_theme_switcher_clicked(self) -> None:
@@ -37,7 +49,18 @@ class AuthController:
 
     # Log In page
     def on_login_login_page_button_clicked(self) -> None:
-        print("Login button clicked")
+
+        # Get data from lineedits
+        email = self.view.get_email_login()
+        password = self.view.get_password_login()
+
+        # Create worker
+        self.worker = APIWorker(self.model.login, email=email, password=password)
+
+        self.worker.finished.connect(lambda data: self.login_user(user_data=data))
+        self.worker.error.connect(lambda e: self.error_login(exception=e))
+
+        self.worker.start()
 
     
     def on_guest_login_page_button_clicked(self) -> None:
