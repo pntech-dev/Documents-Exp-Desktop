@@ -1,0 +1,33 @@
+<RCC>
+  <qresource prefix="/icons/light">
+    <file>input_fields/mail/light/active.svg</file>
+    <file>input_fields/mail/light/disabled.svg</file>
+    <file>input_fields/mail/light/default.svg</file>
+    <file>input_fields/mail/light/hover.svg</file>
+    <file>input_fields/password/light/active.svg</file>
+    <file>input_fields/password/light/default.svg</file>
+    <file>input_fields/password/light/disabled.svg</file>
+    <file>input_fields/password/light/hover.svg</file>
+    <file>check/light/check_light.svg</file>
+    <file>theme/light/clicked.svg</file>
+    <file>theme/light/default.svg</file>
+    <file>theme/light/disabled.svg</file>
+    <file>theme/light/hover.svg</file>
+  </qresource>
+  <qresource prefix="/icons/dark">
+    <file>input_fields/mail/dark/active.svg</file>
+    <file>input_fields/mail/dark/default.svg</file>
+    <file>input_fields/mail/dark/disabled.svg</file>
+    <file>input_fields/mail/dark/hover.svg</file>
+    <file>input_fields/password/dark/active.svg</file>
+    <file>input_fields/password/dark/default.svg</file>
+    <file>input_fields/password/dark/disabled.svg</file>
+    <file>input_fields/password/dark/hover.svg</file>
+    <file>check/dark/check_dark.svg</file>
+    <file>check/dark/check_dark_disabled.svg</file>
+    <file>theme/dark/clicked.svg</file>
+    <file>theme/dark/default.svg</file>
+    <file>theme/dark/disabled.svg</file>
+    <file>theme/dark/hover.svg</file>
+  </qresource>
+</RCC>

@@ -1,0 +1,62 @@
+{   
+    "paths": {
+        "themes_path": "ui/styles/themes/",
+        "templates_path": "ui/styles/templates/"
+    },
+
+    "themes": {
+        "0": "light",
+        "1": "dark"
+    },
+
+    "tokens": {
+        "light_theme": {
+            "accent": {
+                "accent_700": "#7A1F1F",
+                "accent_600": "#A32929",
+                "accent_500": "#CC3333",
+                "accent_400": "#D65C5C",
+                "accent_300": "#E08585",
+                "accent_100": "#F5D6D6"
+            },
+            "neutral": {
+                "neutral_900": "#1A1A1A",
+                "neutral_800": "#333333",
+                "neutral_700": "#4D4D4D",
+                "neutral_600": "#666666",
+                "neutral_500": "#808080",
+                "neutral_400": "#999999",
+                "neutral_300": "#B3B3B3",
+                "neutral_200": "#CCCCCC",
+                "neutral_150": "#D9D9D9",
+                "neutral_100": "#E6E6E6",
+                "neutral_50": "#F2F2F2",
+                "neutral_0": "#FFFFFF"
+            }
+        },
+        "dark_theme": {
+            "accent": {
+                "accent_700": "#5D1717",
+                "accent_600": "#852222",
+                "accent_500": "#C43A3A",
+                "accent_400": "#D65A5A",
+                "accent_300": "#E38282",
+                "accent_100": "#F3C7C7"
+            },
+            "neutral": {
+                "neutral_900": "#E6E6E6",
+                "neutral_800": "#CCCCCC",
+                "neutral_700": "#B3B3B3",
+                "neutral_600": "#999999",
+                "neutral_500": "#808080",
+                "neutral_400": "#666666",
+                "neutral_350": "#595959",
+                "neutral_300": "#4D4D4D",
+                "neutral_250": "#404040",
+                "neutral_200": "#333333",
+                "neutral_100": "#262626",
+                "neutral_0": "#1A1A1A"
+            }
+        }
+    }
+}

@@ -1,0 +1,216 @@
+QWidget {
+	background-color: #FFFFFF;
+}
+
+
+/* Logo */
+LogoLabel {
+	background-image: url(:/light/logo_light.svg);
+	background-repeat: no-repeat;
+    background-position: left;
+}
+
+
+/* QLabel */
+QLabel {
+	color: #1A1A1A;
+}
+
+/* Info label */
+InfoLabel {
+	color: #4D4D4D;
+}
+
+
+/* Buttons */
+QPushButton {
+	border-radius: 8px;
+}
+
+/* Theme button */
+ThemeButton {
+	border: 0px;
+	background-image: url(:/icons/light/theme/light/default.svg);
+	background-repeat: no-repeat;
+    background-position: left;
+}
+
+ThemeButton:pressed {
+	background-image: url(:/icons/light/theme/light/hover.svg);
+	background-color: #FFFFFF;
+}
+
+ThemeButton:pressed {
+	background-image: url(:/icons/light/theme/light/clicked.svg);
+	background-color: #FFFFFF;
+}
+
+ThemeButton:disabled {
+	background-image: url(:/icons/light/theme/light/disabled.svg);
+	background-color: #FFFFFF;
+}
+
+/* Primary button */
+PrimaryButton {
+	border: 0px;
+	color: #FFFFFF;
+	background-color: #CC3333;
+}
+
+PrimaryButton:hover {
+	background-color: #A32929;
+}
+
+PrimaryButton:pressed {
+	background-color: #D65C5C;
+}
+
+PrimaryButton:disabled {
+	background-color: #F2F2F2;
+}
+
+/* Secondary button */
+SecondaryButton {
+	border: 1px solid #E6E6E6;
+	color: #666666;
+	background-color: #F2F2F2;
+}
+
+SecondaryButton:hover {
+	border: 1px solid #CCCCCC;
+	color: #4D4D4D;
+	background-color: #D9D9D9;
+}
+
+SecondaryButton:pressed {
+	border: 1px solid #B3B3B3;
+	color: #333333;
+	background-color: #CCCCCC;
+}
+
+SecondaryButton:disabled {
+	border: 1px solid #F2F2F2;
+	color: #F2F2F2;
+	background-color: #FFFFFF;
+}
+
+/* Tertiary button */
+TertiaryButton {
+	border: 1px solid #F2F2F2;
+	color: #4D4D4D;
+}
+
+TertiaryButton:hover {
+	border: 1px solid #E6E6E6;
+	color: #4D4D4D;
+	background-color: #F2F2F2;
+}
+
+TertiaryButton:pressed {
+	border: 1px solid #D9D9D9;
+	color: #333333;
+	background-color: #E6E6E6;
+}
+
+TertiaryButton:disabled {
+	border: 1px solid #F2F2F2;
+	color: #F2F2F2;
+	background-color: #FFFFFF;
+}
+
+/* Text button */
+TextButton {
+	color: #CC3333;
+}
+
+TextButton:hover {
+	color: #A32929;
+}
+
+TextButton:pressed {
+	color: #D65C5C;
+}
+
+TextButton:disabled {
+	color: #F5D6D6;
+}
+
+
+/* CheckBox */
+QCheckBox {
+	spacing: 8px;
+	color: #666666;
+}
+
+QCheckBox:hover {
+	color: #333333;
+}
+
+QCheckBox:disabled {
+	color: #F2F2F2;
+}
+
+QCheckBox:checked {
+	color: #1A1A1A;
+}
+
+QCheckBox:checked:disabled {
+	color: #E6E6E6;
+}
+
+QCheckBox::indicator {
+	width: 18px;
+	height: 18px;
+	border: 1px solid #808080;
+	border-radius: 4px;
+	background-color: #FFFFFF;
+}
+
+QCheckBox::indicator:hover {
+	border: 1px solid #4D4D4D;
+}
+
+QCheckBox::indicator:disabled {
+	border: 1px solid #F2F2F2;
+}
+
+QCheckBox::indicator:checked {
+	width: 20px;
+	height: 20px;
+	border: 0px;
+	background-color: #CC3333;
+	image: url(:/icons/light/check/light/check_light.svg);
+}
+
+QCheckBox::indicator:checked:hover {
+	background-color: #A32929;
+}
+
+QCheckBox::indicator:checked:disabled {
+	background-color: #F5D6D6;
+}
+
+
+/* LineEdits */
+QLineEdit {
+	border-radius: 8px;
+	border: 1px solid #E6E6E6;
+	background-color: #FFFFFF;
+	color: #808080;
+	padding: 0px 16px;
+}
+
+QLineEdit:hover {
+	border: 1px solid #D9D9D9;
+	color: #4D4D4D;
+}
+
+QLineEdit:focus {
+	border: 1px solid #CC3333;
+	color: #1A1A1A;
+}
+
+QLineEdit:disabled {
+	border: 1px solid #F2F2F2;
+	color: #1A1A1A;
+}
