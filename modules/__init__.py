@@ -1,1 +1,1 @@
-from .auth.auth import AuthWindow
+from .auth.auth_module import AuthWindow
