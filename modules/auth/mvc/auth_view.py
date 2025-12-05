@@ -13,7 +13,7 @@ class AuthView:
             "login_page": self.ui.login_page,
             "signup_page": self.ui.signup_page,
             "change_password_confirm_page": self.ui.change_password_confirm_page,
-            "change_password_change_page": self.ui.change_password_confirm_page
+            "change_password_change_page": self.ui.change_password_change_page
         }
 
         # Theme buttons list
@@ -41,23 +41,44 @@ class AuthView:
         for theme_button in self.theme_buttons:
             theme_button.clicked.connect(handler)
 
-    # Login page
 
-    def create_account_button_clicked(self, handler) -> None:
+    # Log In page
+    def login_login_page_button_clicked(self, handler) -> None:
+        self.ui.login_pushButton.clicked.connect(handler)
+
+    def guest_login_page_button_clicked(self, handler) -> None:
+        self.ui.guest_pushButton.clicked.connect(handler)
+
+
+    def create_account_login_page_button_clicked(self, handler) -> None:
         self.ui.no_account_pushButton.clicked.connect(handler)
 
     
-    def change_password_button_clicked(self, handler) -> None:
+    def forgot_password_login_page_button_clicked(self, handler) -> None:
         self.ui.fogot_password_label.mousePressEvent = handler
 
-    # Create account page
 
-    def have_account_create_button_clicked(self, handler) -> None:
+    # Sign Up page
+    def create_account_signup_page_button_clicked(self, handler) -> None:
+        self.ui.create_pushButton.clicked.connect(handler)
+
+
+    def have_account_signup_page_button_clicked(self, handler) -> None:
         self.ui.have_account_pushButton.clicked.connect(handler)
 
-    # Change password page
 
-    def have_account_password_button_clicked(self, handler) -> None:
+    # Change password page
+    def confirm_email_button_clicked(self, handler) -> None:
+        self.ui.accept_pushButton.clicked.connect(handler)
+
+
+    def know_password_button_clicked(self, handler) -> None:
         self.ui.have_account_pushButton_2.clicked.connect(handler)
 
 
+    def change_password_button_clicked(self, handler) -> None:
+        self.ui.change_pushButton.clicked.connect(handler)
+
+    
+    def do_not_change_password_button_clicked(self, handler) -> None:
+        self.ui.have_account_pushButton_3.clicked.connect(handler)
