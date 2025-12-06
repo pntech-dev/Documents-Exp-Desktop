@@ -71,6 +71,18 @@ class AuthView:
         self.ui.fogot_password_label.mousePressEvent = handler
 
 
+    def email_lineedit_login_page_text_changed(self, handler) -> None:
+        self.ui.email_lineEdit.textChanged.connect(handler)
+
+
+    def password_lineedit_login_page_text_changed(self, handler) -> None:
+        self.ui.password_lineEdit.textChanged.connect(handler)
+
+    
+    def update_login_button(self, state: bool) -> None:
+        self.ui.login_pushButton.setEnabled(state)
+
+
     # Sign Up page
     def get_email_signup(self) -> str:
         return self.ui.email_lineEdit_2.text()
@@ -78,6 +90,10 @@ class AuthView:
 
     def get_password_signup(self) -> str:
         return self.ui.password_lineEdit_2.text()
+    
+
+    def get_confirm_password_signup(self) -> str:
+        return self.ui.password_lineEdit_4.text()
     
 
     def get_auto_login_signup_page(self) -> bool:
@@ -90,6 +106,22 @@ class AuthView:
 
     def have_account_signup_page_button_clicked(self, handler) -> None:
         self.ui.have_account_pushButton.clicked.connect(handler)
+
+
+    def udpate_signup_button(self, state: bool) -> None:
+        self.ui.create_pushButton.setEnabled(state)
+
+
+    def email_lineedit_signup_page_text_changed(self, handler) -> None:
+        self.ui.email_lineEdit_2.textChanged.connect(handler)
+
+    
+    def password_lineedit_signup_page_text_changed(self, handler) -> None:
+        self.ui.password_lineEdit_2.textChanged.connect(handler)
+
+
+    def confirm_password_lineedit_signup_page_text_changed(self, handler) -> None:
+        self.ui.password_lineEdit_4.textChanged.connect(handler)
 
 
     # Change password page

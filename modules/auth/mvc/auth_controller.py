@@ -35,10 +35,15 @@ class AuthController(QObject):
         self.view.guest_login_page_button_clicked(self.on_guest_login_page_button_clicked)
         self.view.create_account_login_page_button_clicked(self.on_create_account_login_page_button_clicked)
         self.view.forgot_password_login_page_button_clicked(self.on_forgot_password_login_page_button_clicked)
+        self.view.email_lineedit_login_page_text_changed(self.on_login_page_lineedits_changed)
+        self.view.password_lineedit_login_page_text_changed(self.on_login_page_lineedits_changed)
 
         # Sign Up page
         self.view.create_account_signup_page_button_clicked(self.on_create_account_signup_page_button_clicked)
         self.view.have_account_signup_page_button_clicked(self.on_have_account_signup_page_button_clicked)
+        self.view.email_lineedit_signup_page_text_changed(self.on_signup_page_lineedits_changed)
+        self.view.password_lineedit_signup_page_text_changed(self.on_signup_page_lineedits_changed)
+        self.view.confirm_password_lineedit_signup_page_text_changed(self.on_signup_page_lineedits_changed)
 
         # Change password pages
         self.view.confirm_email_button_clicked(self.on_confirm_email_button_clicked)
@@ -71,6 +76,14 @@ class AuthController(QObject):
 
     def error_signup(self, exception):
         print(exception)
+
+    
+    def check_signup_passwords_match(self) -> bool:
+        # Get data from lineedits
+        password = self.view.get_password_signup()
+        confirm_password = self.view.get_confirm_password_signup()
+
+        return password == confirm_password
 
 
     """=== Handlers ==="""
@@ -110,6 +123,18 @@ class AuthController(QObject):
         if page:
             self.view.switch_page(page=page)
 
+    
+    def on_login_page_lineedits_changed(self) -> None:
+        # Get texts from lineedits
+        email = self.view.get_email_login()
+        password = self.view.get_password_login()
+
+        # Defining login button state (True if both lineedits has text, else False)
+        state = bool(email.strip() and password.strip())
+
+        # Update login button state
+        self.view.update_login_button(state=state)
+
 
     # Sign Up page
     def on_create_account_signup_page_button_clicked(self) -> None:
@@ -131,6 +156,27 @@ class AuthController(QObject):
         page = self.view.pages.get("login_page", None)
         if page:
             self.view.switch_page(page=page)
+
+        
+    def on_signup_page_lineedits_changed(self) -> None:
+        # Get texts from lineedits
+        email = self.view.get_email_signup()
+        password = self.view.get_password_signup()
+        confirm_password = self.view.get_confirm_password_signup()
+
+        if not all([email.strip(), password.strip(), confirm_password.strip()]):
+            self.view.udpate_signup_button(state=False)
+            return
+
+        # Check password matching
+        passwords_match = self.check_signup_passwords_match()
+
+        # Defining signup button state
+        state = bool(email.strip() and password.strip() and confirm_password.strip() and passwords_match)
+
+        # Update signup button state
+        self.view.udpate_signup_button(state=state)
+
 
 
     # Change password page
