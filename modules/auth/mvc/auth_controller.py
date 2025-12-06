@@ -17,16 +17,19 @@ class AuthController:
         self.view.guest_login_page_button_clicked(self.on_guest_login_page_button_clicked)
         self.view.create_account_login_page_button_clicked(self.on_create_account_login_page_button_clicked)
         self.view.forgot_password_login_page_button_clicked(self.on_forgot_password_login_page_button_clicked)
+        self.view.view_password_login_page_checkbox_state_changed(self.on_view_password_login_page_checkbox_state_changed)
 
         # Sign Up page
         self.view.create_account_signup_page_button_clicked(self.on_create_account_signup_page_button_clicked)
         self.view.have_account_signup_page_button_clicked(self.on_have_account_signup_page_button_clicked)
+        self.view.view_password_signup_page_checkbox_state_changed(self.on_view_password_signup_page_checkbox_state_changed)
 
         # Change password pages
         self.view.confirm_email_button_clicked(self.on_confirm_email_button_clicked)
         self.view.change_password_button_clicked(self.on_change_password_button_clicked)
         self.view.know_password_button_clicked(self.on_do_not_change_password_button_clicked)
         self.view.do_not_change_password_button_clicked(self.on_do_not_change_password_button_clicked)
+        self.view.view_password_change_password_checkbox_state_changed(self.on_view_password_change_password_checkbox_state_changed)
 
 
     """=== Handlers ==="""
@@ -56,6 +59,11 @@ class AuthController:
             self.view.switch_page(page=page)
 
 
+    def on_view_password_login_page_checkbox_state_changed(self):
+        state = self.view.get_view_password_login_page_state()
+        self.view.set_password_visibalty_login_page(state)
+
+
     # Sign Up page
     def on_create_account_signup_page_button_clicked(self) -> None:
         print("Create account button clicked")
@@ -65,6 +73,11 @@ class AuthController:
         page = self.view.pages.get("login_page", None)
         if page:
             self.view.switch_page(page=page)
+
+
+    def on_view_password_signup_page_checkbox_state_changed(self):
+        state = self.view.get_view_password_signup_page_state()
+        self.view.set_password_visibalty_signup_page(state)
 
 
     # Change password page
@@ -82,3 +95,8 @@ class AuthController:
     
     def on_change_password_button_clicked(self) -> None:
         print("Change password button clicked")
+
+
+    def on_view_password_change_password_checkbox_state_changed(self):
+        state = self.view.get_view_password_change_password_page_state()
+        self.view.set_password_visibalty_change_password_page(state)
