@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QPushButton, QLabel
+from PyQt5.QtWidgets import QPushButton, QLabel, QCheckBox
 
 
 """=== Buttons ==="""
@@ -36,5 +36,12 @@ class InfoLabel(QLabel):
 
 
 class TextButton(QLabel):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+
+
+"""=== Checkboxes ==="""
+
+class ViewPasswordCheckbox(QCheckBox):
     def __init__(self, parent=None):
         super().__init__(parent=parent)

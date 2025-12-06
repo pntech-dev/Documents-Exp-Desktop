@@ -189,6 +189,42 @@ QCheckBox::indicator:checked:hover {
 
 QCheckBox::indicator:checked:disabled {
 	background-color: {{ accent.accent_700 }};
+	image: url(:/icons/dark/check/dark/check_dark_disabled.svg);
+}
+
+ViewPasswordCheckbox::indicator {
+	border: 0px;
+	padding: 2px;
+	background-image: url(:/icons/dark/view/dark/Default.svg);
+	background-repeat: no-repeat;
+    background-position: center;
+}
+
+ViewPasswordCheckbox::indicator:hover {
+	border: 0px;
+	background-image: url(:/icons/dark/view/dark/Hover.svg);
+	background-color: {{ neutral.neutral_100 }};
+}
+
+ViewPasswordCheckbox::indicator:checked {
+	image: none;
+	background-image: url(:/icons/dark/view/dark/Checked.svg);
+	background-color: {{ neutral.neutral_100 }};
+}
+
+ViewPasswordCheckbox::indicator:checked:hover {
+	background-image: url(:/icons/dark/view/dark/Checked Hover.svg);
+	background-color: {{ neutral.neutral_100 }};
+}
+
+ViewPasswordCheckbox::indicator:disabled {
+	background-image: url(:/icons/dark/view/dark/Default Disabled.svg);
+	background-color: {{ neutral.neutral_100 }};
+}
+
+ViewPasswordCheckbox::indicator:checked:disabled {
+	background-image: url(:/icons/dark/view/dark/Checked Disabled.svg);
+	background-color: {{ neutral.neutral_100 }};
 }
 
 

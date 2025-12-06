@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/auth.ui'
+# Form implementation generated from reading ui file 'd:\Python Projects\Documents Exp\Documents-Exp-Desktop\ui\auth.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -856,5 +856,5 @@ class Ui_MainWindow(object):
         self.change_pushButton.setText(_translate("MainWindow", "Изменить"))
         self.have_account_pushButton_3.setText(_translate("MainWindow", "Не менять пароль"))
 from .custom_widgets import InfoLabel, LogoLabel, PrimaryButton, TertiaryButton, TextButton, ThemeButton, ViewPasswordCheckbox
-import resources.logo.logo_resources_rc
-import resources.icons.icons_resources_rc
+import icons_resources_rc
+import logo_resources_rc
