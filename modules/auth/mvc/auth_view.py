@@ -52,6 +52,18 @@ class AuthView:
     def set_password_visibalty_login_page(self, state) -> None:
         mode = QLineEdit.Normal if state else QLineEdit.Password
         self.ui.password_lineEdit.setEchoMode(mode)
+        
+        
+    def get_email_login(self) -> str:
+        return self.ui.email_lineEdit.text()
+    
+
+    def get_password_login(self) -> str:
+        return self.ui.password_lineEdit.text()
+    
+
+    def get_auto_login_login_page(self) -> bool:
+        return self.ui.auto_login_checkBox.isChecked()
 
 
     def login_login_page_button_clicked(self, handler) -> None:
@@ -83,6 +95,33 @@ class AuthView:
         mode = QLineEdit.Normal if state else QLineEdit.Password
         self.ui.password_lineEdit_2.setEchoMode(mode)
         self.ui.password_lineEdit_4.setEchoMode(mode)
+    def email_lineedit_login_page_text_changed(self, handler) -> None:
+        self.ui.email_lineEdit.textChanged.connect(handler)
+
+
+    def password_lineedit_login_page_text_changed(self, handler) -> None:
+        self.ui.password_lineEdit.textChanged.connect(handler)
+
+    
+    def update_login_button(self, state: bool) -> None:
+        self.ui.login_pushButton.setEnabled(state)
+
+
+    # Sign Up page
+    def get_email_signup(self) -> str:
+        return self.ui.email_lineEdit_2.text()
+    
+
+    def get_password_signup(self) -> str:
+        return self.ui.password_lineEdit_2.text()
+    
+
+    def get_confirm_password_signup(self) -> str:
+        return self.ui.password_lineEdit_4.text()
+    
+
+    def get_auto_login_signup_page(self) -> bool:
+        return self.ui.auto_login_checkBox_2.isChecked()
 
 
     def create_account_signup_page_button_clicked(self, handler) -> None:
@@ -95,6 +134,22 @@ class AuthView:
     
     def view_password_signup_page_checkbox_state_changed(self, handler) -> None:
         self.ui.view_password_checkBox_2.stateChanged.connect(handler)
+
+
+    def udpate_signup_button(self, state: bool) -> None:
+        self.ui.create_pushButton.setEnabled(state)
+
+
+    def email_lineedit_signup_page_text_changed(self, handler) -> None:
+        self.ui.email_lineEdit_2.textChanged.connect(handler)
+
+    
+    def password_lineedit_signup_page_text_changed(self, handler) -> None:
+        self.ui.password_lineEdit_2.textChanged.connect(handler)
+
+
+    def confirm_password_lineedit_signup_page_text_changed(self, handler) -> None:
+        self.ui.password_lineEdit_4.textChanged.connect(handler)
 
 
     # Change password page

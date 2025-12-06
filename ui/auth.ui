@@ -554,6 +554,9 @@
                     </property>
                     <item>
                      <widget class="PrimaryButton" name="login_pushButton">
+                      <property name="enabled">
+                       <bool>false</bool>
+                      </property>
                       <property name="minimumSize">
                        <size>
                         <width>0</width>
@@ -1155,6 +1158,9 @@
                  </property>
                  <item>
                   <widget class="PrimaryButton" name="create_pushButton">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
                    <property name="minimumSize">
                     <size>
                      <width>0</width>

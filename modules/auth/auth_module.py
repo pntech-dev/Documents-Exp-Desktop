@@ -20,4 +20,6 @@ class AuthWindow(QMainWindow):
         # MVC Initialization
         self.model = AuthModel()
         self.view = AuthView(ui=self.ui)
-        self.controller = AuthController(model=self.model, view=self.view)
+        self.controller = AuthController(model=self.model, 
+                                         view=self.view, 
+                                         window=self)
