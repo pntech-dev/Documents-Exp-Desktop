@@ -16,3 +16,15 @@ class APIClient:
         r.raise_for_status()
 
         return r.json()
+    
+
+    def signup(self, email: str, password: str) -> dict:
+        r = requests.post(
+            url=self.base_url + "/auth/signup",
+            json={"email": email, "password": password},
+            timeout=10
+        )
+
+        r.raise_for_status()
+
+        return r.json()

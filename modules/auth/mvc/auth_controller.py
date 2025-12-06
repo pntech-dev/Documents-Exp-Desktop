@@ -49,7 +49,7 @@ class AuthController(QObject):
 
     def login_user(self, user_data: dict) -> None:
         # Save user data
-        auto_login = self.view.get_auto_login()
+        auto_login = self.view.get_auto_login_login_page()
         self.model.save_user(user_data=user_data, auto_login=auto_login)
 
         self.login_successful.emit()
@@ -57,6 +57,19 @@ class AuthController(QObject):
 
 
     def error_login(self, exception):
+        print(exception)
+
+
+    def signup_user(self, user_data: dict) -> None:
+        # Save user data
+        auto_login = self.view.get_auto_login_signup_page()
+        self.model.save_user(user_data=user_data, auto_login=auto_login)
+
+        self.login_successful.emit()
+        self.auth_window.close()
+
+
+    def error_signup(self, exception):
         print(exception)
 
 
@@ -100,7 +113,18 @@ class AuthController(QObject):
 
     # Sign Up page
     def on_create_account_signup_page_button_clicked(self) -> None:
-        print("Create account button clicked")
+
+        # Get data from lineedits
+        email = self.view.get_email_signup()
+        password = self.view.get_password_signup()
+
+        # Create worker
+        self.api_worker = APIWorker(self.model.signup, email=email, password=password)
+
+        self.api_worker.finished.connect(lambda data: self.signup_user(user_data=data))
+        self.api_worker.error.connect(lambda e: self.error_signup(exception=e))
+
+        self.api_worker.start()
 
 
     def on_have_account_signup_page_button_clicked(self) -> None:

@@ -51,7 +51,7 @@ class AuthView:
         return self.ui.password_lineEdit.text()
     
 
-    def get_auto_login(self) -> bool:
+    def get_auto_login_login_page(self) -> bool:
         return self.ui.auto_login_checkBox.isChecked()
 
 
@@ -72,6 +72,18 @@ class AuthView:
 
 
     # Sign Up page
+    def get_email_signup(self) -> str:
+        return self.ui.email_lineEdit_2.text()
+    
+
+    def get_password_signup(self) -> str:
+        return self.ui.password_lineEdit_2.text()
+    
+
+    def get_auto_login_signup_page(self) -> bool:
+        return self.ui.auto_login_checkBox_2.isChecked()
+
+
     def create_account_signup_page_button_clicked(self, handler) -> None:
         self.ui.create_pushButton.clicked.connect(handler)
 
