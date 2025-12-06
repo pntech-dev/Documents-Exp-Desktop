@@ -1,6 +1,7 @@
 import yaml
 import json
 import keyring
+import logging
 
 from pathlib import Path
 
@@ -43,9 +44,14 @@ class AuthModel:
         user = user_data.get("user", None)
         
         if Path.home():
-            base_dir = Path.home() / 'AppData' / 'Roaming' # AppData/Roaming/...
-            app_dir = base_dir / "Documents Exp" # AppData/Roaming/Documents Exp...
-            local_dir = Path.home() / 'AppData' / 'Local' / 'Documents Exp' # AppData/Local/Documents Exp...
+            # AppData/Roaming/...
+            base_dir = Path.home() / 'AppData' / 'Roaming'
+
+            # AppData/Roaming/Documents Exp...
+            app_dir = base_dir / "Documents Exp" / "Profiles"
+
+            # AppData/Local/Documents Exp...
+            local_dir = Path.home() / 'AppData' / 'Local' / 'Documents Exp'
 
             # Create app folders if not exists or continue
             app_dir.mkdir(parents=True, exist_ok=True)
@@ -81,68 +87,70 @@ class AuthModel:
 
     def get_auto_login_state(self) -> bool:
         """Check auto login flag"""
-        if Path.home():
-            # If app folder not exists
-            app_dir = Path.home() / 'AppData' / 'Roaming' / 'Documents Exp'
 
-            if not app_dir.exists():
-                return False
+        def read_json(file_path: Path) -> dict | None:
+            if not file_path.exists():
+                return None
             
-            # Check number of users profiles
-            users_profiles = app_dir.iterdir()
-
-            # If not user profiles
-            if len(list(users_profiles)) == 0:
-                return False
-            
-            # If more then 1 user profile
-            if len(list(users_profiles)) == 1:
-                # Path to user_data file
-                user_data_file_path = app_dir / users_profiles[0].name
-
-                if not user_data_file_path.exists():
-                    return False
-
-                # Read user_data file
-                with open(user_data_file_path, "r", encoding="utf-8") as f:
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
                     data = json.load(f)
 
-                # Get auto_login flag
-                auto_login = data.get("auto_login", None)
-
-                return False if auto_login is None else auto_login
+                return data
             
-            else:
-                # Get the last logged in user
-                local_app_dir = Path.home() / 'AppData' / 'Local' / 'Documents Exp'
-                last_user_profile = local_app_dir / "last_logged.json"
+            except json.JSONDecodeError:
+                logging.error(msg="JSONDecodeError", exc_info=True)
+                return None
+            except Exception as e:
+                logging.error(msg=e, exc_info=True)
+                return None
+            
+        
+        def get_flag(path: Path) -> bool:
+            data = read_json(file_path=path)
+            
+            return data.get("auto_login", None) is True if isinstance(data, dict) else False
 
-                # Check if file exists
-                if not last_user_profile.exists():
-                    return False
-                
-                # Get user from file
-                with open(last_user_profile, "r", encoding="utf-8") as f:
-                    data = json.load(f)
 
-                user_id = data.get("user_id", None)
+        # If app folder not exists
+        app_dir = Path.home() / 'AppData' / 'Roaming' / 'Documents Exp' / 'Profiles'
 
-                # Path to user_data file
-                user_data_file_path = app_dir / f"user_data_{user_id}.json"
+        if not app_dir.exists():
+            return False
+        
+        # Check number of users profiles
+        users_profiles = [
+            file for file in app_dir.iterdir() 
+            if file.is_file() and file.name.startswith("user_data_") and file.suffix == ".json"
+        ]
 
-                if not user_data_file_path.exists():
-                    return False
-                
-                # Read user_data file
-                with open(user_data_file_path, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-
-                auto_login = data.get("auto_login", None)
-
-                return False if auto_login is None else auto_login
+        # If not user profiles
+        if len(users_profiles) == 0:
+            return False
+        
+        # If more then 1 user profile
+        if len(users_profiles) == 1:
+            return get_flag(path=users_profiles[0])
         
         else:
-            return False
+            # Get the last logged in user
+            local_app_dir = Path.home() / 'AppData' / 'Local' / 'Documents Exp'
+            last_user_profile = local_app_dir / "last_logged.json"
+            
+            # Get user from file
+            data = read_json(file_path=last_user_profile)
+            if data is None:
+                return False
+            
+            # Check user id
+            user_id = data.get("user_id", None)
+            if not isinstance(user_id, int):
+                return False
+
+            # Path to user_data file
+            user_data_file_path = app_dir / f"user_data_{user_id}.json"
+            
+            return get_flag(path=user_data_file_path)
 
 
     def _load_config(self) -> dict:
