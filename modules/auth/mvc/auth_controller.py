@@ -9,7 +9,7 @@ from PyQt5.QtCore import pyqtSignal, QObject
 
 class AuthController(QObject):
 
-    login_successful = pyqtSignal()
+    login_successful = pyqtSignal(str)
 
     def __init__(
             self, 
@@ -22,6 +22,7 @@ class AuthController(QObject):
         self.model = model
         self.view = view
         self.auth_window = window
+        self.main_module_window = None
 
         self.api_worker = None # API worker (Thread)
 
@@ -57,8 +58,7 @@ class AuthController(QObject):
         auto_login = self.view.get_auto_login_login_page()
         self.model.save_user(user_data=user_data, auto_login=auto_login)
 
-        self.login_successful.emit()
-        self.auth_window.close()
+        self.login_successful.emit("auth")
 
 
     def error_login(self, exception):
@@ -70,8 +70,7 @@ class AuthController(QObject):
         auto_login = self.view.get_auto_login_signup_page()
         self.model.save_user(user_data=user_data, auto_login=auto_login)
 
-        self.login_successful.emit()
-        self.auth_window.close()
+        self.login_successful.emit("auth")
 
 
     def error_signup(self, exception):
@@ -109,7 +108,7 @@ class AuthController(QObject):
 
     
     def on_guest_login_page_button_clicked(self) -> None:
-        print("Guest button clicked")
+        self.login_successful.emit("guest")
 
 
     def on_create_account_login_page_button_clicked(self) -> None:

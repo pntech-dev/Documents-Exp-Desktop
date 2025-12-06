@@ -8,11 +8,20 @@ from .main_view import MainView
 class MainController(QObject):
     logout_requested = pyqtSignal()
 
-    def __init__(self, model: MainModel, view: MainView, window: QMainWindow) -> None:
+    def __init__(
+            self, 
+            model: MainModel, 
+            view: MainView, 
+            window: QMainWindow, 
+            mode: str = "guest"
+    ) -> None:
+    
         super().__init__()
         self.model = model
         self.view = view
         self.window = window
+        self.mode = mode
+
 
         """=== Handlers ==="""
         self.view.button_clicked(self.button_clicked_handler)

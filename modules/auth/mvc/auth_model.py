@@ -24,7 +24,53 @@ class AuthModel:
 
     def signup(self, email: str, password: str) -> dict:
         return self.api.signup(email=email, password=password)
-    
+
+
+    def verify_token(self) -> dict:
+        access_token = keyring.get_password(
+            service_name="Documents Exp",
+            username="access_token"
+        )
+        return self.api.verify(token=access_token)
+
+
+    def logout(self) -> None:
+        """Clear user data"""
+
+        def delete_file(file_path: Path) -> None:
+            if file_path.exists():
+                file_path.unlink()
+
+        # Clear keyring
+        try:
+            keyring.delete_password(service_name="Documents Exp", username="access_token")
+            keyring.delete_password(service_name="Documents Exp", username="refresh_token")
+            
+        except keyring.errors.PasswordNotFoundError:
+            logging.info("Tokens not found in keyring, skipping deletion.")
+
+        # Paths
+        app_dir = Path.home() / 'AppData' / 'Roaming' / 'Documents Exp'
+        local_dir = Path.home() / 'AppData' / 'Local' / 'Documents Exp'
+        last_logged_file = local_dir / "last_logged.json"
+
+        # Get last user id
+        if last_logged_file.exists():
+            try:
+                with open(last_logged_file, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+
+                user_id = data.get("user_id")
+
+                if user_id:
+                    user_data_file = app_dir / 'Profiles' / f"user_data_{user_id}.json"
+                    delete_file(user_data_file)
+
+                delete_file(last_logged_file)
+
+            except (json.JSONDecodeError, Exception) as e:
+                logging.error(f"Error processing last logged user file: {e}")
+
 
     def save_user(self, user_data: dict, auto_login: bool) -> None:
         # Save access and refresh tokens

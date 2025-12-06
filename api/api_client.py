@@ -28,3 +28,16 @@ class APIClient:
         r.raise_for_status()
 
         return r.json()
+
+
+    def verify(self, token: str) -> dict:
+        headers = {"Authorization": f"Bearer {token}"}
+        r = requests.get(
+            url=self.base_url + "/auth/user",
+            headers=headers,
+            timeout=10
+        )
+
+        r.raise_for_status()
+
+        return r.json()

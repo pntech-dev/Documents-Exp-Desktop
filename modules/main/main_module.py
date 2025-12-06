@@ -6,8 +6,13 @@ from PyQt5.QtWidgets import QMainWindow
 
 
 class MainWindow(QMainWindow):
-    def __init__(self) -> None:
+    def __init__(self, mode: str = "guest") -> None:
         super().__init__()
+
+        # Application work mode ('guest' - Guest mode, 'auth' - Authorized mode)
+        self.mode = mode
+
+        print(self.mode)
 
         # UI Initialization
         self.ui = MainWindow_UI()
@@ -20,4 +25,9 @@ class MainWindow(QMainWindow):
         # MVC Initialization
         self.model = MainModel()
         self.view = MainView(ui=self.ui)
-        self.controller = MainController(model=self.model, view=self.view, window=self)
+        self.controller = MainController(
+            model=self.model, 
+            view=self.view, 
+            window=self, 
+            mode=self.mode
+        )
