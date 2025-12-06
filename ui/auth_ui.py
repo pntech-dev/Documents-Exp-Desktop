@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/auth.ui'
+# Form implementation generated from reading ui file 'd:\Python Projects\Documents Exp\Documents-Exp-Desktop\ui\auth.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -222,7 +222,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.setSpacing(16)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.login_pushButton = PrimaryButton(self.login_buttons)
-        self.login_pushButton.setEnabled(False)
         self.login_pushButton.setMinimumSize(QtCore.QSize(0, 42))
         font = QtGui.QFont()
         font.setPointSize(12)
@@ -461,7 +460,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout_7.setSpacing(16)
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
         self.create_pushButton = PrimaryButton(self.login_buttons_2)
-        self.create_pushButton.setEnabled(False)
         self.create_pushButton.setMinimumSize(QtCore.QSize(0, 42))
         font = QtGui.QFont()
         font.setPointSize(12)
@@ -858,5 +856,5 @@ class Ui_MainWindow(object):
         self.change_pushButton.setText(_translate("MainWindow", "Изменить"))
         self.have_account_pushButton_3.setText(_translate("MainWindow", "Не менять пароль"))
 from .custom_widgets import InfoLabel, LogoLabel, PrimaryButton, TertiaryButton, TextButton, ThemeButton, ViewPasswordCheckbox
-import resources.icons.icons_resources_rc
-import resources.logo.logo_resources_rc
+import icons_resources_rc
+import logo_resources_rc

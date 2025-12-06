@@ -2,6 +2,8 @@ from utils import ThemeManager
 
 from ui import AuthWindow_UI
 
+from PyQt5.QtWidgets import QLineEdit
+
 
 class AuthView:
     def __init__(self, ui: AuthWindow_UI):
@@ -43,6 +45,15 @@ class AuthView:
 
 
     # Log In page
+    def get_view_password_login_page_state(self) -> bool:
+        return self.ui.view_password_checkBox.isChecked()
+
+
+    def set_password_visibalty_login_page(self, state) -> None:
+        mode = QLineEdit.Normal if state else QLineEdit.Password
+        self.ui.password_lineEdit.setEchoMode(mode)
+        
+        
     def get_email_login(self) -> str:
         return self.ui.email_lineEdit.text()
     
@@ -71,6 +82,19 @@ class AuthView:
         self.ui.fogot_password_label.mousePressEvent = handler
 
 
+    def view_password_login_page_checkbox_state_changed(self, handler) -> None:
+        self.ui.view_password_checkBox.stateChanged.connect(handler)
+
+
+    # Sign Up page
+    def get_view_password_signup_page_state(self) -> bool:
+        return self.ui.view_password_checkBox_2.isChecked()
+
+
+    def set_password_visibalty_signup_page(self, state) -> None:
+        mode = QLineEdit.Normal if state else QLineEdit.Password
+        self.ui.password_lineEdit_2.setEchoMode(mode)
+        self.ui.password_lineEdit_4.setEchoMode(mode)
     def email_lineedit_login_page_text_changed(self, handler) -> None:
         self.ui.email_lineEdit.textChanged.connect(handler)
 
@@ -107,6 +131,10 @@ class AuthView:
     def have_account_signup_page_button_clicked(self, handler) -> None:
         self.ui.have_account_pushButton.clicked.connect(handler)
 
+    
+    def view_password_signup_page_checkbox_state_changed(self, handler) -> None:
+        self.ui.view_password_checkBox_2.stateChanged.connect(handler)
+
 
     def udpate_signup_button(self, state: bool) -> None:
         self.ui.create_pushButton.setEnabled(state)
@@ -125,6 +153,16 @@ class AuthView:
 
 
     # Change password page
+    def get_view_password_change_password_page_state(self) -> bool:
+        return self.ui.view_password_checkBox_3.isChecked()
+
+
+    def set_password_visibalty_change_password_page(self, state) -> None:
+        mode = QLineEdit.Normal if state else QLineEdit.Password
+        self.ui.password_lineEdit_6.setEchoMode(mode)
+        self.ui.password_lineEdit_5.setEchoMode(mode)
+
+
     def confirm_email_button_clicked(self, handler) -> None:
         self.ui.accept_pushButton.clicked.connect(handler)
 
@@ -139,3 +177,7 @@ class AuthView:
     
     def do_not_change_password_button_clicked(self, handler) -> None:
         self.ui.have_account_pushButton_3.clicked.connect(handler)
+
+    
+    def view_password_change_password_checkbox_state_changed(self, handler) -> None:
+        self.ui.view_password_checkBox_3.stateChanged.connect(handler)
