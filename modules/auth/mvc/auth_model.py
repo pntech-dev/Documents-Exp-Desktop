@@ -4,6 +4,7 @@ import keyring
 import logging
 
 from pathlib import Path
+from keyring import errors as keyring_errors
 
 from api.api_client import APIClient
 
@@ -101,7 +102,7 @@ class AuthModel:
                 keyring.delete_password(service_name="Documents Exp", username=f"access_token_{user_id}")
                 keyring.delete_password(service_name="Documents Exp", username=f"refresh_token_{user_id}")
                 logging.info(f"Tokens for user_id {user_id} deleted from keyring.")
-            except keyring.errors.PasswordNotFoundError:
+            except keyring_errors.PasswordDeleteError:
                 logging.info(f"Tokens for user_id {user_id} not found in keyring, skipping deletion.")
 
         # 2. Delete the last logged user file to disable auto-login on next start
