@@ -1,7 +1,7 @@
 import logging
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QApplication
 
 from ui import Notification_UI
 
@@ -35,7 +35,7 @@ class ToastWidget(QWidget):
         
         # Set text and adjust layout
         self.ui.label.setText(self.label)
-        self.ui.Description.setText(self.description)
+        self.ui.description.setText(self.description)
         
         # Set window flags
         self.setWindowFlags(
@@ -45,6 +45,9 @@ class ToastWidget(QWidget):
             Qt.X11BypassWindowManagerHint
         )
         self.setAttribute(Qt.WA_TranslucentBackground)
+
+        # Set notification property
+        self.setProperty("notificationType", self.type)
         
     
     def show_notification(self) -> None:

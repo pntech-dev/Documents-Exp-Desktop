@@ -1,5 +1,13 @@
 <RCC>
   <qresource prefix="/icons/light">
+    <file>close/light/close_dark_clicked.svg</file>
+    <file>close/light/close_dark_default.svg</file>
+    <file>close/light/close_dark_disabled.svg</file>
+    <file>close/light/close_dark_hover.svg</file>
+    <file>notification/light/notification_light_error.svg</file>
+    <file>notification/light/notification_light_info.svg</file>
+    <file>notification/light/notification_light_success.svg</file>
+    <file>notification/light/notification_light_warning.svg</file>
     <file>input_fields/mail/light/active.svg</file>
     <file>input_fields/mail/light/disabled.svg</file>
     <file>input_fields/mail/light/default.svg</file>
@@ -15,6 +23,14 @@
     <file>theme/light/hover.svg</file>
   </qresource>
   <qresource prefix="/icons/dark">
+    <file>close/dark/close_dark_clicked.svg</file>
+    <file>close/dark/close_dark_default.svg</file>
+    <file>close/dark/close_dark_disabled.svg</file>
+    <file>close/dark/close_dark_hover.svg</file>
+    <file>notification/dark/notification_dark_error.svg</file>
+    <file>notification/dark/notification_dark_info.svg</file>
+    <file>notification/dark/notification_dark_success.svg</file>
+    <file>notification/dark/notification_dark_warning.svg</file>
     <file>input_fields/mail/dark/active.svg</file>
     <file>input_fields/mail/dark/default.svg</file>
     <file>input_fields/mail/dark/disabled.svg</file>

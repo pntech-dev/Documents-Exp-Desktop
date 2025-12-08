@@ -1,7 +1,7 @@
 import sys
 
 from ui import MainWindow_UI
-from utils import ThemeManager
+from utils import ThemeManager, ToastWidget
 from modules.main.mvc import MainModel, MainView, MainController
 
 from PyQt5.QtWidgets import QMainWindow, QApplication
@@ -23,6 +23,10 @@ class MainWindow(QMainWindow):
         self.model = MainModel()
         self.view = MainView(ui=self.ui)
         self.controller = MainController(model=self.model, view=self.view, window=self)
+
+        # Notification
+        self.toast = ToastWidget(type="info", label="Информация", description="Доступна новая версия приложения.\nНажмите чтобы обновить.")
+        self.toast.show_notification()
 
 
 if __name__ == "__main__":

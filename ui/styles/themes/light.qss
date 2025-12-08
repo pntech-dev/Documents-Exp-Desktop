@@ -214,3 +214,86 @@ QLineEdit:disabled {
 	border: 1px solid #F2F2F2;
 	color: #1A1A1A;
 }
+
+
+/* Notifications */
+#Notification {
+	background-color: transparent;
+    border: none;
+}
+
+#notification_container {
+	background-color: #FFFFFF;
+	border-radius: 8px;
+}
+
+#Notification #label {
+	color: #1A1A1A;
+}
+
+#Notification #description {
+	color: #4D4D4D;
+}
+
+#Notification #close_pushButton {
+	background-image: url(:/icons/light/close/light/close_dark_default.svg);
+	background-repeat: no-repeat;
+    background-position: center;
+	border-radius: none;
+}
+
+#Notification #close_pushButton:hover {
+	background-image: url(:/icons/light/close/light/close_dark_hover.svg);
+}
+
+#Notification #close_pushButton:pressed {
+	background-image: url(:/icons/light/close/light/close_dark_clicked.svg);
+}
+
+#Notification #close_pushButton:disabled {
+	background-image: url(:/icons/light/close/light/close_dark_disabled.svg);
+}
+
+/* Success */
+#Notification[notificationType="success"] #notify_type_line_frame {
+	background-color: #40BF60;
+}
+
+#Notification[notificationType="success"] #icon_label {
+	background-image: url(:/icons/light/notification/light/notification_light_success.svg);
+	background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Info */
+#Notification[notificationType="info"] #notify_type_line_frame {
+	background-color: #3359CC;
+}
+
+#Notification[notificationType="info"] #icon_label {
+	background-image: url(:/icons/light/notification/light/notification_light_info.svg);
+	background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Warning */
+#Notification[notificationType="warning"] #notify_type_line_frame {
+	background-color: #CC8C33;
+}
+
+#Notification[notificationType="warning"] #icon_label {
+	background-image: url(:/icons/light/notification/light/notification_light_warning.svg);
+	background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Error */
+#Notification[notificationType="error"] #notify_type_line_frame {
+	background-color: #A33329;
+}
+
+#Notification[notificationType="error"] #icon_label {
+	background-image: url(:/icons/light/notification/light/notification_light_error.svg);
+	background-repeat: no-repeat;
+    background-position: center;
+}
