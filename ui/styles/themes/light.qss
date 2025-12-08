@@ -192,7 +192,7 @@ QCheckBox::indicator:checked:disabled {
 
 ViewPasswordCheckbox::indicator {
 	border: 0px;
-	padding: 2px;
+	padding: 0px 2px;
 	background-image: url(:/icons/light/view/light/Default.svg);
 	background-repeat: no-repeat;
     background-position: center;

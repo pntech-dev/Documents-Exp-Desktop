@@ -27,68 +27,107 @@ class AuthModel:
 
 
     def verify_token(self) -> dict:
+        """Verify token for the last logged-in user."""
+
+        def read_json(file_path: Path) -> dict | None:
+            if not file_path.exists():
+                return None
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except (json.JSONDecodeError, Exception) as e:
+                logging.error(f"Error reading or parsing JSON from {file_path}: {e}")
+                return None
+
+        # Find user_id of the last logged-in user
+        local_dir = Path.home() / 'AppData' / 'Local' / 'Documents Exp'
+        last_logged_file = local_dir / "last_logged.json"
+
+        last_logged_data = read_json(last_logged_file)
+        if not last_logged_data:
+            raise ValueError("No last logged user file found.")
+
+        user_id = last_logged_data.get("user_id")
+        if not user_id:
+            raise ValueError("User ID not found in last logged user file.")
+
+        # Get the token for that user
         access_token = keyring.get_password(
             service_name="Documents Exp",
-            username="access_token"
+            username=f"access_token_{user_id}"
         )
+
+        if not access_token:
+            raise ValueError(f"Access token for user_id {user_id} not found in keyring.")
+
+        # Verify via API
         return self.api.verify(token=access_token)
 
 
     def logout(self) -> None:
-        """Clear user data"""
-
+        """
+        Logs out the user by deleting session tokens and disabling auto-login.
+        This action clears the user's session from the device but keeps their profile data.
+        """
         def delete_file(file_path: Path) -> None:
             if file_path.exists():
                 file_path.unlink()
 
-        # Clear keyring
-        try:
-            keyring.delete_password(service_name="Documents Exp", username="access_token")
-            keyring.delete_password(service_name="Documents Exp", username="refresh_token")
-            
-        except keyring.errors.PasswordNotFoundError:
-            logging.info("Tokens not found in keyring, skipping deletion.")
+        def read_json(file_path: Path) -> dict | None:
+            if not file_path.exists():
+                return None
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except (json.JSONDecodeError, Exception) as e:
+                logging.error(f"Error reading or parsing JSON from {file_path}: {e}")
+                return None
 
         # Paths
-        app_dir = Path.home() / 'AppData' / 'Roaming' / 'Documents Exp'
         local_dir = Path.home() / 'AppData' / 'Local' / 'Documents Exp'
         last_logged_file = local_dir / "last_logged.json"
 
         # Get last user id
-        if last_logged_file.exists():
+        last_logged_data = read_json(last_logged_file)
+        if not last_logged_data:
+            logging.info("No last logged user file found. Nothing to log out.")
+            return
+
+        user_id = last_logged_data.get("user_id")
+
+        if user_id:
+            # 1. Clear user-specific tokens from keyring to end the session
             try:
-                with open(last_logged_file, "r", encoding="utf-8") as f:
-                    data = json.load(f)
+                keyring.delete_password(service_name="Documents Exp", username=f"access_token_{user_id}")
+                keyring.delete_password(service_name="Documents Exp", username=f"refresh_token_{user_id}")
+                logging.info(f"Tokens for user_id {user_id} deleted from keyring.")
+            except keyring.errors.PasswordNotFoundError:
+                logging.info(f"Tokens for user_id {user_id} not found in keyring, skipping deletion.")
 
-                user_id = data.get("user_id")
-
-                if user_id:
-                    user_data_file = app_dir / 'Profiles' / f"user_data_{user_id}.json"
-                    delete_file(user_data_file)
-
-                delete_file(last_logged_file)
-
-            except (json.JSONDecodeError, Exception) as e:
-                logging.error(f"Error processing last logged user file: {e}")
+        # 2. Delete the last logged user file to disable auto-login on next start
+        delete_file(last_logged_file)
+        logging.info("Last logged user file deleted to disable auto-login. User is fully logged out.")
 
 
     def save_user(self, user_data: dict, auto_login: bool) -> None:
+        # Get user data
+        user = user_data.get("user", None)
+        user_id = user.get("id", None)
+
         # Save access and refresh tokens
         keyring.set_password(
             service_name="Documents Exp", 
-            username="access_token", 
+            username=f"access_token_{user_id}", 
             password=user_data.get("access_token", None)
         )
 
         keyring.set_password(
             service_name="Documents Exp", 
-            username="refresh_token", 
+            username=f"refresh_token_{user_id}", 
             password=user_data.get("refresh_token", None)
         )
 
         # Save user data
-        user = user_data.get("user", None)
-        
         if Path.home():
             # AppData/Roaming/...
             base_dir = Path.home() / 'AppData' / 'Roaming'
@@ -104,7 +143,6 @@ class AuthModel:
             local_dir.mkdir(parents=True, exist_ok=True)
 
             # Write a data
-            user_id = user.get("id", None)
             user_data_file_path = app_dir / f"user_data_{user_id}.json"
 
             data = {
