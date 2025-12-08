@@ -63,6 +63,77 @@ class AuthModel:
 
         # Verify via API
         return self.api.verify(token=access_token)
+    
+
+    def refresh_tokens(self) -> dict:
+        """
+        Refreshes the access and refresh tokens for the last logged-in user.
+        
+        Raises:
+            ValueError: If the last logged-in user or their refresh token cannot be found.
+        
+        Returns:
+            dict: A dictionary containing the new access and refresh tokens.
+        """
+        def read_json(file_path: Path) -> dict | None:
+            if not file_path.exists():
+                return None
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except (json.JSONDecodeError, Exception) as e:
+                logging.error(f"Error reading or parsing JSON from {file_path}: {e}")
+                return None
+
+        # 1. Find user_id of the last logged-in user
+        local_dir = Path.home() / 'AppData' / 'Local' / 'Documents Exp'
+        last_logged_file = local_dir / "last_logged.json"
+
+        last_logged_data = read_json(last_logged_file)
+        if not last_logged_data:
+            raise ValueError("No last logged user file found. Cannot refresh tokens.")
+
+        user_id = last_logged_data.get("user_id")
+        if not user_id:
+            raise ValueError("User ID not found in last logged user file. Cannot refresh tokens.")
+
+        # 2. Get the current refresh token for that user
+        try:
+            refresh_token = keyring.get_password(
+                service_name="Documents Exp",
+                username=f"refresh_token_{user_id}"
+            )
+        except keyring_errors.NoKeyringError:
+            raise RuntimeError("Keyring backend not found. Please install a backend library.")
+
+        if not refresh_token:
+            raise ValueError(f"Refresh token for user_id {user_id} not found in keyring.")
+
+        # 3. Call the API to get new tokens
+        new_tokens = self.api.refresh(refresh_token=refresh_token)
+
+        # 4. Save the new tokens, overwriting the old ones
+        new_access_token = new_tokens.get("access_token")
+        new_refresh_token = new_tokens.get("refresh_token")
+
+        if not new_access_token or not new_refresh_token:
+            raise ValueError("API response for token refresh did not contain new tokens.")
+
+        keyring.set_password(
+            service_name="Documents Exp",
+            username=f"access_token_{user_id}",
+            password=new_access_token
+        )
+        keyring.set_password(
+            service_name="Documents Exp",
+            username=f"refresh_token_{user_id}",
+            password=new_refresh_token
+        )
+        
+        logging.info(f"Successfully refreshed tokens for user_id {user_id}.")
+
+        # 5. Return the new tokens
+        return new_tokens
 
 
     def logout(self) -> None:

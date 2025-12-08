@@ -41,3 +41,15 @@ class APIClient:
         r.raise_for_status()
 
         return r.json()
+
+
+    def refresh(self, refresh_token: str) -> dict:
+        r = requests.post(
+            url=self.base_url + "/auth/refresh",
+            json={"refresh_token": refresh_token},
+            timeout=10
+        )
+
+        r.raise_for_status()
+
+        return r.json()

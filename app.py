@@ -31,7 +31,14 @@ class Application:
 
     def on_token_verification_failed(self, error):
         # Token is invalid or expired, clear data and show login
-        print(f"Token verification failed: {error}")
+        print(f"Token verification failed: {error}. Refresh tokens...")
+        self.worker = APIWorker(self.auth_model.refresh_tokens)
+        self.worker.finished.connect(self.on_token_verified)
+        self.worker.error.connect(self.on_token_refresh_failed)
+        self.worker.start()
+
+    def on_token_refresh_failed(self, error):
+        print(f"Token refresh failed: {error}. Logging out...")
         self.auth_model.logout()
         self.show_auth_window()
 
