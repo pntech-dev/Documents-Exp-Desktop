@@ -2,10 +2,12 @@ import sys
 
 from PyQt5.QtWidgets import QApplication
 
-from core.worker import APIWorker
+from utils import ThemeManager
 from modules import AuthWindow
+from core.worker import APIWorker
 from modules.main.main_module import MainWindow
 from modules.auth.mvc.auth_model import AuthModel
+
 
 class Application:
     def __init__(self):
@@ -13,6 +15,11 @@ class Application:
         self.main_window = None
         self.auth_window = None
 
+        # Set theme
+        self.theme_manager = ThemeManager()
+        self.theme_manager.switch_theme(theme=0)
+
+        # Check auto login
         self.auth_model = AuthModel()
         if self.auth_model.get_auto_login_state():
             self.attempt_auto_login()

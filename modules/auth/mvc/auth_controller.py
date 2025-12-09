@@ -2,6 +2,7 @@ from .auth_model import AuthModel
 from .auth_view import AuthView
 
 from core.worker import APIWorker
+from utils import EmailConfirmDialog
 
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtCore import pyqtSignal, QObject
@@ -22,7 +23,9 @@ class AuthController(QObject):
         self.model = model
         self.view = view
         self.auth_window = window
+
         self.main_module_window = None
+        self.email_confirm_window = None
 
         self.api_worker = None # API worker (Thread)
 
@@ -91,6 +94,11 @@ class AuthController(QObject):
         page = self.view.pages.get("change_password_change_page", None)
         if page:
             self.view.switch_page(page=page)
+
+    
+    def open_email_confirm_modal_window(self, email: str) -> None:
+        self.email_confirm_window = EmailConfirmDialog(self.auth_window)
+        self.email_confirm_window.exec_()
 
     
     def worker_error(self, exception):
@@ -217,7 +225,7 @@ class AuthController(QObject):
         # Create worker
         self.api_worker = APIWorker(self.model.forgot_password, email=email)
 
-        self.api_worker.finished.connect(lambda data: self.swith_to_change_password_page(data=data))
+        self.api_worker.finished.connect(lambda: self.open_email_confirm_modal_window(email=email))
         self.api_worker.error.connect(lambda e: self.worker_error(exception=e))
 
         self.api_worker.start()
@@ -241,7 +249,7 @@ class AuthController(QObject):
     def _validate_email(self, email: str) -> bool:
         """Simple email validation method."""
 
-        if "@" not in email or "@".count(email) > 1:
+        if "@" not in email or email.count("@") >= 2:
             return False
 
         if email.startswith("@") or email.endswith("@"):
