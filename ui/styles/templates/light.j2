@@ -179,7 +179,7 @@ QCheckBox::indicator:checked {
 	height: 20px;
 	border: 0px;
 	background-color: {{ accent.accent_500 }};
-	image: url(:/icons/light/check/light/check_light.svg);
+	image: url(:/icons/light/check/light/default.svg);
 }
 
 QCheckBox::indicator:checked:hover {
@@ -213,4 +213,87 @@ QLineEdit:focus {
 QLineEdit:disabled {
 	border: 1px solid {{ neutral.neutral_50 }};
 	color: {{ neutral.neutral_900 }};
+}
+
+
+/* Notifications */
+#Notification {
+	background-color: transparent;
+    border: none;
+}
+
+#notification_container {
+	background-color: {{ neutral.neutral_0 }};
+	border-radius: 8px;
+}
+
+#Notification #label {
+	color: {{ neutral.neutral_900 }};
+}
+
+#Notification #description {
+	color: {{ neutral.neutral_700 }};
+}
+
+#Notification #close_pushButton {
+	background-image: url(:/icons/light/close/light/default.svg);
+	background-repeat: no-repeat;
+    background-position: center;
+	border-radius: none;
+}
+
+#Notification #close_pushButton:hover {
+	background-image: url(:/icons/light/close/light/hover.svg);
+}
+
+#Notification #close_pushButton:pressed {
+	background-image: url(:/icons/light/close/light/clicked.svg);
+}
+
+#Notification #close_pushButton:disabled {
+	background-image: url(:/icons/light/close/light/disabled.svg);
+}
+
+/* Success */
+#Notification[notificationType="success"] #notify_type_line_frame {
+	background-color: {{ success.success_500 }};
+}
+
+#Notification[notificationType="success"] #icon_label {
+	background-image: url(:/icons/light/notification/light/success.svg);
+	background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Info */
+#Notification[notificationType="info"] #notify_type_line_frame {
+	background-color: {{ info.info_500 }};
+}
+
+#Notification[notificationType="info"] #icon_label {
+	background-image: url(:/icons/light/notification/light/info.svg);
+	background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Warning */
+#Notification[notificationType="warning"] #notify_type_line_frame {
+	background-color: {{ warning.warning_500 }};
+}
+
+#Notification[notificationType="warning"] #icon_label {
+	background-image: url(:/icons/light/notification/light/warning.svg);
+	background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Error */
+#Notification[notificationType="error"] #notify_type_line_frame {
+	background-color: {{ error.error_500 }};
+}
+
+#Notification[notificationType="error"] #icon_label {
+	background-image: url(:/icons/light/notification/light/error.svg);
+	background-repeat: no-repeat;
+    background-position: center;
 }

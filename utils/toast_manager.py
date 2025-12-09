@@ -1,7 +1,8 @@
 import logging
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QApplication
+from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import QWidget, QGraphicsDropShadowEffect
 
 from ui import Notification_UI
 
@@ -32,6 +33,7 @@ class ToastWidget(QWidget):
         # Set notification style
         self.ui = Notification_UI()
         self.ui.setupUi(self)
+        self.ui.verticalLayout_2.setContentsMargins(20, 20, 20, 20)
         
         # Set text and adjust layout
         self.ui.label.setText(self.label)
@@ -48,6 +50,13 @@ class ToastWidget(QWidget):
 
         # Set notification property
         self.setProperty("notificationType", self.type)
+
+        # === Shadow ===
+        shadow = QGraphicsDropShadowEffect()
+        shadow.setBlurRadius(20)
+        shadow.setColor(QColor(0, 0, 0, int(255 * 0.10)))
+        shadow.setOffset(0, 5)
+        self.ui.notification_container.setGraphicsEffect(shadow)
         
     
     def show_notification(self) -> None:

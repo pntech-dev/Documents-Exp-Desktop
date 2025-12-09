@@ -179,7 +179,7 @@ QCheckBox::indicator:checked {
 	height: 20px;
 	border: 0px;
 	background-color: #CC3333;
-	image: url(:/icons/light/check/light/check_light.svg);
+	image: url(:/icons/light/check/light/default.svg);
 }
 
 QCheckBox::indicator:checked:hover {
@@ -236,22 +236,22 @@ QLineEdit:disabled {
 }
 
 #Notification #close_pushButton {
-	background-image: url(:/icons/light/close/light/close_dark_default.svg);
+	background-image: url(:/icons/light/close/light/default.svg);
 	background-repeat: no-repeat;
     background-position: center;
 	border-radius: none;
 }
 
 #Notification #close_pushButton:hover {
-	background-image: url(:/icons/light/close/light/close_dark_hover.svg);
+	background-image: url(:/icons/light/close/light/hover.svg);
 }
 
 #Notification #close_pushButton:pressed {
-	background-image: url(:/icons/light/close/light/close_dark_clicked.svg);
+	background-image: url(:/icons/light/close/light/clicked.svg);
 }
 
 #Notification #close_pushButton:disabled {
-	background-image: url(:/icons/light/close/light/close_dark_disabled.svg);
+	background-image: url(:/icons/light/close/light/disabled.svg);
 }
 
 /* Success */
@@ -260,7 +260,7 @@ QLineEdit:disabled {
 }
 
 #Notification[notificationType="success"] #icon_label {
-	background-image: url(:/icons/light/notification/light/notification_light_success.svg);
+	background-image: url(:/icons/light/notification/light/success.svg);
 	background-repeat: no-repeat;
     background-position: center;
 }
@@ -271,7 +271,7 @@ QLineEdit:disabled {
 }
 
 #Notification[notificationType="info"] #icon_label {
-	background-image: url(:/icons/light/notification/light/notification_light_info.svg);
+	background-image: url(:/icons/light/notification/light/info.svg);
 	background-repeat: no-repeat;
     background-position: center;
 }
@@ -282,7 +282,7 @@ QLineEdit:disabled {
 }
 
 #Notification[notificationType="warning"] #icon_label {
-	background-image: url(:/icons/light/notification/light/notification_light_warning.svg);
+	background-image: url(:/icons/light/notification/light/warning.svg);
 	background-repeat: no-repeat;
     background-position: center;
 }
@@ -293,7 +293,7 @@ QLineEdit:disabled {
 }
 
 #Notification[notificationType="error"] #icon_label {
-	background-image: url(:/icons/light/notification/light/notification_light_error.svg);
+	background-image: url(:/icons/light/notification/light/error.svg);
 	background-repeat: no-repeat;
     background-position: center;
 }

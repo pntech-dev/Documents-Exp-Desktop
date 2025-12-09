@@ -179,7 +179,7 @@ QCheckBox::indicator:checked {
 	height: 20px;
 	border: 0px;
 	background-color: #C43A3A;
-	image: url(:/icons/light/check/light/check_light.svg);
+	image: url(:/icons/light/check/light/default.svg);
 }
 
 QCheckBox::indicator:checked:hover {
@@ -213,4 +213,87 @@ QLineEdit:focus {
 QLineEdit:disabled {
 	border: 1px solid #333333;
 	color: #333333;
+}
+
+
+/* Notifications */
+#Notification {
+	background-color: transparent;
+    border: none;
+}
+
+#notification_container {
+	background-color: #262626;
+	border-radius: 8px;
+}
+
+#Notification #label {
+	color: #E6E6E6;
+}
+
+#Notification #description {
+	color: #B3B3B3;
+}
+
+#Notification #close_pushButton {
+	background-image: url(:/icons/dark/close/dark/default.svg);
+	background-repeat: no-repeat;
+    background-position: center;
+	border-radius: none;
+}
+
+#Notification #close_pushButton:hover {
+	background-image: url(:/icons/dark/close/dark/hover.svg);
+}
+
+#Notification #close_pushButton:pressed {
+	background-image: url(:/icons/dark/close/dark/clicked.svg);
+}
+
+#Notification #close_pushButton:disabled {
+	background-image: url(:/icons/dark/close/dark/disabled.svg);
+}
+
+/* Success */
+#Notification[notificationType="success"] #notify_type_line_frame {
+	background-color: #33A84F;
+}
+
+#Notification[notificationType="success"] #icon_label {
+	background-image: url(:/icons/dark/notification/dark/success.svg);
+	background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Info */
+#Notification[notificationType="info"] #notify_type_line_frame {
+	background-color: #2C4DA8;
+}
+
+#Notification[notificationType="info"] #icon_label {
+	background-image: url(:/icons/dark/notification/dark/info.svg);
+	background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Warning */
+#Notification[notificationType="warning"] #notify_type_line_frame {
+	background-color: #B27A2B;
+}
+
+#Notification[notificationType="warning"] #icon_label {
+	background-image: url(:/icons/dark/notification/dark/warning.svg);
+	background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Error */
+#Notification[notificationType="error"] #notify_type_line_frame {
+	background-color: #8F2C23;
+}
+
+#Notification[notificationType="error"] #icon_label {
+	background-image: url(:/icons/dark/notification/dark/error.svg);
+	background-repeat: no-repeat;
+    background-position: center;
 }
