@@ -57,8 +57,16 @@ class ToastWidget(QWidget):
         shadow.setColor(QColor(0, 0, 0, int(255 * 0.10)))
         shadow.setOffset(0, 5)
         self.ui.notification_container.setGraphicsEffect(shadow)
+
+        # Handlers
+        self.ui.close_pushButton.clicked.connect(self._close_button_clicked)
         
     
     def show_notification(self) -> None:
         """Show the notification"""
         self.show()
+
+
+    def _close_button_clicked(self) -> None:
+        """Handle close button click event"""
+        self.close()
