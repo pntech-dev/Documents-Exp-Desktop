@@ -1,7 +1,7 @@
 import sys
 
 from ui import MainWindow_UI
-from utils import ThemeManager, ToastWidget
+from utils import ThemeManager, ToastWidget, NotificationWidget
 from modules.main.mvc import MainModel, MainView, MainController
 
 from PyQt5.QtWidgets import QMainWindow, QApplication
@@ -25,8 +25,15 @@ class MainWindow(QMainWindow):
         self.controller = MainController(model=self.model, view=self.view, window=self)
 
         # Notification
-        self.toast = ToastWidget(type="info", label="Информация", description="Доступна новая версия приложения.\nНажмите чтобы обновить.")
-        self.toast.show_notification()
+        # self.toast = ToastWidget(type="info", label="Информация", description="Доступна новая версия приложения.\nНажмите чтобы обновить.")
+        # self.toast.show_notification()
+        self.notification = NotificationWidget(
+            type="info",
+            label="Обновление",
+            description="Доступна новая версия приложения.\nНажмите чтобы обновить.",
+            parent=self
+        )
+        self.notification.show()
 
 
 if __name__ == "__main__":

@@ -33,7 +33,7 @@ class ToastWidget(QWidget):
         # Set notification style
         self.ui = Notification_UI()
         self.ui.setupUi(self)
-        self.ui.verticalLayout_2.setContentsMargins(20, 20, 20, 20)
+        self.ui.verticalLayout.setContentsMargins(20, 20, 20, 20)
         
         # Set text and adjust layout
         self.ui.label.setText(self.label)
@@ -51,7 +51,7 @@ class ToastWidget(QWidget):
         # Set notification property
         self.setProperty("notificationType", self.type)
 
-        # === Shadow ===
+        # Shadow
         shadow = QGraphicsDropShadowEffect()
         shadow.setBlurRadius(20)
         shadow.setColor(QColor(0, 0, 0, int(255 * 0.10)))
