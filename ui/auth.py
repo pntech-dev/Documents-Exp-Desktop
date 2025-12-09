@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/auth.ui'
+# Form implementation generated from reading ui file '.\ui\auth.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -594,6 +594,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_8.setSpacing(16)
         self.horizontalLayout_8.setObjectName("horizontalLayout_8")
         self.accept_pushButton = PrimaryButton(self.login_buttons_3)
+        self.accept_pushButton.setEnabled(False)
         self.accept_pushButton.setMinimumSize(QtCore.QSize(0, 42))
         font = QtGui.QFont()
         font.setPointSize(12)
@@ -771,6 +772,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_9.setSpacing(16)
         self.horizontalLayout_9.setObjectName("horizontalLayout_9")
         self.change_pushButton = PrimaryButton(self.login_buttons_4)
+        self.change_pushButton.setEnabled(False)
         self.change_pushButton.setMinimumSize(QtCore.QSize(0, 42))
         font = QtGui.QFont()
         font.setPointSize(12)

@@ -307,6 +307,18 @@ class AuthModel:
             user_data_file_path = app_dir / f"user_data_{user_id}.json"
             
             return get_flag(path=user_data_file_path)
+        
+
+    def forgot_password(self, email: str) -> dict:
+        return self.api.forgot_password(email=email)
+    
+
+    def confirm_email(self, email: str, code: str) -> dict:
+        return self.api.confirm_email(email=email, code=code)
+    
+
+    def change_password(self, email: str, password: str) -> dict:
+        return self.api.reset_password(email=email, password=password)
 
 
     def _load_config(self) -> dict:

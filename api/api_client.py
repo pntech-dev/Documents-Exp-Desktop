@@ -53,3 +53,39 @@ class APIClient:
         r.raise_for_status()
 
         return r.json()
+    
+
+    def forgot_password(self, email: str) -> dict:
+        r = requests.post(
+            url=self.base_url + "/auth/forgot-password",
+            json={"email": email},
+            timeout=10
+        )
+
+        r.raise_for_status()
+
+        return r.json()
+
+
+    def confirm_email(self, email: str, code: str) -> dict:
+        r = requests.post(
+            url=self.base_url + "/auth/confirm-email",
+            json={"email": email, "code": code},
+            timeout=10
+        )
+
+        r.raise_for_status()
+
+        return r.json()
+    
+
+    def reset_password(self, reset_token: str, password: str) -> dict:
+        r = requests.patch(
+            url=self.base_url + "/auth/reset-password",
+            json={"reset_token": reset_token, "password": password},
+            timeout=10
+        )
+
+        r.raise_for_status()
+
+        return r.json()

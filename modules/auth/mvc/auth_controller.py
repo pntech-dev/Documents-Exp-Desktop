@@ -17,7 +17,7 @@ class AuthController(QObject):
             view: AuthView, 
             window: QMainWindow
     ) -> None:
-        
+
         super().__init__()
         self.model = model
         self.view = view
@@ -30,7 +30,7 @@ class AuthController(QObject):
         """=== Handlers ==="""
 
         self.view.theme_switcher_clicked(self.on_theme_switcher_clicked)
-        
+
         # Sign In page
         self.view.login_login_page_button_clicked(self.on_login_login_page_button_clicked)
         self.view.guest_login_page_button_clicked(self.on_guest_login_page_button_clicked)
@@ -54,6 +54,7 @@ class AuthController(QObject):
         self.view.know_password_button_clicked(self.on_do_not_change_password_button_clicked)
         self.view.do_not_change_password_button_clicked(self.on_do_not_change_password_button_clicked)
         self.view.view_password_change_password_checkbox_state_changed(self.on_view_password_change_password_checkbox_state_changed)
+        self.view.email_lineedit_change_password_page_text_changed(self.on_email_lineedit_change_password_page_text_changed)
 
 
     def login_user(self, user_data: dict) -> None:
@@ -119,13 +120,13 @@ class AuthController(QObject):
         if page:
             self.view.switch_page(page=page)
 
-    
+
     def on_forgot_password_login_page_button_clicked(self, event) -> None:
         page = self.view.pages.get("change_password_confirm_page", None)
         if page:
             self.view.switch_page(page=page)
 
-    
+
     def on_login_page_lineedits_changed(self) -> None:
         # Get texts from lineedits
         email = self.view.get_email_login()
@@ -164,7 +165,7 @@ class AuthController(QObject):
         if page:
             self.view.switch_page(page=page)
 
-        
+
     def on_signup_page_lineedits_changed(self) -> None:
         # Get texts from lineedits
         email = self.view.get_email_signup()
@@ -185,13 +186,23 @@ class AuthController(QObject):
         self.view.udpate_signup_button(state=state)
 
 
-
     def on_view_password_signup_page_checkbox_state_changed(self):
         state = self.view.get_view_password_signup_page_state()
         self.view.set_password_visibalty_signup_page(state)
 
 
     # Change password page
+    def on_email_lineedit_change_password_page_text_changed(self) -> None:
+        # Get text from lineedit
+        email = self.view.get_email_change_password_page()
+
+        # Validate email lineedit
+        validate_email_satate = self._validate_email(email=email)
+
+        # Change confirm email button state
+        self.view.update_confirm_email_button_state(state=validate_email_satate)
+
+
     def on_confirm_email_button_clicked(self) -> None:
         page = self.view.pages.get("change_password_change_page", None)
         if page:
@@ -203,7 +214,7 @@ class AuthController(QObject):
         if page:
             self.view.switch_page(page=page)
 
-    
+
     def on_change_password_button_clicked(self) -> None:
         print("Change password button clicked")
 
@@ -211,3 +222,37 @@ class AuthController(QObject):
     def on_view_password_change_password_checkbox_state_changed(self):
         state = self.view.get_view_password_change_password_page_state()
         self.view.set_password_visibalty_change_password_page(state)
+
+
+    def _validate_email(self, email: str) -> bool:
+        """Simple email validation method."""
+
+        if "@" not in email or "@".count(email) > 1:
+            return False
+
+        if email.startswith("@") or email.endswith("@"):
+            return False
+
+        local_part, domain_part = email.split("@")
+
+        if not local_part or not domain_part:
+            return False
+
+        # Local part verification
+        if len(local_part) > 64:
+            return False
+
+        if local_part.startswith(".") or local_part.endswith("."):
+            return False
+
+        if ".." in local_part:
+            return False
+
+        # Domain part verification
+        if len(domain_part) > 255:
+            return False
+
+        if "." not in domain_part:
+            return False
+
+        return True

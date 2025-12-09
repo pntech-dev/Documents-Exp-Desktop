@@ -155,6 +155,14 @@ class AuthView:
     # Change password page
     def get_view_password_change_password_page_state(self) -> bool:
         return self.ui.view_password_checkBox_3.isChecked()
+    
+
+    def get_email_change_password_page(self) -> str:
+        return self.ui.email_lineEdit_3.text()
+    
+
+    def update_confirm_email_button_state(self, state: bool) -> None:
+        self.ui.accept_pushButton.setEnabled(state)
 
 
     def set_password_visibalty_change_password_page(self, state) -> None:
@@ -169,6 +177,10 @@ class AuthView:
 
     def know_password_button_clicked(self, handler) -> None:
         self.ui.have_account_pushButton_2.clicked.connect(handler)
+
+
+    def email_lineedit_change_password_page_text_changed(self, handler) -> None:
+        self.ui.email_lineEdit_3.textChanged.connect(handler)
 
 
     def change_password_button_clicked(self, handler) -> None:
