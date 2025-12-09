@@ -184,6 +184,9 @@ class AuthModel:
     def save_user(self, user_data: dict, auto_login: bool) -> None:
         # Get user data
         user = user_data.get("user", None)
+        if not user:
+            return
+
         user_id = user.get("id", None)
 
         # Save access and refresh tokens
