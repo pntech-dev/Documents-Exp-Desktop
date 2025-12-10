@@ -68,10 +68,6 @@ class AuthController(QObject):
         self.login_successful.emit("auth")
 
 
-    def error_login(self, exception):
-        print(exception)
-
-
     def signup_user(self, user_data: dict) -> None:
         # Save user data
         auto_login = self.view.get_auto_login_signup_page()
@@ -96,9 +92,17 @@ class AuthController(QObject):
             self.view.switch_page(page=page)
 
     
-    def open_email_confirm_modal_window(self, email: str) -> None:
-        self.email_confirm_window = EmailConfirmDialog(self.auth_window)
-        self.email_confirm_window.exec_()
+    def open_email_confirm_modal_window(self, data, email: str) -> None:
+        print(data)
+        code = EmailConfirmDialog.get_code(parent=self.auth_window)
+        
+        # Create worker
+        self.api_worker = APIWorker(self.model.confirm_email, email=email, code=code)
+
+        self.api_worker.finished.connect(lambda data: self.swith_to_change_password_page(data=data))
+        self.api_worker.error.connect(lambda e: self.worker_error(exception=e))
+
+        self.api_worker.start()
 
     
     def worker_error(self, exception):
@@ -122,7 +126,7 @@ class AuthController(QObject):
         self.api_worker = APIWorker(self.model.login, email=email, password=password)
 
         self.api_worker.finished.connect(lambda data: self.login_user(user_data=data))
-        self.api_worker.error.connect(lambda e: self.error_login(exception=e))
+        self.api_worker.error.connect(lambda e: self.worker_error(exception=e))
 
         self.api_worker.start()
 
@@ -225,7 +229,7 @@ class AuthController(QObject):
         # Create worker
         self.api_worker = APIWorker(self.model.forgot_password, email=email)
 
-        self.api_worker.finished.connect(lambda: self.open_email_confirm_modal_window(email=email))
+        self.api_worker.finished.connect(lambda data: self.open_email_confirm_modal_window(data, email=email))
         self.api_worker.error.connect(lambda e: self.worker_error(exception=e))
 
         self.api_worker.start()

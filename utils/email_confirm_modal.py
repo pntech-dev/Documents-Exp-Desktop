@@ -76,6 +76,15 @@ class EmailConfirmDialog(QDialog):
         )
 
 
+    @staticmethod
+    def get_code(parent=None):
+        dialog = EmailConfirmDialog(parent)
+        if dialog.exec_() == QDialog.Accepted:
+            return dialog.get_verification_code()
+        
+        return None
+
+
     # Handlers
     def code_lineedit_changed(self):
         text = self.ui.verification_code_lineEdit.text()
@@ -83,12 +92,23 @@ class EmailConfirmDialog(QDialog):
 
 
     def accept_button_clicked(self):
-        print("Accept button clicked")
+        self.accept()
+
+
+    def get_verification_code(self):
+        return self.ui.verification_code_lineEdit.text()
 
 
     def cancel_button_clicked(self):
         self.close()
-        print("Cancel button clicked")
+
+
+    def accept(self):
+        if self.overlay:
+            self.overlay.close()
+            
+        super().accept()
+
 
     def reject(self):
         if self.overlay:
