@@ -1,4 +1,4 @@
-from utils import ThemeManager
+from utils import ThemeManagerInstance
 
 from ui import AuthWindow_UI
 
@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QLineEdit
 class AuthView:
     def __init__(self, ui: AuthWindow_UI):
         self.ui = ui
-        self.theme_manager = ThemeManager()
+        self.theme_manager = ThemeManagerInstance()
 
         # Auth module pages
         self.pages = {

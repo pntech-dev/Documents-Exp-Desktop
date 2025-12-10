@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QIntValidator, QColor, QPainter
 
-from ui import EmailConfirm_UI
+from ui.email_confirm import Ui_Dialog as EmailConfirm_UI
 
 
 class EmailConfirmDialog(QDialog):
@@ -49,7 +49,7 @@ class EmailConfirmDialog(QDialog):
 
         # === Main layout (holds container with shadow margins) ===
         main_layout = QVBoxLayout()
-        main_layout.setContentsMargins(20, 20, 20, 20)  # For shadow space
+        main_layout.setContentsMargins(20, 20, 20, 20) # For shadow space
         main_layout.addWidget(container)
         self.setLayout(main_layout)
 
@@ -61,27 +61,41 @@ class EmailConfirmDialog(QDialog):
         self.ui.accept_pushButton.clicked.connect(self.accept_button_clicked)
         self.ui.cancel_pushButton.clicked.connect(self.cancel_button_clicked)
 
+        self.ui.verification_code_lineEdit.set_icon_paths(
+            default_light=":/icons/light/input_fields/code/light/default.svg",
+            default_dark=":/icons/dark/input_fields/code/dark/default.svg",
 
-    # ==========================
+            hover_light=":/icons/light/input_fields/code/light/hover.svg",
+            hover_dark=":/icons/dark/input_fields/code/dark/hover.svg",
+
+            focus_light=":/icons/light/input_fields/code/light/active.svg",
+            focus_dark=":/icons/dark/input_fields/code/dark/active.svg",
+
+            disabled_light=":/icons/light/input_fields/code/light/disabled.svg",
+            disabled_dark=":/icons/dark/input_fields/code/dark/disabled.svg",
+        )
+
+
     # Handlers
-    # ==========================
-
     def code_lineedit_changed(self):
         text = self.ui.verification_code_lineEdit.text()
         self.ui.accept_pushButton.setEnabled(len(text) == 6)
 
+
     def accept_button_clicked(self):
         print("Accept button clicked")
+
 
     def cancel_button_clicked(self):
         self.close()
         print("Cancel button clicked")
 
+    def reject(self):
+        if self.overlay:
+            self.overlay.close()
+        super().reject()
 
-    # ==========================
     # Center modal on screen
-    # ==========================
-
     def showEvent(self, event):
         """Center the dialog AFTER layout is fully calculated."""
         super().showEvent(event)
@@ -106,7 +120,7 @@ class EmailConfirmDialog(QDialog):
 
     def center_on_screen(self):
         """Forces layout calculation and centers the window on the screen."""
-        self.adjustSize()  # ensure final size with shadow container
+        self.adjustSize() # Ensure final size with shadow container
 
         screen = QApplication.primaryScreen().availableGeometry()
         x = screen.center().x() - self.width() // 2
@@ -120,6 +134,7 @@ class EmailConfirmDialog(QDialog):
         pass
 
 
+# Shadow
 class ShadowContainer(QFrame):
     """A QFrame that draws a rounded white background. Used to avoid stylesheet conflicts."""
     def __init__(self, parent=None):
@@ -127,6 +142,7 @@ class ShadowContainer(QFrame):
         self.setFrameStyle(QFrame.NoFrame)
 
 
+# Overlay
 class ModalOverlay(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
@@ -134,7 +150,7 @@ class ModalOverlay(QWidget):
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_NoSystemBackground, True)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
-        self.opacity = 100  # (0–255)
+        self.opacity = 100 # (0–255)
 
 
     def paintEvent(self, event):

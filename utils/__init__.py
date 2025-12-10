@@ -1,2 +1,1 @@
-from .theme_manager import ThemeManager
-from .email_confirm_modal import EmailConfirmDialog
+from .theme_manager import ThemeManagerInstance

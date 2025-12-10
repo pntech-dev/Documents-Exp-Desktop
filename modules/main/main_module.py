@@ -1,5 +1,5 @@
 from ui import MainWindow_UI
-from utils import ThemeManager
+from utils import ThemeManagerInstance
 from .mvc import MainModel, MainView, MainController
 
 from PyQt5.QtWidgets import QMainWindow
@@ -19,7 +19,7 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
 
         # Set theme
-        self.theme_manager = ThemeManager()
+        self.theme_manager = ThemeManagerInstance()
         self.theme_manager.switch_theme(theme=0)
 
         # MVC Initialization

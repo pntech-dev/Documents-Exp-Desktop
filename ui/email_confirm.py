@@ -59,11 +59,12 @@ class Ui_Dialog(object):
         self.lineedit_label.setFont(font)
         self.lineedit_label.setObjectName("lineedit_label")
         self.verticalLayout_2.addWidget(self.lineedit_label)
-        self.verification_code_lineEdit = QtWidgets.QLineEdit(self.verification_code_frame)
+        self.verification_code_lineEdit = IconLineEdit(self.verification_code_frame)
         self.verification_code_lineEdit.setMinimumSize(QtCore.QSize(0, 42))
         font = QtGui.QFont()
         font.setPointSize(12)
         self.verification_code_lineEdit.setFont(font)
+        self.verification_code_lineEdit.setStyleSheet("")
         self.verification_code_lineEdit.setInputMask("")
         self.verification_code_lineEdit.setText("")
         self.verification_code_lineEdit.setMaxLength(6)
@@ -117,4 +118,5 @@ class Ui_Dialog(object):
         self.verification_code_lineEdit.setPlaceholderText(_translate("Dialog", "X X X X X X"))
         self.cancel_pushButton.setText(_translate("Dialog", "Отменить"))
         self.accept_pushButton.setText(_translate("Dialog", "Подтвердить"))
-from .custom_widgets import PrimaryButton, TertiaryButton
+from .custom_widgets import IconLineEdit, PrimaryButton, TertiaryButton
+import resources.icons.icons_resources_rc

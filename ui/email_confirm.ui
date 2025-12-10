@@ -138,7 +138,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="verification_code_lineEdit">
+       <widget class="IconLineEdit" name="verification_code_lineEdit">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -149,6 +149,9 @@
          <font>
           <pointsize>12</pointsize>
          </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true"/>
         </property>
         <property name="inputMask">
          <string/>
@@ -258,7 +261,14 @@
    <extends>QPushButton</extends>
    <header>.custom_widgets</header>
   </customwidget>
+  <customwidget>
+   <class>IconLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>.custom_widgets</header>
+  </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../resources/icons/icons_resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

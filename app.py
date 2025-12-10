@@ -2,9 +2,9 @@ import sys
 
 from PyQt5.QtWidgets import QApplication
 
-from utils import ThemeManager
 from modules import AuthWindow
 from core.worker import APIWorker
+from utils import ThemeManagerInstance
 from modules.main.main_module import MainWindow
 from modules.auth.mvc.auth_model import AuthModel
 
@@ -16,7 +16,7 @@ class Application:
         self.auth_window = None
 
         # Set theme
-        self.theme_manager = ThemeManager()
+        self.theme_manager = ThemeManagerInstance()
         self.theme_manager.switch_theme(theme=0)
 
         # Check auto login

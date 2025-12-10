@@ -2,7 +2,7 @@ from .auth_model import AuthModel
 from .auth_view import AuthView
 
 from core.worker import APIWorker
-from utils import EmailConfirmDialog
+from utils.email_confirm_modal import EmailConfirmDialog
 
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtCore import pyqtSignal, QObject
