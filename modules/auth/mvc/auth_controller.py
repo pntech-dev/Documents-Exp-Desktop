@@ -58,6 +58,8 @@ class AuthController(QObject):
         self.view.do_not_change_password_button_clicked(self.on_do_not_change_password_button_clicked)
         self.view.view_password_change_password_checkbox_state_changed(self.on_view_password_change_password_checkbox_state_changed)
         self.view.email_lineedit_change_password_page_text_changed(self.on_email_lineedit_change_password_page_text_changed)
+        self.view.password_lineedit_change_password_page_text_changed(self.on_change_password_page_lineedits_changed)
+        self.view.confirm_password_lineedit_change_password_page_text_changed(self.on_change_password_page_lineedits_changed)
 
 
     def login_user(self, user_data: dict) -> None:
@@ -85,11 +87,23 @@ class AuthController(QObject):
     
 
     def swith_to_change_password_page(self, data: dict) -> None:
-        print(data)
+        # Save token
+        self.model.save_token(token_name="reset_token", token="reset_token", data=data)
 
+        # Switch to change password page
         page = self.view.pages.get("change_password_change_page", None)
         if page:
             self.view.switch_page(page=page)
+
+
+    def password_changed(self, data: dict) -> None:
+        # Switch to login page
+        page = self.view.pages.get("login_page", None)
+        if page:
+            self.view.switch_page(page=page)
+
+        # Clear lineedits
+        self.view.change_password_page_cler_lineedits()
 
     
     def open_email_confirm_modal_window(self, data, email: str) -> None:
@@ -197,7 +211,7 @@ class AuthController(QObject):
             return
 
         # Check password matching
-        passwords_match = self.check_signup_passwords_match()
+        passwords_match = password == confirm_password
 
         # Defining signup button state
         state = bool(email.strip() and password.strip() and confirm_password.strip() and passwords_match)
@@ -236,13 +250,45 @@ class AuthController(QObject):
 
 
     def on_do_not_change_password_button_clicked(self) -> None:
+        # Switch to login page
         page = self.view.pages.get("login_page", None)
         if page:
             self.view.switch_page(page=page)
 
+        # Clear lineedits
+        self.view.change_password_page_cler_lineedits()
+        
+
+    def on_change_password_page_lineedits_changed(self) -> None:
+        # Get texts from lineedits
+        password = self.view.get_password_change_password_page()
+        confirm_password = self.view.get_confirm_password_change_password_page()
+
+        if not all([password.strip(), confirm_password.strip()]):
+            self.view.update_change_password_button_state(state=False)
+            return
+        
+        # Check password matching
+        passwords_match = password == confirm_password
+
+        # Defining signup button state
+        state = bool(password.strip() and confirm_password.strip() and passwords_match)
+
+        # Update signup button state
+        self.view.update_change_password_button_state(state=state)
+
 
     def on_change_password_button_clicked(self) -> None:
-        print("Change password button clicked")
+        # Get new password
+        password = self.view.get_password_change_password_page()
+
+        # Create worker
+        self.api_worker = APIWorker(self.model.change_password, password=password)
+
+        self.api_worker.finished.connect(lambda data: self.password_changed(data))
+        self.api_worker.error.connect(lambda e: self.worker_error(exception=e))
+
+        self.api_worker.start()
 
 
     def on_view_password_change_password_checkbox_state_changed(self):

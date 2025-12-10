@@ -113,22 +113,8 @@ class AuthModel:
         new_tokens = self.api.refresh(refresh_token=refresh_token)
 
         # 4. Save the new tokens, overwriting the old ones
-        new_access_token = new_tokens.get("access_token")
-        new_refresh_token = new_tokens.get("refresh_token")
-
-        if not new_access_token or not new_refresh_token:
-            raise ValueError("API response for token refresh did not contain new tokens.")
-
-        keyring.set_password(
-            service_name="Documents Exp",
-            username=f"access_token_{user_id}",
-            password=new_access_token
-        )
-        keyring.set_password(
-            service_name="Documents Exp",
-            username=f"refresh_token_{user_id}",
-            password=new_refresh_token
-        )
+        self.save_token(token_name=f"access_token_{user_id}", token="access_token", data=new_tokens)
+        self.save_token(token_name=f"refresh_token_{user_id}", token="refresh_token", data=new_tokens)
         
         logging.info(f"Successfully refreshed tokens for user_id {user_id}.")
 
@@ -190,17 +176,8 @@ class AuthModel:
         user_id = user.get("id", None)
 
         # Save access and refresh tokens
-        keyring.set_password(
-            service_name="Documents Exp", 
-            username=f"access_token_{user_id}", 
-            password=user_data.get("access_token", None)
-        )
-
-        keyring.set_password(
-            service_name="Documents Exp", 
-            username=f"refresh_token_{user_id}", 
-            password=user_data.get("refresh_token", None)
-        )
+        self.save_token(token_name=f"access_token_{user_id}", token="access_token", data=user_data)
+        self.save_token(token_name=f"refresh_token_{user_id}", token="refresh_token", data=user_data)
 
         # Save user data
         if Path.home():
@@ -320,8 +297,31 @@ class AuthModel:
         return self.api.confirm_email(email=email, code=code)
     
 
-    def change_password(self, email: str, password: str) -> dict:
-        return self.api.reset_password(email=email, password=password)
+    def change_password(self, password: str) -> dict:
+        # Get reset token from keyring
+        reset_token = self.get_token(token_name="reset_token")
+        if not reset_token:
+            raise ValueError("Reset token not found in keyring.")
+
+        return self.api.reset_password(reset_token=reset_token, password=password)
+    
+
+    def save_token(self, token_name: str, token: str, data: dict) -> None:
+        try:
+            keyring.set_password(
+                service_name="Documents Exp", 
+                username=token_name, 
+                password=data.get(token, None)
+            )
+        
+        except keyring_errors.PasswordSetError:
+            logging.error(msg="PasswordSetError", exc_info=True)
+        except Exception as e:
+            logging.error(msg=e, exc_info=True)
+
+
+    def get_token(self, token_name: str) -> str:
+        return keyring.get_password(service_name="Documents Exp", username=token_name)
 
 
     def _load_config(self) -> dict:

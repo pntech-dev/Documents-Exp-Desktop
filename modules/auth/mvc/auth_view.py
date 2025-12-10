@@ -161,14 +161,37 @@ class AuthView:
         return self.ui.email_lineEdit_3.text()
     
 
+    def get_password_change_password_page(self) -> str:
+        return self.ui.password_lineEdit_6.text()
+    
+
+    def get_confirm_password_change_password_page(self) -> str:
+        return self.ui.password_lineEdit_5.text()
+    
+
     def update_confirm_email_button_state(self, state: bool) -> None:
         self.ui.accept_pushButton.setEnabled(state)
+
+    
+    def update_change_password_button_state(self, state: bool) -> None:
+        self.ui.change_pushButton.setEnabled(state)
 
 
     def set_password_visibalty_change_password_page(self, state) -> None:
         mode = QLineEdit.Normal if state else QLineEdit.Password
         self.ui.password_lineEdit_6.setEchoMode(mode)
         self.ui.password_lineEdit_5.setEchoMode(mode)
+
+    
+    def change_password_page_cler_lineedits(self) -> None:
+        lineedits = [
+            self.ui.email_lineEdit_3,
+            self.ui.password_lineEdit_6,
+            self.ui.password_lineEdit_5
+        ]
+
+        for lineedit in lineedits:
+            lineedit.clear()
 
 
     def confirm_email_button_clicked(self, handler) -> None:
@@ -193,3 +216,11 @@ class AuthView:
     
     def view_password_change_password_checkbox_state_changed(self, handler) -> None:
         self.ui.view_password_checkBox_3.stateChanged.connect(handler)
+
+
+    def password_lineedit_change_password_page_text_changed(self, handler) -> None:
+        self.ui.password_lineEdit_6.textChanged.connect(handler)
+
+
+    def confirm_password_lineedit_change_password_page_text_changed(self, handler) -> None:
+        self.ui.password_lineEdit_5.textChanged.connect(handler)
