@@ -1,11 +1,12 @@
-from .auth_model import AuthModel
-from .auth_view import AuthView
-
-from core.worker import APIWorker
-from utils.email_confirm_modal import EmailConfirmDialog
+import string
 
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtCore import pyqtSignal, QObject
+
+from .auth_view import AuthView
+from .auth_model import AuthModel
+from core.worker import APIWorker
+from utils.email_confirm_modal import EmailConfirmDialog
 
 
 class AuthController(QObject):
@@ -131,7 +132,6 @@ class AuthController(QObject):
 
     # Log In page
     def on_login_login_page_button_clicked(self) -> None:
-
         # Get data from lineedits
         email = self.view.get_email_login()
         password = self.view.get_password_login()
@@ -165,6 +165,14 @@ class AuthController(QObject):
         # Get texts from lineedits
         email = self.view.get_email_login()
         password = self.view.get_password_login()
+
+        # Validate email
+        if not self._validate_email(email=email):
+            return
+        
+        # Validate password
+        if not self._validate_password(password=password):
+            return
 
         # Defining login button state (True if both lineedits has text, else False)
         state = bool(email.strip() and password.strip())
@@ -205,9 +213,13 @@ class AuthController(QObject):
         email = self.view.get_email_signup()
         password = self.view.get_password_signup()
         confirm_password = self.view.get_confirm_password_signup()
-
-        if not all([email.strip(), password.strip(), confirm_password.strip()]):
-            self.view.udpate_signup_button(state=False)
+        
+        # Validate email
+        if not self._validate_email(email=email):
+            return
+        
+        # Validate password
+        if not self._validate_password(password=password):
             return
 
         # Check password matching
@@ -257,15 +269,15 @@ class AuthController(QObject):
 
         # Clear lineedits
         self.view.change_password_page_cler_lineedits()
-        
+
 
     def on_change_password_page_lineedits_changed(self) -> None:
         # Get texts from lineedits
         password = self.view.get_password_change_password_page()
         confirm_password = self.view.get_confirm_password_change_password_page()
-
-        if not all([password.strip(), confirm_password.strip()]):
-            self.view.update_change_password_button_state(state=False)
+        
+        # Validate password
+        if not self._validate_password(password=password):
             return
         
         # Check password matching
@@ -325,6 +337,31 @@ class AuthController(QObject):
             return False
 
         if "." not in domain_part:
+            return False
+
+        return True
+    
+    def _validate_password(self, password: str) -> bool:
+        """Simple password validation method."""
+
+        # Password length
+        if len(password) < 8:
+            return False
+        
+        # Minimum one symbol is digit
+        if not any(char.isdigit() for char in password):
+            return False
+        
+        # Minimum one symbol is uppercase
+        if not any(char.isupper() for char in password):
+            return False
+        
+        # Minimum one symbol is lowercase
+        if not any(char.islower() for char in password):
+            return False
+        
+        # Minimum one symbol is special character
+        if not any(char in string.punctuation for char in password):
             return False
 
         return True
