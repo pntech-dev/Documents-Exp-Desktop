@@ -1,11 +1,27 @@
-from utils import ThemeManagerInstance
+from PyQt5.QtWidgets import QLineEdit, QCheckBox, QPushButton
 
 from ui import AuthWindow_UI
-
-from PyQt5.QtWidgets import QLineEdit, QCheckBox, QPushButton
+from utils import ThemeManagerInstance
 
 
 class AuthPageWidgetGroup:
+    """A helper class to group and manage UI widgets for an authentication page.
+
+    This class provides a unified interface for accessing and manipulating a set of
+    related widgets (e.g., email, password, buttons) that constitute a single
+    authentication form like login, signup, or password reset.
+
+    Attributes:
+        email_field (QLineEdit): The input field for the user's email.
+        password_field (QLineEdit): The input field for the user's password.
+        confirm_password_field (QLineEdit): The input field for password confirmation.
+        view_password_checkbox (QCheckBox): The checkbox to toggle password visibility.
+        auto_login_checkbox (QCheckBox): The checkbox for the "auto-login" feature.
+        submit_button (QPushButton): The primary action button (e.g., "Login", "Sign Up").
+        back_button (QPushButton): The button to return to a previous page.
+        tertiary_button (QPushButton): A secondary action button (e.g., "No account?").
+        forgot_password_button (QPushButton): The button/label to initiate password reset.
+    """
     def __init__(
             self,
             email_field: QLineEdit = None,
@@ -18,6 +34,19 @@ class AuthPageWidgetGroup:
             tertiary_button: QPushButton = None,
             forgot_password_button: QPushButton = None
     ) -> None:
+        """Initializes the AuthPageWidgetGroup.
+
+        Args:
+            email_field (QLineEdit, optional): The input field for the user's email. Defaults to None.
+            password_field (QLineEdit, optional): The input field for the user's password. Defaults to None.
+            confirm_password_field (QLineEdit, optional): The input field for password confirmation. Defaults to None.
+            view_password_checkbox (QCheckBox, optional): The checkbox to toggle password visibility. Defaults to None.
+            auto_login_checkbox (QCheckBox, optional): The checkbox for the "auto-login" feature. Defaults to None.
+            submit_button (QPushButton, optional): The primary action button. Defaults to None.
+            back_button (QPushButton, optional): The button to return to a previous page. Defaults to None.
+            tertiary_button (QPushButton, optional): A secondary action button. Defaults to None.
+            forgot_password_button (QPushButton, optional): The button/label to initiate password reset. Defaults to None.
+        """
         self.email_field = email_field
         self.password_field = password_field
         self.confirm_password_field = confirm_password_field
@@ -29,26 +58,230 @@ class AuthPageWidgetGroup:
         self.forgot_password_button = forgot_password_button
 
 
+    """=== Getters ==="""
+    def get_email(self) -> str | None:
+        """
+        Retrieves the text from the email input field.
+
+        Returns:
+            str: The email address entered by the user, or None if the field doesn't exist.
+        """
+        if self.email_field:
+            return self.email_field.text()
+
+        return None
+    
+
+    def get_password(self) -> str | None:
+        """
+        Retrieves the text from the password input field.
+
+        Returns:
+            str: The password entered by the user, or None if the field doesn't exist.
+        """
+        if self.password_field:
+            return self.password_field.text()
+        
+        return None
+    
+
+    def get_confirm_password(self) -> str | None:
+        """
+        Retrieves the text from the password confirmation input field.
+
+        Returns:
+            str: The confirmation password entered by the user, or None if the field doesn't exist.
+        """
+        if self.confirm_password_field:
+            return self.confirm_password_field.text()
+
+        return None
+    
+
+    def get_view_password_state(self) -> bool | None:
+        """
+        Checks if the 'view password' checkbox is currently checked.
+
+        Returns:
+            bool: True if the checkbox is checked, False otherwise, or None if the checkbox doesn't exist.
+        """
+        if self.view_password_checkbox:
+            return self.view_password_checkbox.isChecked()
+            
+        return None
+
+
+    def get_auto_login_state(self) -> bool | None:
+        """
+        Checks if the 'auto-login' checkbox is currently checked.
+
+        Returns:
+            bool: True if the checkbox is checked, False otherwise, or None if the checkbox doesn't exist.
+        """
+        if self.auto_login_checkbox:
+            return self.auto_login_checkbox.isChecked()
+            
+        return None
+    
+
+
+    """=== Setters ==="""
+    def set_password_visibility(self, state: bool) -> None:
+        """
+        Sets the visibility of password characters in the password fields.
+
+        Args:
+            state (bool): If True, characters are shown. If False, they are masked.
+        """
+        mode = QLineEdit.Normal if state else QLineEdit.Password
+
+        if self.password_field:
+            self.password_field.setEchoMode(mode)
+
+        if self.confirm_password_field:
+            self.confirm_password_field.setEchoMode(mode)
+
+    
+    def clear_lineedits(self) -> None:
+        """
+        Clears the text from all associated line edit fields (email, password, confirm password).
+        """
+        if self.email_field:
+            self.email_field.clear()
+
+        if self.password_field:
+            self.password_field.clear()
+
+        if self.confirm_password_field:
+            self.confirm_password_field.clear()
+
+
+    
+    """=== Updaters ==="""
+    def update_submit_button_state(self, state: bool) -> None:
+        """Enables or disables the submit button.
+
+        Args:
+            state (bool): True to enable the button, False to disable it.
+        """
+        if self.submit_button:
+            self.submit_button.setEnabled(state)
+
+
+
+    """=== Handlers ==="""
+    def submit_button_clicked(self, handler) -> None:
+        """Connects a handler to the submit button's 'clicked' signal.
+
+        Args:
+            handler (Callable): The function or method to call when the button is clicked.
+        """
+        if self.submit_button:
+            self.submit_button.clicked.connect(handler)
+
+
+    def back_button_clicked(self, handler) -> None:
+        """Connects a handler to the back button's 'clicked' signal.
+
+        Args:
+            handler (Callable): The function or method to call when the button is clicked.
+        """
+        if self.back_button:
+            self.back_button.clicked.connect(handler)
+
+
+    def tertiary_button_clicked(self, handler) -> None:
+        """Connects a handler to the tertiary button's 'clicked' signal.
+
+        This button is used for actions like switching between login and sign-up pages.
+
+        Args:
+            handler (Callable): The function or method to call when the button is clicked.
+        """
+        if self.tertiary_button:
+            self.tertiary_button.clicked.connect(handler)
+
+
+    def forgot_password_button_clicked(self, handler) -> None:
+        """Connects a handler to the 'forgot password' label's 'mousePressEvent'.
+
+        Args:
+            handler (Callable): The function or method to call when the label is clicked.
+        """
+        if self.forgot_password_button:
+            self.forgot_password_button.mousePressEvent = handler
+
+    
+    def view_password_checkbox_state_changed(self, handler) -> None:
+        """Connects a handler to the 'view password' checkbox's 'stateChanged' signal.
+
+        Args:
+            handler (Callable): The function or method to call when the checkbox state changes.
+        """
+        if self.view_password_checkbox:
+            self.view_password_checkbox.stateChanged.connect(handler)
+
+
+    def email_lineedit_text_changed(self, handler) -> None:
+        """Connects a handler to the email field's 'textChanged' signal.
+
+        Args:
+            handler (Callable): The function or method to call when the text changes.
+        """
+        if self.email_field:
+            self.email_field.textChanged.connect(handler)
+
+    
+    def password_lineedit_text_changed(self, handler) -> None:
+        """Connects a handler to the password field's 'textChanged' signal.
+
+        Args:
+            handler (Callable): The function or method to call when the text changes.
+        """
+        if self.password_field:
+            self.password_field.textChanged.connect(handler)
+
+
+    def confirm_password_lineedit_text_changed(self, handler) -> None:
+        """Connects a handler to the confirm password field's 'textChanged' signal.
+
+        Args:
+            handler (Callable): The function or method to call when the text changes.
+        """
+        if self.confirm_password_field:
+            self.confirm_password_field.textChanged.connect(handler)
+
+
 class AuthView:
+    """The main View class for the authentication window.
+
+    This class orchestrates the UI components of the authentication module. It
+    manages various pages (login, signup, etc.) as widget groups and provides
+    methods to interact with them and the overall window (e.g., switching pages,
+    handling theme changes).
+
+    Attributes:
+        ui (AuthWindow_UI): The UI object generated from Qt Designer.
+        theme_manager (ThemeManager): An instance to manage application themes.
+        login_page (AuthPageWidgetGroup): Widget group for the login page.
+        signup_page (AuthPageWidgetGroup): Widget group for the signup page.
+        forgot_page_email_confirm (AuthPageWidgetGroup): Widget group for the password
+            reset email confirmation page.
+        forgot_page_reset_password (AuthPageWidgetGroup): Widget group for the new
+            password entry page.
+        pages (dict): A mapping of page names to their corresponding widget objects.
+        theme_buttons (list): A list of all theme-switching buttons in the UI.
+    """
     def __init__(self, ui: AuthWindow_UI):
+        """Initializes the AuthView.
+
+        Args:
+            ui (AuthWindow_UI): The UI object generated from Qt Designer.
+        """
         self.ui = ui
         self.theme_manager = ThemeManagerInstance()
 
-        # Auth module pages
-        self.pages = {
-            "login_page": self.ui.login_page,
-            "signup_page": self.ui.signup_page,
-            "change_password_confirm_page": self.ui.change_password_confirm_page,
-            "change_password_change_page": self.ui.change_password_change_page
-        }
-
-        # Theme buttons list
-        self.theme_buttons = [
-            self.ui.theme_button,
-            self.ui.theme_button_2,
-            self.ui.theme_button_3,
-            self.ui.theme_button_4
-        ]
+        # Initialize page widget groups
 
         self.login_page = AuthPageWidgetGroup(
             email_field=self.ui.email_lineEdit,
@@ -71,200 +304,63 @@ class AuthView:
             back_button=self.ui.have_account_pushButton,
         )
 
+        self.forgot_page_email_confirm = AuthPageWidgetGroup(
+            email_field=self.ui.email_lineEdit_3,
+            submit_button=self.ui.accept_pushButton,
+            back_button=self.ui.have_account_pushButton_2
+        )
+
+        self.forgot_page_reset_password = AuthPageWidgetGroup(
+            password_field=self.ui.password_lineEdit_6,
+            confirm_password_field=self.ui.password_lineEdit_5,
+            view_password_checkbox=self.ui.view_password_checkBox_3,
+            submit_button=self.ui.change_pushButton,
+            back_button=self.ui.have_account_pushButton_3
+        )
+
+        # Auth module pages
+        self.pages = {
+            "login_page": self.ui.login_page,
+            "signup_page": self.ui.signup_page,
+            "change_password_confirm_page": self.ui.change_password_confirm_page,
+            "change_password_change_page": self.ui.change_password_change_page
+        }
+
+        # Theme buttons list
+        self.theme_buttons = [
+            self.ui.theme_button,
+            self.ui.theme_button_2,
+            self.ui.theme_button_3,
+            self.ui.theme_button_4
+        ]
+
+
     def set_theme(self) -> None:
-        """Set theme"""
+        """Switches the application's theme.
+
+        Delegates the theme switching logic to the theme manager instance.
+        """
         self.theme_manager.switch_theme()
 
 
     def switch_page(self, page) -> None:
-        """Page switcher"""
+        """Switches the currently visible page in the stacked widget.
+
+        Args:
+            page (QWidget): The page widget to display.
+        """
         self.ui.pages.setCurrentWidget(page)
 
-    """=== Handlers ==="""
 
     def theme_switcher_clicked(self, handler) -> None:
-        """Switch theme on click theme switcher button"""
+        """Connects a handler to all theme-switching buttons.
+
+        Iterates through all registered theme buttons and connects their 'clicked'
+        signal to the provided handler.
+
+        Args:
+            handler (Callable): The function or method to call when any theme
+                button is clicked.
+        """
         for theme_button in self.theme_buttons:
             theme_button.clicked.connect(handler)
-
-
-    # Log In page
-    def get_view_password_login_page_state(self) -> bool:
-        return self.ui.view_password_checkBox.isChecked()
-
-
-    def set_password_visibality_login_page(self, state) -> None:
-        mode = QLineEdit.Normal if state else QLineEdit.Password
-        self.ui.password_lineEdit.setEchoMode(mode)
-        
-        
-    def get_email_login(self) -> str:
-        return self.ui.email_lineEdit.text()
-    
-
-    def get_password_login(self) -> str:
-        return self.ui.password_lineEdit.text()
-    
-
-    def get_auto_login_login_page(self) -> bool:
-        return self.ui.auto_login_checkBox.isChecked()
-
-
-    def login_login_page_button_clicked(self, handler) -> None:
-        self.ui.login_pushButton.clicked.connect(handler)
-
-
-    def guest_login_page_button_clicked(self, handler) -> None:
-        self.ui.guest_pushButton.clicked.connect(handler)
-
-
-    def create_account_login_page_button_clicked(self, handler) -> None:
-        self.ui.no_account_pushButton.clicked.connect(handler)
-
-    
-    def forgot_password_login_page_button_clicked(self, handler) -> None:
-        self.ui.forgot_password_label.mousePressEvent = handler
-
-
-    def view_password_login_page_checkbox_state_changed(self, handler) -> None:
-        self.ui.view_password_checkBox.stateChanged.connect(handler)
-
-
-    # Sign Up page
-    def get_view_password_signup_page_state(self) -> bool:
-        return self.ui.view_password_checkBox_2.isChecked()
-
-
-    def set_password_visibality_signup_page(self, state) -> None:
-        mode = QLineEdit.Normal if state else QLineEdit.Password
-        self.ui.password_lineEdit_2.setEchoMode(mode)
-        self.ui.password_lineEdit_4.setEchoMode(mode)
-    def email_lineedit_login_page_text_changed(self, handler) -> None:
-        self.ui.email_lineEdit.textChanged.connect(handler)
-
-
-    def password_lineedit_login_page_text_changed(self, handler) -> None:
-        self.ui.password_lineEdit.textChanged.connect(handler)
-
-    
-    def update_login_button(self, state: bool) -> None:
-        self.ui.login_pushButton.setEnabled(state)
-
-
-    # Sign Up page
-    def get_email_signup(self) -> str:
-        return self.ui.email_lineEdit_2.text()
-    
-
-    def get_password_signup(self) -> str:
-        return self.ui.password_lineEdit_2.text()
-    
-
-    def get_confirm_password_signup(self) -> str:
-        return self.ui.password_lineEdit_4.text()
-    
-
-    def get_auto_login_signup_page(self) -> bool:
-        return self.ui.auto_login_checkBox_2.isChecked()
-
-
-    def create_account_signup_page_button_clicked(self, handler) -> None:
-        self.ui.create_pushButton.clicked.connect(handler)
-
-
-    def have_account_signup_page_button_clicked(self, handler) -> None:
-        self.ui.have_account_pushButton.clicked.connect(handler)
-
-    
-    def view_password_signup_page_checkbox_state_changed(self, handler) -> None:
-        self.ui.view_password_checkBox_2.stateChanged.connect(handler)
-
-
-    def update_signup_button(self, state: bool) -> None:
-        self.ui.create_pushButton.setEnabled(state)
-
-
-    def email_lineedit_signup_page_text_changed(self, handler) -> None:
-        self.ui.email_lineEdit_2.textChanged.connect(handler)
-
-    
-    def password_lineedit_signup_page_text_changed(self, handler) -> None:
-        self.ui.password_lineEdit_2.textChanged.connect(handler)
-
-
-    def confirm_password_lineedit_signup_page_text_changed(self, handler) -> None:
-        self.ui.password_lineEdit_4.textChanged.connect(handler)
-
-
-    # Change password page
-    def get_view_password_change_password_page_state(self) -> bool:
-        return self.ui.view_password_checkBox_3.isChecked()
-    
-
-    def get_email_change_password_page(self) -> str:
-        return self.ui.email_lineEdit_3.text()
-    
-
-    def get_password_change_password_page(self) -> str:
-        return self.ui.password_lineEdit_6.text()
-    
-
-    def get_confirm_password_change_password_page(self) -> str:
-        return self.ui.password_lineEdit_5.text()
-    
-
-    def update_confirm_email_button_state(self, state: bool) -> None:
-        self.ui.accept_pushButton.setEnabled(state)
-
-    
-    def update_change_password_button_state(self, state: bool) -> None:
-        self.ui.change_pushButton.setEnabled(state)
-
-
-    def set_password_visibality_change_password_page(self, state) -> None:
-        mode = QLineEdit.Normal if state else QLineEdit.Password
-        self.ui.password_lineEdit_6.setEchoMode(mode)
-        self.ui.password_lineEdit_5.setEchoMode(mode)
-
-    
-    def change_password_page_clear_lineedits(self) -> None:
-        lineedits = [
-            self.ui.email_lineEdit_3,
-            self.ui.password_lineEdit_6,
-            self.ui.password_lineEdit_5
-        ]
-
-        for lineedit in lineedits:
-            lineedit.clear()
-
-
-    def confirm_email_button_clicked(self, handler) -> None:
-        self.ui.accept_pushButton.clicked.connect(handler)
-
-
-    def know_password_button_clicked(self, handler) -> None:
-        self.ui.have_account_pushButton_2.clicked.connect(handler)
-
-
-    def email_lineedit_change_password_page_text_changed(self, handler) -> None:
-        self.ui.email_lineEdit_3.textChanged.connect(handler)
-
-
-    def change_password_button_clicked(self, handler) -> None:
-        self.ui.change_pushButton.clicked.connect(handler)
-
-    
-    def do_not_change_password_button_clicked(self, handler) -> None:
-        self.ui.have_account_pushButton_3.clicked.connect(handler)
-
-    
-    def view_password_change_password_checkbox_state_changed(self, handler) -> None:
-        self.ui.view_password_checkBox_3.stateChanged.connect(handler)
-
-
-    def password_lineedit_change_password_page_text_changed(self, handler) -> None:
-        self.ui.password_lineEdit_6.textChanged.connect(handler)
-
-
-    def confirm_password_lineedit_change_password_page_text_changed(self, handler) -> None:
-        self.ui.password_lineEdit_5.textChanged.connect(handler)
