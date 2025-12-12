@@ -18,13 +18,22 @@ class AuthModel:
         # API Client Initialization
         self.api = APIClient(base_url=self.config_data.get("base_url", None))
 
+    """=== Login ==="""
 
     def login(self, email: str, password: str) -> dict:
         return self.api.login(email=email, password=password)
     
 
-    def signup(self, email: str, password: str) -> dict:
-        return self.api.signup(email=email, password=password)
+    
+    """=== Signup ==="""
+
+    def signup(self, code: str, email: str, password: str) -> dict:
+        return self.api.signup(code=code, email=email, password=password)
+    
+
+    def signup_send_code(self, email: str) -> dict:
+        return self.api.signup_send_code(email=email)
+    
 
 
     def verify_token(self) -> dict:
@@ -288,23 +297,24 @@ class AuthModel:
             
             return get_flag(path=user_data_file_path)
         
-
-    def forgot_password(self, email: str) -> dict:
-        return self.api.forgot_password(email=email)
     
 
-    def confirm_email(self, email: str, code: str) -> dict:
-        return self.api.confirm_email(email=email, code=code)
+    """=== Reset password ==="""
+
+    def request_reset_password(self, email: str) -> dict:
+        return self.api.request_reset_password(email=email)
     
 
-    def change_password(self, password: str) -> dict:
-        # Get reset token from keyring
-        reset_token = self.get_token(token_name="reset_token")
-        if not reset_token:
-            raise ValueError("Reset token not found in keyring.")
+    def reset_password_confirm_email(self, email: str, code: str) -> dict:
+        return self.api.reset_password_confirm_email(email=email, code=code)
 
-        return self.api.reset_password(reset_token=reset_token, password=password)
-    
+
+    def reset_password(self, password: str) -> dict:
+        token = self._get_token(token_name="reset_token")
+        print(token)
+
+        return self.api.reset_password(reset_token=token, password=password)
+
 
     def save_token(self, token_name: str, token: str, data: dict) -> None:
         try:
@@ -320,7 +330,12 @@ class AuthModel:
             logging.error(msg=e, exc_info=True)
 
 
-    def get_token(self, token_name: str) -> str:
+    # ====================
+    # Model Methods
+    # ====================
+
+
+    def _get_token(self, token_name: str) -> str:
         return keyring.get_password(service_name="Documents Exp", username=token_name)
 
 

@@ -112,7 +112,11 @@ class AuthController(QObject):
         code = EmailConfirmDialog.get_code(parent=self.auth_window)
         
         # Create worker
-        self.api_worker = APIWorker(self.model.confirm_email, email=email, code=code)
+        self.api_worker = APIWorker(
+            self.model.reset_password_confirm_email,  
+            email=email, 
+            code=code
+        )
 
         self.api_worker.finished.connect(lambda data: self.swith_to_change_password_page(data=data))
         self.api_worker.error.connect(lambda e: self.worker_error(exception=e))
@@ -122,6 +126,24 @@ class AuthController(QObject):
     
     def worker_error(self, exception):
         print(exception)
+
+
+    def signup(self, data: dict, email: str, password: str) -> None:
+        print(data)
+        code = EmailConfirmDialog.get_code(parent=self.auth_window)
+
+        # Create worker
+        self.api_worker = APIWorker(
+            self.model.signup, 
+            code=code, 
+            email=email, 
+            password=password
+        )
+
+        self.api_worker.finished.connect(lambda data: self.signup_user(user_data=data))
+        self.api_worker.error.connect(lambda e: self.worker_error(exception=e))
+
+        self.api_worker.start()
 
 
     """=== Handlers ==="""
@@ -187,16 +209,17 @@ class AuthController(QObject):
 
 
     # Sign Up page
+
     def on_create_account_signup_page_button_clicked(self) -> None:
 
         # Get data from lineedits
         email = self.view.get_email_signup()
         password = self.view.get_password_signup()
 
-        # Create worker
-        self.api_worker = APIWorker(self.model.signup, email=email, password=password)
+        # Create email confirm worker
+        self.api_worker = APIWorker(self.model.signup_send_code, email=email)
 
-        self.api_worker.finished.connect(lambda data: self.signup_user(user_data=data))
+        self.api_worker.finished.connect(lambda data: self.signup(data=data, email=email, password=password))
         self.api_worker.error.connect(lambda e: self.worker_error(exception=e))
 
         self.api_worker.start()
@@ -238,6 +261,7 @@ class AuthController(QObject):
 
 
     # Change password page
+
     def on_email_lineedit_change_password_page_text_changed(self) -> None:
         # Get text from lineedit
         email = self.view.get_email_change_password_page()
@@ -253,7 +277,7 @@ class AuthController(QObject):
         email = self.view.get_email_change_password_page()
 
         # Create worker
-        self.api_worker = APIWorker(self.model.forgot_password, email=email)
+        self.api_worker = APIWorker(self.model.request_reset_password, email=email)
 
         self.api_worker.finished.connect(lambda data: self.open_email_confirm_modal_window(data, email=email))
         self.api_worker.error.connect(lambda e: self.worker_error(exception=e))
@@ -295,7 +319,7 @@ class AuthController(QObject):
         password = self.view.get_password_change_password_page()
 
         # Create worker
-        self.api_worker = APIWorker(self.model.change_password, password=password)
+        self.api_worker = APIWorker(self.model.reset_password, password=password)
 
         self.api_worker.finished.connect(lambda data: self.password_changed(data))
         self.api_worker.error.connect(lambda e: self.worker_error(exception=e))
