@@ -640,7 +640,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="TextButton" name="fogot_password_label">
+         <widget class="TextButton" name="forgot_password_label">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
             <horstretch>0</horstretch>

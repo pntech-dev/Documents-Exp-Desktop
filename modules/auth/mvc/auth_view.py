@@ -2,7 +2,31 @@ from utils import ThemeManagerInstance
 
 from ui import AuthWindow_UI
 
-from PyQt5.QtWidgets import QLineEdit
+from PyQt5.QtWidgets import QLineEdit, QCheckBox, QPushButton
+
+
+class AuthPageWidgetGroup:
+    def __init__(
+            self,
+            email_field: QLineEdit = None,
+            password_field: QLineEdit = None,
+            confirm_password_field: QLineEdit = None,
+            view_password_checkbox: QCheckBox = None,
+            auto_login_checkbox: QCheckBox = None,
+            submit_button: QPushButton = None,
+            back_button: QPushButton = None,
+            tertiary_button: QPushButton = None,
+            forgot_password_button: QPushButton = None
+    ) -> None:
+        self.email_field = email_field
+        self.password_field = password_field
+        self.confirm_password_field = confirm_password_field
+        self.view_password_checkbox = view_password_checkbox
+        self.auto_login_checkbox = auto_login_checkbox
+        self.submit_button = submit_button
+        self.back_button = back_button
+        self.tertiary_button = tertiary_button
+        self.forgot_password_button = forgot_password_button
 
 
 class AuthView:
@@ -26,6 +50,26 @@ class AuthView:
             self.ui.theme_button_4
         ]
 
+        self.login_page = AuthPageWidgetGroup(
+            email_field=self.ui.email_lineEdit,
+            password_field=self.ui.password_lineEdit,
+            view_password_checkbox=self.ui.view_password_checkBox,
+            auto_login_checkbox=self.ui.auto_login_checkBox,
+            submit_button=self.ui.login_pushButton,
+            back_button=self.ui.guest_pushButton,
+            tertiary_button=self.ui.no_account_pushButton,
+            forgot_password_button=self.ui.forgot_password_label
+        )
+
+        self.signup_page = AuthPageWidgetGroup(
+            email_field=self.ui.email_lineEdit_2,
+            password_field=self.ui.password_lineEdit_2,
+            confirm_password_field=self.ui.password_lineEdit_4,
+            view_password_checkbox=self.ui.view_password_checkBox_2,
+            auto_login_checkbox=self.ui.auto_login_checkBox_2,
+            submit_button=self.ui.create_pushButton,
+            back_button=self.ui.have_account_pushButton,
+        )
 
     def set_theme(self) -> None:
         """Set theme"""
@@ -49,7 +93,7 @@ class AuthView:
         return self.ui.view_password_checkBox.isChecked()
 
 
-    def set_password_visibalty_login_page(self, state) -> None:
+    def set_password_visibality_login_page(self, state) -> None:
         mode = QLineEdit.Normal if state else QLineEdit.Password
         self.ui.password_lineEdit.setEchoMode(mode)
         
@@ -79,7 +123,7 @@ class AuthView:
 
     
     def forgot_password_login_page_button_clicked(self, handler) -> None:
-        self.ui.fogot_password_label.mousePressEvent = handler
+        self.ui.forgot_password_label.mousePressEvent = handler
 
 
     def view_password_login_page_checkbox_state_changed(self, handler) -> None:
@@ -91,7 +135,7 @@ class AuthView:
         return self.ui.view_password_checkBox_2.isChecked()
 
 
-    def set_password_visibalty_signup_page(self, state) -> None:
+    def set_password_visibality_signup_page(self, state) -> None:
         mode = QLineEdit.Normal if state else QLineEdit.Password
         self.ui.password_lineEdit_2.setEchoMode(mode)
         self.ui.password_lineEdit_4.setEchoMode(mode)
@@ -136,7 +180,7 @@ class AuthView:
         self.ui.view_password_checkBox_2.stateChanged.connect(handler)
 
 
-    def udpate_signup_button(self, state: bool) -> None:
+    def update_signup_button(self, state: bool) -> None:
         self.ui.create_pushButton.setEnabled(state)
 
 
@@ -177,13 +221,13 @@ class AuthView:
         self.ui.change_pushButton.setEnabled(state)
 
 
-    def set_password_visibalty_change_password_page(self, state) -> None:
+    def set_password_visibality_change_password_page(self, state) -> None:
         mode = QLineEdit.Normal if state else QLineEdit.Password
         self.ui.password_lineEdit_6.setEchoMode(mode)
         self.ui.password_lineEdit_5.setEchoMode(mode)
 
     
-    def change_password_page_cler_lineedits(self) -> None:
+    def change_password_page_clear_lineedits(self) -> None:
         lineedits = [
             self.ui.email_lineEdit_3,
             self.ui.password_lineEdit_6,

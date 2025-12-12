@@ -104,7 +104,7 @@ class AuthController(QObject):
             self.view.switch_page(page=page)
 
         # Clear lineedits
-        self.view.change_password_page_cler_lineedits()
+        self.view.change_password_page_clear_lineedits()
 
     
     def open_email_confirm_modal_window(self, data, email: str) -> None:
@@ -205,7 +205,7 @@ class AuthController(QObject):
 
     def on_view_password_login_page_checkbox_state_changed(self):
         state = self.view.get_view_password_login_page_state()
-        self.view.set_password_visibalty_login_page(state)
+        self.view.set_password_visibality_login_page(state)
 
 
     # Sign Up page
@@ -252,12 +252,12 @@ class AuthController(QObject):
         state = bool(email.strip() and password.strip() and confirm_password.strip() and passwords_match)
 
         # Update signup button state
-        self.view.udpate_signup_button(state=state)
+        self.view.update_signup_button(state=state)
 
 
     def on_view_password_signup_page_checkbox_state_changed(self):
         state = self.view.get_view_password_signup_page_state()
-        self.view.set_password_visibalty_signup_page(state)
+        self.view.set_password_visibality_signup_page(state)
 
 
     # Change password page
@@ -292,7 +292,7 @@ class AuthController(QObject):
             self.view.switch_page(page=page)
 
         # Clear lineedits
-        self.view.change_password_page_cler_lineedits()
+        self.view.change_password_page_clear_lineedits()
 
 
     def on_change_password_page_lineedits_changed(self) -> None:
@@ -329,7 +329,7 @@ class AuthController(QObject):
 
     def on_view_password_change_password_checkbox_state_changed(self):
         state = self.view.get_view_password_change_password_page_state()
-        self.view.set_password_visibalty_change_password_page(state)
+        self.view.set_password_visibality_change_password_page(state)
 
 
     def _validate_email(self, email: str) -> bool:
