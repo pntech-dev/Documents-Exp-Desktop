@@ -179,7 +179,11 @@ QCheckBox::indicator:checked {
 	height: 20px;
 	border: 0px;
 	background-color: #C43A3A;
+<<<<<<< HEAD
 	image: url(:/icons/light/check/light/default.svg);
+=======
+	image: url(:/icons/dark/check/dark/check_dark.svg);
+>>>>>>> development
 }
 
 QCheckBox::indicator:checked:hover {
@@ -188,6 +192,42 @@ QCheckBox::indicator:checked:hover {
 
 QCheckBox::indicator:checked:disabled {
 	background-color: #5D1717;
+	image: url(:/icons/dark/check/dark/check_dark_disabled.svg);
+}
+
+ViewPasswordCheckbox::indicator {
+	border: 0px;
+	padding: 0px 2px;
+	background-image: url(:/icons/dark/view/dark/Default.svg);
+	background-repeat: no-repeat;
+    background-position: center;
+}
+
+ViewPasswordCheckbox::indicator:hover {
+	border: 0px;
+	background-image: url(:/icons/dark/view/dark/Hover.svg);
+	background-color: #262626;
+}
+
+ViewPasswordCheckbox::indicator:checked {
+	image: none;
+	background-image: url(:/icons/dark/view/dark/Checked.svg);
+	background-color: #262626;
+}
+
+ViewPasswordCheckbox::indicator:checked:hover {
+	background-image: url(:/icons/dark/view/dark/Checked Hover.svg);
+	background-color: #262626;
+}
+
+ViewPasswordCheckbox::indicator:disabled {
+	background-image: url(:/icons/dark/view/dark/Default Disabled.svg);
+	background-color: #262626;
+}
+
+ViewPasswordCheckbox::indicator:checked:disabled {
+	background-image: url(:/icons/dark/view/dark/Checked Disabled.svg);
+	background-color: #262626;
 }
 
 
@@ -296,4 +336,10 @@ QLineEdit:disabled {
 	background-image: url(:/icons/dark/notification/dark/error.svg);
 	background-repeat: no-repeat;
     background-position: center;
+
+	
+/* Email Confirm Window */
+QFrame#emailConfirmContainer {
+    border-radius: 8px;
+    background-color: #262626;
 }

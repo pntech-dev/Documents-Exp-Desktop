@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\ui\auth.ui'
+# Form implementation generated from reading ui file 'd:\Python Projects\Documents Exp\Documents-Exp-Desktop\ui\auth.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -222,7 +222,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.setSpacing(16)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.login_pushButton = PrimaryButton(self.login_buttons)
-        self.login_pushButton.setEnabled(False)
         self.login_pushButton.setMinimumSize(QtCore.QSize(0, 42))
         font = QtGui.QFont()
         font.setPointSize(12)
@@ -251,17 +250,17 @@ class Ui_MainWindow(object):
         self.verticalLayout_8.addWidget(self.content_frame)
         spacerItem3 = QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_8.addItem(spacerItem3)
-        self.forgot_password_label = TextButton(self.login_page)
+        self.fogot_password_label = TextButton(self.login_page)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.forgot_password_label.sizePolicy().hasHeightForWidth())
-        self.forgot_password_label.setSizePolicy(sizePolicy)
+        sizePolicy.setHeightForWidth(self.fogot_password_label.sizePolicy().hasHeightForWidth())
+        self.fogot_password_label.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setPointSize(12)
-        self.forgot_password_label.setFont(font)
-        self.forgot_password_label.setObjectName("forgot_password_label")
-        self.verticalLayout_8.addWidget(self.forgot_password_label)
+        self.fogot_password_label.setFont(font)
+        self.fogot_password_label.setObjectName("fogot_password_label")
+        self.verticalLayout_8.addWidget(self.fogot_password_label)
         self.pages.addWidget(self.login_page)
         self.signup_page = QtWidgets.QWidget()
         self.signup_page.setObjectName("signup_page")
@@ -461,7 +460,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout_7.setSpacing(16)
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
         self.create_pushButton = PrimaryButton(self.login_buttons_2)
-        self.create_pushButton.setEnabled(False)
         self.create_pushButton.setMinimumSize(QtCore.QSize(0, 42))
         font = QtGui.QFont()
         font.setPointSize(12)
@@ -594,7 +592,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout_8.setSpacing(16)
         self.horizontalLayout_8.setObjectName("horizontalLayout_8")
         self.accept_pushButton = PrimaryButton(self.login_buttons_3)
-        self.accept_pushButton.setEnabled(False)
         self.accept_pushButton.setMinimumSize(QtCore.QSize(0, 42))
         font = QtGui.QFont()
         font.setPointSize(12)
@@ -772,7 +769,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout_9.setSpacing(16)
         self.horizontalLayout_9.setObjectName("horizontalLayout_9")
         self.change_pushButton = PrimaryButton(self.login_buttons_4)
-        self.change_pushButton.setEnabled(False)
         self.change_pushButton.setMinimumSize(QtCore.QSize(0, 42))
         font = QtGui.QFont()
         font.setPointSize(12)
@@ -833,7 +829,7 @@ class Ui_MainWindow(object):
         self.login_pushButton.setText(_translate("MainWindow", "Войти"))
         self.guest_pushButton.setText(_translate("MainWindow", "Гость"))
         self.no_account_pushButton.setText(_translate("MainWindow", "Нет аккаунта"))
-        self.forgot_password_label.setText(_translate("MainWindow", "Забыли пароль?"))
+        self.fogot_password_label.setText(_translate("MainWindow", "Забыли пароль?"))
         self.create_account_label.setText(_translate("MainWindow", "Создайте аккаунт:"))
         self.email_label_2.setText(_translate("MainWindow", "Почта"))
         self.email_lineEdit_2.setPlaceholderText(_translate("MainWindow", "Введите почту..."))
@@ -860,5 +856,5 @@ class Ui_MainWindow(object):
         self.change_pushButton.setText(_translate("MainWindow", "Изменить"))
         self.have_account_pushButton_3.setText(_translate("MainWindow", "Не менять пароль"))
 from .custom_widgets import InfoLabel, LogoLabel, PrimaryButton, TertiaryButton, TextButton, ThemeButton, ViewPasswordCheckbox
-import resources.icons.icons_resources_rc
-import resources.logo.logo_resources_rc
+import icons_resources_rc
+import logo_resources_rc

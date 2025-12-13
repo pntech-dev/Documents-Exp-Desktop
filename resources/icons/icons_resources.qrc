@@ -8,6 +8,16 @@
     <file>notification/light/info.svg</file>
     <file>notification/light/success.svg</file>
     <file>notification/light/warning.svg</file>
+    <file>input_fields/code/light/active.svg</file>
+    <file>input_fields/code/light/default.svg</file>
+    <file>input_fields/code/light/disabled.svg</file>
+    <file>input_fields/code/light/hover.svg</file>
+    <file>view/light/Checked Disabled.svg</file>
+    <file>view/light/Checked Hover.svg</file>
+    <file>view/light/Checked.svg</file>
+    <file>view/light/Default Disabled.svg</file>
+    <file>view/light/Default.svg</file>
+    <file>view/light/Hover.svg</file>
     <file>input_fields/mail/light/active.svg</file>
     <file>input_fields/mail/light/disabled.svg</file>
     <file>input_fields/mail/light/default.svg</file>
@@ -31,6 +41,16 @@
     <file>notification/dark/info.svg</file>
     <file>notification/dark/success.svg</file>
     <file>notification/dark/warning.svg</file>
+    <file>input_fields/code/dark/active.svg</file>
+    <file>input_fields/code/dark/default.svg</file>
+    <file>input_fields/code/dark/disabled.svg</file>
+    <file>input_fields/code/dark/hover.svg</file>
+    <file>view/dark/Checked Disabled.svg</file>
+    <file>view/dark/Checked Hover.svg</file>
+    <file>view/dark/Checked.svg</file>
+    <file>view/dark/Default Disabled.svg</file>
+    <file>view/dark/Default.svg</file>
+    <file>view/dark/Hover.svg</file>
     <file>input_fields/mail/dark/active.svg</file>
     <file>input_fields/mail/dark/default.svg</file>
     <file>input_fields/mail/dark/disabled.svg</file>
