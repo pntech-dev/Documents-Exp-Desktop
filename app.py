@@ -17,7 +17,7 @@ class Application:
 
         # Set theme
         self.theme_manager = ThemeManagerInstance()
-        self.theme_manager.switch_theme(theme=0)
+        self.theme_manager.switch_theme(theme=1)
 
         # Check auto login
         self.auth_model = AuthModel()
@@ -87,20 +87,8 @@ class Application:
 
     def run(self):
         sys.exit(self.app.exec_())
-
-
-        # Notification
-        # self.toast = ToastWidget(type="info", label="Информация", description="Доступна новая версия приложения.\nНажмите чтобы обновить.")
-        # self.toast.show_notification()
-        self.notification = NotificationWidget(
-            type="info",
-            label="Обновление",
-            description="Доступна новая версия приложения.\nНажмите чтобы обновить.",
-            parent=self
-        )
-        self.notification.show()
-
-
+        
+        
 if __name__ == "__main__":
     app = Application()
     app.run()

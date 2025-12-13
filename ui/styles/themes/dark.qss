@@ -179,11 +179,7 @@ QCheckBox::indicator:checked {
 	height: 20px;
 	border: 0px;
 	background-color: #C43A3A;
-<<<<<<< HEAD
-	image: url(:/icons/light/check/light/default.svg);
-=======
 	image: url(:/icons/dark/check/dark/check_dark.svg);
->>>>>>> development
 }
 
 QCheckBox::indicator:checked:hover {
@@ -336,6 +332,7 @@ QLineEdit:disabled {
 	background-image: url(:/icons/dark/notification/dark/error.svg);
 	background-repeat: no-repeat;
     background-position: center;
+}
 
 	
 /* Email Confirm Window */

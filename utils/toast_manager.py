@@ -4,8 +4,6 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QWidget, QGraphicsDropShadowEffect
 
-from ui import Notification_UI
-
 
 class ToastWidget(QWidget):
     def __init__(
@@ -16,6 +14,8 @@ class ToastWidget(QWidget):
             parent=None
     ) -> None:
         super().__init__(parent)
+
+        from ui import Notification_UI
 
         self.type = type
         self.label = label

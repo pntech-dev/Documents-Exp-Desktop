@@ -331,6 +331,7 @@ QLineEdit:disabled {
 	background-image: url(:/icons/light/notification/light/error.svg);
 	background-repeat: no-repeat;
     background-position: center;
+}
 
 
 /* Email Confirm Window */

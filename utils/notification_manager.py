@@ -2,8 +2,6 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QDialog, QGraphicsDropShadowEffect
 
-from ui import Notification_D_UI
-
 
 class NotificationWidget(QDialog):
     def __init__(self, type: str, label: str, description: str, parent=None):
@@ -13,12 +11,13 @@ class NotificationWidget(QDialog):
         self.description = description
 
         # Set notification style
+        from ui import Notification_D_UI
         self.ui = Notification_D_UI()
         self.ui.setupUi(self)
 
         # Set window flags
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.Dialog)
-        self.setWindowModality(Qt.ApplicationModal)
+        # self.setWindowModality(Qt.ApplicationModal)
         self.setAttribute(Qt.WA_TranslucentBackground)
 
         # Set texts
