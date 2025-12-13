@@ -640,7 +640,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="TextButton" name="fogot_password_label">
+         <widget class="TextButton" name="forgot_password_label">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -1502,6 +1502,9 @@
                  </property>
                  <item>
                   <widget class="PrimaryButton" name="accept_pushButton">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
@@ -1963,6 +1966,9 @@
                  </property>
                  <item>
                   <widget class="PrimaryButton" name="change_pushButton">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
                    <property name="minimumSize">
                     <size>
                      <width>0</width>

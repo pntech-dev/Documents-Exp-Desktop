@@ -1,16 +1,18 @@
 import json
 import yaml
 import logging
+
 from pathlib import Path
 from jinja2 import Template
 from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import pyqtSignal, QObject
 
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-class ThemeManager:
+class ThemeManager(QObject):
     """A universal theme manager for PyQt applications.
 
     This class handles loading UI configuration, checking theme availability,
@@ -23,6 +25,8 @@ class ThemeManager:
         current_theme_id (str): The ID of the currently active theme.
     """
 
+    themeChanged = pyqtSignal(str)
+
     def __init__(self) -> None:
         """Initializes the ThemeManager.
 
@@ -30,6 +34,8 @@ class ThemeManager:
         theme ID. If the configuration is missing or empty, the manager is
         disabled.
         """
+        super().__init__()
+
         self.ui_config = self._load_ui_config()
 
         # If the config is empty, we don't do anything.
@@ -72,6 +78,8 @@ class ThemeManager:
                     return
 
             self._apply_theme()
+            
+            self.themeChanged.emit(self.current_theme_id)
 
         except Exception as e:
             logger.error(f"Unexpected error during theme switching: {e}")
@@ -244,3 +252,10 @@ class ThemeManager:
         except Exception as e:
             logger.error(f"Theme compilation error: {e}")
             return False
+        
+
+theme_manager_singleton = ThemeManager()
+
+
+def ThemeManagerInstance():
+    return theme_manager_singleton

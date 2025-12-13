@@ -1,5 +1,9 @@
 <RCC>
   <qresource prefix="/icons/light">
+    <file>input_fields/code/light/active.svg</file>
+    <file>input_fields/code/light/default.svg</file>
+    <file>input_fields/code/light/disabled.svg</file>
+    <file>input_fields/code/light/hover.svg</file>
     <file>view/light/Checked Disabled.svg</file>
     <file>view/light/Checked Hover.svg</file>
     <file>view/light/Checked.svg</file>
@@ -21,6 +25,10 @@
     <file>theme/light/hover.svg</file>
   </qresource>
   <qresource prefix="/icons/dark">
+    <file>input_fields/code/dark/active.svg</file>
+    <file>input_fields/code/dark/default.svg</file>
+    <file>input_fields/code/dark/disabled.svg</file>
+    <file>input_fields/code/dark/hover.svg</file>
     <file>view/dark/Checked Disabled.svg</file>
     <file>view/dark/Checked Hover.svg</file>
     <file>view/dark/Checked.svg</file>

@@ -194,7 +194,7 @@ QCheckBox::indicator:checked:disabled {
 
 ViewPasswordCheckbox::indicator {
 	border: 0px;
-	padding: 2px;
+	padding: 0px 2px;
 	background-image: url(:/icons/dark/view/dark/Default.svg);
 	background-repeat: no-repeat;
     background-position: center;
@@ -250,4 +250,11 @@ QLineEdit:focus {
 QLineEdit:disabled {
 	border: 1px solid {{ neutral.neutral_200 }};
 	color: {{ neutral.neutral_200 }};
+}
+
+
+/* Email Confirm Window */
+QFrame#emailConfirmContainer {
+    border-radius: 8px;
+    background-color: {{ neutral.neutral_100 }};
 }
