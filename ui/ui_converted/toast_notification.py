@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/notification.ui'
+# Form implementation generated from reading ui file '.\ui\toast_notification.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -11,24 +11,24 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_Notification(object):
-    def setupUi(self, Notification):
-        Notification.setObjectName("Notification")
-        Notification.resize(440, 64)
-        Notification.setMinimumSize(QtCore.QSize(0, 64))
-        Notification.setStyleSheet("")
-        self.horizontalLayout = QtWidgets.QHBoxLayout(Notification)
+class Ui_ToastNotification(object):
+    def setupUi(self, ToastNotification):
+        ToastNotification.setObjectName("ToastNotification")
+        ToastNotification.resize(440, 64)
+        ToastNotification.setMinimumSize(QtCore.QSize(0, 64))
+        ToastNotification.setStyleSheet("")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(ToastNotification)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.notify_type_line_frame = QtWidgets.QFrame(Notification)
+        self.notify_type_line_frame = QtWidgets.QFrame(ToastNotification)
         self.notify_type_line_frame.setMinimumSize(QtCore.QSize(16, 0))
         self.notify_type_line_frame.setMaximumSize(QtCore.QSize(16, 16777215))
         self.notify_type_line_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.notify_type_line_frame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.notify_type_line_frame.setObjectName("notify_type_line_frame")
         self.horizontalLayout.addWidget(self.notify_type_line_frame)
-        self.notification_container = QtWidgets.QFrame(Notification)
+        self.notification_container = QtWidgets.QFrame(ToastNotification)
         self.notification_container.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.notification_container.setFrameShadow(QtWidgets.QFrame.Raised)
         self.notification_container.setObjectName("notification_container")
@@ -96,12 +96,12 @@ class Ui_Notification(object):
         self.horizontalLayout_2.addWidget(self.close_pushButton)
         self.horizontalLayout.addWidget(self.notification_container)
 
-        self.retranslateUi(Notification)
-        QtCore.QMetaObject.connectSlotsByName(Notification)
+        self.retranslateUi(ToastNotification)
+        QtCore.QMetaObject.connectSlotsByName(ToastNotification)
 
-    def retranslateUi(self, Notification):
+    def retranslateUi(self, ToastNotification):
         _translate = QtCore.QCoreApplication.translate
-        Notification.setWindowTitle(_translate("Notification", "Form"))
-        self.label.setText(_translate("Notification", "Label"))
-        self.description.setText(_translate("Notification", "Description"))
+        ToastNotification.setWindowTitle(_translate("ToastNotification", "Form"))
+        self.label.setText(_translate("ToastNotification", "Label"))
+        self.description.setText(_translate("ToastNotification", "Description"))
 import resources.icons.icons_resources_rc

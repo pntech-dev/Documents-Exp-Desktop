@@ -4,9 +4,9 @@ from PyQt5.QtWidgets import QApplication
 
 from modules import AuthWindow
 from core.worker import APIWorker
+from utils import ThemeManagerInstance
 from modules.main.main_module import MainWindow
 from modules.auth.mvc.auth_model import AuthModel
-from utils import ThemeManagerInstance, NotificationWidget
 
 
 class Application:
