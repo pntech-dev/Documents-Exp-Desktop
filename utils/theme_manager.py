@@ -52,6 +52,11 @@ class ThemeManager(QObject):
 
         self.current_theme_id = "0"  # The topic ID as a string
 
+    @property
+    def notification_config(self) -> dict:
+        """Returns the notification-specific configuration."""
+        return self.ui_config.get("notifications", {})
+
     # ---------------------------
     # PUBLIC API
     # ---------------------------

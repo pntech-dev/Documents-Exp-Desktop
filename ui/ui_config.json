@@ -9,6 +9,11 @@
         "1": "dark"
     },
 
+    "notifications": {
+        "spacing": 10,
+        "toast_duration": 5000
+    },
+
     "tokens": {
         "light_theme": {
             "accent": {
