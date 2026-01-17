@@ -1,5 +1,7 @@
+import os
 import sys
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
 
 from modules import AuthWindow
@@ -9,8 +11,16 @@ from modules.main.main_module import MainWindow
 from modules.auth.mvc.auth_model import AuthModel
 
 
+os.environ.setdefault("QT_ENABLE_HIGHDPI_SCALING", "1")
+os.environ.setdefault("QT_AUTO_SCREEN_SCALE_FACTOR", "1")
+os.environ.setdefault("QT_SCALE_FACTOR_ROUNDING_POLICY", "PassThrough")
+
+
 class Application:
     def __init__(self):
+        QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+        QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+
         self.app = QApplication(sys.argv)
         self.main_window = None
         self.auth_window = None
