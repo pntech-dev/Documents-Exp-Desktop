@@ -1,11 +1,11 @@
 QWidget {
-	background-color: {{ neutral.neutral_0 }};
+	background-color: {{ neutral.neutral_100 }};
 }
 
 
 /* Logo */
 LogoLabel {
-	background-image: url(:/light/logo_light.svg);
+	background-image: url(:/dark/logo_dark.svg);
 	background-repeat: no-repeat;
     background-position: left;
 }
@@ -30,30 +30,30 @@ QPushButton {
 /* Theme button */
 ThemeButton {
 	border: 0px;
-	background-image: url(:/icons/light/theme/light/default.svg);
+	background-image: url(:/icons/dark/theme/dark/default.svg);
 	background-repeat: no-repeat;
     background-position: left;
 }
 
 ThemeButton:hover {
-	background-image: url(:/icons/light/theme/light/hover.svg);
+	background-image: url(:/icons/dark/theme/dark/hover.svg);
 	background-color: {{ neutral.neutral_100 }};
 }
 
 ThemeButton:pressed {
-	background-image: url(:/icons/light/theme/light/clicked.svg);
+	background-image: url(:/icons/dark/theme/dark/clicked.svg);
 	background-color: {{ neutral.neutral_100 }};
 }
 
 ThemeButton:disabled {
-	background-image: url(:/icons/light/theme/light/disabled.svg);
+	background-image: url(:/icons/dark/theme/dark/disabled.svg);
 	background-color: {{ neutral.neutral_100 }};
 }
 
 /* Primary button */
 PrimaryButton {
 	border: 0px;
-	color: {{ neutral.neutral_0 }};
+	color: {{ neutral.neutral_900 }};
 	background-color: {{ accent.accent_500 }};
 }
 
@@ -180,7 +180,7 @@ QCheckBox::indicator:checked {
 	height: 20px;
 	border: 0px;
 	background-color: {{ accent.accent_500 }};
-	image: url(:/icons/light/check/light/default.svg);
+	image: url(:/icons/dark/check/dark/default.svg);
 }
 
 QCheckBox::indicator:checked:hover {
@@ -233,7 +233,7 @@ QLineEdit {
 	border-radius: 8px;
 	border: 1px solid {{ neutral.neutral_250 }};
 	background-color: {{ neutral.neutral_100 }};
-	color: {{ neutral.neutral_650 }};
+	color: {{ neutral.neutral_400 }};
 	padding: 0px 16px;
 }
 
@@ -262,6 +262,8 @@ QLineEdit:disabled {
 #notification_container {
 	background-color: {{ neutral.neutral_100 }};
 	border-radius: 8px;
+    border: 1px solid {{ neutral.neutral_300 }};
+	padding: 1px;
 }
 
 #Notification #label {
@@ -272,11 +274,16 @@ QLineEdit:disabled {
 	color: {{ neutral.neutral_700 }};
 }
 
+#Notification #notify_type_line_frame {
+    border-radius: 7px;
+	margin: 1px 0px 1px 1px;
+}
+
 #Notification #close_pushButton {
 	background-image: url(:/icons/dark/close/dark/default.svg);
 	background-repeat: no-repeat;
     background-position: center;
-	border-radius: none;
+	border-radius: 0px;
 }
 
 #Notification #close_pushButton:hover {
@@ -293,49 +300,25 @@ QLineEdit:disabled {
 
 /* Success */
 #Notification[notificationType="success"] #notify_type_line_frame {
-	background-color: {{ success.success_500 }};
-}
-
-#Notification[notificationType="success"] #icon_label {
-	background-image: url(:/icons/dark/notification/dark/success.svg);
-	background-repeat: no-repeat;
-    background-position: center;
+	background-color: {{ semantic.success.success_500 }};
 }
 
 /* Info */
 #Notification[notificationType="info"] #notify_type_line_frame {
-	background-color: {{ info.info_500 }};
-}
-
-#Notification[notificationType="info"] #icon_label {
-	background-image: url(:/icons/dark/notification/dark/info.svg);
-	background-repeat: no-repeat;
-    background-position: center;
+	background-color: {{ semantic.info.info_500 }};
 }
 
 /* Warning */
 #Notification[notificationType="warning"] #notify_type_line_frame {
-	background-color: {{ warning.warning_500 }};
-}
-
-#Notification[notificationType="warning"] #icon_label {
-	background-image: url(:/icons/dark/notification/dark/warning.svg);
-	background-repeat: no-repeat;
-    background-position: center;
+	background-color: {{ semantic.warning.warning_500 }};
 }
 
 /* Error */
 #Notification[notificationType="error"] #notify_type_line_frame {
-	background-color: {{ error.error_500 }};
+	background-color: {{ semantic.error.error_500 }};
 }
 
-#Notification[notificationType="error"] #icon_label {
-	background-image: url(:/icons/dark/notification/dark/error.svg);
-	background-repeat: no-repeat;
-    background-position: center;
-}
 
-	
 /* Email Confirm Window */
 QFrame#emailConfirmContainer {
     border-radius: 8px;

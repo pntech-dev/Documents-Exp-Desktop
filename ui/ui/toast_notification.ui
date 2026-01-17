@@ -161,7 +161,7 @@
            </property>
            <property name="font">
             <font>
-             <pointsize>14</pointsize>
+             <pointsize>12</pointsize>
             </font>
            </property>
            <property name="text">
@@ -182,7 +182,7 @@
            </property>
            <property name="font">
             <font>
-             <pointsize>12</pointsize>
+             <pointsize>10</pointsize>
             </font>
            </property>
            <property name="text">
@@ -224,7 +224,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../resources/icons/icons_resources.qrc"/>
+  <include location="../../resources/icons/icons_resources.qrc"/>
  </resources>
  <connections/>
 </ui>

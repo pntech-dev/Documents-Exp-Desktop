@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\ui\toast_notification.ui'
+# Form implementation generated from reading ui file '.\ui\ui\toast_notification.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -66,7 +66,7 @@ class Ui_ToastNotification(object):
         self.label.setMinimumSize(QtCore.QSize(280, 0))
         self.label.setMaximumSize(QtCore.QSize(280, 16777215))
         font = QtGui.QFont()
-        font.setPointSize(14)
+        font.setPointSize(12)
         self.label.setFont(font)
         self.label.setWordWrap(True)
         self.label.setObjectName("label")
@@ -78,7 +78,7 @@ class Ui_ToastNotification(object):
         sizePolicy.setHeightForWidth(self.description.sizePolicy().hasHeightForWidth())
         self.description.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setPointSize(10)
         self.description.setFont(font)
         self.description.setObjectName("description")
         self.verticalLayout.addWidget(self.description)

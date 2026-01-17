@@ -136,6 +136,7 @@ TextButton:disabled {
 	color: #5D1717;
 }
 
+
 /* Checkbox */
 QCheckBox {
 	spacing: 8px;
@@ -179,7 +180,7 @@ QCheckBox::indicator:checked {
 	height: 20px;
 	border: 0px;
 	background-color: #C43A3A;
-	image: url(:/icons/dark/check/dark/check_dark.svg);
+	image: url(:/icons/dark/check/dark/default.svg);
 }
 
 QCheckBox::indicator:checked:hover {
@@ -232,7 +233,7 @@ QLineEdit {
 	border-radius: 8px;
 	border: 1px solid #404040;
 	background-color: #262626;
-	color: #999999;
+	color: #666666;
 	padding: 0px 16px;
 }
 
@@ -261,6 +262,8 @@ QLineEdit:disabled {
 #notification_container {
 	background-color: #262626;
 	border-radius: 8px;
+    border: 1px solid #4D4D4D;
+	padding: 1px;
 }
 
 #Notification #label {
@@ -271,11 +274,16 @@ QLineEdit:disabled {
 	color: #B3B3B3;
 }
 
+#Notification #notify_type_line_frame {
+    border-radius: 7px;
+	margin: 1px 0px 1px 1px;
+}
+
 #Notification #close_pushButton {
 	background-image: url(:/icons/dark/close/dark/default.svg);
 	background-repeat: no-repeat;
     background-position: center;
-	border-radius: none;
+	border-radius: 0px;
 }
 
 #Notification #close_pushButton:hover {
@@ -295,21 +303,9 @@ QLineEdit:disabled {
 	background-color: #33A84F;
 }
 
-#Notification[notificationType="success"] #icon_label {
-	background-image: url(:/icons/dark/notification/dark/success.svg);
-	background-repeat: no-repeat;
-    background-position: center;
-}
-
 /* Info */
 #Notification[notificationType="info"] #notify_type_line_frame {
 	background-color: #2C4DA8;
-}
-
-#Notification[notificationType="info"] #icon_label {
-	background-image: url(:/icons/dark/notification/dark/info.svg);
-	background-repeat: no-repeat;
-    background-position: center;
 }
 
 /* Warning */
@@ -317,24 +313,12 @@ QLineEdit:disabled {
 	background-color: #B27A2B;
 }
 
-#Notification[notificationType="warning"] #icon_label {
-	background-image: url(:/icons/dark/notification/dark/warning.svg);
-	background-repeat: no-repeat;
-    background-position: center;
-}
-
 /* Error */
 #Notification[notificationType="error"] #notify_type_line_frame {
 	background-color: #8F2C23;
 }
 
-#Notification[notificationType="error"] #icon_label {
-	background-image: url(:/icons/dark/notification/dark/error.svg);
-	background-repeat: no-repeat;
-    background-position: center;
-}
 
-	
 /* Email Confirm Window */
 QFrame#emailConfirmContainer {
     border-radius: 8px;

@@ -35,7 +35,7 @@ ThemeButton {
     background-position: left;
 }
 
-ThemeButton:pressed {
+ThemeButton:hover {
 	background-image: url(:/icons/light/theme/light/hover.svg);
 	background-color: #FFFFFF;
 }
@@ -260,6 +260,8 @@ QLineEdit:disabled {
 #notification_container {
 	background-color: #FFFFFF;
 	border-radius: 8px;
+    border: 1px solid #E6E6E6;
+	padding: 1px;
 }
 
 #Notification #label {
@@ -270,11 +272,16 @@ QLineEdit:disabled {
 	color: #4D4D4D;
 }
 
+#Notification #notify_type_line_frame {
+    border-radius: 7px;
+	margin: 1px 0px 1px 1px;
+}
+
 #Notification #close_pushButton {
 	background-image: url(:/icons/light/close/light/default.svg);
 	background-repeat: no-repeat;
     background-position: center;
-	border-radius: none;
+	border-radius: 0px;
 }
 
 #Notification #close_pushButton:hover {
@@ -294,21 +301,9 @@ QLineEdit:disabled {
 	background-color: #40BF60;
 }
 
-#Notification[notificationType="success"] #icon_label {
-	background-image: url(:/icons/light/notification/light/success.svg);
-	background-repeat: no-repeat;
-    background-position: center;
-}
-
 /* Info */
 #Notification[notificationType="info"] #notify_type_line_frame {
 	background-color: #3359CC;
-}
-
-#Notification[notificationType="info"] #icon_label {
-	background-image: url(:/icons/light/notification/light/info.svg);
-	background-repeat: no-repeat;
-    background-position: center;
 }
 
 /* Warning */
@@ -316,21 +311,9 @@ QLineEdit:disabled {
 	background-color: #CC8C33;
 }
 
-#Notification[notificationType="warning"] #icon_label {
-	background-image: url(:/icons/light/notification/light/warning.svg);
-	background-repeat: no-repeat;
-    background-position: center;
-}
-
 /* Error */
 #Notification[notificationType="error"] #notify_type_line_frame {
 	background-color: #A33329;
-}
-
-#Notification[notificationType="error"] #icon_label {
-	background-image: url(:/icons/light/notification/light/error.svg);
-	background-repeat: no-repeat;
-    background-position: center;
 }
 
 
