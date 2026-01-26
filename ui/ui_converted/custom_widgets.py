@@ -182,7 +182,7 @@ class IconLineEdit(QLineEdit):
         else:
             self.icon_label.setPixmap(pix)
 
-    
+
     def _on_theme_changed(self, theme_id):
         self._update_icon()
 
