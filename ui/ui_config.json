@@ -9,6 +9,11 @@
         "1": "dark"
     },
 
+    "notifications": {
+        "spacing": 10,
+        "toast_duration": 5000
+    },
+
     "tokens": {
         "light_theme": {
             "accent": {
@@ -19,6 +24,7 @@
                 "accent_300": "#E08585",
                 "accent_100": "#F5D6D6"
             },
+
             "neutral": {
                 "neutral_900": "#1A1A1A",
                 "neutral_800": "#333333",
@@ -32,6 +38,36 @@
                 "neutral_100": "#E6E6E6",
                 "neutral_50": "#F2F2F2",
                 "neutral_0": "#FFFFFF"
+            },
+
+            "semantic": {
+                "info": {
+                    "info_700": "#1F367A",
+                    "info_500": "#3359CC",
+                    "info_300": "#859CE0",
+                    "info_100": "#D6D9F5"
+                },
+
+                "success": {
+                    "success_700": "#267339",
+                    "success_500": "#40BF60",
+                    "success_300": "#8CD99F",
+                    "success_100": "#D9F2DF"
+                },
+
+                "warning": {
+                    "warning_700": "#7A541F",
+                    "warning_500": "#CC8C33",
+                    "warning_300": "#E1BA84",
+                    "warning_100": "#F5E8D6"
+                },
+
+                "error": {
+                    "error_700": "#521A15",
+                    "error_500": "#A33329",
+                    "error_300": "#D6665C",
+                    "error_100": "#EBB2AD"
+                }
             }
         },
         "dark_theme": {
@@ -43,6 +79,7 @@
                 "accent_300": "#E38282",
                 "accent_100": "#F3C7C7"
             },
+
             "neutral": {
                 "neutral_900": "#E6E6E6",
                 "neutral_800": "#CCCCCC",
@@ -56,6 +93,36 @@
                 "neutral_200": "#333333",
                 "neutral_100": "#262626",
                 "neutral_0": "#1A1A1A"
+            },
+
+            "semantic": {
+                "info": {
+                    "info_700": "#172A63",
+                    "info_500": "#2C4DA8",
+                    "info_300": "#6E81D1",
+                    "info_100": "#AFB9EE"
+                },
+
+                "success": {
+                    "success_700": "#1E5A2D",
+                    "success_500": "#33A84F",
+                    "success_300": "#70C789",
+                    "success_100": "#B6E7C6"
+                },
+
+                "warning": {
+                    "warning_700": "#5F4019",
+                    "warning_500": "#B27A2B",
+                    "warning_300": "#D2A568",
+                    "warning_100": "#E3CFA5"
+                },
+                
+                "error": {
+                    "error_700": "#441511",
+                    "error_500": "#8F2C23",
+                    "error_300": "#C1534A",
+                    "error_100": "#E39D98"
+                }
             }
         }
     }

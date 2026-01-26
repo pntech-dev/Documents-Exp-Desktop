@@ -27,7 +27,7 @@ class Application:
 
         # Set theme
         self.theme_manager = ThemeManagerInstance()
-        self.theme_manager.switch_theme(theme=0)
+        self.theme_manager.switch_theme(theme=1)
 
         # Check auto login
         self.auth_model = AuthModel()
@@ -97,9 +97,8 @@ class Application:
 
     def run(self):
         sys.exit(self.app.exec_())
-
-
-
+        
+        
 if __name__ == "__main__":
     app = Application()
     app.run()

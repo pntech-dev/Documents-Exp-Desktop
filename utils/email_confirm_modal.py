@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QIntValidator, QColor, QPainter
 
-from ui.email_confirm import Ui_Dialog as EmailConfirm_UI
+from ui import EmailConfirm_UI
 
 
 class EmailConfirmDialog(QDialog):

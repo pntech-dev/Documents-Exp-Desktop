@@ -1,5 +1,5 @@
 QWidget {
-	background-color: {{ neutral.neutral_100 }};
+	background-color: {{ neutral.neutral_0 }};
 }
 
 
@@ -35,17 +35,17 @@ ThemeButton {
     background-position: left;
 }
 
-ThemeButton {
+ThemeButton:hover {
 	background-image: url(:/icons/light/theme/light/hover.svg);
 	background-color: {{ neutral.neutral_0 }};
 }
 
-ThemeButton {
+ThemeButton:pressed {
 	background-image: url(:/icons/light/theme/light/clicked.svg);
 	background-color: {{ neutral.neutral_0 }};
 }
 
-ThemeButtonPrimaryButton {
+ThemeButton:disabled {
 	background-image: url(:/icons/light/theme/light/disabled.svg);
 	background-color: {{ neutral.neutral_0 }};
 }
@@ -53,7 +53,7 @@ ThemeButtonPrimaryButton {
 /* Primary button */
 PrimaryButton {
 	border: 0px;
-	color: neutral.neutral_0;
+	color: {{ neutral.neutral_0 }};
 	background-color: {{ accent.accent_500 }};
 }
 
@@ -179,7 +179,7 @@ QCheckBox::indicator:checked {
 	height: 20px;
 	border: 0px;
 	background-color: {{ accent.accent_500 }};
-	image: url(:/icons/light/check/light/check_light.svg);
+	image: url(:/icons/light/check/light/default.svg);
 }
 
 QCheckBox::indicator:checked:hover {
@@ -248,6 +248,72 @@ QLineEdit:focus {
 QLineEdit:disabled {
 	border: 1px solid {{ neutral.neutral_50 }};
 	color: {{ neutral.neutral_900 }};
+}
+
+
+/* Notifications */
+#Notification {
+	background-color: transparent;
+    border: none;
+}
+
+#notification_container {
+	background-color: {{ neutral.neutral_0 }};
+	border-radius: 8px;
+    border: 1px solid {{ neutral.neutral_100 }};
+	padding: 1px;
+}
+
+#Notification #label {
+	color: {{ neutral.neutral_900 }};
+}
+
+#Notification #description {
+	color: {{ neutral.neutral_700 }};
+}
+
+#Notification #notify_type_line_frame {
+    border-radius: 7px;
+	margin: 1px 0px 1px 1px;
+}
+
+#Notification #close_pushButton {
+	background-image: url(:/icons/light/close/light/default.svg);
+	background-repeat: no-repeat;
+    background-position: center;
+	border-radius: 0px;
+}
+
+#Notification #close_pushButton:hover {
+	background-image: url(:/icons/light/close/light/hover.svg);
+}
+
+#Notification #close_pushButton:pressed {
+	background-image: url(:/icons/light/close/light/clicked.svg);
+}
+
+#Notification #close_pushButton:disabled {
+	background-image: url(:/icons/light/close/light/disabled.svg);
+}
+
+/* Success */
+#Notification[notificationType="success"] #notify_type_line_frame {
+	background-color: {{ semantic.success.success_500 }};
+}
+
+/* Info */
+#Notification[notificationType="info"] #notify_type_line_frame {
+	background-color: {{ semantic.info.info_500 }};
+}
+
+/* Warning */
+#Notification[notificationType="warning"] #notify_type_line_frame {
+	background-color: {{ semantic.warning.warning_500 }};
+}
+
+/* Error */
+#Notification[notificationType="error"] #notify_type_line_frame {
+	background-color: {{ semantic.error.error_500 }};
 }
 
 

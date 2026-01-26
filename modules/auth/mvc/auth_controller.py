@@ -174,6 +174,11 @@ class AuthController(QObject):
 
         # Clear lineedits
         self.view.forgot_page_reset_password.clear_lineedits()
+
+        from utils import NotificationService
+        NotificationService().show_toast(notification_type="success",
+                                         title="Пароль успешно изменён",
+                                         message="Ваш пароль успешно изменён!")
         
 
     def swith_to_reset_password_page(self, data: dict) -> None:

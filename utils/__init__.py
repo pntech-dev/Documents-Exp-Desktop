@@ -1,2 +1,4 @@
+from .notifications import NotificationService
+
 from .fields_validators import FieldValidator
 from .theme_manager import ThemeManagerInstance
