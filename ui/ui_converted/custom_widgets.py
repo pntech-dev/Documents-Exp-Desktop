@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from PyQt5.QtCore import Qt, QRect, pyqtSignal, QModelIndex, pyqtProperty
-from PyQt5.QtGui import QPixmap,QStandardItem, QColor, QIcon, QStandardItemModel, QPainter, QFont, QFontMetrics, QPalette
 from PyQt5.QtWidgets import QPushButton, QAbstractItemView, QLabel, QCheckBox, QLineEdit, QTreeView, QStyle, QStyledItemDelegate
+from PyQt5.QtGui import QPixmap,QStandardItem, QColor, QIcon, QStandardItemModel, QPainter, QFont, QFontMetrics, QPalette, QTransform
 
 from utils import ThemeManagerInstance
 
@@ -193,6 +193,11 @@ ROLE_ID = Qt.UserRole + 1
 ROLE_COUNT = Qt.UserRole + 2
 ROLE_DISABLED = Qt.UserRole + 3
 ROLE_IS_GROUP = Qt.UserRole + 4
+ROLE_ICON_DEFAULT_LIGHT = Qt.UserRole + 5
+ROLE_ICON_HOVER_LIGHT = Qt.UserRole + 6
+ROLE_ICON_DEFAULT_DARK = Qt.UserRole + 7
+ROLE_ICON_HOVER_DARK = Qt.UserRole + 8
+
 
 @dataclass
 class DeptItem:
@@ -201,6 +206,14 @@ class DeptItem:
     count: int = 0
     icon: QIcon = None
     disabled: bool = False
+
+
+@dataclass(frozen=True)
+class GroupIconPaths:
+    default_light: str
+    hover_light: str
+    default_dark: str
+    hover_dark: str
 
 
 def _resolve_view_color(view, attr_name: str) -> QColor | None:
@@ -288,11 +301,36 @@ class _DeptDelegate(QStyledItemDelegate):
             text_color = palette.color(QPalette.Text)
 
         # Иконка
-        icon = index.data(Qt.DecorationRole)
-        if isinstance(icon, QIcon):
-            icon_rect = QRect(x, y + (h - self.icon_sz) // 2, self.icon_sz, self.icon_sz)
-            mode = QIcon.Disabled if disabled else QIcon.Normal
-            icon.paint(painter, icon_rect, Qt.AlignCenter, mode=mode)
+        icon_rect = QRect(x, y + (h - self.icon_sz) // 2, self.icon_sz, self.icon_sz)
+        icon_drawn = False
+        if is_group:
+            theme_id = ThemeManagerInstance().current_theme_id
+            use_dark = theme_id == "1"
+            icon_path = None
+            if is_hover and not disabled:
+                icon_path = index.data(ROLE_ICON_HOVER_DARK if use_dark else ROLE_ICON_HOVER_LIGHT)
+            if not icon_path:
+                icon_path = index.data(ROLE_ICON_DEFAULT_DARK if use_dark else ROLE_ICON_DEFAULT_LIGHT)
+            if icon_path:
+                pixmap = QPixmap(icon_path)
+                if not pixmap.isNull():
+                    tree = option.widget if isinstance(option.widget, QTreeView) else None
+                    if tree and tree.isExpanded(index):
+                        pixmap = pixmap.transformed(QTransform().rotate(180))
+                    scaled = pixmap.scaled(
+                        self.icon_sz,
+                        self.icon_sz,
+                        Qt.KeepAspectRatio,
+                        Qt.SmoothTransformation,
+                    )
+                    painter.drawPixmap(icon_rect, scaled)
+                    icon_drawn = True
+        else:
+            icon = index.data(Qt.DecorationRole)
+            if isinstance(icon, QIcon):
+                mode = QIcon.Disabled if disabled else QIcon.Normal
+                icon.paint(painter, icon_rect, Qt.AlignCenter, mode=mode)
+                icon_drawn = True
 
         x += self.icon_sz + self.gap
 
@@ -402,6 +440,7 @@ class SidebarBlock(QTreeView):
         self._items_by_id: dict[str, QStandardItem] = {}
 
         self.clicked.connect(self._on_clicked)
+        ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
         self._badge_background_color = QColor()
         self._badge_text_color = QColor()
         self._badge_background_selected_color = QColor()
@@ -494,6 +533,7 @@ class SidebarBlock(QTreeView):
         items: DeptItem,
         group_title: str | None = None,
         group_icon: QIcon | None = None,
+        group_icon_paths: GroupIconPaths | None = None,
         expand_group: bool = True,
     ) -> None:
         """
@@ -508,6 +548,17 @@ class SidebarBlock(QTreeView):
             grp = QStandardItem(group_icon or QIcon(), group_title)
             grp.setData(True, ROLE_IS_GROUP)
             grp.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+            default_paths = GroupIconPaths(
+                default_light="resources/icons/arrow/light/default.svg",
+                hover_light="resources/icons/arrow/light/hover.svg",
+                default_dark="resources/icons/arrow/dark/default.svg",
+                hover_dark="resources/icons/arrow/dark/hover.svg",
+            )
+            icon_paths = group_icon_paths or default_paths
+            grp.setData(icon_paths.default_light, ROLE_ICON_DEFAULT_LIGHT)
+            grp.setData(icon_paths.hover_light, ROLE_ICON_HOVER_LIGHT)
+            grp.setData(icon_paths.default_dark, ROLE_ICON_DEFAULT_DARK)
+            grp.setData(icon_paths.hover_dark, ROLE_ICON_HOVER_DARK)
             parent_item.appendRow(grp)
             parent_item = grp
 
@@ -549,6 +600,9 @@ class SidebarBlock(QTreeView):
         if not idx.isValid():
             return None
         return idx.data(ROLE_ID)
+    
+    def _on_theme_changed(self, theme_id: str) -> None:
+        self.viewport().update()
     
     # ---------- Internal ----------
     def _on_clicked(self, index: QModelIndex) -> None:

@@ -330,9 +330,9 @@ QFrame#emailConfirmContainer {
 /* Sidebar */
 SidebarBlock {
 	background-color: #FFFFFF;
-	color: #1F2937;
+	color: #666666;
 	alternate-background-color: #F2F2F2;
-	selection-background-color: #C43A3A;
+	selection-background-color: #CC3333;
 	selection-color: #FFFFFF;
 
 	qproperty-badgeBackgroundColor: transparent;
