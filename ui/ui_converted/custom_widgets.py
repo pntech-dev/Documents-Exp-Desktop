@@ -295,10 +295,28 @@ class _DeptDelegate(QStyledItemDelegate):
             text_color = _resolve_view_color(view, "disabledTextColor") or palette.color(
                 QPalette.Disabled, QPalette.Text
             )
-        elif is_selected and not is_group:
-            text_color = palette.color(QPalette.HighlightedText)
+        elif is_group:
+            if is_hover:
+                text_color = _resolve_view_color(
+                    view, "groupTextHoverColor"
+                ) or palette.color(QPalette.HighlightedText)
+            else:
+                text_color = _resolve_view_color(view, "groupTextColor") or palette.color(
+                    QPalette.Text
+                )
         else:
-            text_color = palette.color(QPalette.Text)
+            if is_selected:
+                text_color = _resolve_view_color(
+                    view, "itemTextSelectedColor"
+                ) or palette.color(QPalette.HighlightedText)
+            elif is_hover:
+                text_color = _resolve_view_color(view, "itemTextHoverColor") or palette.color(
+                    QPalette.Text
+                )
+            else:
+                text_color = _resolve_view_color(view, "itemTextColor") or palette.color(
+                    QPalette.Text
+                )
 
         # Иконка
         icon_rect = QRect(x, y + (h - self.icon_sz) // 2, self.icon_sz, self.icon_sz)
@@ -449,6 +467,11 @@ class SidebarBlock(QTreeView):
         self._badge_text_hover_color = QColor()
         self._disabled_text_color = QColor()
         self._hover_background_color = QColor()
+        self._group_text_color = QColor()
+        self._group_text_hover_color = QColor()
+        self._item_text_color = QColor()
+        self._item_text_hover_color = QColor()
+        self._item_text_selected_color = QColor()
 
     @pyqtProperty(QColor)
     def badgeBackgroundColor(self) -> QColor:
@@ -520,6 +543,51 @@ class SidebarBlock(QTreeView):
     @hoverBackgroundColor.setter
     def hoverBackgroundColor(self, color: QColor) -> None:
         self._hover_background_color = color
+        self.viewport().update()
+
+    @pyqtProperty(QColor)
+    def groupTextColor(self) -> QColor:
+        return self._group_text_color
+
+    @groupTextColor.setter
+    def groupTextColor(self, color: QColor) -> None:
+        self._group_text_color = color
+        self.viewport().update()
+
+    @pyqtProperty(QColor)
+    def groupTextHoverColor(self) -> QColor:
+        return self._group_text_hover_color
+
+    @groupTextHoverColor.setter
+    def groupTextHoverColor(self, color: QColor) -> None:
+        self._group_text_hover_color = color
+        self.viewport().update()
+
+    @pyqtProperty(QColor)
+    def itemTextColor(self) -> QColor:
+        return self._item_text_color
+
+    @itemTextColor.setter
+    def itemTextColor(self, color: QColor) -> None:
+        self._item_text_color = color
+        self.viewport().update()
+
+    @pyqtProperty(QColor)
+    def itemTextHoverColor(self) -> QColor:
+        return self._item_text_hover_color
+
+    @itemTextHoverColor.setter
+    def itemTextHoverColor(self, color: QColor) -> None:
+        self._item_text_hover_color = color
+        self.viewport().update()
+
+    @pyqtProperty(QColor)
+    def itemTextSelectedColor(self) -> QColor:
+        return self._item_text_selected_color
+
+    @itemTextSelectedColor.setter
+    def itemTextSelectedColor(self, color: QColor) -> None:
+        self._item_text_selected_color = color
         self.viewport().update()
 
     # ---------- Public API ----------
