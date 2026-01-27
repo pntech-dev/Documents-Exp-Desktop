@@ -235,9 +235,9 @@ class _DeptDelegate(QStyledItemDelegate):
         self.pad_r = 16
         self.icon_sz = 20
         self.gap = 10
-        self.badge_pad_x = 10
-        self.badge_h = 24
-        self.radius = 10
+        self.badge_pad_x = 6
+        self.badge_h = 16
+        self.radius = 8
 
         self.hover_alpha = 28
 
@@ -352,7 +352,7 @@ class _DeptDelegate(QStyledItemDelegate):
 
         x += self.icon_sz + self.gap
 
-        # Badge справа (только для пунктов)
+                # Badge справа (только для пунктов)
         badge_w = 0
         count = index.data(ROLE_COUNT)
         if (count is not None) and (not is_group):
@@ -408,7 +408,21 @@ class _DeptDelegate(QStyledItemDelegate):
                     QPalette.Text
                 )
             painter.setPen(badge_text)
-            painter.drawText(badge_rect, Qt.AlignCenter, count_str)
+            
+            # ИСПРАВЛЕННОЕ ЦЕНТРИРОВАНИЕ ТЕКСТА
+            # Вычисляем ширину текста
+            text_width = fm_b.horizontalAdvance(count_str)
+            
+            # Получаем метрики шрифта для точного вертикального центрирования
+            font_ascent = fm_b.ascent()    # высота от базовой линии до верха символов
+            font_descent = fm_b.descent()  # высота от базовой линии до низа символов
+            
+            # Вычисляем позицию базовой линии для идеального вертикального центрирования
+            baseline_y = badge_rect.top() + (badge_rect.height() + font_ascent - font_descent) // 2
+            text_x = badge_rect.left() + (badge_rect.width() - text_width) // 2
+            
+            # Рисуем текст с правильным позиционированием
+            painter.drawText(text_x, baseline_y, count_str)
 
         # Текст (с elide, чтобы не залезал в badge)
         title = str(index.data(Qt.DisplayRole) or "")
