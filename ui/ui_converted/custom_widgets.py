@@ -1,6 +1,6 @@
-from PyQt5.QtCore import Qt, QRect, pyqtSignal, QModelIndex
 from dataclasses import dataclass
-from PyQt5.QtGui import QPixmap, QStandardItem, QIcon, QColor, QStandardItemModel, QPainter, QFont, QFontMetrics
+from PyQt5.QtCore import Qt, QRect, pyqtSignal, QModelIndex, pyqtProperty
+from PyQt5.QtGui import QPixmap,QStandardItem, QColor, QIcon, QStandardItemModel, QPainter, QFont, QFontMetrics, QPalette
 from PyQt5.QtWidgets import QPushButton, QAbstractItemView, QLabel, QCheckBox, QLineEdit, QTreeView, QStyle, QStyledItemDelegate
 
 from utils import ThemeManagerInstance
@@ -203,30 +203,30 @@ class DeptItem:
     disabled: bool = False
 
 
+def _resolve_view_color(view, attr_name: str) -> QColor | None:
+    if view is None:
+        return None
+    color = getattr(view, attr_name, None)
+    if isinstance(color, QColor) and color.isValid():
+        return color
+    return None
+
+
 class _DeptDelegate(QStyledItemDelegate):
     """Рисует строку: иконка + текст + badge справа, выбранное красным."""
     def __init__(self, parent=None):
         super().__init__(parent)
 
         self.row_h = 44
-        self.pad_l = 14
-        self.pad_r = 12
+        self.pad_l = 16
+        self.pad_r = 16
         self.icon_sz = 20
         self.gap = 10
         self.badge_pad_x = 10
         self.badge_h = 24
         self.radius = 10
 
-        self.c_hover = QColor(0, 0, 0, 18)
-        self.c_sel = QColor("#C43A3A")
-        self.c_text = QColor("#1F2937")
-        self.c_text_sel = QColor("#FFFFFF")
-        self.c_muted = QColor("#9AA0A6")
-
-        self.c_badge_bg = QColor("#F3F4F6")
-        self.c_badge_bg_sel = QColor("#FFFFFF")
-        self.c_badge_text = QColor("#6B7280")
-        self.c_badge_text_sel = QColor("#111827")
+        self.hover_alpha = 28
 
     def sizeHint(self, option, index):
         sz = super().sizeHint(option, index)
@@ -238,19 +238,37 @@ class _DeptDelegate(QStyledItemDelegate):
         painter.setRenderHint(QPainter.Antialiasing, True)
 
         is_group = bool(index.data(ROLE_IS_GROUP) or False)
-        disabled = bool(index.data(ROLE_DISABLED) or False)
+        disabled = bool(index.data(ROLE_DISABLED) or False) or not (
+            option.state & QStyle.State_Enabled
+        )
         is_selected = bool(option.state & QStyle.State_Selected)
         is_hover = bool(option.state & QStyle.State_MouseOver)
+        palette = option.palette
+        view = self.parent()
+        highlight = palette.color(QPalette.Highlight)
+        hover_color = _resolve_view_color(view, "hoverBackgroundColor") or palette.color(
+            QPalette.AlternateBase
+        )
 
         # Скруглённый фон только для пунктов (не для группы)
-        r = option.rect.adjusted(6, 2, -6, -2)
+        r = option.rect
+        if view is not None:
+            viewport_rect = view.viewport().rect()
+            clip_rect = viewport_rect.adjusted(0, 0, -1, 0)
+            painter.setClipRect(clip_rect)
+            r = QRect(
+                clip_rect.left(),
+                option.rect.top(),
+                clip_rect.width(),
+                option.rect.height(),
+            )
         if not is_group and not disabled:
             if is_selected:
-                painter.setBrush(self.c_sel)
+                painter.setBrush(highlight)
                 painter.setPen(Qt.NoPen)
                 painter.drawRoundedRect(r, self.radius, self.radius)
             elif is_hover:
-                painter.setBrush(self.c_hover)
+                painter.setBrush(hover_color)
                 painter.setPen(Qt.NoPen)
                 painter.drawRoundedRect(r, self.radius, self.radius)
 
@@ -260,10 +278,14 @@ class _DeptDelegate(QStyledItemDelegate):
         h = option.rect.height()
 
         # Текстовые цвета
-        text_color = (
-            self.c_text_sel if (is_selected and not is_group and not disabled)
-            else (self.c_muted if disabled else self.c_text)
-        )
+        if disabled:
+            text_color = _resolve_view_color(view, "disabledTextColor") or palette.color(
+                QPalette.Disabled, QPalette.Text
+            )
+        elif is_selected and not is_group:
+            text_color = palette.color(QPalette.HighlightedText)
+        else:
+            text_color = palette.color(QPalette.Text)
 
         # Иконка
         icon = index.data(Qt.DecorationRole)
@@ -281,8 +303,8 @@ class _DeptDelegate(QStyledItemDelegate):
             count_str = str(int(count))
 
             badge_font = QFont(option.font)
-            badge_font.setPointSize(max(8, option.font.pointSize() - 1))
-            badge_font.setWeight(QFont.DemiBold)
+            badge_font.setPointSize(10)
+            badge_font.setWeight(QFont.Normal)
 
             fm_b = QFontMetrics(badge_font)
             badge_w = max(32, fm_b.horizontalAdvance(count_str) + self.badge_pad_x * 2)
@@ -294,20 +316,49 @@ class _DeptDelegate(QStyledItemDelegate):
                 self.badge_h,
             )
 
-            painter.setBrush(self.c_badge_bg_sel if (is_selected and not disabled) else self.c_badge_bg)
+            if is_selected and not disabled:
+                badge_bg = (
+                    _resolve_view_color(view, "badgeBackgroundSelectedColor")
+                    or palette.color(QPalette.HighlightedText)
+                )
+            elif is_hover and not disabled:
+                badge_bg = _resolve_view_color(view, "badgeBackgroundHoverColor") or palette.color(
+                    QPalette.AlternateBase
+                )
+            else:
+                badge_bg = _resolve_view_color(view, "badgeBackgroundColor") or QColor(
+                    Qt.transparent
+                )
+            painter.setBrush(badge_bg)
             painter.setPen(Qt.NoPen)
             painter.drawRoundedRect(badge_rect, self.badge_h // 2, self.badge_h // 2)
 
             painter.setFont(badge_font)
-            painter.setPen(
-                self.c_badge_text_sel if (is_selected and not disabled)
-                else (self.c_muted if disabled else self.c_badge_text)
-            )
+            if disabled:
+                badge_text = _resolve_view_color(view, "disabledTextColor") or palette.color(
+                    QPalette.Disabled, QPalette.Text
+                )
+            elif is_selected and not disabled:
+                badge_text = (
+                    _resolve_view_color(view, "badgeTextSelectedColor")
+                    or palette.color(QPalette.Highlight)
+                )
+            elif is_hover and not disabled:
+                badge_text = _resolve_view_color(view, "badgeTextHoverColor") or palette.color(
+                    QPalette.Text
+                )
+            else:
+                badge_text = _resolve_view_color(view, "badgeTextColor") or palette.color(
+                    QPalette.Text
+                )
+            painter.setPen(badge_text)
             painter.drawText(badge_rect, Qt.AlignCenter, count_str)
 
         # Текст (с elide, чтобы не залезал в badge)
         title = str(index.data(Qt.DisplayRole) or "")
         font = QFont(option.font)
+        if is_selected and not is_group and not disabled:
+            font.setWeight(QFont.Bold)
         painter.setFont(font)
         painter.setPen(text_color)
 
@@ -343,6 +394,7 @@ class SidebarBlock(QTreeView):
         self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.setMouseTracking(True)
+        self.setAttribute(Qt.WA_Hover, True)
 
         self.setItemDelegate(_DeptDelegate(self))
 
@@ -350,6 +402,86 @@ class SidebarBlock(QTreeView):
         self._items_by_id: dict[str, QStandardItem] = {}
 
         self.clicked.connect(self._on_clicked)
+        self._badge_background_color = QColor()
+        self._badge_text_color = QColor()
+        self._badge_background_selected_color = QColor()
+        self._badge_text_selected_color = QColor()
+        self._badge_background_hover_color = QColor()
+        self._badge_text_hover_color = QColor()
+        self._disabled_text_color = QColor()
+        self._hover_background_color = QColor()
+
+    @pyqtProperty(QColor)
+    def badgeBackgroundColor(self) -> QColor:
+        return self._badge_background_color
+
+    @badgeBackgroundColor.setter
+    def badgeBackgroundColor(self, color: QColor) -> None:
+        self._badge_background_color = color
+        self.viewport().update()
+
+    @pyqtProperty(QColor)
+    def badgeTextColor(self) -> QColor:
+        return self._badge_text_color
+
+    @badgeTextColor.setter
+    def badgeTextColor(self, color: QColor) -> None:
+        self._badge_text_color = color
+        self.viewport().update()
+
+    @pyqtProperty(QColor)
+    def badgeBackgroundSelectedColor(self) -> QColor:
+        return self._badge_background_selected_color
+
+    @badgeBackgroundSelectedColor.setter
+    def badgeBackgroundSelectedColor(self, color: QColor) -> None:
+        self._badge_background_selected_color = color
+        self.viewport().update()
+
+    @pyqtProperty(QColor)
+    def badgeTextSelectedColor(self) -> QColor:
+        return self._badge_text_selected_color
+
+    @badgeTextSelectedColor.setter
+    def badgeTextSelectedColor(self, color: QColor) -> None:
+        self._badge_text_selected_color = color
+        self.viewport().update()
+
+    @pyqtProperty(QColor)
+    def badgeBackgroundHoverColor(self) -> QColor:
+        return self._badge_background_hover_color
+
+    @badgeBackgroundHoverColor.setter
+    def badgeBackgroundHoverColor(self, color: QColor) -> None:
+        self._badge_background_hover_color = color
+        self.viewport().update()
+
+    @pyqtProperty(QColor)
+    def badgeTextHoverColor(self) -> QColor:
+        return self._badge_text_hover_color
+
+    @badgeTextHoverColor.setter
+    def badgeTextHoverColor(self, color: QColor) -> None:
+        self._badge_text_hover_color = color
+        self.viewport().update()
+
+    @pyqtProperty(QColor)
+    def disabledTextColor(self) -> QColor:
+        return self._disabled_text_color
+
+    @disabledTextColor.setter
+    def disabledTextColor(self, color: QColor) -> None:
+        self._disabled_text_color = color
+        self.viewport().update()
+
+    @pyqtProperty(QColor)
+    def hoverBackgroundColor(self) -> QColor:
+        return self._hover_background_color
+
+    @hoverBackgroundColor.setter
+    def hoverBackgroundColor(self, color: QColor) -> None:
+        self._hover_background_color = color
+        self.viewport().update()
 
     # ---------- Public API ----------
     def clear_items(self) -> None:
@@ -420,6 +552,13 @@ class SidebarBlock(QTreeView):
     
     # ---------- Internal ----------
     def _on_clicked(self, index: QModelIndex) -> None:
+        if index.data(ROLE_IS_GROUP):
+            if self.isExpanded(index):
+                self.collapse(index)
+            else:
+                self.expand(index)
+            return
+        
         id_ = index.data(ROLE_ID)
         if id_:
             self.itemActivatedById.emit(str(id_))
