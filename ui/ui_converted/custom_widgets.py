@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Iterable
 from PyQt5.QtCore import Qt, QRect, pyqtSignal, QModelIndex, pyqtProperty
 from PyQt5.QtWidgets import QPushButton, QAbstractItemView, QLabel, QCheckBox, QLineEdit, QTreeView, QStyle, QStyledItemDelegate
 from PyQt5.QtGui import QPixmap,QStandardItem, QColor, QIcon, QStandardItemModel, QPainter, QFont, QFontMetrics, QPalette, QTransform
@@ -193,10 +194,6 @@ ROLE_ID = Qt.UserRole + 1
 ROLE_COUNT = Qt.UserRole + 2
 ROLE_DISABLED = Qt.UserRole + 3
 ROLE_IS_GROUP = Qt.UserRole + 4
-ROLE_ICON_DEFAULT_LIGHT = Qt.UserRole + 5
-ROLE_ICON_HOVER_LIGHT = Qt.UserRole + 6
-ROLE_ICON_DEFAULT_DARK = Qt.UserRole + 7
-ROLE_ICON_HOVER_DARK = Qt.UserRole + 8
 
 
 @dataclass
@@ -208,12 +205,16 @@ class DeptItem:
     disabled: bool = False
 
 
-@dataclass(frozen=True)
-class GroupIconPaths:
-    default_light: str
-    hover_light: str
-    default_dark: str
-    hover_dark: str
+def _create_color_property(private_name: str) -> pyqtProperty:
+    """A factory for creating QColor pyqtProperty."""
+    def getter(self) -> QColor:
+        return getattr(self, private_name)
+
+    def setter(self, color: QColor) -> None:
+        setattr(self, private_name, color)
+        self.viewport().update()
+
+    return pyqtProperty(QColor, getter, setter)
 
 
 def _resolve_view_color(view, attr_name: str) -> QColor | None:
@@ -238,6 +239,8 @@ class _DeptDelegate(QStyledItemDelegate):
         self.badge_pad_x = 6
         self.badge_h = 16
         self.radius = 8
+        self.badge_font_size = 10
+        self.badge_font_weight = QFont.Normal
 
         self.hover_alpha = 28
 
@@ -266,13 +269,11 @@ class _DeptDelegate(QStyledItemDelegate):
         # Скруглённый фон только для пунктов (не для группы)
         r = option.rect
         if view is not None:
-            viewport_rect = view.viewport().rect()
-            clip_rect = viewport_rect.adjusted(0, 0, -1, 0)
-            painter.setClipRect(clip_rect)
+            # Рисуем фон на всю ширину viewport, без клиппинга (убирает артефакты при ресайзе)
             r = QRect(
-                clip_rect.left(),
+                0,
                 option.rect.top(),
-                clip_rect.width(),
+                view.viewport().width(),
                 option.rect.height(),
             )
         if not is_group and not disabled:
@@ -291,19 +292,20 @@ class _DeptDelegate(QStyledItemDelegate):
         h = option.rect.height()
 
         # Текстовые цвета
+        # Дефолтный цвет, если ничего не подошло
+        text_color = palette.color(QPalette.WindowText)
+
         if disabled:
             text_color = _resolve_view_color(view, "disabledTextColor") or palette.color(
                 QPalette.Disabled, QPalette.Text
             )
         elif is_group:
             if is_hover:
-                text_color = _resolve_view_color(
-                    view, "groupTextHoverColor"
-                ) or palette.color(QPalette.HighlightedText)
+                c = _resolve_view_color(view, "groupTextHoverColor")
+                if c: text_color = c
             else:
-                text_color = _resolve_view_color(view, "groupTextColor") or palette.color(
-                    QPalette.Text
-                )
+                c = _resolve_view_color(view, "groupTextColor")
+                if c: text_color = c
         else:
             if is_selected:
                 text_color = _resolve_view_color(
@@ -322,27 +324,27 @@ class _DeptDelegate(QStyledItemDelegate):
         icon_rect = QRect(x, y + (h - self.icon_sz) // 2, self.icon_sz, self.icon_sz)
         icon_drawn = False
         if is_group:
-            theme_id = ThemeManagerInstance().current_theme_id
-            use_dark = theme_id == "1"
-            icon_path = None
+            # Берем иконку из свойств виджета (установленных через QSS)
+            icon = QIcon()
             if is_hover and not disabled:
-                icon_path = index.data(ROLE_ICON_HOVER_DARK if use_dark else ROLE_ICON_HOVER_LIGHT)
-            if not icon_path:
-                icon_path = index.data(ROLE_ICON_DEFAULT_DARK if use_dark else ROLE_ICON_DEFAULT_LIGHT)
-            if icon_path:
-                pixmap = QPixmap(icon_path)
-                if not pixmap.isNull():
-                    tree = option.widget if isinstance(option.widget, QTreeView) else None
-                    if tree and tree.isExpanded(index):
-                        pixmap = pixmap.transformed(QTransform().rotate(180))
-                    scaled = pixmap.scaled(
-                        self.icon_sz,
-                        self.icon_sz,
-                        Qt.KeepAspectRatio,
-                        Qt.SmoothTransformation,
-                    )
-                    painter.drawPixmap(icon_rect, scaled)
-                    icon_drawn = True
+                icon = view.groupIconHover
+            
+            if icon.isNull():
+                icon = view.groupIcon
+
+            if not icon.isNull():
+                tree = option.widget if isinstance(option.widget, QTreeView) else None
+                if tree and tree.isExpanded(index):
+                    painter.save()
+                    center = icon_rect.center()
+                    painter.translate(center)
+                    painter.rotate(180)
+                    painter.translate(-center)
+                    icon.paint(painter, icon_rect, Qt.AlignCenter)
+                    painter.restore()
+                else:
+                    icon.paint(painter, icon_rect, Qt.AlignCenter)
+                icon_drawn = True
         else:
             icon = index.data(Qt.DecorationRole)
             if isinstance(icon, QIcon):
@@ -358,9 +360,12 @@ class _DeptDelegate(QStyledItemDelegate):
         if (count is not None) and (not is_group):
             count_str = str(int(count))
 
-            badge_font = QFont(option.font)
-            badge_font.setPointSize(10)
-            badge_font.setWeight(QFont.Normal)
+            # Используем шрифт из опций, меняем только размер
+            badge_font = option.font
+            if badge_font.pointSize() != self.badge_font_size:
+                badge_font = QFont(badge_font)
+                badge_font.setPointSize(self.badge_font_size)
+                badge_font.setWeight(self.badge_font_weight)
 
             fm_b = QFontMetrics(badge_font)
             badge_w = max(32, fm_b.horizontalAdvance(count_str) + self.badge_pad_x * 2)
@@ -456,7 +461,6 @@ class SidebarBlock(QTreeView):
         self.setModel(self._model)
 
         self.setHeaderHidden(True)
-        self.setIndentation(0)
         self.setRootIsDecorated(False)
         self.setUniformRowHeights(True)
         self.setAllColumnsShowFocus(False)
@@ -470,9 +474,11 @@ class SidebarBlock(QTreeView):
 
         # Мапа id -> item для быстрых апдейтов
         self._items_by_id: dict[str, QStandardItem] = {}
+        self._active_id: str | None = None
 
         self.clicked.connect(self._on_clicked)
         ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
+        # Инициализация приватных атрибутов для свойств
         self._badge_background_color = QColor()
         self._badge_text_color = QColor()
         self._badge_background_selected_color = QColor()
@@ -486,122 +492,40 @@ class SidebarBlock(QTreeView):
         self._item_text_color = QColor()
         self._item_text_hover_color = QColor()
         self._item_text_selected_color = QColor()
+        self._group_icon = QIcon()
+        self._group_icon_hover = QIcon()
 
-    @pyqtProperty(QColor)
-    def badgeBackgroundColor(self) -> QColor:
-        return self._badge_background_color
+    # Создание свойств через фабрику
+    badgeBackgroundColor = _create_color_property("_badge_background_color")
+    badgeTextColor = _create_color_property("_badge_text_color")
+    badgeBackgroundSelectedColor = _create_color_property("_badge_background_selected_color")
+    badgeTextSelectedColor = _create_color_property("_badge_text_selected_color")
+    badgeBackgroundHoverColor = _create_color_property("_badge_background_hover_color")
+    badgeTextHoverColor = _create_color_property("_badge_text_hover_color")
+    disabledTextColor = _create_color_property("_disabled_text_color")
+    hoverBackgroundColor = _create_color_property("_hover_background_color")
+    groupTextColor = _create_color_property("_group_text_color")
+    groupTextHoverColor = _create_color_property("_group_text_hover_color")
+    itemTextColor = _create_color_property("_item_text_color")
+    itemTextHoverColor = _create_color_property("_item_text_hover_color")
+    itemTextSelectedColor = _create_color_property("_item_text_selected_color")
 
-    @badgeBackgroundColor.setter
-    def badgeBackgroundColor(self, color: QColor) -> None:
-        self._badge_background_color = color
+    @pyqtProperty(QIcon)
+    def groupIcon(self) -> QIcon:
+        return self._group_icon
+
+    @groupIcon.setter
+    def groupIcon(self, icon: QIcon) -> None:
+        self._group_icon = icon
         self.viewport().update()
 
-    @pyqtProperty(QColor)
-    def badgeTextColor(self) -> QColor:
-        return self._badge_text_color
+    @pyqtProperty(QIcon)
+    def groupIconHover(self) -> QIcon:
+        return self._group_icon_hover
 
-    @badgeTextColor.setter
-    def badgeTextColor(self, color: QColor) -> None:
-        self._badge_text_color = color
-        self.viewport().update()
-
-    @pyqtProperty(QColor)
-    def badgeBackgroundSelectedColor(self) -> QColor:
-        return self._badge_background_selected_color
-
-    @badgeBackgroundSelectedColor.setter
-    def badgeBackgroundSelectedColor(self, color: QColor) -> None:
-        self._badge_background_selected_color = color
-        self.viewport().update()
-
-    @pyqtProperty(QColor)
-    def badgeTextSelectedColor(self) -> QColor:
-        return self._badge_text_selected_color
-
-    @badgeTextSelectedColor.setter
-    def badgeTextSelectedColor(self, color: QColor) -> None:
-        self._badge_text_selected_color = color
-        self.viewport().update()
-
-    @pyqtProperty(QColor)
-    def badgeBackgroundHoverColor(self) -> QColor:
-        return self._badge_background_hover_color
-
-    @badgeBackgroundHoverColor.setter
-    def badgeBackgroundHoverColor(self, color: QColor) -> None:
-        self._badge_background_hover_color = color
-        self.viewport().update()
-
-    @pyqtProperty(QColor)
-    def badgeTextHoverColor(self) -> QColor:
-        return self._badge_text_hover_color
-
-    @badgeTextHoverColor.setter
-    def badgeTextHoverColor(self, color: QColor) -> None:
-        self._badge_text_hover_color = color
-        self.viewport().update()
-
-    @pyqtProperty(QColor)
-    def disabledTextColor(self) -> QColor:
-        return self._disabled_text_color
-
-    @disabledTextColor.setter
-    def disabledTextColor(self, color: QColor) -> None:
-        self._disabled_text_color = color
-        self.viewport().update()
-
-    @pyqtProperty(QColor)
-    def hoverBackgroundColor(self) -> QColor:
-        return self._hover_background_color
-
-    @hoverBackgroundColor.setter
-    def hoverBackgroundColor(self, color: QColor) -> None:
-        self._hover_background_color = color
-        self.viewport().update()
-
-    @pyqtProperty(QColor)
-    def groupTextColor(self) -> QColor:
-        return self._group_text_color
-
-    @groupTextColor.setter
-    def groupTextColor(self, color: QColor) -> None:
-        self._group_text_color = color
-        self.viewport().update()
-
-    @pyqtProperty(QColor)
-    def groupTextHoverColor(self) -> QColor:
-        return self._group_text_hover_color
-
-    @groupTextHoverColor.setter
-    def groupTextHoverColor(self, color: QColor) -> None:
-        self._group_text_hover_color = color
-        self.viewport().update()
-
-    @pyqtProperty(QColor)
-    def itemTextColor(self) -> QColor:
-        return self._item_text_color
-
-    @itemTextColor.setter
-    def itemTextColor(self, color: QColor) -> None:
-        self._item_text_color = color
-        self.viewport().update()
-
-    @pyqtProperty(QColor)
-    def itemTextHoverColor(self) -> QColor:
-        return self._item_text_hover_color
-
-    @itemTextHoverColor.setter
-    def itemTextHoverColor(self, color: QColor) -> None:
-        self._item_text_hover_color = color
-        self.viewport().update()
-
-    @pyqtProperty(QColor)
-    def itemTextSelectedColor(self) -> QColor:
-        return self._item_text_selected_color
-
-    @itemTextSelectedColor.setter
-    def itemTextSelectedColor(self, color: QColor) -> None:
-        self._item_text_selected_color = color
+    @groupIconHover.setter
+    def groupIconHover(self, icon: QIcon) -> None:
+        self._group_icon_hover = icon
         self.viewport().update()
 
     # ---------- Public API ----------
@@ -609,13 +533,13 @@ class SidebarBlock(QTreeView):
         self._model.clear()
         self._model.setHorizontalHeaderLabels([""])
         self._items_by_id.clear()
+        self._active_id = None
 
     def set_items(
         self,
-        items: DeptItem,
+        items: Iterable[DeptItem],
         group_title: str | None = None,
         group_icon: QIcon | None = None,
-        group_icon_paths: GroupIconPaths | None = None,
         expand_group: bool = True,
     ) -> None:
         """
@@ -630,17 +554,6 @@ class SidebarBlock(QTreeView):
             grp = QStandardItem(group_icon or QIcon(), group_title)
             grp.setData(True, ROLE_IS_GROUP)
             grp.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
-            default_paths = GroupIconPaths(
-                default_light="resources/icons/arrow/light/default.svg",
-                hover_light="resources/icons/arrow/light/hover.svg",
-                default_dark="resources/icons/arrow/dark/default.svg",
-                hover_dark="resources/icons/arrow/dark/hover.svg",
-            )
-            icon_paths = group_icon_paths or default_paths
-            grp.setData(icon_paths.default_light, ROLE_ICON_DEFAULT_LIGHT)
-            grp.setData(icon_paths.hover_light, ROLE_ICON_HOVER_LIGHT)
-            grp.setData(icon_paths.default_dark, ROLE_ICON_DEFAULT_DARK)
-            grp.setData(icon_paths.hover_dark, ROLE_ICON_HOVER_DARK)
             parent_item.appendRow(grp)
             parent_item = grp
 
@@ -661,6 +574,28 @@ class SidebarBlock(QTreeView):
         if group_title is not None and expand_group:
             self.expand(self._model.index(0, 0))
 
+        # Автоматический выбор первого элемента
+        first_index = None
+        if group_title is not None:
+            group_idx = self._model.index(0, 0)
+            if self._model.rowCount(group_idx) > 0:
+                first_index = self._model.index(0, 0, group_idx)
+        else:
+            if self._model.rowCount() > 0:
+                first_index = self._model.index(0, 0)
+
+        if first_index and first_index.isValid():
+            self.setCurrentIndex(first_index)
+            id_ = first_index.data(ROLE_ID)
+            if id_:
+                self._active_id = str(id_)
+                self.itemActivatedById.emit(str(id_))
+            
+            # Если есть группа, убедимся, что она видна (не уехала за пределы из-за скролла к ребенку)
+            if group_title is not None:
+                self.updateGeometry()
+                self.scrollTo(self._model.index(0, 0), QAbstractItemView.PositionAtTop)
+
     def update_count(self, id: str, count: int) -> None:
         item = self._items_by_id.get(id)
         if not item:
@@ -675,6 +610,7 @@ class SidebarBlock(QTreeView):
         if not item:
             return
         self.setCurrentIndex(item.index())
+        self._active_id = id
         self.scrollTo(item.index(), QAbstractItemView.PositionAtCenter)
 
     def get_selected_id(self) -> str | None:
@@ -686,15 +622,31 @@ class SidebarBlock(QTreeView):
     def _on_theme_changed(self, theme_id: str) -> None:
         self.viewport().update()
     
+    def mousePressEvent(self, event) -> None:
+        if event.button() == Qt.LeftButton:
+            index = self.indexAt(event.pos())
+            if index.isValid() and index.data(ROLE_IS_GROUP):
+                # Перехватываем клик по группе: только сворачиваем/разворачиваем
+                self.setUpdatesEnabled(False)
+                if self.isExpanded(index):
+                    self.collapse(index)
+                else:
+                    self.expand(index)
+                    # Восстанавливаем выделение, если активный элемент внутри этой группы
+                    if self._active_id:
+                        item = self._items_by_id.get(self._active_id)
+                        if item:
+                            idx = item.index()
+                            if idx.isValid() and idx.parent() == index:
+                                self.setCurrentIndex(idx)
+                self.setUpdatesEnabled(True)
+                event.accept()
+                return
+        super().mousePressEvent(event)
+
     # ---------- Internal ----------
     def _on_clicked(self, index: QModelIndex) -> None:
-        if index.data(ROLE_IS_GROUP):
-            if self.isExpanded(index):
-                self.collapse(index)
-            else:
-                self.expand(index)
-            return
-        
         id_ = index.data(ROLE_ID)
         if id_:
+            self._active_id = str(id_)
             self.itemActivatedById.emit(str(id_))

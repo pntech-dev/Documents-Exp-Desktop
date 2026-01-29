@@ -324,3 +324,33 @@ QFrame#emailConfirmContainer {
     border-radius: 8px;
     background-color: #262626;
 }
+
+
+
+/* MAIN APPLICATION */
+
+/* Sidebar */
+SidebarBlock {
+	background-color: #262626;
+	selection-background-color: #C43A3A;
+
+	qproperty-badgeBackgroundColor: transparent;
+	qproperty-badgeTextColor: #4D4D4D;
+	qproperty-badgeBackgroundSelectedColor: #E6E6E6;
+	qproperty-badgeTextSelectedColor: #1A1A1A;
+	qproperty-badgeBackgroundHoverColor: #404040;
+	qproperty-badgeTextHoverColor: #B3B3B3;
+	
+	qproperty-disabledTextColor: #333333;
+	qproperty-hoverBackgroundColor: #333333;
+
+	qproperty-groupTextColor: #E6E6E6;
+	qproperty-groupTextHoverColor: #999999;
+
+	qproperty-itemTextColor: #999999;
+	qproperty-itemTextHoverColor: #B3B3B3;
+	qproperty-itemTextSelectedColor: #E6E6E6;
+
+	qproperty-groupIcon: url(:/icons/dark/arrow/dark/default.svg);
+	qproperty-groupIconHover: url(:/icons/dark/arrow/dark/hover.svg);
+}

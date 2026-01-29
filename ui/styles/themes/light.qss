@@ -330,10 +330,7 @@ QFrame#emailConfirmContainer {
 /* Sidebar */
 SidebarBlock {
 	background-color: #FFFFFF;
-	color: #666666;
-	alternate-background-color: #F2F2F2;
 	selection-background-color: #CC3333;
-	selection-color: #FFFFFF;
 
 	qproperty-badgeBackgroundColor: transparent;
 	qproperty-badgeTextColor: #B3B3B3;
@@ -351,9 +348,7 @@ SidebarBlock {
 	qproperty-itemTextColor: #666666;
 	qproperty-itemTextHoverColor: #333333;
 	qproperty-itemTextSelectedColor: #FFFFFF;
-}
 
-/* Sidebar row hover */
-SidebarBlock::item:hover {
-	background-color: #F2F2F2;
+	qproperty-groupIcon: url(:/icons/light/arrow/light/default.svg);
+	qproperty-groupIconHover: url(:/icons/light/arrow/light/hover.svg);
 }
