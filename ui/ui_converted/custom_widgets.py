@@ -1,5 +1,5 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import QPushButton, QLabel, QCheckBox, QLineEdit
 
 from utils import ThemeManagerInstance
@@ -107,13 +107,9 @@ class IconLineEdit(QLineEdit):
 
         for (state, mode), path in mapping.items():
             if path:
-                pix = QPixmap(path)
-                if not pix.isNull():
-                    self.icons[state][mode] = pix.scaled(
-                        self.icon_size, self.icon_size,
-                        Qt.KeepAspectRatio,
-                        Qt.SmoothTransformation
-                    )
+                icon = QIcon(path)
+                if not icon.isNull():
+                    self.icons[state][mode] = icon
 
         self._update_icon()
 
@@ -168,18 +164,18 @@ class IconLineEdit(QLineEdit):
         theme = "light" if theme_id == "0" else "dark"
 
         if self._disabled:
-            pix = self.icons["disabled"][theme]
+            icon = self.icons["disabled"][theme]
         elif self._focus:
-            pix = self.icons["focus"][theme]
+            icon = self.icons["focus"][theme]
         elif self._hover:
-            pix = self.icons["hover"][theme]
+            icon = self.icons["hover"][theme]
         else:
-            pix = self.icons["default"][theme]
+            icon = self.icons["default"][theme]
 
-        if pix is None:
+        if icon is None:
             self.icon_label.clear()
         else:
-            self.icon_label.setPixmap(pix)
+            self.icon_label.setPixmap(icon.pixmap(self.icon_size, self.icon_size))
 
     
     def _on_theme_changed(self, theme_id):
