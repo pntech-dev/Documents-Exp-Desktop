@@ -1,4 +1,5 @@
 from ui import MainWindow_UI
+from ui.ui_converted.custom_widgets import SidebarItem, SidebarBlock
 from utils import ThemeManagerInstance
 from .mvc import MainModel, MainView, MainController
 
@@ -17,6 +18,7 @@ class MainWindow(QMainWindow):
         # UI Initialization
         self.ui = MainWindow_UI()
         self.ui.setupUi(self)
+        self.showMaximized()
 
         # Set theme
         self.theme_manager = ThemeManagerInstance()
