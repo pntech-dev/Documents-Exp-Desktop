@@ -155,6 +155,116 @@ class TextButton(QLabel):
 class ViewPasswordCheckbox(QCheckBox):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
+        self.setCursor(Qt.PointingHandCursor)
+        # Hiding the standard checkbox indicator so that only the icon is displayed
+        self.setStyleSheet("QCheckBox::indicator { width: 0px; height: 0px; border: none; background: transparent; }")
+        
+        ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
+        self.stateChanged.connect(self._on_state_changed)
+
+        # Structure: theme -> status (checked/unchecked) -> mode (default/hover/pressed)
+        self.icons = {
+            "light": {
+                "unchecked": {"default": None, "hover": None, "pressed": None, "disabled": None},
+                "checked":   {"default": None, "hover": None, "pressed": None, "disabled": None}
+            },
+            "dark": {
+                "unchecked": {"default": None, "hover": None, "pressed": None, "disabled": None},
+                "checked":   {"default": None, "hover": None, "pressed": None, "disabled": None}
+            }
+        }
+        self._hover = False
+        self._pressed = False
+        self.setIconSize(QSize(24, 24))
+
+    def set_icon_paths(self, 
+                       light_unchecked=None, light_unchecked_hover=None, light_unchecked_pressed=None, light_unchecked_disabled=None,
+                       light_checked=None, light_checked_hover=None, light_checked_pressed=None, light_checked_disabled=None,
+                       dark_unchecked=None, dark_unchecked_hover=None, dark_unchecked_pressed=None, dark_unchecked_disabled=None,
+                       dark_checked=None, dark_checked_hover=None, dark_checked_pressed=None, dark_checked_disabled=None):
+        
+        def get_icon(path):
+            return QIcon(path) if path else None
+
+        # Light theme
+        self.icons["light"]["unchecked"]["default"] = get_icon(light_unchecked)
+        self.icons["light"]["unchecked"]["hover"] = get_icon(light_unchecked_hover)
+        self.icons["light"]["unchecked"]["pressed"] = get_icon(light_unchecked_pressed)
+        self.icons["light"]["unchecked"]["disabled"] = get_icon(light_unchecked_disabled)
+        
+        self.icons["light"]["checked"]["default"] = get_icon(light_checked)
+        self.icons["light"]["checked"]["hover"] = get_icon(light_checked_hover)
+        self.icons["light"]["checked"]["pressed"] = get_icon(light_checked_pressed)
+        self.icons["light"]["checked"]["disabled"] = get_icon(light_checked_disabled)
+
+        # Dark theme
+        self.icons["dark"]["unchecked"]["default"] = get_icon(dark_unchecked)
+        self.icons["dark"]["unchecked"]["hover"] = get_icon(dark_unchecked_hover)
+        self.icons["dark"]["unchecked"]["pressed"] = get_icon(dark_unchecked_pressed)
+        self.icons["dark"]["unchecked"]["disabled"] = get_icon(dark_unchecked_disabled)
+        
+        self.icons["dark"]["checked"]["default"] = get_icon(dark_checked)
+        self.icons["dark"]["checked"]["hover"] = get_icon(dark_checked_hover)
+        self.icons["dark"]["checked"]["pressed"] = get_icon(dark_checked_pressed)
+        self.icons["dark"]["checked"]["disabled"] = get_icon(dark_checked_disabled)
+
+        self._update_icon()
+
+    def _update_icon(self):
+        theme_id = ThemeManagerInstance().current_theme_id
+        theme = "light" if theme_id == "0" else "dark"
+        
+        state = "checked" if self.isChecked() else "unchecked"
+        
+        mode = "default"
+        if not self.isEnabled():
+            mode = "disabled"
+        elif self._pressed:
+            mode = "pressed"
+        elif self._hover:
+            mode = "hover"
+            
+        icon = self.icons[theme][state].get(mode)
+        if not icon or icon.isNull():
+            icon = self.icons[theme][state].get("default")
+            
+        if icon and not icon.isNull():
+            self.setIcon(icon)
+        else:
+            self.setIcon(QIcon())
+
+    def _on_theme_changed(self, theme_id):
+        self._update_icon()
+
+    def _on_state_changed(self, state):
+        self._update_icon()
+
+    def enterEvent(self, event):
+        self._hover = True
+        self._update_icon()
+        super().enterEvent(event)
+
+    def leaveEvent(self, event):
+        self._hover = False
+        self._update_icon()
+        super().leaveEvent(event)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self._pressed = True
+            self._update_icon()
+        super().mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self._pressed = False
+            self._update_icon()
+        super().mouseReleaseEvent(event)
+
+    def changeEvent(self, event):
+        if event.type() == QEvent.EnabledChange:
+            self._update_icon()
+        super().changeEvent(event)
 
 
 """=== QLineEdit ==="""

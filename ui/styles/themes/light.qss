@@ -185,41 +185,6 @@ QCheckBox::indicator:checked:disabled {
 	background-color: #F5D6D6;
 }
 
-ViewPasswordCheckbox::indicator {
-	border: 0px;
-	padding: 0px 2px;
-	background-image: url(:/icons/light/view/light/Default.svg);
-	background-repeat: no-repeat;
-    background-position: center;
-}
-
-ViewPasswordCheckbox::indicator:hover {
-	border: 0px;
-	background-image: url(:/icons/light/view/light/Hover.svg);
-	background-color: #FFFFFF;
-}
-
-ViewPasswordCheckbox::indicator:checked {
-	image: none;
-	background-image: url(:/icons/light/view/light/Checked.svg);
-	background-color: #FFFFFF;
-}
-
-ViewPasswordCheckbox::indicator:checked:hover {
-	background-image: url(:/icons/light/view/light/Checked Hover.svg);
-	background-color: #FFFFFF;
-}
-
-ViewPasswordCheckbox::indicator:disabled {
-	background-image: url(:/icons/light/view/light/Default Disabled.svg);
-	background-color: #FFFFFF;
-}
-
-ViewPasswordCheckbox::indicator:checked:disabled {
-	background-image: url(:/icons/light/view/light/Checked Disabled.svg);
-	background-color: #FFFFFF;
-}
-
 
 /* LineEdits */
 QLineEdit {

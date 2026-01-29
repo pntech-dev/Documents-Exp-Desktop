@@ -319,6 +319,34 @@ class AuthView:
                 dark_disabled=":/icons/dark/theme/dark/disabled.svg"
             )
 
+        # Setting up icons for password display checkboxes
+        self.view_password_checkboxes = [
+            self.ui.view_password_checkBox,
+            self.ui.view_password_checkBox_2,
+            self.ui.view_password_checkBox_3
+        ]
+
+        for checkbox in self.view_password_checkboxes:
+            checkbox.set_icon_paths(
+                # Light theme
+                light_unchecked=":/icons/light/view/light/Default.svg",
+                light_unchecked_hover=":/icons/light/view/light/Hover.svg",
+                light_unchecked_disabled=":/icons/light/view/light/Default Disabled.svg",
+                
+                light_checked=":/icons/light/view/light/Checked.svg",
+                light_checked_hover=":/icons/light/view/light/Checked Hover.svg",
+                light_checked_disabled=":/icons/light/view/light/Checked Disabled.svg",
+                
+                # Dark theme
+                dark_unchecked=":/icons/dark/view/dark/Default.svg",
+                dark_unchecked_hover=":/icons/dark/view/dark/Hover.svg",
+                dark_unchecked_disabled=":/icons/dark/view/dark/Default Disabled.svg",
+                
+                dark_checked=":/icons/dark/view/dark/Checked.svg",
+                dark_checked_hover=":/icons/dark/view/dark/Checked Hover.svg",
+                dark_checked_disabled=":/icons/dark/view/dark/Checked Disabled.svg"
+            )
+
         # Initialize page widget groups
 
         self.login_page = AuthPageWidgetGroup(
