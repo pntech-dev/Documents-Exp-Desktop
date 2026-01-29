@@ -29,16 +29,20 @@ class ThemeButton(QPushButton):
         ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
 
         self.icons = {
-            "light": {"default": None, "hover": None, "pressed": None, "disabled": None},
-            "dark": {"default": None, "hover": None, "pressed": None, "disabled": None}
+            "light": {"default": None, "hover": None, 
+                      "pressed": None, "disabled": None},
+            "dark": {"default": None, "hover": None, 
+                     "pressed": None, "disabled": None}
         }
         self._hover = False
         self._pressed = False
         self.setIconSize(QSize(24, 24))
 
     def set_icon_paths(self,
-                       light_default=None, light_hover=None, light_pressed=None, light_disabled=None,
-                       dark_default=None, dark_hover=None, dark_pressed=None, dark_disabled=None):
+                       light_default=None, light_hover=None, 
+                       light_pressed=None, light_disabled=None,
+                       dark_default=None, dark_hover=None, 
+                       dark_pressed=None, dark_disabled=None):
         
         def get_icon(path):
             return QIcon(path) if path else None
@@ -157,7 +161,9 @@ class ViewPasswordCheckbox(QCheckBox):
         super().__init__(parent=parent)
         self.setCursor(Qt.PointingHandCursor)
         # Hiding the standard checkbox indicator so that only the icon is displayed
-        self.setStyleSheet("QCheckBox::indicator { width: 0px; height: 0px; border: none; background: transparent; }")
+        self.setStyleSheet(
+            "QCheckBox::indicator { width: 0px; height: 0px; border: none; background: transparent; }"
+        )
         
         ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
         self.stateChanged.connect(self._on_state_changed)
@@ -165,12 +171,16 @@ class ViewPasswordCheckbox(QCheckBox):
         # Structure: theme -> status (checked/unchecked) -> mode (default/hover/pressed)
         self.icons = {
             "light": {
-                "unchecked": {"default": None, "hover": None, "pressed": None, "disabled": None},
-                "checked":   {"default": None, "hover": None, "pressed": None, "disabled": None}
+                "unchecked": {"default": None, "hover": None, 
+                              "pressed": None, "disabled": None},
+                "checked":   {"default": None, "hover": None, 
+                              "pressed": None, "disabled": None}
             },
             "dark": {
-                "unchecked": {"default": None, "hover": None, "pressed": None, "disabled": None},
-                "checked":   {"default": None, "hover": None, "pressed": None, "disabled": None}
+                "unchecked": {"default": None, "hover": None, 
+                              "pressed": None, "disabled": None},
+                "checked":   {"default": None, "hover": None, 
+                              "pressed": None, "disabled": None}
             }
         }
         self._hover = False
@@ -178,10 +188,14 @@ class ViewPasswordCheckbox(QCheckBox):
         self.setIconSize(QSize(24, 24))
 
     def set_icon_paths(self, 
-                       light_unchecked=None, light_unchecked_hover=None, light_unchecked_pressed=None, light_unchecked_disabled=None,
-                       light_checked=None, light_checked_hover=None, light_checked_pressed=None, light_checked_disabled=None,
-                       dark_unchecked=None, dark_unchecked_hover=None, dark_unchecked_pressed=None, dark_unchecked_disabled=None,
-                       dark_checked=None, dark_checked_hover=None, dark_checked_pressed=None, dark_checked_disabled=None):
+                       light_unchecked=None, light_unchecked_hover=None, 
+                       light_unchecked_pressed=None, light_unchecked_disabled=None,
+                       light_checked=None, light_checked_hover=None, 
+                       light_checked_pressed=None, light_checked_disabled=None,
+                       dark_unchecked=None, dark_unchecked_hover=None, 
+                       dark_unchecked_pressed=None, dark_unchecked_disabled=None,
+                       dark_checked=None, dark_checked_hover=None, 
+                       dark_checked_pressed=None, dark_checked_disabled=None):
         
         def get_icon(path):
             return QIcon(path) if path else None
@@ -391,7 +405,8 @@ class IconLineEdit(QLineEdit):
         if icon is None:
             self.icon_label.clear()
         else:
-            self.icon_label.setPixmap(icon.pixmap(self.icon_size, self.icon_size))
+            self.icon_label.setPixmap(icon.pixmap(self.icon_size, 
+                                                  self.icon_size))
 
     
     def _on_theme_changed(self, theme_id):

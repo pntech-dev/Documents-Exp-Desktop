@@ -281,43 +281,26 @@ class AuthView:
         self.ui = ui
         self.theme_manager = ThemeManagerInstance()
 
-        # Lists of all logos and theme buttons on all pages
-        self.logo_labels = [
-            self.ui.logo_lable,
-            self.ui.logo_lable_2,
-            self.ui.logo_lable_3,
-            self.ui.logo_lable_4
-        ]
+        # Setting icon for logo label
+        self.ui.logo_lable.set_icon_paths(
+            light=":/light/logo_light.svg",
+            dark=":/dark/logo_dark.svg"
+        )
 
-        self.theme_buttons = [
-            self.ui.theme_button,
-            self.ui.theme_button_2,
-            self.ui.theme_button_3,
-            self.ui.theme_button_4
-        ]
-
-        # We set icons for all logos
-        for logo in self.logo_labels:
-            logo.set_icon_paths(
-                light=":/light/logo_light.svg",
-                dark=":/dark/logo_dark.svg"
-            )
-
-        # Setting icons for all theme change buttons
-        for btn in self.theme_buttons:
-            btn.set_icon_paths(
-                # light theme
-                light_default=":/icons/light/theme/light/default.svg",
-                light_hover=":/icons/light/theme/light/hover.svg",
-                light_pressed=":/icons/light/theme/light/clicked.svg",
-                light_disabled=":/icons/light/theme/light/disabled.svg",
-                
-                # dark theme
-                dark_default=":/icons/dark/theme/dark/default.svg",
-                dark_hover=":/icons/dark/theme/dark/hover.svg",
-                dark_pressed=":/icons/dark/theme/dark/clicked.svg",
-                dark_disabled=":/icons/dark/theme/dark/disabled.svg"
-            )
+        # Setting icon for theme change button
+        self.ui.theme_button.set_icon_paths(
+            # light theme
+            light_default=":/icons/light/theme/light/default.svg",
+            light_hover=":/icons/light/theme/light/hover.svg",
+            light_pressed=":/icons/light/theme/light/clicked.svg",
+            light_disabled=":/icons/light/theme/light/disabled.svg",
+            
+            # dark theme
+            dark_default=":/icons/dark/theme/dark/default.svg",
+            dark_hover=":/icons/dark/theme/dark/hover.svg",
+            dark_pressed=":/icons/dark/theme/dark/clicked.svg",
+            dark_disabled=":/icons/dark/theme/dark/disabled.svg"
+        )
 
         # Setting up icons for password display checkboxes
         self.view_password_checkboxes = [
@@ -421,5 +404,4 @@ class AuthView:
             handler (Callable): The function or method to call when any theme
                 button is clicked.
         """
-        for theme_button in self.theme_buttons:
-            theme_button.clicked.connect(handler)
+        self.ui.theme_button.clicked.connect(handler)
