@@ -197,7 +197,7 @@ ROLE_IS_GROUP = Qt.UserRole + 4
 
 
 @dataclass
-class DeptItem:
+class SidebarItem:
     id: str
     title: str
     count: int = 0
@@ -537,7 +537,7 @@ class SidebarBlock(QTreeView):
 
     def set_items(
         self,
-        items: Iterable[DeptItem],
+        items: Iterable[SidebarItem],
         group_title: str | None = None,
         group_icon: QIcon | None = None,
         expand_group: bool = True,

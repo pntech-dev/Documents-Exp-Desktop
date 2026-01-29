@@ -1,5 +1,5 @@
 from ui import MainWindow_UI
-from ui.ui_converted.custom_widgets import DeptItem, SidebarBlock
+from ui.ui_converted.custom_widgets import SidebarItem, SidebarBlock
 
 
 class Sidebar:
@@ -12,12 +12,23 @@ class Sidebar:
         self.categories_tree = categories_tree
 
 
-    def update_departments(self, departments: list[DeptItem]):
-        self.departments_tree.set_items(departments, group_title="Отделы", group_icon=None)
+    # def update_departments(self, departments: list[SidebarItem]):
+    #     self.departments_tree.set_items(departments, group_title="Отделы", group_icon=None)
 
 
-    def update_categories(self, categories: list[DeptItem]):
-        self.categories_tree.set_items(categories, group_title="Категории", group_icon=None)
+    # def update_categories(self, categories: list[SidebarItem]):
+    #     self.categories_tree.set_items(categories, group_title="Категории", group_icon=None)
+
+
+    def update_tree(self, items: list[SidebarItem], group_title: str, group_icon: str = None):
+        if not items:
+            return
+        
+        if group_title == "Отделы":
+            self.departments_tree.set_items(items, group_title, group_icon)
+        
+        elif group_title == "Категории":
+            self.categories_tree.set_items(items, group_title, group_icon)
 
 
 class MainView:
