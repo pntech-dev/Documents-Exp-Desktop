@@ -140,7 +140,7 @@ class LogoLabel(QLabel):
             painter = QPainter(self)
             painter.setRenderHint(QPainter.Antialiasing)
             painter.setRenderHint(QPainter.SmoothPixmapTransform)
-            icon.paint(painter, self.rect(), Qt.AlignCenter)
+            icon.paint(painter, self.rect(), self.alignment())
 
     def _on_theme_changed(self, theme_id):
         self.update()

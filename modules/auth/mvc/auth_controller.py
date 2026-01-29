@@ -597,12 +597,12 @@ class AuthController(QObject):
         completion.
 
         Args:
-            method (Callable): The model's method to be executed in the worker
+            method (callable): The model's method to be executed in the worker
                 thread.
-            success_signal (Callable): The callback function to execute upon
+            success_signal (callable): The callback function to execute upon
                 successful completion. It receives the data returned by the
                 worker.
-            error_signal (Callable): The callback function to execute when an
+            error_signal (callable): The callback function to execute when an
                 error occurs. It receives the exception object.
             **kwargs: Arbitrary keyword arguments to be passed to the `method`
                 when it's called.

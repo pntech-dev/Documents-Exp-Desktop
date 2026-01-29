@@ -8,16 +8,9 @@ class Sidebar:
             departments_tree: SidebarBlock,
             categories_tree: SidebarBlock
             ) -> None:
+        
         self.departments_tree = departments_tree
         self.categories_tree = categories_tree
-
-
-    # def update_departments(self, departments: list[SidebarItem]):
-    #     self.departments_tree.set_items(departments, group_title="Отделы", group_icon=None)
-
-
-    # def update_categories(self, categories: list[SidebarItem]):
-    #     self.categories_tree.set_items(categories, group_title="Категории", group_icon=None)
 
 
     def update_tree(self, items: list[SidebarItem], group_title: str, group_icon: str = None):
@@ -34,6 +27,12 @@ class Sidebar:
 class MainView:
     def __init__(self, ui: MainWindow_UI) -> None:
         self.ui = ui
+
+        # Setting icon for logo label
+        self.ui.logo_label.set_icon_paths(
+            light=":/light/logo_light.svg",
+            dark=":/dark/logo_dark.svg"
+        )
 
         self.sidebar = Sidebar(
             departments_tree=ui.departments_treeView,

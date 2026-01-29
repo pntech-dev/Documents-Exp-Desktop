@@ -174,7 +174,7 @@ class AuthPageWidgetGroup:
         """Connects a handler to the submit button's 'clicked' signal.
 
         Args:
-            handler (Callable): The function or method to call when the button is clicked.
+            handler (callable): The function or method to call when the button is clicked.
         """
         if self.submit_button:
             self.submit_button.clicked.connect(handler)
@@ -184,7 +184,7 @@ class AuthPageWidgetGroup:
         """Connects a handler to the back button's 'clicked' signal.
 
         Args:
-            handler (Callable): The function or method to call when the button is clicked.
+            handler (callable): The function or method to call when the button is clicked.
         """
         if self.back_button:
             self.back_button.clicked.connect(handler)
@@ -196,7 +196,7 @@ class AuthPageWidgetGroup:
         This button is used for actions like switching between login and sign-up pages.
 
         Args:
-            handler (Callable): The function or method to call when the button is clicked.
+            handler (callable): The function or method to call when the button is clicked.
         """
         if self.tertiary_button:
             self.tertiary_button.clicked.connect(handler)
@@ -206,7 +206,7 @@ class AuthPageWidgetGroup:
         """Connects a handler to the 'forgot password' label's 'mousePressEvent'.
 
         Args:
-            handler (Callable): The function or method to call when the label is clicked.
+            handler (callable): The function or method to call when the label is clicked.
         """
         if self.forgot_password_button:
             self.forgot_password_button.mousePressEvent = handler
@@ -216,7 +216,7 @@ class AuthPageWidgetGroup:
         """Connects a handler to the 'view password' checkbox's 'stateChanged' signal.
 
         Args:
-            handler (Callable): The function or method to call when the checkbox state changes.
+            handler (callable): The function or method to call when the checkbox state changes.
         """
         if self.view_password_checkbox:
             self.view_password_checkbox.stateChanged.connect(handler)
@@ -226,7 +226,7 @@ class AuthPageWidgetGroup:
         """Connects a handler to the email field's 'textChanged' signal.
 
         Args:
-            handler (Callable): The function or method to call when the text changes.
+            handler (callable): The function or method to call when the text changes.
         """
         if self.email_field:
             self.email_field.textChanged.connect(handler)
@@ -236,7 +236,7 @@ class AuthPageWidgetGroup:
         """Connects a handler to the password field's 'textChanged' signal.
 
         Args:
-            handler (Callable): The function or method to call when the text changes.
+            handler (callable): The function or method to call when the text changes.
         """
         if self.password_field:
             self.password_field.textChanged.connect(handler)
@@ -246,7 +246,7 @@ class AuthPageWidgetGroup:
         """Connects a handler to the confirm password field's 'textChanged' signal.
 
         Args:
-            handler (Callable): The function or method to call when the text changes.
+            handler (callable): The function or method to call when the text changes.
         """
         if self.confirm_password_field:
             self.confirm_password_field.textChanged.connect(handler)
@@ -282,7 +282,7 @@ class AuthView:
         self.theme_manager = ThemeManagerInstance()
 
         # Setting icon for logo label
-        self.ui.logo_lable.set_icon_paths(
+        self.ui.logo_label.set_icon_paths(
             light=":/light/logo_light.svg",
             dark=":/dark/logo_dark.svg"
         )
@@ -401,7 +401,7 @@ class AuthView:
         signal to the provided handler.
 
         Args:
-            handler (Callable): The function or method to call when any theme
+            handler (callable): The function or method to call when any theme
                 button is clicked.
         """
         self.ui.theme_button.clicked.connect(handler)
