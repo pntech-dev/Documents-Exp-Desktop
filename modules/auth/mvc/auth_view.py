@@ -281,6 +281,55 @@ class AuthView:
         self.ui = ui
         self.theme_manager = ThemeManagerInstance()
 
+        # Setting icon for logo label
+        self.ui.logo_lable.set_icon_paths(
+            light=":/light/logo_light.svg",
+            dark=":/dark/logo_dark.svg"
+        )
+
+        # Setting icon for theme change button
+        self.ui.theme_button.set_icon_paths(
+            # light theme
+            light_default=":/icons/light/theme/light/default.svg",
+            light_hover=":/icons/light/theme/light/hover.svg",
+            light_pressed=":/icons/light/theme/light/clicked.svg",
+            light_disabled=":/icons/light/theme/light/disabled.svg",
+            
+            # dark theme
+            dark_default=":/icons/dark/theme/dark/default.svg",
+            dark_hover=":/icons/dark/theme/dark/hover.svg",
+            dark_pressed=":/icons/dark/theme/dark/clicked.svg",
+            dark_disabled=":/icons/dark/theme/dark/disabled.svg"
+        )
+
+        # Setting up icons for password display checkboxes
+        self.view_password_checkboxes = [
+            self.ui.view_password_checkBox,
+            self.ui.view_password_checkBox_2,
+            self.ui.view_password_checkBox_3
+        ]
+
+        for checkbox in self.view_password_checkboxes:
+            checkbox.set_icon_paths(
+                # Light theme
+                light_unchecked=":/icons/light/view/light/Default.svg",
+                light_unchecked_hover=":/icons/light/view/light/Hover.svg",
+                light_unchecked_disabled=":/icons/light/view/light/Default Disabled.svg",
+                
+                light_checked=":/icons/light/view/light/Checked.svg",
+                light_checked_hover=":/icons/light/view/light/Checked Hover.svg",
+                light_checked_disabled=":/icons/light/view/light/Checked Disabled.svg",
+                
+                # Dark theme
+                dark_unchecked=":/icons/dark/view/dark/Default.svg",
+                dark_unchecked_hover=":/icons/dark/view/dark/Hover.svg",
+                dark_unchecked_disabled=":/icons/dark/view/dark/Default Disabled.svg",
+                
+                dark_checked=":/icons/dark/view/dark/Checked.svg",
+                dark_checked_hover=":/icons/dark/view/dark/Checked Hover.svg",
+                dark_checked_disabled=":/icons/dark/view/dark/Checked Disabled.svg"
+            )
+
         # Initialize page widget groups
 
         self.login_page = AuthPageWidgetGroup(
@@ -326,13 +375,6 @@ class AuthView:
             "change_password_change_page": self.ui.change_password_change_page
         }
 
-        # Theme buttons list
-        self.theme_buttons = [
-            self.ui.theme_button,
-            self.ui.theme_button_2,
-            self.ui.theme_button_3,
-            self.ui.theme_button_4
-        ]
 
 
     def set_theme(self) -> None:
@@ -362,5 +404,4 @@ class AuthView:
             handler (Callable): The function or method to call when any theme
                 button is clicked.
         """
-        for theme_button in self.theme_buttons:
-            theme_button.clicked.connect(handler)
+        self.ui.theme_button.clicked.connect(handler)

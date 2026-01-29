@@ -5,7 +5,6 @@ QWidget {
 
 /* Logo */
 LogoLabel {
-	background-image: url(:/light/logo_light.svg);
 	background-repeat: no-repeat;
     background-position: left;
 }
@@ -30,23 +29,19 @@ QPushButton {
 /* Theme button */
 ThemeButton {
 	border: 0px;
-	background-image: url(:/icons/light/theme/light/default.svg);
 	background-repeat: no-repeat;
     background-position: left;
 }
 
 ThemeButton:hover {
-	background-image: url(:/icons/light/theme/light/hover.svg);
 	background-color: {{ neutral.neutral_0 }};
 }
 
 ThemeButton:pressed {
-	background-image: url(:/icons/light/theme/light/clicked.svg);
 	background-color: {{ neutral.neutral_0 }};
 }
 
 ThemeButton:disabled {
-	background-image: url(:/icons/light/theme/light/disabled.svg);
 	background-color: {{ neutral.neutral_0 }};
 }
 
@@ -188,41 +183,6 @@ QCheckBox::indicator:checked:hover {
 
 QCheckBox::indicator:checked:disabled {
 	background-color: {{ accent.accent_100 }};
-}
-
-ViewPasswordCheckbox::indicator {
-	border: 0px;
-	padding: 0px 2px;
-	background-image: url(:/icons/light/view/light/Default.svg);
-	background-repeat: no-repeat;
-    background-position: center;
-}
-
-ViewPasswordCheckbox::indicator:hover {
-	border: 0px;
-	background-image: url(:/icons/light/view/light/Hover.svg);
-	background-color: {{ neutral.neutral_0 }};
-}
-
-ViewPasswordCheckbox::indicator:checked {
-	image: none;
-	background-image: url(:/icons/light/view/light/Checked.svg);
-	background-color: {{ neutral.neutral_0 }};
-}
-
-ViewPasswordCheckbox::indicator:checked:hover {
-	background-image: url(:/icons/light/view/light/Checked Hover.svg);
-	background-color: {{ neutral.neutral_0 }};
-}
-
-ViewPasswordCheckbox::indicator:disabled {
-	background-image: url(:/icons/light/view/light/Default Disabled.svg);
-	background-color: {{ neutral.neutral_0 }};
-}
-
-ViewPasswordCheckbox::indicator:checked:disabled {
-	background-image: url(:/icons/light/view/light/Checked Disabled.svg);
-	background-color: {{ neutral.neutral_0 }};
 }
 
 
