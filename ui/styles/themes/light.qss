@@ -29,23 +29,19 @@ QPushButton {
 /* Theme button */
 ThemeButton {
 	border: 0px;
-	background-image: url(:/icons/light/theme/light/default.svg);
 	background-repeat: no-repeat;
     background-position: left;
 }
 
 ThemeButton:hover {
-	background-image: url(:/icons/light/theme/light/hover.svg);
 	background-color: #FFFFFF;
 }
 
 ThemeButton:pressed {
-	background-image: url(:/icons/light/theme/light/clicked.svg);
 	background-color: #FFFFFF;
 }
 
 ThemeButton:disabled {
-	background-image: url(:/icons/light/theme/light/disabled.svg);
 	background-color: #FFFFFF;
 }
 

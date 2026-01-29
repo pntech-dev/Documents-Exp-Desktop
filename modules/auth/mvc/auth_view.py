@@ -286,6 +286,20 @@ class AuthView:
             dark=":/dark/logo_dark.svg"
         )
 
+        self.ui.theme_button.set_icon_paths(
+            # light theme
+            light_default=":/icons/light/theme/light/default.svg",
+            light_hover=":/icons/light/theme/light/hover.svg",
+            light_pressed=":/icons/light/theme/light/clicked.svg",
+            light_disabled=":/icons/light/theme/light/disabled.svg",
+            
+            # dark theme
+            dark_default=":/icons/dark/theme/dark/default.svg",
+            dark_hover=":/icons/dark/theme/dark/hover.svg",
+            dark_pressed=":/icons/dark/theme/dark/clicked.svg",
+            dark_disabled=":/icons/dark/theme/dark/disabled.svg"
+        )
+
         # Initialize page widget groups
 
         self.login_page = AuthPageWidgetGroup(

@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QEvent, QSize
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import QPushButton, QLabel, QCheckBox, QLineEdit
 
@@ -25,6 +25,87 @@ class TertiaryButton(QPushButton):
 class ThemeButton(QPushButton):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
+        self.setCursor(Qt.PointingHandCursor)
+        ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
+
+        self.icons = {
+            "light": {"default": None, "hover": None, "pressed": None, "disabled": None},
+            "dark": {"default": None, "hover": None, "pressed": None, "disabled": None}
+        }
+        self._hover = False
+        self._pressed = False
+        self.setIconSize(QSize(24, 24))
+
+    def set_icon_paths(self,
+                       light_default=None, light_hover=None, light_pressed=None, light_disabled=None,
+                       dark_default=None, dark_hover=None, dark_pressed=None, dark_disabled=None):
+        
+        def get_icon(path):
+            return QIcon(path) if path else None
+
+        self.icons["light"]["default"] = get_icon(light_default)
+        self.icons["light"]["hover"] = get_icon(light_hover)
+        self.icons["light"]["pressed"] = get_icon(light_pressed)
+        self.icons["light"]["disabled"] = get_icon(light_disabled)
+
+        self.icons["dark"]["default"] = get_icon(dark_default)
+        self.icons["dark"]["hover"] = get_icon(dark_hover)
+        self.icons["dark"]["pressed"] = get_icon(dark_pressed)
+        self.icons["dark"]["disabled"] = get_icon(dark_disabled)
+
+        self._update_icon()
+
+    def _update_icon(self):
+        theme_id = ThemeManagerInstance().current_theme_id
+        theme = "light" if theme_id == "0" else "dark"
+
+        state = "default"
+        if not self.isEnabled():
+            state = "disabled"
+        elif self._pressed:
+            state = "pressed"
+        elif self._hover:
+            state = "hover"
+
+        icon = self.icons[theme].get(state)
+        # Если иконки для конкретного состояния нет, берем дефолтную
+        if not icon or icon.isNull():
+            icon = self.icons[theme].get("default")
+
+        if icon and not icon.isNull():
+            self.setIcon(icon)
+        else:
+            self.setIcon(QIcon())
+
+    def _on_theme_changed(self, theme_id):
+        self._update_icon()
+
+    def enterEvent(self, event):
+        self._hover = True
+        self._update_icon()
+        super().enterEvent(event)
+
+    def leaveEvent(self, event):
+        self._hover = False
+        self._update_icon()
+        super().leaveEvent(event)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self._pressed = True
+            self._update_icon()
+        super().mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self._pressed = False
+            self._update_icon()
+        super().mouseReleaseEvent(event)
+
+    def changeEvent(self, event):
+        if event.type() == QEvent.EnabledChange:
+            self._update_icon()
+        super().changeEvent(event)
 
 
 """=== Labels ==="""
