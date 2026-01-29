@@ -1,5 +1,5 @@
 from PyQt5.QtCore import Qt, QEvent, QSize
-from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtGui import QPixmap, QIcon, QPainter
 from PyQt5.QtWidgets import QPushButton, QLabel, QCheckBox, QLineEdit
 
 from utils import ThemeManagerInstance
@@ -113,7 +113,6 @@ class ThemeButton(QPushButton):
 class LogoLabel(QLabel):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.setAlignment(Qt.AlignCenter)
         ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
 
         self.icons = {"light": None, "dark": None}
@@ -123,27 +122,22 @@ class LogoLabel(QLabel):
             self.icons["light"] = QIcon(light)
         if dark:
             self.icons["dark"] = QIcon(dark)
-        self._update_icon()
+        self.update()
 
-    def resizeEvent(self, event):
-        # Redrawing the icon when resizing the widget
-        self._update_icon()
-        super().resizeEvent(event)
-
-    def _update_icon(self):
+    def paintEvent(self, event):
+        super().paintEvent(event)
         theme_id = ThemeManagerInstance().current_theme_id
         theme = "light" if theme_id == "0" else "dark"
 
         icon = self.icons.get(theme)
         if icon and not icon.isNull():
-            # Generating a Pixmap exactly for the size of the widget, 
-            # taking into account DPI
-            self.setPixmap(icon.pixmap(self.size()))
-        else:
-            self.clear()
+            painter = QPainter(self)
+            painter.setRenderHint(QPainter.Antialiasing)
+            painter.setRenderHint(QPainter.SmoothPixmapTransform)
+            icon.paint(painter, self.rect(), Qt.AlignCenter)
 
     def _on_theme_changed(self, theme_id):
-        self._update_icon()
+        self.update()
 
 
 class InfoLabel(QLabel):

@@ -281,24 +281,43 @@ class AuthView:
         self.ui = ui
         self.theme_manager = ThemeManagerInstance()
 
-        self.ui.logo_lable.set_icon_paths(
-            light=":/light/logo_light.svg",
-            dark=":/dark/logo_dark.svg"
-        )
+        # Lists of all logos and theme buttons on all pages
+        self.logo_labels = [
+            self.ui.logo_lable,
+            self.ui.logo_lable_2,
+            self.ui.logo_lable_3,
+            self.ui.logo_lable_4
+        ]
 
-        self.ui.theme_button.set_icon_paths(
-            # light theme
-            light_default=":/icons/light/theme/light/default.svg",
-            light_hover=":/icons/light/theme/light/hover.svg",
-            light_pressed=":/icons/light/theme/light/clicked.svg",
-            light_disabled=":/icons/light/theme/light/disabled.svg",
-            
-            # dark theme
-            dark_default=":/icons/dark/theme/dark/default.svg",
-            dark_hover=":/icons/dark/theme/dark/hover.svg",
-            dark_pressed=":/icons/dark/theme/dark/clicked.svg",
-            dark_disabled=":/icons/dark/theme/dark/disabled.svg"
-        )
+        self.theme_buttons = [
+            self.ui.theme_button,
+            self.ui.theme_button_2,
+            self.ui.theme_button_3,
+            self.ui.theme_button_4
+        ]
+
+        # We set icons for all logos
+        for logo in self.logo_labels:
+            logo.set_icon_paths(
+                light=":/light/logo_light.svg",
+                dark=":/dark/logo_dark.svg"
+            )
+
+        # Setting icons for all theme change buttons
+        for btn in self.theme_buttons:
+            btn.set_icon_paths(
+                # light theme
+                light_default=":/icons/light/theme/light/default.svg",
+                light_hover=":/icons/light/theme/light/hover.svg",
+                light_pressed=":/icons/light/theme/light/clicked.svg",
+                light_disabled=":/icons/light/theme/light/disabled.svg",
+                
+                # dark theme
+                dark_default=":/icons/dark/theme/dark/default.svg",
+                dark_hover=":/icons/dark/theme/dark/hover.svg",
+                dark_pressed=":/icons/dark/theme/dark/clicked.svg",
+                dark_disabled=":/icons/dark/theme/dark/disabled.svg"
+            )
 
         # Initialize page widget groups
 
@@ -345,13 +364,6 @@ class AuthView:
             "change_password_change_page": self.ui.change_password_change_page
         }
 
-        # Theme buttons list
-        self.theme_buttons = [
-            self.ui.theme_button,
-            self.ui.theme_button_2,
-            self.ui.theme_button_3,
-            self.ui.theme_button_4
-        ]
 
 
     def set_theme(self) -> None:
