@@ -32,6 +32,37 @@ class ThemeButton(QPushButton):
 class LogoLabel(QLabel):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
+        self.setAlignment(Qt.AlignCenter)
+        ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
+
+        self.icons = {"light": None, "dark": None}
+
+    def set_icon_paths(self, light=None, dark=None):
+        if light:
+            self.icons["light"] = QIcon(light)
+        if dark:
+            self.icons["dark"] = QIcon(dark)
+        self._update_icon()
+
+    def resizeEvent(self, event):
+        # Redrawing the icon when resizing the widget
+        self._update_icon()
+        super().resizeEvent(event)
+
+    def _update_icon(self):
+        theme_id = ThemeManagerInstance().current_theme_id
+        theme = "light" if theme_id == "0" else "dark"
+
+        icon = self.icons.get(theme)
+        if icon and not icon.isNull():
+            # Generating a Pixmap exactly for the size of the widget, 
+            # taking into account DPI
+            self.setPixmap(icon.pixmap(self.size()))
+        else:
+            self.clear()
+
+    def _on_theme_changed(self, theme_id):
+        self._update_icon()
 
 
 class InfoLabel(QLabel):

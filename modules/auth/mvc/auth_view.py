@@ -281,6 +281,11 @@ class AuthView:
         self.ui = ui
         self.theme_manager = ThemeManagerInstance()
 
+        self.ui.logo_lable.set_icon_paths(
+            light=":/light/logo_light.svg",
+            dark=":/dark/logo_dark.svg"
+        )
+
         # Initialize page widget groups
 
         self.login_page = AuthPageWidgetGroup(

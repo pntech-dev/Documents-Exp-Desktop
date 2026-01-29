@@ -5,7 +5,6 @@ QWidget {
 
 /* Logo */
 LogoLabel {
-	background-image: url(:/dark/logo_dark.svg);
 	background-repeat: no-repeat;
     background-position: left;
 }
