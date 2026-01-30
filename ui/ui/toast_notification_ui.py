@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\ui\ui\toast_notification.ui'
+# Form implementation generated from reading ui file 'd:\Python Projects\Documents-Exp-Desktop\ui\ui\toast_notification.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -104,4 +104,4 @@ class Ui_ToastNotification(object):
         ToastNotification.setWindowTitle(_translate("ToastNotification", "Form"))
         self.label.setText(_translate("ToastNotification", "Label"))
         self.description.setText(_translate("ToastNotification", "Description"))
-import resources.icons.icons_resources_rc
+import icons_resources_rc

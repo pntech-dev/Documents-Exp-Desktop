@@ -42,7 +42,7 @@
     <widget class="QFrame" name="notify_type_line_frame">
      <property name="minimumSize">
       <size>
-       <width>16</width>
+       <width>12</width>
        <height>0</height>
       </size>
      </property>

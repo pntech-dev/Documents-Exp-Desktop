@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QFrame, QGraphicsDropShadowEffect
-from PyQt5.QtGui import QColor, QPixmap
-from PyQt5.QtCore import QPropertyAnimation, QEasingCurve, QRect, Qt
+from PyQt5.QtGui import QColor, QIcon
+from PyQt5.QtCore import QPropertyAnimation, QEasingCurve, QRect, Qt, QSize, QEvent
 
 from ui.ui_converted.toast_notification import Ui_ToastNotification
 from utils.theme_manager import theme_manager_singleton
@@ -52,17 +52,40 @@ class ToastNotification(QFrame, Ui_ToastNotification):
         theme_name = theme_manager_singleton.themes.get(theme_manager_singleton.current_theme_id, 'light')
         icon_path = f":/icons/{theme_name}/notification/{theme_name}/{notification_type}.svg"
         
-        pixmap = QPixmap(icon_path)
-        scaled_pixmap = pixmap.scaled(32, 32, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        icon = QIcon(icon_path)
+        pixmap = icon.pixmap(32, 32)
         
         self.icon_label.clear()
-        self.icon_label.setPixmap(scaled_pixmap)
+        self.icon_label.setPixmap(pixmap)
         self.icon_label.setFixedSize(32, 32)
 
+        self.close_pushButton.setIconSize(QSize(16, 16))
         self.close_pushButton.clicked.connect(self.close_animated)
+
+        # Загружаем иконки для состояний кнопки закрытия
+        self._close_icons = {
+            "default": QIcon(f":/icons/{theme_name}/close/{theme_name}/default.svg"),
+            "hover": QIcon(f":/icons/{theme_name}/close/{theme_name}/hover.svg"),
+            "pressed": QIcon(f":/icons/{theme_name}/close/{theme_name}/clicked.svg"),
+        }
+        self.close_pushButton.setIcon(self._close_icons["default"])
+        self.close_pushButton.installEventFilter(self)
 
         self._set_shadow()
         self.animation = QPropertyAnimation(self, b"geometry")
+
+    def eventFilter(self, watched, event):
+        if watched == self.close_pushButton:
+            if event.type() == QEvent.Enter:
+                self.close_pushButton.setIcon(self._close_icons["hover"])
+            elif event.type() == QEvent.Leave:
+                self.close_pushButton.setIcon(self._close_icons["default"])
+            elif event.type() == QEvent.MouseButtonPress:
+                self.close_pushButton.setIcon(self._close_icons["pressed"])
+            elif event.type() == QEvent.MouseButtonRelease:
+                icon = self._close_icons["hover"] if self.close_pushButton.underMouse() else self._close_icons["default"]
+                self.close_pushButton.setIcon(icon)
+        return super().eventFilter(watched, event)
 
     def _set_shadow(self):
         """Sets the shadow effect for the widget."""
