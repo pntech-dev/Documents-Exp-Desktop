@@ -15,6 +15,7 @@ QLabel {
 	color: #1A1A1A;
 }
 
+
 /* Info label */
 InfoLabel {
 	color: #4D4D4D;
@@ -311,4 +312,16 @@ SidebarBlock {
 
 	qproperty-groupIcon: url(:/icons/light/arrow/light/default.svg);
 	qproperty-groupIconHover: url(:/icons/light/arrow/light/hover.svg);
+}
+
+
+/* Logo */
+QFrame#logo_frame {
+	border-bottom: 1px solid #E6E6E6;
+}
+
+
+/* Profile */
+QFrame#profile_frame {
+	border-top: 1px solid #E6E6E6;
 }
