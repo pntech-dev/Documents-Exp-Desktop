@@ -1,8 +1,14 @@
-from dataclasses import dataclass
 from typing import Iterable
+from dataclasses import dataclass
 from PyQt5.QtCore import Qt, QRect, pyqtSignal, QModelIndex, pyqtProperty, QEvent, QSize
-from PyQt5.QtWidgets import QPushButton, QAbstractItemView, QLabel, QCheckBox, QLineEdit, QTreeView, QStyle, QStyledItemDelegate
-from PyQt5.QtGui import QPixmap,QStandardItem, QColor, QIcon, QStandardItemModel, QPainter, QFont, QFontMetrics, QPalette, QTransform
+from PyQt5.QtGui import (
+    QStandardItem, QColor, QIcon, QStandardItemModel, QPainter, QFont, 
+    QFontMetrics, QPalette, QMouseEvent, QResizeEvent, QFocusEvent, QPaintEvent
+)
+from PyQt5.QtWidgets import (
+    QPushButton, QAbstractItemView, QLabel, QCheckBox, QLineEdit, QTreeView, 
+    QStyle, QStyledItemDelegate, QWidget, QStyleOptionViewItem
+)
 
 from utils import ThemeManagerInstance
 
@@ -10,22 +16,26 @@ from utils import ThemeManagerInstance
 """=== Buttons ==="""
 
 class PrimaryButton(QPushButton):
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget | None = None) -> None:
+        """Initializes the primary button."""
         super().__init__(parent=parent)
 
 
 class SecondaryButton(QPushButton):
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget | None = None) -> None:
+        """Initializes the secondary button."""
         super().__init__(parent=parent)
 
 
 class TertiaryButton(QPushButton):
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget | None = None) -> None:
+        """Initializes the tertiary button."""
         super().__init__(parent=parent)
 
 
 class ThemeButton(QPushButton):
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget | None = None) -> None:
+        """Initializes the theme button."""
         super().__init__(parent=parent)
         self.setCursor(Qt.PointingHandCursor)
         ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
@@ -41,27 +51,40 @@ class ThemeButton(QPushButton):
         self.setIconSize(QSize(24, 24))
 
     def set_icon_paths(self,
-                       light_default=None, light_hover=None, 
-                       light_pressed=None, light_disabled=None,
-                       dark_default=None, dark_hover=None, 
-                       dark_pressed=None, dark_disabled=None):
-        
-        def get_icon(path):
-            return QIcon(path) if path else None
+                       light_default: str | None = None, light_hover: str | None = None, 
+                       light_pressed: str | None = None, light_disabled: str | None = None,
+                       dark_default: str | None = None, dark_hover: str | None = None, 
+                       dark_pressed: str | None = None, dark_disabled: str | None = None) -> None:
+        """
+        Sets the icon paths for different states and themes.
 
-        self.icons["light"]["default"] = get_icon(light_default)
-        self.icons["light"]["hover"] = get_icon(light_hover)
-        self.icons["light"]["pressed"] = get_icon(light_pressed)
-        self.icons["light"]["disabled"] = get_icon(light_disabled)
-
-        self.icons["dark"]["default"] = get_icon(dark_default)
-        self.icons["dark"]["hover"] = get_icon(dark_hover)
-        self.icons["dark"]["pressed"] = get_icon(dark_pressed)
-        self.icons["dark"]["disabled"] = get_icon(dark_disabled)
+        Args:
+            light_default: Path to the default icon for light theme.
+            light_hover: Path to the hover icon for light theme.
+            light_pressed: Path to the pressed icon for light theme.
+            light_disabled: Path to the disabled icon for light theme.
+            dark_default: Path to the default icon for dark theme.
+            dark_hover: Path to the hover icon for dark theme.
+            dark_pressed: Path to the pressed icon for dark theme.
+            dark_disabled: Path to the disabled icon for dark theme.
+        """
+        mapping = {
+            ("light", "default"): light_default,
+            ("light", "hover"): light_hover,
+            ("light", "pressed"): light_pressed,
+            ("light", "disabled"): light_disabled,
+            ("dark", "default"): dark_default,
+            ("dark", "hover"): dark_hover,
+            ("dark", "pressed"): dark_pressed,
+            ("dark", "disabled"): dark_disabled,
+        }
+        for (theme, state), path in mapping.items():
+            self.icons[theme][state] = QIcon(path) if path else None
 
         self._update_icon()
 
-    def _update_icon(self):
+    def _update_icon(self) -> None:
+        """Updates the icon based on the current state and theme."""
         theme_id = ThemeManagerInstance().current_theme_id
         theme = "light" if theme_id == "0" else "dark"
 
@@ -74,7 +97,7 @@ class ThemeButton(QPushButton):
             state = "hover"
 
         icon = self.icons[theme].get(state)
-        # Если иконки для конкретного состояния нет, берем дефолтную
+        # If there is no icon for a specific state, take the default one
         if not icon or icon.isNull():
             icon = self.icons[theme].get("default")
 
@@ -83,32 +106,38 @@ class ThemeButton(QPushButton):
         else:
             self.setIcon(QIcon())
 
-    def _on_theme_changed(self, theme_id):
+    def _on_theme_changed(self, theme_id: str) -> None:
+        """Handles theme change events."""
         self._update_icon()
 
-    def enterEvent(self, event):
+    def enterEvent(self, event: QEvent) -> None:
+        """Handles mouse enter events."""
         self._hover = True
         self._update_icon()
         super().enterEvent(event)
 
-    def leaveEvent(self, event):
+    def leaveEvent(self, event: QEvent) -> None:
+        """Handles mouse leave events."""
         self._hover = False
         self._update_icon()
         super().leaveEvent(event)
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event: QMouseEvent) -> None:
+        """Handles mouse press events."""
         if event.button() == Qt.LeftButton:
             self._pressed = True
             self._update_icon()
         super().mousePressEvent(event)
 
-    def mouseReleaseEvent(self, event):
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+        """Handles mouse release events."""
         if event.button() == Qt.LeftButton:
             self._pressed = False
             self._update_icon()
         super().mouseReleaseEvent(event)
 
-    def changeEvent(self, event):
+    def changeEvent(self, event: QEvent) -> None:
+        """Handles widget state change events."""
         if event.type() == QEvent.EnabledChange:
             self._update_icon()
         super().changeEvent(event)
@@ -117,20 +146,29 @@ class ThemeButton(QPushButton):
 """=== Labels ==="""
 
 class LogoLabel(QLabel):
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget | None = None) -> None:
+        """Initializes the logo label."""
         super().__init__(parent=parent)
         ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
 
         self.icons = {"light": None, "dark": None}
 
-    def set_icon_paths(self, light=None, dark=None):
+    def set_icon_paths(self, light: str | None = None, dark: str | None = None) -> None:
+        """
+        Sets the icon paths for light and dark themes.
+
+        Args:
+            light: Path to the icon for light theme.
+            dark: Path to the icon for dark theme.
+        """
         if light:
             self.icons["light"] = QIcon(light)
         if dark:
             self.icons["dark"] = QIcon(dark)
         self.update()
 
-    def paintEvent(self, event):
+    def paintEvent(self, event: QPaintEvent) -> None:
+        """Paints the logo icon."""
         super().paintEvent(event)
         theme_id = ThemeManagerInstance().current_theme_id
         theme = "light" if theme_id == "0" else "dark"
@@ -142,24 +180,28 @@ class LogoLabel(QLabel):
             painter.setRenderHint(QPainter.SmoothPixmapTransform)
             icon.paint(painter, self.rect(), self.alignment())
 
-    def _on_theme_changed(self, theme_id):
+    def _on_theme_changed(self, theme_id: str) -> None:
+        """Handles theme change events."""
         self.update()
 
 
 class InfoLabel(QLabel):
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget | None = None) -> None:
+        """Initializes the info label."""
         super().__init__(parent=parent)
 
 
 class TextButton(QLabel):
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget | None = None) -> None:
+        """Initializes the text button."""
         super().__init__(parent=parent)
 
 
 """=== Checkboxes ==="""
 
 class ViewPasswordCheckbox(QCheckBox):
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget | None = None) -> None:
+        """Initializes the view password checkbox."""
         super().__init__(parent=parent)
         self.setCursor(Qt.PointingHandCursor)
         # Hiding the standard checkbox indicator so that only the icon is displayed
@@ -190,43 +232,70 @@ class ViewPasswordCheckbox(QCheckBox):
         self.setIconSize(QSize(24, 24))
 
     def set_icon_paths(self, 
-                       light_unchecked=None, light_unchecked_hover=None, 
-                       light_unchecked_pressed=None, light_unchecked_disabled=None,
-                       light_checked=None, light_checked_hover=None, 
-                       light_checked_pressed=None, light_checked_disabled=None,
-                       dark_unchecked=None, dark_unchecked_hover=None, 
-                       dark_unchecked_pressed=None, dark_unchecked_disabled=None,
-                       dark_checked=None, dark_checked_hover=None, 
-                       dark_checked_pressed=None, dark_checked_disabled=None):
-        
-        def get_icon(path):
-            return QIcon(path) if path else None
+                       light_unchecked: str | None = None, 
+                       light_unchecked_hover: str | None = None, 
+                       light_unchecked_pressed: str | None = None, 
+                       light_unchecked_disabled: str | None = None,
+                       light_checked: str | None = None, 
+                       light_checked_hover: str | None = None, 
+                       light_checked_pressed: str | None = None, 
+                       light_checked_disabled: str | None = None,
 
-        # Light theme
-        self.icons["light"]["unchecked"]["default"] = get_icon(light_unchecked)
-        self.icons["light"]["unchecked"]["hover"] = get_icon(light_unchecked_hover)
-        self.icons["light"]["unchecked"]["pressed"] = get_icon(light_unchecked_pressed)
-        self.icons["light"]["unchecked"]["disabled"] = get_icon(light_unchecked_disabled)
-        
-        self.icons["light"]["checked"]["default"] = get_icon(light_checked)
-        self.icons["light"]["checked"]["hover"] = get_icon(light_checked_hover)
-        self.icons["light"]["checked"]["pressed"] = get_icon(light_checked_pressed)
-        self.icons["light"]["checked"]["disabled"] = get_icon(light_checked_disabled)
+                       dark_unchecked: str | None = None, 
+                       dark_unchecked_hover: str | None = None, 
+                       dark_unchecked_pressed: str | None = None, 
+                       dark_unchecked_disabled: str | None = None,
+                       dark_checked: str | None = None, 
+                       dark_checked_hover: str | None = None, 
+                       dark_checked_pressed: str | None = None, 
+                       dark_checked_disabled: str | None = None) -> None:
+        """
+        Sets icon paths for different states and themes.
 
-        # Dark theme
-        self.icons["dark"]["unchecked"]["default"] = get_icon(dark_unchecked)
-        self.icons["dark"]["unchecked"]["hover"] = get_icon(dark_unchecked_hover)
-        self.icons["dark"]["unchecked"]["pressed"] = get_icon(dark_unchecked_pressed)
-        self.icons["dark"]["unchecked"]["disabled"] = get_icon(dark_unchecked_disabled)
-        
-        self.icons["dark"]["checked"]["default"] = get_icon(dark_checked)
-        self.icons["dark"]["checked"]["hover"] = get_icon(dark_checked_hover)
-        self.icons["dark"]["checked"]["pressed"] = get_icon(dark_checked_pressed)
-        self.icons["dark"]["checked"]["disabled"] = get_icon(dark_checked_disabled)
+        Args:
+            light_unchecked: Default unchecked icon for light theme.
+            light_unchecked_hover: Hover unchecked icon for light theme.
+            light_unchecked_pressed: Pressed unchecked icon for light theme.
+            light_unchecked_disabled: Disabled unchecked icon for light theme.
+            light_checked: Default checked icon for light theme.
+            light_checked_hover: Hover checked icon for light theme.
+            light_checked_pressed: Pressed checked icon for light theme.
+            light_checked_disabled: Disabled checked icon for light theme.
+            dark_unchecked: Default unchecked icon for dark theme.
+            dark_unchecked_hover: Hover unchecked icon for dark theme.
+            dark_unchecked_pressed: Pressed unchecked icon for dark theme.
+            dark_unchecked_disabled: Disabled unchecked icon for dark theme.
+            dark_checked: Default checked icon for dark theme.
+            dark_checked_hover: Hover checked icon for dark theme.
+            dark_checked_pressed: Pressed checked icon for dark theme.
+            dark_checked_disabled: Disabled checked icon for dark theme.
+        """
+        mapping = {
+            ("light", "unchecked", "default"): light_unchecked,
+            ("light", "unchecked", "hover"): light_unchecked_hover,
+            ("light", "unchecked", "pressed"): light_unchecked_pressed,
+            ("light", "unchecked", "disabled"): light_unchecked_disabled,
+            ("light", "checked", "default"): light_checked,
+            ("light", "checked", "hover"): light_checked_hover,
+            ("light", "checked", "pressed"): light_checked_pressed,
+            ("light", "checked", "disabled"): light_checked_disabled,
+            ("dark", "unchecked", "default"): dark_unchecked,
+            ("dark", "unchecked", "hover"): dark_unchecked_hover,
+            ("dark", "unchecked", "pressed"): dark_unchecked_pressed,
+            ("dark", "unchecked", "disabled"): dark_unchecked_disabled,
+            ("dark", "checked", "default"): dark_checked,
+            ("dark", "checked", "hover"): dark_checked_hover,
+            ("dark", "checked", "pressed"): dark_checked_pressed,
+            ("dark", "checked", "disabled"): dark_checked_disabled,
+        }
+
+        for (theme, state, mode), path in mapping.items():
+            self.icons[theme][state][mode] = QIcon(path) if path else None
 
         self._update_icon()
 
-    def _update_icon(self):
+    def _update_icon(self) -> None:
+        """Updates the icon based on the current state and theme."""
         theme_id = ThemeManagerInstance().current_theme_id
         theme = "light" if theme_id == "0" else "dark"
         
@@ -249,35 +318,42 @@ class ViewPasswordCheckbox(QCheckBox):
         else:
             self.setIcon(QIcon())
 
-    def _on_theme_changed(self, theme_id):
+    def _on_theme_changed(self, theme_id: str) -> None:
+        """Handles theme change events."""
         self._update_icon()
 
-    def _on_state_changed(self, state):
+    def _on_state_changed(self, state: int) -> None:
+        """Handles checkbox state change events."""
         self._update_icon()
 
-    def enterEvent(self, event):
+    def enterEvent(self, event: QEvent) -> None:
+        """Handles mouse enter events."""
         self._hover = True
         self._update_icon()
         super().enterEvent(event)
 
-    def leaveEvent(self, event):
+    def leaveEvent(self, event: QEvent) -> None:
+        """Handles mouse leave events."""
         self._hover = False
         self._update_icon()
         super().leaveEvent(event)
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event: QMouseEvent) -> None:
+        """Handles mouse press events."""
         if event.button() == Qt.LeftButton:
             self._pressed = True
             self._update_icon()
         super().mousePressEvent(event)
 
-    def mouseReleaseEvent(self, event):
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+        """Handles mouse release events."""
         if event.button() == Qt.LeftButton:
             self._pressed = False
             self._update_icon()
         super().mouseReleaseEvent(event)
 
-    def changeEvent(self, event):
+    def changeEvent(self, event: QEvent) -> None:
+        """Handles widget state change events."""
         if event.type() == QEvent.EnabledChange:
             self._update_icon()
         super().changeEvent(event)
@@ -286,7 +362,8 @@ class ViewPasswordCheckbox(QCheckBox):
 """=== QLineEdit ==="""
 
 class IconLineEdit(QLineEdit):
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget | None = None) -> None:
+        """Initializes the icon line edit."""
         super().__init__(parent)
 
         ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
@@ -321,11 +398,24 @@ class IconLineEdit(QLineEdit):
     # Assign icons for both light/dark themes
     def set_icon_paths(
         self,
-        default_light=None, default_dark=None,
-        hover_light=None, hover_dark=None,
-        focus_light=None, focus_dark=None,
-        disabled_light=None, disabled_dark=None
-    ):
+        default_light: str | None = None, default_dark: str | None = None,
+        hover_light: str | None = None, hover_dark: str | None = None,
+        focus_light: str | None = None, focus_dark: str | None = None,
+        disabled_light: str | None = None, disabled_dark: str | None = None
+    ) -> None:
+        """
+        Sets icon paths for different states and themes.
+
+        Args:
+            default_light: Default icon for light theme.
+            default_dark: Default icon for dark theme.
+            hover_light: Hover icon for light theme.
+            hover_dark: Hover icon for dark theme.
+            focus_light: Focus icon for light theme.
+            focus_dark: Focus icon for dark theme.
+            disabled_light: Disabled icon for light theme.
+            disabled_dark: Disabled icon for dark theme.
+        """
         mapping = {
             ("default",  "light"): default_light,
             ("default",  "dark"):  default_dark,
@@ -347,11 +437,13 @@ class IconLineEdit(QLineEdit):
 
 
     # Reload icons when theme changes
-    def refresh_icons(self):
+    def refresh_icons(self) -> None:
+        """Refreshes the icons."""
         self._update_icon()
 
     # icon placement
-    def resizeEvent(self, event):
+    def resizeEvent(self, event: QResizeEvent) -> None:
+        """Handles resize events to reposition the icon."""
         super().resizeEvent(event)
 
         self.icon_label.setGeometry(
@@ -362,36 +454,42 @@ class IconLineEdit(QLineEdit):
         )
 
     # hover
-    def enterEvent(self, event):
+    def enterEvent(self, event: QEvent) -> None:
+        """Handles mouse enter events."""
         super().enterEvent(event)
         self._hover = True
         self._update_icon()
 
-    def leaveEvent(self, event):
+    def leaveEvent(self, event: QEvent) -> None:
+        """Handles mouse leave events."""
         super().leaveEvent(event)
         self._hover = False
         self._update_icon()
 
     # focus
-    def focusInEvent(self, event):
+    def focusInEvent(self, event: QFocusEvent) -> None:
+        """Handles focus in events."""
         super().focusInEvent(event)
         self._focus = True
         self._update_icon()
 
-    def focusOutEvent(self, event):
+    def focusOutEvent(self, event: QFocusEvent) -> None:
+        """Handles focus out events."""
         super().focusOutEvent(event)
         self._focus = False
         self._update_icon()
 
     # disabled
-    def setDisabled(self, disabled):
+    def setDisabled(self, disabled: bool) -> None:
+        """Sets the disabled state of the widget."""
         super().setDisabled(disabled)
         self._disabled = disabled
         self._update_icon()
 
 
     # State priority + theme-based icon selection
-    def _update_icon(self):
+    def _update_icon(self) -> None:
+        """Updates the icon based on the current state and theme."""
         theme_id = ThemeManagerInstance().current_theme_id
         theme = "light" if theme_id == "0" else "dark"
 
@@ -411,7 +509,8 @@ class IconLineEdit(QLineEdit):
                                                   self.icon_size))
 
 
-    def _on_theme_changed(self, theme_id):
+    def _on_theme_changed(self, theme_id: str) -> None:
+        """Handles theme change events."""
         self._update_icon()
 
 
@@ -428,12 +527,12 @@ class SidebarItem:
     id: str
     title: str
     count: int = 0
-    icon: QIcon = None
+    icon: QIcon | None = None
     disabled: bool = False
 
 
 def _create_color_property(private_name: str) -> pyqtProperty:
-    """A factory for creating QColor pyqtProperty."""
+    """Creates a QColor property."""
     def getter(self) -> QColor:
         return getattr(self, private_name)
 
@@ -444,7 +543,8 @@ def _create_color_property(private_name: str) -> pyqtProperty:
     return pyqtProperty(QColor, getter, setter)
 
 
-def _resolve_view_color(view, attr_name: str) -> QColor | None:
+def _resolve_view_color(view: QWidget | None, attr_name: str) -> QColor | None:
+    """Resolves a color from the view's attributes."""
     if view is None:
         return None
     color = getattr(view, attr_name, None)
@@ -454,8 +554,9 @@ def _resolve_view_color(view, attr_name: str) -> QColor | None:
 
 
 class _DeptDelegate(QStyledItemDelegate):
-    """Рисует строку: иконка + текст + badge справа, выбранное красным."""
-    def __init__(self, parent=None):
+    """Draws a row: icon + text + badge on the right, selected item in red."""
+    def __init__(self, parent: QWidget | None = None) -> None:
+        """Initializes the delegate."""
         super().__init__(parent)
 
         self.row_h = 44
@@ -471,12 +572,19 @@ class _DeptDelegate(QStyledItemDelegate):
 
         self.hover_alpha = 28
 
-    def sizeHint(self, option, index):
+    def sizeHint(self, option: QStyleOptionViewItem, index: QModelIndex) -> QSize:
+        """Returns the size hint for the item."""
         sz = super().sizeHint(option, index)
         sz.setHeight(self.row_h)
         return sz
 
-    def paint(self, painter, option, index):
+    def paint(
+            self, 
+            painter: QPainter, 
+            option: QStyleOptionViewItem, 
+            index: QModelIndex
+    ) -> None:
+        """Paints the item."""
         painter.save()
         painter.setRenderHint(QPainter.Antialiasing, True)
 
@@ -493,10 +601,11 @@ class _DeptDelegate(QStyledItemDelegate):
             QPalette.AlternateBase
         )
 
-        # Скруглённый фон только для пунктов (не для группы)
+        # Rounded background only for items (not for the group)
         r = option.rect
         if view is not None:
-            # Рисуем фон на всю ширину viewport, без клиппинга (убирает артефакты при ресайзе)
+            # Draw background for the full width of the viewport, 
+            # without clipping (removes artifacts during resize)
             r = QRect(
                 0,
                 option.rect.top(),
@@ -513,13 +622,13 @@ class _DeptDelegate(QStyledItemDelegate):
                 painter.setPen(Qt.NoPen)
                 painter.drawRoundedRect(r, self.radius, self.radius)
 
-        # Контент
+        # Content
         x = option.rect.left() + self.pad_l
         y = option.rect.top()
         h = option.rect.height()
 
-        # Текстовые цвета
-        # Дефолтный цвет, если ничего не подошло
+        # Text colors
+        # Default color if nothing matched
         text_color = palette.color(QPalette.WindowText)
 
         if disabled:
@@ -547,11 +656,11 @@ class _DeptDelegate(QStyledItemDelegate):
                     QPalette.Text
                 )
 
-        # Иконка
+        # Icon
         icon_rect = QRect(x, y + (h - self.icon_sz) // 2, self.icon_sz, self.icon_sz)
         icon_drawn = False
         if is_group:
-            # Берем иконку из свойств виджета (установленных через QSS)
+            # Take the icon from widget properties (set via QSS)
             icon = QIcon()
             if is_hover and not disabled:
                 icon = view.groupIconHover
@@ -581,13 +690,13 @@ class _DeptDelegate(QStyledItemDelegate):
 
         x += self.icon_sz + self.gap
 
-                # Badge справа (только для пунктов)
+        # Badge on the right (only for items)
         badge_w = 0
         count = index.data(ROLE_COUNT)
         if (count is not None) and (not is_group):
             count_str = str(int(count))
 
-            # Используем шрифт из опций, меняем только размер
+            # Use font from options, change only size
             badge_font = option.font
             if badge_font.pointSize() != self.badge_font_size:
                 badge_font = QFont(badge_font)
@@ -603,15 +712,6 @@ class _DeptDelegate(QStyledItemDelegate):
                 badge_w,
                 self.badge_h,
             )
-
-            if not disabled:
-                theme_id = ThemeManagerInstance().current_theme_id
-                # Light: Black 5% (13), Dark: White 5% (13). Offset (0, 3).
-                shadow_color = QColor(0, 0, 0, 13) if theme_id == "0" else QColor(255, 255, 255, 13)
-                
-                painter.setBrush(shadow_color)
-                painter.setPen(Qt.NoPen)
-                painter.drawRoundedRect(badge_rect.translated(0, 3), self.badge_h // 2, self.badge_h // 2)
 
             if is_selected and not disabled:
                 badge_bg = (
@@ -649,23 +749,22 @@ class _DeptDelegate(QStyledItemDelegate):
                     QPalette.Text
                 )
             painter.setPen(badge_text)
-            
-            # ИСПРАВЛЕННОЕ ЦЕНТРИРОВАНИЕ ТЕКСТА
-            # Вычисляем ширину текста
+
+            # Calculate text width
             text_width = fm_b.horizontalAdvance(count_str)
-            
-            # Получаем метрики шрифта для точного вертикального центрирования
-            font_ascent = fm_b.ascent()    # высота от базовой линии до верха символов
-            font_descent = fm_b.descent()  # высота от базовой линии до низа символов
-            
-            # Вычисляем позицию базовой линии для идеального вертикального центрирования
+
+            # Get font metrics for precise vertical centering
+            font_ascent = fm_b.ascent()    # height from baseline to top of characters
+            font_descent = fm_b.descent()  # height from baseline to bottom of characters
+
+            # Calculate baseline position for ideal vertical centering
             baseline_y = badge_rect.top() + (badge_rect.height() + font_ascent - font_descent) // 2
             text_x = badge_rect.left() + (badge_rect.width() - text_width) // 2
-            
-            # Рисуем текст с правильным позиционированием
+
+            # Draw text with correct positioning
             painter.drawText(text_x, baseline_y, count_str)
 
-        # Текст (с elide, чтобы не залезал в badge)
+        # Text (with elide so it doesn't overlap the badge)
         title = str(index.data(Qt.DisplayRole) or "")
         font = QFont(option.font)
         if is_selected and not is_group and not disabled:
@@ -685,12 +784,13 @@ class _DeptDelegate(QStyledItemDelegate):
 
 class SidebarBlock(QTreeView):
     """
-    QTreeView, который можно promote'нуть в Designer.
-    Динамически загружаешь элементы через set_items().
+    QTreeView that can be promoted in Designer.
+    Dynamically load items via set_items().
     """
-    itemActivatedById = pyqtSignal(str)  # по клику/enter отдаёт id
+    itemActivatedById = pyqtSignal(str)  # emits id on click/enter
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget | None = None) -> None:
+        """Initializes the sidebar block."""
         super().__init__(parent)
 
         self._model = QStandardItemModel(self)
@@ -708,13 +808,13 @@ class SidebarBlock(QTreeView):
 
         self.setItemDelegate(_DeptDelegate(self))
 
-        # Мапа id -> item для быстрых апдейтов
+        # Map id -> item for fast updates
         self._items_by_id: dict[str, QStandardItem] = {}
         self._active_id: str | None = None
 
         self.clicked.connect(self._on_clicked)
         ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
-        # Инициализация приватных атрибутов для свойств
+        # Initialization of private attributes for properties
         self._badge_background_color = QColor()
         self._badge_text_color = QColor()
         self._badge_background_selected_color = QColor()
@@ -731,7 +831,7 @@ class SidebarBlock(QTreeView):
         self._group_icon = QIcon()
         self._group_icon_hover = QIcon()
 
-    # Создание свойств через фабрику
+    # Creating properties via factory
     badgeBackgroundColor = _create_color_property("_badge_background_color")
     badgeTextColor = _create_color_property("_badge_text_color")
     badgeBackgroundSelectedColor = _create_color_property("_badge_background_selected_color")
@@ -748,24 +848,29 @@ class SidebarBlock(QTreeView):
 
     @pyqtProperty(QIcon)
     def groupIcon(self) -> QIcon:
+        """Returns the group icon."""
         return self._group_icon
 
     @groupIcon.setter
     def groupIcon(self, icon: QIcon) -> None:
+        """Sets the group icon."""
         self._group_icon = icon
         self.viewport().update()
 
     @pyqtProperty(QIcon)
     def groupIconHover(self) -> QIcon:
+        """Returns the hover group icon."""
         return self._group_icon_hover
 
     @groupIconHover.setter
     def groupIconHover(self, icon: QIcon) -> None:
+        """Sets the hover group icon."""
         self._group_icon_hover = icon
         self.viewport().update()
 
     # ---------- Public API ----------
     def clear_items(self) -> None:
+        """Clears all items from the sidebar."""
         self._model.clear()
         self._model.setHorizontalHeaderLabels([""])
         self._items_by_id.clear()
@@ -779,8 +884,14 @@ class SidebarBlock(QTreeView):
         expand_group: bool = True,
     ) -> None:
         """
-        Полностью перезалить список.
-        Если group_title задан – делаем одну “группу” сверху.
+        Completely reload the list.
+        If group_title is set, create one "group" at the top.
+
+        Args:
+            items: An iterable of SidebarItem objects.
+            group_title: The title of the group (optional).
+            group_icon: The icon for the group (optional).
+            expand_group: Whether to expand the group by default.
         """
         self.clear_items()
 
@@ -810,7 +921,7 @@ class SidebarBlock(QTreeView):
         if group_title is not None and expand_group:
             self.expand(self._model.index(0, 0))
 
-        # Автоматический выбор первого элемента
+        # Automatic selection of the first item
         first_index = None
         if group_title is not None:
             group_idx = self._model.index(0, 0)
@@ -827,21 +938,23 @@ class SidebarBlock(QTreeView):
                 self._active_id = str(id_)
                 self.itemActivatedById.emit(str(id_))
             
-            # Если есть группа, убедимся, что она видна (не уехала за пределы из-за скролла к ребенку)
+            # If there is a group, ensure it is visible (didn't scroll out of view due to scrolling to child)
             if group_title is not None:
                 self.updateGeometry()
-                self.scrollTo(self._model.index(0, 0), QAbstractItemView.PositionAtTop)
+                self.verticalScrollBar().setValue(0)
 
     def update_count(self, id: str, count: int) -> None:
+        """Updates the count badge for a specific item."""
         item = self._items_by_id.get(id)
         if not item:
             return
         item.setData(int(count), ROLE_COUNT)
-        # попросим view перерисовать эту строку
+        # ask view to repaint this row
         idx = item.index()
         self.viewport().update(self.visualRect(idx))
 
     def set_selected(self, id: str) -> None:
+        """Selects an item by its ID."""
         item = self._items_by_id.get(id)
         if not item:
             return
@@ -850,25 +963,28 @@ class SidebarBlock(QTreeView):
         self.scrollTo(item.index(), QAbstractItemView.PositionAtCenter)
 
     def get_selected_id(self) -> str | None:
+        """Returns the ID of the currently selected item."""
         idx = self.currentIndex()
         if not idx.isValid():
             return None
         return idx.data(ROLE_ID)
     
     def _on_theme_changed(self, theme_id: str) -> None:
+        """Handles theme change events."""
         self.viewport().update()
     
-    def mousePressEvent(self, event) -> None:
+    def mousePressEvent(self, event: QMouseEvent) -> None:
+        """Handles mouse press events."""
         if event.button() == Qt.LeftButton:
             index = self.indexAt(event.pos())
             if index.isValid() and index.data(ROLE_IS_GROUP):
-                # Перехватываем клик по группе: только сворачиваем/разворачиваем
+                # Intercept click on group: only collapse/expand
                 self.setUpdatesEnabled(False)
                 if self.isExpanded(index):
                     self.collapse(index)
                 else:
                     self.expand(index)
-                    # Восстанавливаем выделение, если активный элемент внутри этой группы
+                    # Restore selection if the active item is inside this group
                     if self._active_id:
                         item = self._items_by_id.get(self._active_id)
                         if item:
@@ -882,6 +998,7 @@ class SidebarBlock(QTreeView):
 
     # ---------- Internal ----------
     def _on_clicked(self, index: QModelIndex) -> None:
+        """Handles item click events."""
         id_ = index.data(ROLE_ID)
         if id_:
             self._active_id = str(id_)
