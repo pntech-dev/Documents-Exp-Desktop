@@ -604,6 +604,15 @@ class _DeptDelegate(QStyledItemDelegate):
                 self.badge_h,
             )
 
+            if not disabled:
+                theme_id = ThemeManagerInstance().current_theme_id
+                # Light: Black 5% (13), Dark: White 5% (13). Offset (0, 3).
+                shadow_color = QColor(0, 0, 0, 13) if theme_id == "0" else QColor(255, 255, 255, 13)
+                
+                painter.setBrush(shadow_color)
+                painter.setPen(Qt.NoPen)
+                painter.drawRoundedRect(badge_rect.translated(0, 3), self.badge_h // 2, self.badge_h // 2)
+
             if is_selected and not disabled:
                 badge_bg = (
                     _resolve_view_color(view, "badgeBackgroundSelectedColor")
