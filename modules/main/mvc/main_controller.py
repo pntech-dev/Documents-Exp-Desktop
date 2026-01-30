@@ -28,9 +28,31 @@ class MainController(QObject):
         self._update_departments()
         self._update_categories()
 
+        """ Setup connections """
+        self._setup_navbar_connections()
+
+
+    # ====================
+    # Contoller Handlers
+    # ====================
+
+
+    """=== Theme ==="""
+    def on_theme_switcher_clicked(self) -> None:
+        """Handles the theme switcher button click.
+
+        Calls the view's `set_theme` method to toggle between light and dark
+        themes for the application.
+        """
+        self.view.set_theme()
+
+
+    # ====================
+    # Controller methods
+    # ====================
+
 
     """=== Updaters ==="""
-
     def _update_departments(self):
         # TODO Change it with data from the database
         items = [
@@ -55,3 +77,8 @@ class MainController(QObject):
         ]
 
         self.view.sidebar.update_tree(items=items, group_title="Категории", group_icon=None)
+
+
+    """=== Setup connections ==="""
+    def _setup_navbar_connections(self):
+        self.view.navbar.theme_switcher_clicked(self.on_theme_switcher_clicked)

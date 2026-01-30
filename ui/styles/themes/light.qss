@@ -330,3 +330,42 @@ QFrame#navbar_frame {
 QFrame#main_content_frame {
 	background-color: #F2F2F2;
 }
+
+
+/* Theme Switch */
+#themeSwitch {
+	background-color: transparent;
+	border: none;
+	/* Shadow: blur=10, color=black 10% (approx 26 alpha) */
+	qproperty-knobShadowBlur: 10;
+	qproperty-knobShadowColor: rgba(0, 0, 0, 26);
+}
+
+#themeSwitchTrack {
+	background-color: #FFFFFF;
+	border: 1px solid #E6E6E6;
+	border-radius: 8px;
+}
+
+#themeSwitchKnob {
+	background-color: #FFFFFF;
+	border-radius: 12px;
+}
+
+#themeSwitchLabel {
+	color: #666666;
+	font-size: 12pt;
+	background-color: transparent;
+}
+
+#themeSwitch[hovered="true"] #themeSwitchTrack {
+    background-color: #F2F2F2;
+    border-color: #CCCCCC;
+}
+#themeSwitch[hovered="true"] {
+    qproperty-knobShadowColor: rgba(0, 0, 0, 51);
+}
+
+#themeSwitch:pressed #themeSwitchKnob {
+	background-color: #FFFFFF;
+}

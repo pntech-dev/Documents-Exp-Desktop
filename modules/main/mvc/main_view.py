@@ -1,5 +1,7 @@
 from ui import MainWindow_UI
-from ui.ui_converted.custom_widgets import SidebarItem, SidebarBlock
+from ui.ui_converted.custom_widgets import SidebarItem, SidebarBlock, ThemeSwitch
+
+from utils import ThemeManagerInstance
 
 
 class Sidebar:
@@ -24,9 +26,23 @@ class Sidebar:
             self.categories_tree.set_items(items, group_title, group_icon)
 
 
+class Navbar:
+    def __init__(self, theme_switch: ThemeSwitch) -> None:
+        self.theme_switch = theme_switch
+
+    
+    def theme_switcher_clicked(self, handler) -> None:
+        self.theme_switch.clicked.connect(handler)
+
+
+
 class MainView:
     def __init__(self, ui: MainWindow_UI) -> None:
         self.ui = ui
+        self.theme_manager = ThemeManagerInstance()
+
+        # Заменяем стандартную кнопку темы на кастомный свитчер
+        self._replace_theme_button()
 
         # Setting icon for logo label
         self.ui.logo_label.set_icon_paths(
@@ -71,3 +87,40 @@ class MainView:
             departments_tree=ui.departments_treeView,
             categories_tree=ui.categories_treeView
         )
+
+        self.navbar = Navbar(
+            theme_switch=ui.theme_pushButton
+        )
+
+
+    def _replace_theme_button(self) -> None:
+        """Replaces the generated QPushButton with ThemeSwitch."""
+        # Получаем родительский контейнер и его layout
+        parent = self.ui.navbar_actions_frame
+        layout = parent.layout()
+        
+        # Находим старую кнопку и её позицию
+        old_button = self.ui.theme_pushButton
+        if old_button:
+            index = layout.indexOf(old_button)
+            layout.removeWidget(old_button)
+            old_button.deleteLater()
+            
+            # Создаем и вставляем новый свитчер на то же место
+            self.ui.theme_pushButton = ThemeSwitch(parent)
+            self.ui.theme_pushButton.setMinimumSize(125, 42)
+            self.ui.theme_pushButton.setObjectName("themeSwitch")
+            
+            # Устанавливаем начальное состояние
+            is_dark = self.theme_manager.current_theme_id != "0"
+            self.ui.theme_pushButton.setChecked(is_dark)
+            
+            layout.insertWidget(index, self.ui.theme_pushButton)
+
+
+    def set_theme(self) -> None:
+        """Switches the application's theme.
+
+        Delegates the theme switching logic to the theme manager instance.
+        """
+        self.theme_manager.switch_theme()
