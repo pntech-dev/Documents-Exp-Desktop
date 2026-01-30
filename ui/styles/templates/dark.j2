@@ -316,14 +316,28 @@ SidebarBlock {
 	qproperty-groupIconHover: url(:/icons/dark/arrow/dark/hover.svg);
 }
 
+QFrame#sidebar_frame {
+	border-right: 1px solid {{ neutral.neutral_200 }};
+}
 
 /* Logo */
 QFrame#logo_frame {
 	border-bottom: 1px solid {{ neutral.neutral_200 }};
 }
 
-
 /* Profile */
 QFrame#profile_frame {
 	border-top: 1px solid {{ neutral.neutral_200 }};
+}
+
+
+/* Navbar */
+QFrame#navbar_frame {
+	border-bottom: 1px solid {{ neutral.neutral_200 }};
+}
+
+
+/* Content */
+QFrame#main_content_frame {
+	background-color: {{ neutral.neutral_0 }};
 }

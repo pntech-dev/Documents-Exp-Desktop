@@ -181,7 +181,7 @@ class AuthController(QObject):
                                          message="Ваш пароль успешно изменён!")
         
 
-    def swith_to_reset_password_page(self, data: dict) -> None:
+    def switch_to_reset_password_page(self, data: dict) -> None:
         """Switches to the password reset page after email confirmation.
 
         This method is called after the user successfully verifies their email
@@ -215,7 +215,7 @@ class AuthController(QObject):
         code = EmailConfirmDialog.get_code(parent=self.auth_window)
 
         # Create success callback
-        success_cb = lambda data: self.swith_to_reset_password_page(data=data)
+        success_cb = lambda data: self.switch_to_reset_password_page(data=data)
         
         # Create worker
         self._create_worker(

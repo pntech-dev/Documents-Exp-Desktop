@@ -1,5 +1,4 @@
 from ui import MainWindow_UI
-from ui.ui_converted.custom_widgets import SidebarItem, SidebarBlock
 from utils import ThemeManagerInstance
 from .mvc import MainModel, MainView, MainController
 
