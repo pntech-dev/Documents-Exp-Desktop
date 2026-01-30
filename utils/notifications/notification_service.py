@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QTimer, QObject, QEvent
 from PyQt5.QtWidgets import QWidget
 
 from .toast_notification import ToastNotification
@@ -14,6 +14,18 @@ class Singleton(type):
         if cls not in cls._instances:
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
+
+
+class WindowResizeFilter(QObject):
+    """Event filter to detect main window resize events."""
+    def __init__(self, notification_service):
+        super().__init__()
+        self.notification_service = notification_service
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Resize:
+            self.notification_service._reposition_toasts()
+        return super().eventFilter(obj, event)
 
 
 class NotificationService(metaclass=Singleton):
@@ -36,6 +48,7 @@ class NotificationService(metaclass=Singleton):
 
         self.main_window: QWidget | None = None
         self.active_toasts = []
+        self.resize_filter = WindowResizeFilter(self)
 
     def set_main_window(self, main_window: QWidget):
         """Sets the main window instance for positioning notifications.
@@ -43,7 +56,16 @@ class NotificationService(metaclass=Singleton):
         Args:
             main_window (QWidget): The main window of the application.
         """
+        if self.main_window:
+            self.main_window.removeEventFilter(self.resize_filter)
+
+        # Clear active toasts from the previous window to prevent positioning issues
+        for toast in self.active_toasts:
+            toast.close()
+        self.active_toasts.clear()
+
         self.main_window = main_window
+        self.main_window.installEventFilter(self.resize_filter)
 
     def show_toast(
             self,
@@ -73,6 +95,9 @@ class NotificationService(metaclass=Singleton):
             notification_type=notification_type,
             parent=self.main_window
         )
+
+        # Ensure the toast is resized to fit its content before calculating position
+        toast.adjustSize()
 
         # Calculate position
         position_y = self.main_window.height() - toast.height() - self.SPACING
@@ -107,10 +132,11 @@ class NotificationService(metaclass=Singleton):
             return
 
         position_y = self.main_window.height() - self.SPACING
-        for toast in reversed(self.active_toasts):
-            position_y -= toast.height() + self.SPACING
-            # A QPropertyAnimation could be used here for smoother repositioning
-            toast.move(self.main_window.width() - toast.width() - self.SPACING, position_y)
+        for toast in self.active_toasts:
+            position_y -= toast.height()
+            target_x = self.main_window.width() - toast.width() - self.SPACING
+            toast.update_position(target_x, position_y)
+            position_y -= self.SPACING
 
     def show_modal(self):
         """Displays a modal notification (dialog).

@@ -62,7 +62,7 @@ class ToastNotification(QFrame, Ui_ToastNotification):
         self.close_pushButton.setIconSize(QSize(16, 16))
         self.close_pushButton.clicked.connect(self.close_animated)
 
-        # Загружаем иконки для состояний кнопки закрытия
+        # Loading icons for the close button states
         self._close_icons = {
             "default": QIcon(f":/icons/{theme_name}/close/{theme_name}/default.svg"),
             "hover": QIcon(f":/icons/{theme_name}/close/{theme_name}/hover.svg"),
@@ -116,6 +116,26 @@ class ToastNotification(QFrame, Ui_ToastNotification):
         self.animation.setEndValue(end_pos)
         self.animation.setEasingCurve(QEasingCurve.OutCubic)
         self.animation.start()
+
+    def update_position(self, target_x, target_y):
+        """Updates the position of the notification, adjusting animation if needed."""
+        if self.animation.state() == QPropertyAnimation.Running:
+            old_end = self.animation.endValue()
+            # Calculate deltas
+            dx = target_x - old_end.x()
+            dy = target_y - old_end.y()
+            
+            # Update start value
+            start_val = self.animation.startValue()
+            start_val.translate(dx, dy)
+            self.animation.setStartValue(start_val)
+            
+            # Update end value
+            end_val = self.animation.endValue()
+            end_val.translate(dx, dy)
+            self.animation.setEndValue(end_val)
+        else:
+            self.move(target_x, target_y)
 
     def close_animated(self):
         """Closes the widget with a slide-out animation."""

@@ -1,7 +1,6 @@
 from ui import MainWindow_UI
-from ui.ui_converted.custom_widgets import SidebarItem, SidebarBlock
-from utils import ThemeManagerInstance
 from .mvc import MainModel, MainView, MainController
+from utils import ThemeManagerInstance, NotificationService
 
 from PyQt5.QtWidgets import QMainWindow
 
@@ -23,6 +22,14 @@ class MainWindow(QMainWindow):
         # Set theme
         self.theme_manager = ThemeManagerInstance()
         self.theme_manager.switch_theme(theme=0)
+
+        # Setup Notification Service
+        NotificationService().set_main_window(self)
+        NotificationService().show_toast(
+            notification_type="info",
+            title="Главное окно",
+            message="Добро пожаловать!"
+        )
 
         # MVC Initialization
         self.model = MainModel()
