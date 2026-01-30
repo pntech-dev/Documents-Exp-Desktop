@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\ui\ui\main.ui'
+# Form implementation generated from reading ui file 'd:\Python Projects\Documents Exp\Documents-Exp-Desktop\ui\ui\main.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -181,6 +181,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_6.addWidget(self.search_lineEdit)
         self.search_filters_pushButton = TertiaryButton(self.search_frame)
         self.search_filters_pushButton.setMinimumSize(QtCore.QSize(0, 42))
+        self.search_filters_pushButton.setText("")
         self.search_filters_pushButton.setObjectName("search_filters_pushButton")
         self.horizontalLayout_6.addWidget(self.search_filters_pushButton)
         self.horizontalLayout_4.addWidget(self.search_frame)
@@ -234,7 +235,6 @@ class Ui_MainWindow(object):
         self.profile_info_label.setText(_translate("MainWindow", "Войдите в аккаунт"))
         self.profile_arrow_label.setText(_translate("MainWindow", "arrow"))
         self.search_lineEdit.setPlaceholderText(_translate("MainWindow", "search"))
-        self.search_filters_pushButton.setText(_translate("MainWindow", "filters"))
         self.theme_pushButton.setText(_translate("MainWindow", "theme"))
         self.create_pushButton.setText(_translate("MainWindow", "Создать"))
         self.fided_label.setText(_translate("MainWindow", "finded"))

@@ -7,7 +7,8 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtWidgets import (
     QPushButton, QAbstractItemView, QLabel, QCheckBox, QLineEdit, QTreeView, 
-    QStyle, QStyledItemDelegate, QWidget, QStyleOptionViewItem
+    QStyle, QStyledItemDelegate, QWidget, QStyleOptionViewItem, QHBoxLayout,
+    QStyleOptionButton
 )
 
 from utils import ThemeManagerInstance
@@ -15,27 +16,9 @@ from utils import ThemeManagerInstance
 
 """=== Buttons ==="""
 
-class PrimaryButton(QPushButton):
+class _IconCustomButton(QPushButton):
     def __init__(self, parent: QWidget | None = None) -> None:
-        """Initializes the primary button."""
-        super().__init__(parent=parent)
-
-
-class SecondaryButton(QPushButton):
-    def __init__(self, parent: QWidget | None = None) -> None:
-        """Initializes the secondary button."""
-        super().__init__(parent=parent)
-
-
-class TertiaryButton(QPushButton):
-    def __init__(self, parent: QWidget | None = None) -> None:
-        """Initializes the tertiary button."""
-        super().__init__(parent=parent)
-
-
-class ThemeButton(QPushButton):
-    def __init__(self, parent: QWidget | None = None) -> None:
-        """Initializes the theme button."""
+        """Initializes the button with icon support."""
         super().__init__(parent=parent)
         ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
 
@@ -47,7 +30,8 @@ class ThemeButton(QPushButton):
         }
         self._hover = False
         self._pressed = False
-        self.setIconSize(QSize(24, 24))
+
+        self.setIconSize(QSize(20, 20))
 
     def set_icon_paths(self,
                        light_default: str | None = None, light_hover: str | None = None, 
@@ -56,16 +40,6 @@ class ThemeButton(QPushButton):
                        dark_pressed: str | None = None, dark_disabled: str | None = None) -> None:
         """
         Sets the icon paths for different states and themes.
-
-        Args:
-            light_default: Path to the default icon for light theme.
-            light_hover: Path to the hover icon for light theme.
-            light_pressed: Path to the pressed icon for light theme.
-            light_disabled: Path to the disabled icon for light theme.
-            dark_default: Path to the default icon for dark theme.
-            dark_hover: Path to the hover icon for dark theme.
-            dark_pressed: Path to the pressed icon for dark theme.
-            dark_disabled: Path to the disabled icon for dark theme.
         """
         mapping = {
             ("light", "default"): light_default,
@@ -105,6 +79,74 @@ class ThemeButton(QPushButton):
         else:
             self.setIcon(QIcon())
 
+    def paintEvent(self, event: QPaintEvent) -> None:
+        """Custom paint event to handle icon and text spacing."""
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setRenderHint(QPainter.SmoothPixmapTransform)
+
+        opt = QStyleOptionButton()
+        self.initStyleOption(opt)
+
+        # Clear content to draw background only
+        original_text = opt.text
+        original_icon = opt.icon
+        opt.text = ""
+        opt.icon = QIcon()
+
+        painter.save()
+        self.style().drawControl(QStyle.CE_PushButton, opt, painter, self)
+        painter.restore()
+
+        # Restore content
+        opt.text = original_text
+        opt.icon = original_icon
+
+        # Layout calculations
+        spacing = 8
+        rect = opt.rect
+
+        # Font
+        painter.setFont(self.font())
+        font_metrics = QFontMetrics(self.font())
+        text_width = font_metrics.width(opt.text)
+        
+        icon_size = self.iconSize()
+        
+        current_icon = self.icon()
+        has_text = bool(opt.text)
+        has_icon = not current_icon.isNull()
+        
+        total_width = 0
+        if has_icon:
+            total_width += icon_size.width()
+        if has_text:
+            total_width += text_width
+        if has_icon and has_text:
+            total_width += spacing
+            
+        # Center
+        x = rect.left() + (rect.width() - total_width) // 2
+        
+        # Draw Icon
+        if has_icon:
+            icon_y = rect.top() + (rect.height() - icon_size.height()) // 2
+            pixmap = current_icon.pixmap(icon_size, QIcon.Normal, QIcon.Off)
+            painter.drawPixmap(x, icon_y, pixmap)
+            x += icon_size.width() + spacing
+            
+        # Draw Text
+        if has_text:
+            text_rect = QRect(x, rect.top(), text_width, rect.height())
+            
+            # Color from palette (handles QSS states)
+            color = opt.palette.color(QPalette.ButtonText)
+            if not self.isEnabled():
+                color = opt.palette.color(QPalette.Disabled, QPalette.ButtonText)
+            
+            painter.setPen(color)
+            painter.drawText(text_rect, Qt.AlignVCenter | Qt.AlignLeft, opt.text)
+
     def _on_theme_changed(self, theme_id: str) -> None:
         """Handles theme change events."""
         self._update_icon()
@@ -140,6 +182,30 @@ class ThemeButton(QPushButton):
         if event.type() == QEvent.EnabledChange:
             self._update_icon()
         super().changeEvent(event)
+
+
+class PrimaryButton(_IconCustomButton):
+    def __init__(self, parent: QWidget | None = None) -> None:
+        """Initializes the primary button."""
+        super().__init__(parent=parent)
+
+
+class SecondaryButton(_IconCustomButton):
+    def __init__(self, parent: QWidget | None = None) -> None:
+        """Initializes the secondary button."""
+        super().__init__(parent=parent)
+
+
+class TertiaryButton(_IconCustomButton):
+    def __init__(self, parent: QWidget | None = None) -> None:
+        """Initializes the tertiary button."""
+        super().__init__(parent=parent)
+
+
+class ThemeButton(_IconCustomButton):
+    def __init__(self, parent: QWidget | None = None) -> None:
+        """Initializes the theme button."""
+        super().__init__(parent=parent)
 
 
 """=== Labels ==="""
