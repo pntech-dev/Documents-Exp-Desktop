@@ -15,6 +15,7 @@ QLabel {
 	color: {{ neutral.neutral_900 }};
 }
 
+
 /* Info label */
 InfoLabel {
 	color: {{ neutral.neutral_700 }};
@@ -281,4 +282,46 @@ QLineEdit:disabled {
 QFrame#emailConfirmContainer {
     border-radius: 8px;
     background-color: {{ neutral.neutral_0 }};
+}
+
+
+
+/* MAIN APPLICATION */
+
+/* Sidebar */
+SidebarBlock {
+	background-color: {{ neutral.neutral_0 }};
+	selection-background-color: {{ accent.accent_500 }};
+
+	qproperty-badgeBackgroundColor: transparent;
+	qproperty-badgeTextColor: {{ neutral.neutral_300 }};
+	qproperty-badgeBackgroundSelectedColor: {{ neutral.neutral_0 }};
+	qproperty-badgeTextSelectedColor: {{ neutral.neutral_900 }};
+	qproperty-badgeBackgroundHoverColor: {{ neutral.neutral_150 }};
+	qproperty-badgeTextHoverColor: {{ neutral.neutral_800 }};
+	
+	qproperty-disabledTextColor: {{ neutral.neutral_100 }};
+	qproperty-hoverBackgroundColor: {{ neutral.neutral_50 }};
+
+	qproperty-groupTextColor: {{ neutral.neutral_900 }};
+	qproperty-groupTextHoverColor: {{ neutral.neutral_600 }};
+
+	qproperty-itemTextColor: {{ neutral.neutral_600 }};
+	qproperty-itemTextHoverColor: {{ neutral.neutral_800 }};
+	qproperty-itemTextSelectedColor: {{ neutral.neutral_0 }};
+
+	qproperty-groupIcon: url(:/icons/light/arrow/light/default.svg);
+	qproperty-groupIconHover: url(:/icons/light/arrow/light/hover.svg);
+}
+
+
+/* Logo */
+QFrame#logo_frame {
+	border-bottom: 1px solid {{ neutral.neutral_100 }};
+}
+
+
+/* Profile */
+QFrame#profile_frame {
+	border-top: 1px solid {{ neutral.neutral_100 }};
 }
