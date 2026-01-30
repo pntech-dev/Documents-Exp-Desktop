@@ -605,13 +605,6 @@
                            <height>42</height>
                           </size>
                          </property>
-                         <property name="font">
-                          <font>
-                           <pointsize>12</pointsize>
-                           <weight>75</weight>
-                           <bold>true</bold>
-                          </font>
-                         </property>
                          <property name="text">
                           <string>Войти</string>
                          </property>
@@ -1125,13 +1118,6 @@
                         <height>42</height>
                        </size>
                       </property>
-                      <property name="font">
-                       <font>
-                        <pointsize>12</pointsize>
-                        <weight>75</weight>
-                        <bold>true</bold>
-                       </font>
-                      </property>
                       <property name="text">
                        <string>Создать</string>
                       </property>
@@ -1384,13 +1370,6 @@
                         <width>0</width>
                         <height>42</height>
                        </size>
-                      </property>
-                      <property name="font">
-                       <font>
-                        <pointsize>12</pointsize>
-                        <weight>75</weight>
-                        <bold>true</bold>
-                       </font>
                       </property>
                       <property name="text">
                        <string>Подтвердить</string>
@@ -1764,13 +1743,6 @@
                         <width>0</width>
                         <height>42</height>
                        </size>
-                      </property>
-                      <property name="font">
-                       <font>
-                        <pointsize>12</pointsize>
-                        <weight>75</weight>
-                        <bold>true</bold>
-                       </font>
                       </property>
                       <property name="text">
                        <string>Изменить</string>

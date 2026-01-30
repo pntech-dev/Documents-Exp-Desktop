@@ -37,7 +37,6 @@ class ThemeButton(QPushButton):
     def __init__(self, parent: QWidget | None = None) -> None:
         """Initializes the theme button."""
         super().__init__(parent=parent)
-        self.setCursor(Qt.PointingHandCursor)
         ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
 
         self.icons = {

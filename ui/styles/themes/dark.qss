@@ -51,6 +51,9 @@ PrimaryButton {
 	border: 0px;
 	color: #E6E6E6;
 	background-color: #C43A3A;
+	font-weight: bold;
+	font-size: 12pt;
+	padding: 0px 16px;
 }
 
 PrimaryButton:hover {
@@ -71,6 +74,7 @@ SecondaryButton {
 	border: 1px solid #E6E6E6;
 	color: #999999;
 	background-color: #333333;
+	padding: 0px 16px;
 }
 
 SecondaryButton:hover {
@@ -95,6 +99,7 @@ SecondaryButton:disabled {
 TertiaryButton {
 	border: 1px solid #333333;
 	color: #999999;
+	padding: 0px 16px;
 }
 
 TertiaryButton:hover {
