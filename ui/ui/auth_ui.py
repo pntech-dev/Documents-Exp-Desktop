@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'd:\Python Projects\Documents-Exp-Desktop\ui\ui\auth.ui'
+# Form implementation generated from reading ui file 'd:\Python Projects\Documents Exp\Documents-Exp-Desktop\ui\ui\auth.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -235,11 +235,6 @@ class Ui_MainWindow(object):
         self.login_pushButton = PrimaryButton(self.login_buttons)
         self.login_pushButton.setEnabled(False)
         self.login_pushButton.setMinimumSize(QtCore.QSize(0, 42))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        font.setBold(True)
-        font.setWeight(75)
-        self.login_pushButton.setFont(font)
         self.login_pushButton.setObjectName("login_pushButton")
         self.horizontalLayout_2.addWidget(self.login_pushButton)
         self.guest_pushButton = TertiaryButton(self.login_buttons)
@@ -437,11 +432,6 @@ class Ui_MainWindow(object):
         self.create_pushButton = PrimaryButton(self.login_buttons_2)
         self.create_pushButton.setEnabled(False)
         self.create_pushButton.setMinimumSize(QtCore.QSize(0, 42))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        font.setBold(True)
-        font.setWeight(75)
-        self.create_pushButton.setFont(font)
         self.create_pushButton.setObjectName("create_pushButton")
         self.horizontalLayout_7.addWidget(self.create_pushButton)
         self.have_account_pushButton = TertiaryButton(self.login_buttons_2)
@@ -533,11 +523,6 @@ class Ui_MainWindow(object):
         self.accept_pushButton = PrimaryButton(self.login_buttons_3)
         self.accept_pushButton.setEnabled(False)
         self.accept_pushButton.setMinimumSize(QtCore.QSize(0, 42))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        font.setBold(True)
-        font.setWeight(75)
-        self.accept_pushButton.setFont(font)
         self.accept_pushButton.setObjectName("accept_pushButton")
         self.horizontalLayout_8.addWidget(self.accept_pushButton)
         self.have_account_pushButton_2 = TertiaryButton(self.login_buttons_3)
@@ -674,11 +659,6 @@ class Ui_MainWindow(object):
         self.change_pushButton = PrimaryButton(self.login_buttons_4)
         self.change_pushButton.setEnabled(False)
         self.change_pushButton.setMinimumSize(QtCore.QSize(0, 42))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        font.setBold(True)
-        font.setWeight(75)
-        self.change_pushButton.setFont(font)
         self.change_pushButton.setObjectName("change_pushButton")
         self.horizontalLayout_9.addWidget(self.change_pushButton)
         self.have_account_pushButton_3 = TertiaryButton(self.login_buttons_4)

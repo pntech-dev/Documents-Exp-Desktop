@@ -171,6 +171,9 @@ class AuthModel:
                 "user_id": user_id
             }
 
+            # Ensure the directory exists before writing
+            self.LOCAL_DIR.mkdir(parents=True, exist_ok=True)
+
             with open(self.LOCAL_DIR_LAST_LOGGED, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=4, ensure_ascii=False)
 

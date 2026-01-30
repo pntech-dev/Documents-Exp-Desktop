@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\ui\email_confirm.ui'
+# Form implementation generated from reading ui file 'd:\Python Projects\Documents Exp\Documents-Exp-Desktop\ui\ui\email_confirm.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -116,4 +116,4 @@ class Ui_Dialog(object):
         self.cancel_pushButton.setText(_translate("Dialog", "Отменить"))
         self.accept_pushButton.setText(_translate("Dialog", "Подтвердить"))
 from .custom_widgets import IconLineEdit, PrimaryButton, TertiaryButton
-import resources.icons.icons_resources_rc
+import icons_resources_rc

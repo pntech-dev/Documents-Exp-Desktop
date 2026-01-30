@@ -1,5 +1,10 @@
 <RCC>
   <qresource prefix="/icons/light">
+    <file>create/create_light.svg</file>
+    <file>search_filter/light/clicked.svg</file>
+    <file>search_filter/light/default.svg</file>
+    <file>search_filter/light/disabled.svg</file>
+    <file>search_filter/light/hover.svg</file>
     <file>arrow/light/default.svg</file>
     <file>arrow/light/hover.svg</file>
     <file>close/light/clicked.svg</file>
@@ -35,6 +40,11 @@
     <file>theme/light/hover.svg</file>
   </qresource>
   <qresource prefix="/icons/dark">
+    <file>create/create_dark.svg</file>
+    <file>search_filter/dark/clicked.svg</file>
+    <file>search_filter/dark/default.svg</file>
+    <file>search_filter/dark/disabled.svg</file>
+    <file>search_filter/dark/hover.svg</file>
     <file>arrow/dark/default.svg</file>
     <file>arrow/dark/hover.svg</file>
     <file>close/dark/clicked.svg</file>
