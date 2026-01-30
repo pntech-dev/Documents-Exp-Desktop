@@ -230,7 +230,7 @@ class EmailConfirmDialog(QDialog):
         """
         self.adjustSize() # Ensure final size with shadow container
 
-        screen = QApplication.primaryScreen().availabelGeometry()
+        screen = QApplication.primaryScreen().availableGeometry()
         x = screen.center().x() - self.width() // 2
         y = screen.center().y() - self.height() // 2
 

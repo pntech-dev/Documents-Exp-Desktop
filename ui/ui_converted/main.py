@@ -236,7 +236,7 @@ class Ui_MainWindow(object):
         self.search_lineEdit.setPlaceholderText(_translate("MainWindow", "search"))
         self.search_filters_pushButton.setText(_translate("MainWindow", "filters"))
         self.theme_pushButton.setText(_translate("MainWindow", "theme"))
-        self.create_pushButton.setText(_translate("MainWindow", "create"))
+        self.create_pushButton.setText(_translate("MainWindow", "Создать"))
         self.fided_label.setText(_translate("MainWindow", "finded"))
         self.tags_label.setText(_translate("MainWindow", "tags"))
 from .custom_widgets import LogoLabel, PrimaryButton, SidebarBlock, TertiaryButton

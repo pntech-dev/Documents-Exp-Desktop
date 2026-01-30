@@ -462,7 +462,7 @@
                 </size>
                </property>
                <property name="text">
-                <string>create</string>
+                <string>Создать</string>
                </property>
               </widget>
              </item>
