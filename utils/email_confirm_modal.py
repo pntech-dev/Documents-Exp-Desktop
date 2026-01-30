@@ -225,12 +225,12 @@ class EmailConfirmDialog(QDialog):
         """Calculates and applies the centered position on the screen.
 
         This method ensures the dialog is perfectly centered on the primary
-        monitor's available geometry. It's called via a QTimer.singleShot to
+        monitor's availabel geometry. It's called via a QTimer.singleShot to
         run after the layout has been fully processed.
         """
         self.adjustSize() # Ensure final size with shadow container
 
-        screen = QApplication.primaryScreen().availableGeometry()
+        screen = QApplication.primaryScreen().availabelGeometry()
         x = screen.center().x() - self.width() // 2
         y = screen.center().y() - self.height() // 2
 

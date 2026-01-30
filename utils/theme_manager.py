@@ -136,11 +136,11 @@ class ThemeManager(QObject):
     def _apply_theme(self) -> None:
         """Applies the current theme's QSS stylesheet to the QApplication.
 
-        Ensures the theme is available and its QSS file exists, then reads the
+        Ensures the theme is availabel and its QSS file exists, then reads the
         stylesheet and applies it to the running QApplication instance.
         """
 
-        if not self._validate_theme_available():
+        if not self._validate_theme_availabel():
             return
 
         theme_name = self.themes[self.current_theme_id]
@@ -166,7 +166,7 @@ class ThemeManager(QObject):
     # VALIDATION
     # ---------------------------
 
-    def _validate_theme_available(self) -> bool:
+    def _validate_theme_availabel(self) -> bool:
         """Validates that the current theme and its QSS file exist.
 
         Checks for the theme ID, theme name, and the existence of the themes
@@ -174,7 +174,7 @@ class ThemeManager(QObject):
         from their Jinja2 templates.
 
         Returns:
-            True if the theme is valid and the QSS file is available (or was
+            True if the theme is valid and the QSS file is availabel (or was
             successfully compiled), False otherwise.
         """
 
