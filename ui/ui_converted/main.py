@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'd:\Python Projects\Documents Exp\Documents-Exp-Desktop\ui\ui\main.ui'
+# Form implementation generated from reading ui file '.\ui\ui\main.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -202,10 +202,20 @@ class Ui_MainWindow(object):
         self.horizontalLayout_5.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_5.setSpacing(32)
         self.horizontalLayout_5.setObjectName("horizontalLayout_5")
-        self.fided_label = QtWidgets.QLabel(self.navbar_info_frame)
+        self.fided_label = IconLabel(self.navbar_info_frame)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.fided_label.sizePolicy().hasHeightForWidth())
+        self.fided_label.setSizePolicy(sizePolicy)
         self.fided_label.setObjectName("fided_label")
         self.horizontalLayout_5.addWidget(self.fided_label)
-        self.tags_label = QtWidgets.QLabel(self.navbar_info_frame)
+        self.tags_label = IconLabel(self.navbar_info_frame)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.tags_label.sizePolicy().hasHeightForWidth())
+        self.tags_label.setSizePolicy(sizePolicy)
         self.tags_label.setObjectName("tags_label")
         self.horizontalLayout_5.addWidget(self.tags_label)
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -237,6 +247,7 @@ class Ui_MainWindow(object):
         self.search_lineEdit.setPlaceholderText(_translate("MainWindow", "search"))
         self.theme_pushButton.setText(_translate("MainWindow", "theme"))
         self.create_pushButton.setText(_translate("MainWindow", "Создать"))
-        self.fided_label.setText(_translate("MainWindow", "finded"))
-        self.tags_label.setText(_translate("MainWindow", "tags"))
-from .custom_widgets import LogoLabel, PrimaryButton, SidebarBlock, TertiaryButton
+        self.fided_label.setText(_translate("MainWindow", "Найдено:"))
+        self.tags_label.setText(_translate("MainWindow", "Популярные теги:"))
+from .custom_widgets import IconLabel, LogoLabel, PrimaryButton, SidebarBlock, TertiaryButton
+import resources.icons.icons_resources_rc

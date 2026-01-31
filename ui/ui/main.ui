@@ -494,16 +494,28 @@
               <number>0</number>
              </property>
              <item>
-              <widget class="QLabel" name="fided_label">
+              <widget class="IconLabel" name="fided_label">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="text">
-                <string>finded</string>
+                <string>Найдено:</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="tags_label">
+              <widget class="IconLabel" name="tags_label">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="text">
-                <string>tags</string>
+                <string>Популярные теги:</string>
                </property>
               </widget>
              </item>
@@ -578,7 +590,14 @@
    <extends>QTreeView</extends>
    <header>.custom_widgets</header>
   </customwidget>
+  <customwidget>
+   <class>IconLabel</class>
+   <extends>QLabel</extends>
+   <header>.custom_widgets</header>
+  </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../../resources/icons/icons_resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -11,7 +11,7 @@ from PyQt5.QtGui import (
 from PyQt5.QtWidgets import (
     QPushButton, QAbstractItemView, QLabel, QCheckBox, QLineEdit, QTreeView, 
     QStyle, QStyledItemDelegate, QWidget, QStyleOptionViewItem, QHBoxLayout,
-    QStyleOptionButton, QGraphicsDropShadowEffect
+    QStyleOptionButton, QGraphicsDropShadowEffect, QStyleOption
 )
 
 from utils import ThemeManagerInstance
@@ -419,6 +419,108 @@ class InfoLabel(QLabel):
     def __init__(self, parent: QWidget | None = None) -> None:
         """Initializes the info label."""
         super().__init__(parent=parent)
+
+
+class IconLabel(QLabel):
+    def __init__(self, parent: QWidget | None = None) -> None:
+        """Initializes the icon label."""
+        super().__init__(parent=parent)
+        self._icon = QIcon()
+        self._icon_size = QSize(20, 20)
+        self._spacing = 8
+
+    def getIcon(self) -> QIcon:
+        return self._icon
+
+    def setIcon(self, icon: QIcon) -> None:
+        self._icon = icon
+        self.updateGeometry()
+        self.update()
+
+    icon = pyqtProperty(QIcon, getIcon, setIcon)
+
+    def getIconSize(self) -> QSize:
+        return self._icon_size
+
+    def setIconSize(self, size: QSize) -> None:
+        self._icon_size = size
+        self.updateGeometry()
+        self.update()
+
+    iconSize = pyqtProperty(QSize, getIconSize, setIconSize)
+
+    def sizeHint(self) -> QSize:
+        sh = super().sizeHint()
+        if not self._icon.isNull():
+            w = sh.width() + self._icon_size.width() + self._spacing
+            h = max(sh.height(), self._icon_size.height())
+            return QSize(w, h)
+        return sh
+
+    def minimumSizeHint(self) -> QSize:
+        msh = super().minimumSizeHint()
+        if not self._icon.isNull():
+            w = msh.width() + self._icon_size.width() + self._spacing
+            h = max(msh.height(), self._icon_size.height())
+            return QSize(w, h)
+        return msh
+
+    def paintEvent(self, event: QPaintEvent) -> None:
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+
+        # Draw background (supports QSS)
+        opt = QStyleOption()
+        opt.initFrom(self)
+        self.style().drawPrimitive(QStyle.PE_Widget, opt, painter, self)
+
+        rect = self.contentsRect()
+        text = self.text()
+        
+        has_icon = not self._icon.isNull()
+        has_text = bool(text)
+        
+        content_width = 0
+        if has_icon:
+            content_width += self._icon_size.width()
+        if has_text:
+            fm = self.fontMetrics()
+            content_width += fm.horizontalAdvance(text)
+        if has_icon and has_text:
+            content_width += self._spacing
+            
+        align = self.alignment()
+        
+        # Calculate starting x
+        x = rect.left()
+        if align & Qt.AlignHCenter:
+            x += (rect.width() - content_width) // 2
+        elif align & Qt.AlignRight:
+            x += rect.width() - content_width
+            
+        if has_icon:
+            icon_rect = QRect(
+                x, 
+                rect.top() + (rect.height() - self._icon_size.height()) // 2,
+                self._icon_size.width(), 
+                self._icon_size.height()
+            )
+            
+            mode = QIcon.Disabled if not self.isEnabled() else QIcon.Normal
+            self._icon.paint(painter, icon_rect, Qt.AlignCenter, mode=mode)
+            
+            x += self._icon_size.width() + self._spacing
+            
+        if has_text:
+            text_rect = QRect(x, rect.top(), rect.width() - (x - rect.left()), rect.height())
+            
+            color = self.palette().color(QPalette.WindowText)
+            if not self.isEnabled():
+                color = self.palette().color(QPalette.Disabled, QPalette.WindowText)
+            
+            painter.setPen(color)
+            painter.setFont(self.font())
+            painter.drawText(text_rect, Qt.AlignVCenter | Qt.AlignLeft, text)
 
 
 """=== Checkboxes ==="""

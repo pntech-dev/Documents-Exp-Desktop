@@ -15,6 +15,13 @@ QLabel {
 	color: #E6E6E6;
 }
 
+IconLabel#fided_label {
+	qproperty-icon: url(:/icons/dark/finded/dark.svg);
+}
+
+IconLabel#tags_label {
+	qproperty-icon: url(:/icons/dark/tags/dark.svg);
+}
 
 /* Info label */
 InfoLabel {
