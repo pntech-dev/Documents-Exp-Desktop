@@ -21,7 +21,6 @@ class MainWindow(QMainWindow):
 
         # Set theme
         self.theme_manager = ThemeManagerInstance()
-        self.theme_manager.switch_theme(theme=0)
 
         # Setup Notification Service
         NotificationService().set_main_window(self)
