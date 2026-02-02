@@ -428,6 +428,7 @@ class IconLabel(QLabel):
         self._icon = QIcon()
         self._icon_size = QSize(20, 20)
         self._spacing = 8
+        self._icon_rotation = 0.0
 
     def getIcon(self) -> QIcon:
         return self._icon
@@ -448,6 +449,15 @@ class IconLabel(QLabel):
         self.update()
 
     iconSize = pyqtProperty(QSize, getIconSize, setIconSize)
+
+    def getIconRotation(self) -> float:
+        return self._icon_rotation
+
+    def setIconRotation(self, angle: float) -> None:
+        self._icon_rotation = angle
+        self.update()
+
+    iconRotation = pyqtProperty(float, getIconRotation, setIconRotation)
 
     def sizeHint(self) -> QSize:
         sh = super().sizeHint()
@@ -506,8 +516,16 @@ class IconLabel(QLabel):
                 self._icon_size.height()
             )
             
+            painter.save()
+            if self._icon_rotation != 0:
+                center = icon_rect.center()
+                painter.translate(center)
+                painter.rotate(self._icon_rotation)
+                painter.translate(-center)
+
             mode = QIcon.Disabled if not self.isEnabled() else QIcon.Normal
             self._icon.paint(painter, icon_rect, Qt.AlignCenter, mode=mode)
+            painter.restore()
             
             x += self._icon_size.width() + self._spacing
             
@@ -521,6 +539,61 @@ class IconLabel(QLabel):
             painter.setPen(color)
             painter.setFont(self.font())
             painter.drawText(text_rect, Qt.AlignVCenter | Qt.AlignLeft, text)
+
+
+class ProfileIconLabel(IconLabel):
+    def __init__(self, parent: QWidget | None = None) -> None:
+        """Initializes the profile icon label."""
+        super().__init__(parent)
+        ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
+        
+        self.icons = {
+            "guest": {"light": None, "dark": None},
+            "auth": {"light": None, "dark": None}
+        }
+        self._mode = "guest"
+        self._custom_avatar = None
+        
+        # Default size for profile icon
+        self.setIconSize(QSize(48, 48))
+
+    def set_icon_paths(
+            self,
+            guest_light: str | None = None, guest_dark: str | None = None,
+            auth_light: str | None = None, auth_dark: str | None = None
+            ) -> None:
+                       
+        """Sets icon paths for guest and auth modes."""
+        if guest_light: self.icons["guest"]["light"] = QIcon(guest_light)
+        if guest_dark: self.icons["guest"]["dark"] = QIcon(guest_dark)
+        if auth_light: self.icons["auth"]["light"] = QIcon(auth_light)
+        if auth_dark: self.icons["auth"]["dark"] = QIcon(auth_dark)
+        self._update_icon()
+
+    def set_mode(self, mode: str) -> None:
+        """Sets the current mode ('guest' or 'auth')."""
+        self._mode = mode
+        self._update_icon()
+
+    def set_custom_avatar(self, icon: QIcon | None) -> None:
+        """Sets a custom avatar for the authorized user using QIcon."""
+        self._custom_avatar = icon
+        self._update_icon()
+
+    def _update_icon(self) -> None:
+        theme_id = ThemeManagerInstance().current_theme_id
+        theme = "light" if theme_id == "0" else "dark"
+        
+        if self._mode == "auth" and self._custom_avatar and not self._custom_avatar.isNull():
+            self.setIcon(self._custom_avatar)
+            return
+
+        icon = self.icons.get(self._mode, {}).get(theme)
+        if icon and not icon.isNull():
+            self.setIcon(icon)
+
+    def _on_theme_changed(self, theme_id: str) -> None:
+        self._update_icon()
 
 
 """=== Checkboxes ==="""

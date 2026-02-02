@@ -15,6 +15,17 @@ QLabel {
 	color: {{ neutral.neutral_900 }};
 }
 
+IconLabel {
+	font-size: 10pt;
+}
+
+IconLabel#fided_label {
+	qproperty-icon: url(:/icons/light/finded/light.svg);
+}
+
+IconLabel#tags_label {
+	qproperty-icon: url(:/icons/light/tags/light.svg);
+}
 
 /* Info label */
 InfoLabel {
@@ -319,6 +330,21 @@ QFrame#profile_frame {
 	border-top: 1px solid {{ neutral.neutral_100 }};
 }
 
+QLabel#profile_name_label {
+	color: {{ neutral.neutral_800 }};
+	font-size: 12pt;
+}
+
+QLabel#profile_info_label {
+	color: {{ neutral.neutral_600 }};
+	font-size: 10pt;
+}
+
+IconLabel#profile_arrow_label {
+	qproperty-icon: url(:/icons/light/arrow/light/default.svg);
+	qproperty-iconRotation: 90;
+}
+
 
 /* Navbar */
 QFrame#navbar_frame {
@@ -329,4 +355,43 @@ QFrame#navbar_frame {
 /* Content */
 QFrame#main_content_frame {
 	background-color: {{ neutral.neutral_50 }};
+}
+
+
+/* Theme Switch */
+#themeSwitch {
+	background-color: transparent;
+	border: none;
+	/* Shadow: blur=10, color=black 10% (approx 26 alpha) */
+	qproperty-knobShadowBlur: 10;
+	qproperty-knobShadowColor: rgba(0, 0, 0, 26);
+}
+
+#themeSwitchTrack {
+	background-color: {{ neutral.neutral_0 }};
+	border: 1px solid {{ neutral.neutral_100 }};
+	border-radius: 8px;
+}
+
+#themeSwitchKnob {
+	background-color: {{ neutral.neutral_0 }};
+	border-radius: 12px;
+}
+
+#themeSwitchLabel {
+	color: {{ neutral.neutral_600 }};
+	font-size: 12pt;
+	background-color: transparent;
+}
+
+#themeSwitch[hovered="true"] #themeSwitchTrack {
+    background-color: {{ neutral.neutral_50 }};
+    border-color: {{ neutral.neutral_200 }};
+}
+#themeSwitch[hovered="true"] {
+    qproperty-knobShadowColor: rgba(0, 0, 0, 51);
+}
+
+#themeSwitch:pressed #themeSwitchKnob {
+	background-color: {{ neutral.neutral_0 }};
 }

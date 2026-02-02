@@ -330,6 +330,21 @@ QFrame#profile_frame {
 	border-top: 1px solid #E6E6E6;
 }
 
+QLabel#profile_name_label {
+	color: #333333;
+	font-size: 12pt;
+}
+
+QLabel#profile_info_label {
+	color: #666666;
+	font-size: 10pt;
+}
+
+IconLabel#profile_arrow_label {
+	qproperty-icon: url(:/icons/light/arrow/light/default.svg);
+	qproperty-iconRotation: 90;
+}
+
 
 /* Navbar */
 QFrame#navbar_frame {

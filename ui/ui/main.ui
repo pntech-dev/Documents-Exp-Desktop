@@ -260,19 +260,25 @@
            <number>24</number>
           </property>
           <item>
-           <widget class="QLabel" name="profile_icon_label">
+           <widget class="ProfileIconLabel" name="profile_icon_label">
             <property name="font">
              <font>
               <pointsize>10</pointsize>
              </font>
             </property>
             <property name="text">
-             <string>profile</string>
+             <string/>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QFrame" name="profile_data_frame">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
             </property>
@@ -280,6 +286,21 @@
              <enum>QFrame::Raised</enum>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_3">
+             <property name="spacing">
+              <number>8</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
              <item>
               <widget class="QLabel" name="profile_name_label">
                <property name="text">
@@ -298,14 +319,26 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="profile_arrow_label">
+           <widget class="IconLabel" name="profile_arrow_label">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="font">
              <font>
               <pointsize>10</pointsize>
              </font>
             </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
             <property name="text">
-             <string>arrow</string>
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
             </property>
            </widget>
           </item>
@@ -592,6 +625,11 @@
   </customwidget>
   <customwidget>
    <class>IconLabel</class>
+   <extends>QLabel</extends>
+   <header>.custom_widgets</header>
+  </customwidget>
+  <customwidget>
+   <class>ProfileIconLabel</class>
    <extends>QLabel</extends>
    <header>.custom_widgets</header>
   </customwidget>

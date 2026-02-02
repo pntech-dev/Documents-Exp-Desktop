@@ -125,5 +125,42 @@
                 }
             }
         }
+    },
+
+    "icons": {
+        "logo": {
+            "light": ":/light/logo_light.svg",
+            "dark": ":/dark/logo_dark.svg"
+        },
+        "profile": {
+            "guest": {
+                "light": ":/icons/light/profile/light/guest.svg",
+                "dark": ":/icons/dark/profile/dark/guest.svg"
+            },
+            "auth": {
+                "light": ":/icons/light/profile/light/auth.svg",
+                "dark": ":/icons/dark/profile/dark/auth.svg"
+            }
+        },
+        "navbar": {
+            "search_filter": {
+                "light": {
+                    "default": ":/icons/light/search_filter/light/default.svg",
+                    "hover": ":/icons/light/search_filter/light/hover.svg",
+                    "pressed": ":/icons/light/search_filter/light/clicked.svg",
+                    "disabled": ":/icons/light/search_filter/light/disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/search_filter/dark/default.svg",
+                    "hover": ":/icons/dark/search_filter/dark/hover.svg",
+                    "pressed": ":/icons/dark/search_filter/dark/clicked.svg",
+                    "disabled": ":/icons/dark/search_filter/dark/disabled.svg"
+                }
+            },
+            "create": {
+                "light": ":/icons/light/create/create_light.svg",
+                "dark": ":/icons/dark/create/create_dark.svg"
+            }
+        }
     }
 }

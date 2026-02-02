@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="/icons/light">
+    <file>profile/light/guest.svg</file>
+    <file>profile/light/auth.svg</file>
     <file>tags/light.svg</file>
     <file>finded/light.svg</file>
     <file>create/create_light.svg</file>
@@ -42,6 +44,8 @@
     <file>theme/light/hover.svg</file>
   </qresource>
   <qresource prefix="/icons/dark">
+    <file>profile/dark/guest.svg</file>
+    <file>profile/dark/auth.svg</file>
     <file>tags/dark.svg</file>
     <file>finded/dark.svg</file>
     <file>create/create_dark.svg</file>
