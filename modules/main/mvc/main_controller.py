@@ -105,7 +105,14 @@ class MainController(QObject):
         dept_items = []
 
         for dept in self.model.departments:
-            dept_items.append(SidebarItem(id=dept["id"], title=dept["name"], count=0, icon=None))
+            dept_items.append(
+                SidebarItem(
+                    id=dept["id"], 
+                    title=dept["name"], 
+                    count=dept.get("documents_count", 0), 
+                    icon=None
+                )
+            )
             
         self.view.update_departments(dept_items)
         self._update_categories_list()
@@ -115,6 +122,13 @@ class MainController(QObject):
         cat_items = []
         for cat in self.model.categories:
             if self.model.current_department_id and cat.get("group_id") == self.model.current_department_id:
-                cat_items.append(SidebarItem(id=cat["id"], title=cat["name"], count=0, icon=None))
+                cat_items.append(
+                    SidebarItem(
+                        id=cat["id"], 
+                        title=cat["name"], 
+                        count=cat.get("documents_count", 0), 
+                        icon=None
+                    )
+                )
             
         self.view.update_categories(cat_items)
