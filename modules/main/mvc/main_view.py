@@ -103,6 +103,16 @@ class Sidebar:
         """
         pass
 
+    def connect_departments_selection(self, handler) -> None:
+        """Connects to the departments tree selection changed signal."""
+        if self.departments_tree.selectionModel():
+            self.departments_tree.selectionModel().selectionChanged.connect(handler)
+
+    def connect_categories_selection(self, handler) -> None:
+        """Connects to the categories tree selection changed signal."""
+        if self.categories_tree.selectionModel():
+            self.categories_tree.selectionModel().selectionChanged.connect(handler)
+
 
 class Navbar:
     """Manages the navigation bar logic and updates."""
@@ -424,3 +434,19 @@ class MainView(QObject):
         """
         if self.profile_menu:
             self.logout_action.triggered.connect(handler)
+
+    def connect_departments_selection(self, handler) -> None:
+        """Connects the departments selection signal to a handler.
+
+        Args:
+            handler: The callback function.
+        """
+        self.sidebar.connect_departments_selection(handler)
+
+    def connect_categories_selection(self, handler) -> None:
+        """Connects the categories selection signal to a handler.
+
+        Args:
+            handler: The callback function.
+        """
+        self.sidebar.connect_categories_selection(handler)

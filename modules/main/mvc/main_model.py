@@ -22,8 +22,9 @@ class MainModel:
 
         # Sidebar data
         self.departments = self._get_departments()
-        self.current_department_id = self.departments[0]["id"]
+        self.current_department_id = self.departments[0]["id"] if self.departments else None
         self.categories = self._get_categories()
+        self.current_category_id = self.categories[0]["id"] if self.categories else None
 
 
     # ====================
