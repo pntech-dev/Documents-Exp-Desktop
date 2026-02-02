@@ -57,8 +57,8 @@ class MainController(QObject):
 
     def _init_ui(self) -> None:
         """Initializes the UI with default data."""
-        self.view.set_profile_mode(self.mode)
         self._load_sidebar_data()
+        self.view.set_profile_mode(self.mode)
 
 
     def _setup_connections(self) -> None:

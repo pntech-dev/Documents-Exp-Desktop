@@ -92,6 +92,14 @@ class Sidebar:
         """
         self.profile_icon_label.set_custom_avatar(icon)
 
+    def set_ui_visible(self, is_visible: bool) -> None:
+        """Enables or disables UI elements visibility.
+
+        Args:
+            is_enabled: Boolean indicating whether the UI should be enabled.
+        """
+        pass
+
 
 class Navbar:
     """Manages the navigation bar logic and updates."""
@@ -151,6 +159,13 @@ class Navbar:
             dark_disabled=dark_create
         )
 
+    def set_ui_visible(self, is_visible: bool) -> None:
+        """Enables or disables UI elements visibility.
+
+        Args:
+            is_enabled: Boolean indicating whether the UI should be enabled.
+        """
+        self.create_pushButton.setVisible(is_visible)
     
     def theme_switcher_clicked(self, handler) -> None:
         """Connects the theme switcher click signal to a handler.
@@ -298,6 +313,10 @@ class MainView:
     def set_profile_mode(self, mode: str) -> None:
         """Sets the profile mode ('guest' or 'auth')."""
         self.sidebar.set_profile_mode(mode)
+
+        is_visible = True if mode == "auth" else False
+        self.navbar.set_ui_visible(is_visible)
+        self.sidebar.set_ui_visible(is_visible)
 
 
     def connect_theme_switch(self, handler) -> None:
