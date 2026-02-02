@@ -239,34 +239,40 @@ class MainView(QObject):
         self.profile_menu = ThemeAwareMenu(self.ui.profile_frame)
         self.profile_menu.setObjectName("profile_menu")
         
-        # Example actions (Icons should ideally come from config)
-        # Using existing icons as placeholders for demonstration
+        # Get menu icons config
+        menu_icons = self.ui_config.get("icons", {}).get("menu", {})
+        
+        profile_icons = menu_icons.get("profile", {})
         self.user_profile_action = self.profile_menu.add_theme_action(
             text="Профиль", 
-            light_default=":/icons/light/profile/light/profile_default.svg",
-            light_hover=":/icons/light/profile/light/profile_hover.svg",
-            light_pressed=":/icons/light/profile/light/profile_pressed.svg",
-            dark_default=":/icons/dark/profile/dark/profile_default.svg",
-            dark_hover=":/icons/dark/profile/dark/profile_hover.svg",
-            dark_pressed=":/icons/dark/profile/dark/profile_pressed.svg"
+            light_default=profile_icons.get("light", {}).get("default"),
+            light_hover=profile_icons.get("light", {}).get("hover"),
+            light_pressed=profile_icons.get("light", {}).get("pressed"),
+            dark_default=profile_icons.get("dark", {}).get("default"),
+            dark_hover=profile_icons.get("dark", {}).get("hover"),
+            dark_pressed=profile_icons.get("dark", {}).get("pressed")
         )
+        
+        settings_icons = menu_icons.get("settings", {})
         self.settings_action = self.profile_menu.add_theme_action(
             text="Настройки", 
-            light_default=":/icons/light/settings/light/default.svg",
-            light_hover=":/icons/light/settings/light/hover.svg",
-            light_pressed=":/icons/light/settings/light/pressed.svg",
-            dark_default=":/icons/dark/settings/dark/default.svg",
-            dark_hover=":/icons/dark/settings/dark/hover.svg",
-            dark_pressed=":/icons/dark/settings/dark/pressed.svg"
+            light_default=settings_icons.get("light", {}).get("default"),
+            light_hover=settings_icons.get("light", {}).get("hover"),
+            light_pressed=settings_icons.get("light", {}).get("pressed"),
+            dark_default=settings_icons.get("dark", {}).get("default"),
+            dark_hover=settings_icons.get("dark", {}).get("hover"),
+            dark_pressed=settings_icons.get("dark", {}).get("pressed")
         )
+        
+        logout_icons = menu_icons.get("logout", {})
         self.logout_action = self.profile_menu.add_theme_action(
             text="Выйти", 
-            light_default=":/icons/light/exit/light/default.svg",
-            light_hover=":/icons/light/exit/light/hover.svg",
-            light_pressed=":/icons/light/exit/light/pressed.svg",
-            dark_default=":/icons/dark/exit/dark/default.svg",
-            dark_hover=":/icons/dark/exit/dark/hover.svg",
-            dark_pressed=":/icons/dark/exit/dark/pressed.svg",
+            light_default=logout_icons.get("light", {}).get("default"),
+            light_hover=logout_icons.get("light", {}).get("hover"),
+            light_pressed=logout_icons.get("light", {}).get("pressed"),
+            dark_default=logout_icons.get("dark", {}).get("default"),
+            dark_hover=logout_icons.get("dark", {}).get("hover"),
+            dark_pressed=logout_icons.get("dark", {}).get("pressed"),
             danger_action=True
         )
 

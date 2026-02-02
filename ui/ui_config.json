@@ -161,6 +161,44 @@
                 "light": ":/icons/light/create/create_light.svg",
                 "dark": ":/icons/dark/create/create_dark.svg"
             }
+        },
+        "menu": {
+            "profile": {
+                "light": {
+                    "default": ":/icons/light/profile/light/profile_default.svg",
+                    "hover": ":/icons/light/profile/light/profile_hover.svg",
+                    "pressed": ":/icons/light/profile/light/profile_pressed.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/profile/dark/profile_default.svg",
+                    "hover": ":/icons/dark/profile/dark/profile_hover.svg",
+                    "pressed": ":/icons/dark/profile/dark/profile_pressed.svg"
+                }
+            },
+            "settings": {
+                "light": {
+                    "default": ":/icons/light/settings/light/default.svg",
+                    "hover": ":/icons/light/settings/light/hover.svg",
+                    "pressed": ":/icons/light/settings/light/pressed.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/settings/dark/default.svg",
+                    "hover": ":/icons/dark/settings/dark/hover.svg",
+                    "pressed": ":/icons/dark/settings/dark/pressed.svg"
+                }
+            },
+            "logout": {
+                "light": {
+                    "default": ":/icons/light/exit/light/default.svg",
+                    "hover": ":/icons/light/exit/light/hover.svg",
+                    "pressed": ":/icons/light/exit/light/pressed.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/exit/dark/default.svg",
+                    "hover": ":/icons/dark/exit/dark/hover.svg",
+                    "pressed": ":/icons/dark/exit/dark/pressed.svg"
+                }
+            }
         }
     }
 }
