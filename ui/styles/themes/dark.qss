@@ -394,7 +394,7 @@ QFrame#main_content_frame {
     qproperty-knobShadowColor: rgba(255, 255, 255, 51);
 }
 
-#themeSwitch:pressed #themeSwitchKnob {
+#themeSwitch[hovered="true"] #themeSwitchKnob {
 	background-color: #B3B3B3;
 }
 

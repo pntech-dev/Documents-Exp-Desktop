@@ -224,6 +224,7 @@ class ThemeSwitch(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
+        ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
         self.setCursor(Qt.PointingHandCursor)
         self.setObjectName("themeSwitch")
 
@@ -238,17 +239,17 @@ class ThemeSwitch(QWidget):
         self._track = QWidget(self)
         self._track.setObjectName("themeSwitchTrack")
         self._track.setAttribute(Qt.WA_StyledBackground, True)
-        self._track.setAttribute(Qt.WA_TransparentForMouseEvents, True)  # IMPORTANT
+        self._track.setAttribute(Qt.WA_TransparentForMouseEvents, True)
 
         self._knob = QWidget(self._track)
         self._knob.setObjectName("themeSwitchKnob")
         self._knob.setAttribute(Qt.WA_StyledBackground, True)
-        self._knob.setAttribute(Qt.WA_TransparentForMouseEvents, True)   # IMPORTANT
+        self._knob.setAttribute(Qt.WA_TransparentForMouseEvents, True)
 
         self._label = QLabel(self._track)
         self._label.setObjectName("themeSwitchLabel")
         self._label.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
-        self._label.setAttribute(Qt.WA_TransparentForMouseEvents, True)  # IMPORTANT
+        self._label.setAttribute(Qt.WA_TransparentForMouseEvents, True)
 
         self._shadow = QGraphicsDropShadowEffect(self)
         self._shadow.setOffset(0, 0)
@@ -332,10 +333,18 @@ class ThemeSwitch(QWidget):
     # ---- click ----
     def mousePressEvent(self, e):
         if e.button() == Qt.LeftButton:
-            self.setChecked(not self._checked)
             e.accept()
             return
         super().mousePressEvent(e)
+
+    def mouseReleaseEvent(self, e):
+        if e.button() == Qt.LeftButton:
+            # Toggle only if released inside the widget
+            if self.rect().contains(e.pos()):
+                self.setChecked(not self._checked)
+            e.accept()
+            return
+        super().mouseReleaseEvent(e)
 
     # ---- ui/layout ----
     def _update_ui(self):
@@ -343,8 +352,19 @@ class ThemeSwitch(QWidget):
         self._label.setAlignment(
             Qt.AlignVCenter | (Qt.AlignLeft if self._checked else Qt.AlignRight)
         )
+
+        # Update properties for QSS styling
+        state_str = "true" if self._checked else "false"
+        
+        self.setProperty("checked", state_str)
+        self._track.setProperty("checked", state_str)
+        self._knob.setProperty("checked", state_str)
+
         self._layout()
-        self._repolish()
+        self._repolish_all()
+
+    def _on_theme_changed(self, theme_id: str) -> None:
+        self._repolish_all()
 
     def resizeEvent(self, e):
         super().resizeEvent(e)
@@ -622,9 +642,8 @@ class MenuItemWidget(QWidget):
         self._pressed = False
 
         layout = QHBoxLayout(self)
-        # Отступы как у ThemeAwareMenu::item (Left 24, Right 32)
-        layout.setContentsMargins(24, 8, 32, 8)
-        layout.setSpacing(12)
+        layout.setContentsMargins(16, 8, 16, 8)
+        layout.setSpacing(8)
         
         self.icon_label = QLabel()
         self.icon_label.setFixedSize(20, 20)
