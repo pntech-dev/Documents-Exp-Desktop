@@ -18,6 +18,10 @@ class APIClient:
         r.raise_for_status()
 
         return r.json()
+    
+    
+    def get_user_data(self, token: str) -> dict:
+        return self.verify(token)
 
 
     """=== App Data ==="""

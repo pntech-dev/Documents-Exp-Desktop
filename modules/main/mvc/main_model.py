@@ -27,6 +27,17 @@ class MainModel:
         self.current_category_id = self.categories[0]["id"] if self.categories else None
 
 
+    def get_user_data(self) -> dict | None:
+        token = self._get_user_token()
+
+        if not token:
+            return None
+        
+        data = self.api.get_user_data(token)
+        
+        return data
+
+
     # ====================
     # Model Methods
     # ====================
@@ -80,7 +91,23 @@ class MainModel:
         except Exception as e:
             logging.error(msg=e, exc_info=True)
             return None
+        
 
+    def _get_user_token(self) -> str | None:
+        last_logged = self._read_json(self.LOCAL_DIR_LAST_LOGGED)
+
+        if not last_logged:
+            return None
+
+        user_id = last_logged["user_id"]
+
+        access_token = keyring.get_password(
+            service_name="Documents Exp",
+            username=f"access_token_{user_id}"
+        )
+
+        return access_token
+    
 
     def _get_departments(self) -> list[dict]:
         departments = self.api.get_departments()

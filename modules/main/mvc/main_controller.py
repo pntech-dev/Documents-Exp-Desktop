@@ -91,6 +91,20 @@ class MainController(QObject):
         self._load_sidebar_data()
         self.view.set_profile_mode(self.mode)
 
+        # Set user data
+        if self.mode == "auth":
+            user_data = self.model.get_user_data()
+
+            if user_data:
+                username = user_data.get("username")
+                department = user_data.get("department")
+                self.view.set_username(name=username if username else user_data.get("email"))
+                self.view.set_user_department(dept=department if department else "Отдел не выбран")
+
+        else:
+            self.view.set_username("Гость")
+            self.view.set_user_department("Войдите в аккаунт")
+
 
     def _setup_connections(self) -> None:
         """Sets up signal-slot connections."""

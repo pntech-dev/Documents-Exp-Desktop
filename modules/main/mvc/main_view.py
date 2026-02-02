@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtGui import QIcon, QMouseEvent
+from PyQt5.QtWidgets import QWidget, QLabel
+from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QEvent, Qt, QObject, QPoint
 
 from ui import MainWindow_UI
@@ -28,6 +28,8 @@ class Sidebar:
             departments_tree: SidebarBlock,
             categories_tree: SidebarBlock,
             profile_icon_label: ProfileIconLabel,
+            profile_name_label: QLabel,
+            profile_info_label: QLabel,
             icons_config: dict
             ) -> None:
         """Initializes the Sidebar manager.
@@ -44,6 +46,8 @@ class Sidebar:
         self.departments_tree = departments_tree
         self.categories_tree = categories_tree
         self.profile_icon_label = profile_icon_label
+        self.profile_name_label = profile_name_label
+        self.profile_info_label = profile_info_label
         self.config = icons_config
 
         # Setting icon for logo label
@@ -70,6 +74,7 @@ class Sidebar:
         # The View decides the title and icon, not the Controller
         self.departments_tree.set_items(items, group_title="Отделы", group_icon=None)
 
+
     def update_categories(self, items: list[SidebarItem]) -> None:
         """Updates the categories tree with new items.
 
@@ -79,6 +84,7 @@ class Sidebar:
         # The View decides the title and icon, not the Controller
         self.categories_tree.set_items(items, group_title="Категории", group_icon=None)
 
+
     def set_profile_mode(self, mode: str) -> None:
         """Sets the profile mode ('guest' or 'auth').
 
@@ -86,6 +92,24 @@ class Sidebar:
             mode: The mode string, either 'guest' or 'auth'.
         """
         self.profile_icon_label.set_mode(mode)
+
+    def set_username(self, name: str) -> None:
+        """Sets the user's name.
+
+        Args:
+            name: The user's name as a string.
+        """
+        self.profile_name_label.setText(name)
+
+
+    def set_user_department(self, dept: str) -> None:
+        """Sets the user's department.
+
+        Args:
+            dept: The user's department as a string.
+        """
+        self.profile_info_label.setText(dept)
+
 
     def set_user_avatar(self, icon: QIcon | None) -> None:
         """Sets the user's custom avatar.
@@ -95,6 +119,7 @@ class Sidebar:
         """
         self.profile_icon_label.set_custom_avatar(icon)
 
+
     def set_ui_visible(self, is_visible: bool) -> None:
         """Enables or disables UI elements visibility.
 
@@ -103,10 +128,12 @@ class Sidebar:
         """
         pass
 
+
     def connect_departments_selection(self, handler) -> None:
         """Connects to the departments tree selection changed signal."""
         if self.departments_tree.selectionModel():
             self.departments_tree.selectionModel().selectionChanged.connect(handler)
+
 
     def connect_categories_selection(self, handler) -> None:
         """Connects to the categories tree selection changed signal."""
@@ -221,6 +248,8 @@ class MainView(QObject):
             categories_tree=self.ui.categories_treeView,
             logo_label=self.ui.logo_label,
             profile_icon_label=self.ui.profile_icon_label,
+            profile_name_label=self.ui.profile_name_label,
+            profile_info_label=self.ui.profile_info_label,
             icons_config=icons_config
         )
 
@@ -416,6 +445,24 @@ class MainView(QObject):
         is_visible = True if mode == "auth" else False
         self.navbar.set_ui_visible(is_visible)
         self.sidebar.set_ui_visible(is_visible)
+
+
+    def set_username(self, name: str) -> None:
+        """Sets the user's name in the profile frame.
+
+        Args:
+            name: The user's name as a string.
+        """
+        self.sidebar.set_username(name=name)
+
+
+    def set_user_department(self, dept: str) -> None:
+        """Sets the user's department in the profile frame.
+
+        Args:
+            dept: The user's department as a string.
+        """
+        self.sidebar.set_user_department(dept=dept)
 
 
     def connect_theme_switch(self, handler) -> None:
