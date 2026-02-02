@@ -1,10 +1,10 @@
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from .main_model import MainModel
 from .main_view import MainView
-
+from .main_model import MainModel
 from ui.ui_converted.custom_widgets import SidebarItem
+
 
 
 class MainController(QObject):
@@ -39,9 +39,11 @@ class MainController(QObject):
         self._init_ui()
         self._setup_connections()
 
+
     # ====================
     # Controller Handlers
     # ====================
+
 
     def _on_theme_switcher_clicked(self, checked: bool) -> None:
         """Handles the theme switcher button click.
@@ -51,9 +53,15 @@ class MainController(QObject):
         """
         self.view.set_theme()
 
+    def _on_logout_clicked(self) -> None:
+        """Handles the logout action."""
+        self.logout_requested.emit()
+
+
     # ====================
     # Controller Methods
     # ====================
+
 
     def _init_ui(self) -> None:
         """Initializes the UI with default data."""
@@ -64,6 +72,7 @@ class MainController(QObject):
     def _setup_connections(self) -> None:
         """Sets up signal-slot connections."""
         self.view.connect_theme_switch(self._on_theme_switcher_clicked)
+        self.view.connect_logout(self._on_logout_clicked)
 
 
     def _load_sidebar_data(self) -> None:

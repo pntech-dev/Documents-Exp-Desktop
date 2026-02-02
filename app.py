@@ -72,7 +72,7 @@ class Application:
 
     def show_main_window(self, mode: str = "auth"):
         self.main_window = MainWindow(mode=mode)
-        self.main_window.controller.logout_requested.connect(self.on_logout_requested)
+        self.main_window.logout_requested.connect(self.on_logout_requested)
         self.main_window.show()
 
 

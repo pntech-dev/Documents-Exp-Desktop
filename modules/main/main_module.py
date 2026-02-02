@@ -2,10 +2,13 @@ from ui import MainWindow_UI
 from .mvc import MainModel, MainView, MainController
 from utils import ThemeManagerInstance, NotificationService
 
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QMainWindow
 
 
 class MainWindow(QMainWindow):
+    logout_requested = pyqtSignal()
+
     def __init__(self, mode: str = "guest") -> None:
         super().__init__()
 
@@ -39,3 +42,5 @@ class MainWindow(QMainWindow):
             window=self, 
             mode=self.mode
         )
+        # Logout signal
+        self.controller.logout_requested.connect(self.logout_requested.emit)

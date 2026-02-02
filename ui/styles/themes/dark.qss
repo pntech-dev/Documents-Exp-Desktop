@@ -397,3 +397,39 @@ QFrame#main_content_frame {
 #themeSwitch:pressed #themeSwitchKnob {
 	background-color: #B3B3B3;
 }
+
+
+/* Profile Menu (Popover) */
+ThemeAwareMenu {
+	background-color: #262626;
+	border: 1px solid #404040;
+	border-radius: 8px;
+	padding: 8px;
+}
+
+/* Danger Label */
+QLabel[danger="true"] {
+	color: #C43A3A;
+}
+
+/* Menu Item Widget */
+MenuItemWidget {
+    background-color: transparent;
+    border-radius: 4px;
+}
+MenuItemWidget[hovered="true"] {
+    background-color: #333333;
+}
+MenuItemWidget[pressed="true"] {
+    background-color: #4D4D4D;
+}
+
+/* Menu Item Text Colors */
+MenuItemWidget QLabel { color: #999999; }
+MenuItemWidget[hovered="true"] QLabel { color: #B3B3B3; }
+MenuItemWidget[pressed="true"] QLabel { color: #E6E6E6; }
+
+/* Danger Text Overrides */
+MenuItemWidget QLabel[danger="true"] { color: #C43A3A; }
+MenuItemWidget[hovered="true"] QLabel[danger="true"] { color: #D65A5A; }
+MenuItemWidget[pressed="true"] QLabel[danger="true"] { color: #852222; }

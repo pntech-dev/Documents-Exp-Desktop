@@ -1,5 +1,14 @@
 <RCC>
   <qresource prefix="/icons/light">
+    <file>exit/light/default.svg</file>
+    <file>exit/light/hover.svg</file>
+    <file>exit/light/pressed.svg</file>
+    <file>settings/light/default.svg</file>
+    <file>settings/light/hover.svg</file>
+    <file>settings/light/pressed.svg</file>
+    <file>profile/light/profile_default.svg</file>
+    <file>profile/light/profile_hover.svg</file>  
+    <file>profile/light/profile_pressed.svg</file>  
     <file>profile/light/guest.svg</file>
     <file>profile/light/auth.svg</file>
     <file>tags/light.svg</file>
@@ -44,6 +53,15 @@
     <file>theme/light/hover.svg</file>
   </qresource>
   <qresource prefix="/icons/dark">
+    <file>exit/dark/default.svg</file>
+    <file>exit/dark/hover.svg</file>
+    <file>exit/dark/pressed.svg</file>
+    <file>settings/dark/default.svg</file>
+    <file>settings/dark/hover.svg</file>
+    <file>settings/dark/pressed.svg</file>
+    <file>profile/dark/profile_default.svg</file>
+    <file>profile/dark/profile_hover.svg</file>  
+    <file>profile/dark/profile_pressed.svg</file>  
     <file>profile/dark/guest.svg</file>
     <file>profile/dark/auth.svg</file>
     <file>tags/dark.svg</file>

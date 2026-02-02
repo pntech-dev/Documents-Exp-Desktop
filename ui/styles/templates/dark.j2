@@ -370,30 +370,66 @@ QFrame#main_content_frame {
 }
 
 #themeSwitchTrack {
-	background-color: #333333;
-	border: 1px solid #404040;
+	background-color: {{ neutral.neutral_200 }};
+	border: 1px solid {{ neutral.neutral_250 }};
 	border-radius: 8px;
 }
 
 #themeSwitchKnob {
-	background-color: #666666;
+	background-color: {{ neutral.neutral_400 }};
 	border-radius: 12px;
 }
 
 #themeSwitchLabel {
-	color: #B3B3B3;
+	color: {{ neutral.neutral_700 }};
 	font-size: 12pt;
 	background-color: transparent;
 }
 
 #themeSwitch[hovered="true"] #themeSwitchTrack {
-    background-color: #4D4D4D;
-    border-color: #666666;
+    background-color: {{ neutral.neutral_300 }};
+    border-color: {{ neutral.neutral_400 }};
 }
 #themeSwitch[hovered="true"] {
     qproperty-knobShadowColor: rgba(255, 255, 255, 51);
 }
 
 #themeSwitch:pressed #themeSwitchKnob {
-	background-color: #B3B3B3;
+	background-color: {{ neutral.neutral_700 }};
 }
+
+
+/* Profile Menu (Popover) */
+ThemeAwareMenu {
+	background-color: {{ neutral.neutral_100 }};
+	border: 1px solid {{ neutral.neutral_250 }};
+	border-radius: 8px;
+	padding: 8px;
+}
+
+/* Danger Label */
+QLabel[danger="true"] {
+	color: {{ accent.accent_500 }};
+}
+
+/* Menu Item Widget */
+MenuItemWidget {
+    background-color: transparent;
+    border-radius: 4px;
+}
+MenuItemWidget[hovered="true"] {
+    background-color: {{ neutral.neutral_200 }};
+}
+MenuItemWidget[pressed="true"] {
+    background-color: {{ neutral.neutral_300 }};
+}
+
+/* Menu Item Text Colors */
+MenuItemWidget QLabel { color: {{ neutral.neutral_600 }}; }
+MenuItemWidget[hovered="true"] QLabel { color: {{ neutral.neutral_700 }}; }
+MenuItemWidget[pressed="true"] QLabel { color: {{ neutral.neutral_900 }}; }
+
+/* Danger Text Overrides */
+MenuItemWidget QLabel[danger="true"] { color: {{ accent.accent_500 }}; }
+MenuItemWidget[hovered="true"] QLabel[danger="true"] { color: {{ accent.accent_400 }}; }
+MenuItemWidget[pressed="true"] QLabel[danger="true"] { color: {{ accent.accent_600 }}; }
