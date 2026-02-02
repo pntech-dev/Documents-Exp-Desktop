@@ -191,7 +191,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_6.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_6.setSpacing(8)
         self.horizontalLayout_6.setObjectName("horizontalLayout_6")
-        self.search_lineEdit = QtWidgets.QLineEdit(self.search_frame)
+        self.search_lineEdit = IconLineEdit(self.search_frame)
         self.search_lineEdit.setMinimumSize(QtCore.QSize(0, 42))
         self.search_lineEdit.setObjectName("search_lineEdit")
         self.horizontalLayout_6.addWidget(self.search_lineEdit)
@@ -258,10 +258,10 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "Documents Exp"))
         self.profile_name_label.setText(_translate("MainWindow", "Гость"))
         self.profile_info_label.setText(_translate("MainWindow", "Войдите в аккаунт"))
-        self.search_lineEdit.setPlaceholderText(_translate("MainWindow", "search"))
+        self.search_lineEdit.setPlaceholderText(_translate("MainWindow", "Поиск..."))
         self.theme_pushButton.setText(_translate("MainWindow", "theme"))
         self.create_pushButton.setText(_translate("MainWindow", "Создать"))
         self.fided_label.setText(_translate("MainWindow", "Найдено:"))
         self.tags_label.setText(_translate("MainWindow", "Популярные теги:"))
-from .custom_widgets import IconLabel, LogoLabel, PrimaryButton, ProfileIconLabel, SidebarBlock, TertiaryButton
+from .custom_widgets import IconLabel, IconLineEdit, LogoLabel, PrimaryButton, ProfileIconLabel, SidebarBlock, TertiaryButton
 import resources.icons.icons_resources_rc

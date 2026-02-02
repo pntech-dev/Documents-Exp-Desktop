@@ -143,6 +143,20 @@
             }
         },
         "navbar": {
+            "search_input": {
+                "light": {
+                    "default": ":/icons/light/input_fields/search/light/default.svg",
+                    "hover": ":/icons/light/input_fields/search/light/hover.svg",
+                    "focus": ":/icons/light/input_fields/search/light/active.svg",
+                    "disabled": ":/icons/light/input_fields/search/light/disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/input_fields/search/dark/default.svg",
+                    "hover": ":/icons/dark/input_fields/search/dark/hover.svg",
+                    "focus": ":/icons/dark/input_fields/search/dark/active.svg",
+                    "disabled": ":/icons/dark/input_fields/search/dark/disabled.svg"
+                }
+            },
             "search_filter": {
                 "light": {
                     "default": ":/icons/light/search_filter/light/default.svg",

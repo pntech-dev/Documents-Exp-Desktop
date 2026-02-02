@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from PyQt5.QtWidgets import QWidget, QLabel
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QEvent, Qt, QObject, QPoint
 
@@ -146,6 +146,7 @@ class Navbar:
 
     def __init__(
             self,
+            search_lineedit: QLineEdit,
             search_filters_pushButton: TertiaryButton,
             theme_switch: ThemeSwitch,
             create_pushButton: PrimaryButton,
@@ -159,10 +160,27 @@ class Navbar:
             create_pushButton: The primary button for creating new items.
             icons_config: Dictionary containing icon paths configuration.
         """
+        self.search_lineedit = search_lineedit
         self.search_filters_pushButton = search_filters_pushButton
         self.theme_switch = theme_switch
         self.create_pushButton = create_pushButton
         self.config = icons_config.get("navbar", {})
+
+        # Setting icon fot search line
+        search_input_cfg = self.config.get("search_input", {})
+        self.search_lineedit.set_icon_paths(
+            # light theme
+            default_light=search_input_cfg.get("light", {}).get("default"),
+            hover_light=search_input_cfg.get("light", {}).get("hover"),
+            focus_light=search_input_cfg.get("light", {}).get("focus"),
+            disabled_light=search_input_cfg.get("light", {}).get("disabled"),
+
+            # dark theme
+            default_dark=search_input_cfg.get("dark", {}).get("default"),
+            hover_dark=search_input_cfg.get("dark", {}).get("hover"),
+            focus_dark=search_input_cfg.get("dark", {}).get("focus"),
+            disabled_dark=search_input_cfg.get("dark", {}).get("disabled"),
+        )
 
         # Setting icon for search filter button
         search_cfg = self.config.get("search_filter", {})
@@ -254,6 +272,7 @@ class MainView(QObject):
         )
 
         self.navbar = Navbar(
+            search_lineedit=self.ui.search_lineEdit,
             search_filters_pushButton=self.ui.search_filters_pushButton,
             theme_switch=self.ui.theme_pushButton,
             create_pushButton=self.ui.create_pushButton,

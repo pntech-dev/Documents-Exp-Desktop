@@ -212,6 +212,7 @@ QLineEdit {
 	background-color: #262626;
 	color: #666666;
 	padding: 0px 16px;
+	font-size: 12pt;
 }
 
 QLineEdit:hover {

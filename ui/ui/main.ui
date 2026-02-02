@@ -445,7 +445,7 @@
                  <number>0</number>
                 </property>
                 <item>
-                 <widget class="QLineEdit" name="search_lineEdit">
+                 <widget class="IconLineEdit" name="search_lineEdit">
                   <property name="minimumSize">
                    <size>
                     <width>0</width>
@@ -453,7 +453,7 @@
                    </size>
                   </property>
                   <property name="placeholderText">
-                   <string>search</string>
+                   <string>Поиск...</string>
                   </property>
                  </widget>
                 </item>
@@ -631,6 +631,11 @@
   <customwidget>
    <class>ProfileIconLabel</class>
    <extends>QLabel</extends>
+   <header>.custom_widgets</header>
+  </customwidget>
+  <customwidget>
+   <class>IconLineEdit</class>
+   <extends>QLineEdit</extends>
    <header>.custom_widgets</header>
   </customwidget>
  </customwidgets>
