@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtGui import QIcon, QMouseEvent
-from PyQt5.QtCore import QEvent, Qt, QObject
+from PyQt5.QtCore import QEvent, Qt, QObject, QPoint
 
 from ui import MainWindow_UI
 from utils import ThemeManagerInstance
@@ -272,14 +272,18 @@ class MainView(QObject):
     def eventFilter(self, source: QObject, event: QEvent) -> bool:
         if source == self.ui.profile_frame and event.type() == QEvent.MouseButtonPress:
             if event.button() == Qt.LeftButton:
-                # Show menu aligned to the top-right of the frame
-                pos = self.ui.profile_frame.mapToGlobal(self.ui.profile_frame.rect().topRight())
-                # Adjust position to open slightly above/inside
-                menu_pos = pos
-                menu_pos.setY(menu_pos.y() - self.profile_menu.sizeHint().height()) 
+                # Show menu aligned to the top-right of the frame (above it)
+                frame_width = self.ui.profile_frame.width()
+                # Map top-right corner (width, 0) to global coordinates
+                top_right_global = self.ui.profile_frame.mapToGlobal(QPoint(frame_width, 0))
                 
-                # Or standard popup behavior (at mouse position or aligned)
-                self.profile_menu.exec_(QMouseEvent(event).globalPos())
+                menu_size = self.profile_menu.sizeHint()
+                
+                # Calculate position: x = right - menu_width, y = top - menu_height - margin
+                pos = QPoint(top_right_global.x() - menu_size.width(), 
+                             top_right_global.y() - menu_size.height())
+                
+                self.profile_menu.exec_(pos)
                 return True
         return super().eventFilter(source, event)
 
