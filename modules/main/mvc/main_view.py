@@ -193,6 +193,7 @@ class MainView(QObject):
         self.ui = ui
         self.theme_manager = ThemeManagerInstance()
         self.ui_config = self._load_ui_config()
+        self.current_mode = "guest"
 
         self.profile_menu = None
         self.user_profile_action = None
@@ -272,6 +273,11 @@ class MainView(QObject):
     def eventFilter(self, source: QObject, event: QEvent) -> bool:
         if source == self.ui.profile_frame and event.type() == QEvent.MouseButtonPress:
             if event.button() == Qt.LeftButton:
+                if self.current_mode == "guest":
+                    if self.logout_action:
+                        self.logout_action.trigger()
+                    return True
+
                 # Show menu aligned to the top-right of the frame (above it)
                 frame_width = self.ui.profile_frame.width()
                 # Map top-right corner (width, 0) to global coordinates
@@ -388,6 +394,7 @@ class MainView(QObject):
 
     def set_profile_mode(self, mode: str) -> None:
         """Sets the profile mode ('guest' or 'auth')."""
+        self.current_mode = mode
         self.sidebar.set_profile_mode(mode)
 
         is_visible = True if mode == "auth" else False
