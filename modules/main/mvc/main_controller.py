@@ -77,21 +77,19 @@ class MainController(QObject):
 
     def _load_sidebar_data(self) -> None:
         """Loads and updates sidebar data (departments and categories)."""
-        # TODO: Fetch data from self.model instead of hardcoding
-        dept_items = [
-            SidebarItem(id="tech", title="ТехУпр", count=23, icon=None),
-            SidebarItem(id="shop1", title="Цех №1", count=57, icon=None),
-            SidebarItem(id="shop19", title="Цех №19", count=964, icon=None),
-            SidebarItem(id="rmp", title="РМП", count=0, icon=None, disabled=True),
-        ]
+
+        # Departments
+        dept_items = []
+
+        for dept in self.model.departments:
+            dept_items.append(SidebarItem(id=dept["id"], title=dept["name"], count=0, icon=None))
+            
         self.view.update_departments(dept_items)
 
-        cat_items = [
-            SidebarItem(id="all_docs", title="Все документы", count=964, icon=None),
-            SidebarItem(id="standards_docs", title="Стандарты предприятия", count=64, icon=None),
-            SidebarItem(id="construct_docs", title="Конструкторская документация", count=144, icon=None),
-            SidebarItem(id="tech_docs", title="Технологическая документация", count=25, icon=None),
-            SidebarItem(id="notices", title="Извещения", count=453, icon=None),
-            SidebarItem(id="block-schemas", title="Блок-схемы", count=278, icon=None),
-        ]
+        # Categories
+        cat_items = []
+        for cat in self.model.categories:
+            if cat["group_id"] == self.model.current_department_id:
+                cat_items.append(SidebarItem(id=cat["id"], title=cat["name"], count=0, icon=None))
+            
         self.view.update_categories(cat_items)

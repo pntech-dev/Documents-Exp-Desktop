@@ -20,6 +20,29 @@ class APIClient:
         return r.json()
 
 
+    """=== App Data ==="""
+
+    def get_departments(self) -> dict:
+        r = requests.get(
+            url=self.base_url + "/app/groups",
+            timeout=10
+        )
+
+        r.raise_for_status()
+
+        return r.json()
+    
+
+    def get_categories(self) -> dict:
+        r = requests.get(
+            url=self.base_url + "/app/categories",
+            timeout=10
+        )
+
+        r.raise_for_status()
+
+        return r.json()
+        
 
     """=== Login ==="""
 
