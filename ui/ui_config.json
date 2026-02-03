@@ -134,183 +134,183 @@
         },
         "profile": {
             "guest": {
-                "light": ":/icons/light/profile/light/guest.svg",
-                "dark": ":/icons/dark/profile/dark/guest.svg"
+                "light": ":/icons/light/light/profile_guest.svg",
+                "dark": ":/icons/dark/dark/profile_guest.svg"
             },
             "auth": {
-                "light": ":/icons/light/profile/light/auth.svg",
-                "dark": ":/icons/dark/profile/dark/auth.svg"
+                "light": ":/icons/light/light/profile_auth.svg",
+                "dark": ":/icons/dark/dark/profile_auth.svg"
             }
         },
         "navbar": {
             "search_input": {
                 "light": {
-                    "default": ":/icons/light/input_fields/search/light/default.svg",
-                    "hover": ":/icons/light/input_fields/search/light/hover.svg",
-                    "focus": ":/icons/light/input_fields/search/light/active.svg",
-                    "disabled": ":/icons/light/input_fields/search/light/disabled.svg"
+                    "default": ":/icons/light/light/search_default.svg",
+                    "hover": ":/icons/light/light/search_hover.svg",
+                    "focus": ":/icons/light/light/search_active.svg",
+                    "disabled": ":/icons/light/light/search_disabled.svg"
                 },
                 "dark": {
-                    "default": ":/icons/dark/input_fields/search/dark/default.svg",
-                    "hover": ":/icons/dark/input_fields/search/dark/hover.svg",
-                    "focus": ":/icons/dark/input_fields/search/dark/active.svg",
-                    "disabled": ":/icons/dark/input_fields/search/dark/disabled.svg"
+                    "default": ":/icons/dark/dark/search_default.svg",
+                    "hover": ":/icons/dark/dark/search_hover.svg",
+                    "focus": ":/icons/dark/dark/search_active.svg",
+                    "disabled": ":/icons/dark/dark/search_disabled.svg"
                 }
             },
             "search_filter": {
                 "light": {
-                    "default": ":/icons/light/search_filter/light/default.svg",
-                    "hover": ":/icons/light/search_filter/light/hover.svg",
-                    "pressed": ":/icons/light/search_filter/light/clicked.svg",
-                    "disabled": ":/icons/light/search_filter/light/disabled.svg"
+                    "default": ":/icons/light/light/search_filter_default.svg",
+                    "hover": ":/icons/light/light/search_filter_hover.svg",
+                    "pressed": ":/icons/light/light/search_filter_clicked.svg",
+                    "disabled": ":/icons/light/light/search_filter_disabled.svg"
                 },
                 "dark": {
-                    "default": ":/icons/dark/search_filter/dark/default.svg",
-                    "hover": ":/icons/dark/search_filter/dark/hover.svg",
-                    "pressed": ":/icons/dark/search_filter/dark/clicked.svg",
-                    "disabled": ":/icons/dark/search_filter/dark/disabled.svg"
+                    "default": ":/icons/dark/dark/search_filter_default.svg",
+                    "hover": ":/icons/dark/dark/search_filter_hover.svg",
+                    "pressed": ":/icons/dark/dark/search_filter_clicked.svg",
+                    "disabled": ":/icons/dark/dark/search_filter_disabled.svg"
                 }
             },
             "create": {
-                "light": ":/icons/light/create/create_light.svg",
-                "dark": ":/icons/dark/create/create_dark.svg"
+                "light": ":/icons/light/light/create_default.svg",
+                "dark": ":/icons/dark/dark/create_default.svg"
             }
         },
         "menu": {
             "profile": {
                 "light": {
-                    "default": ":/icons/light/profile/light/profile_default.svg",
-                    "hover": ":/icons/light/profile/light/profile_hover.svg",
-                    "pressed": ":/icons/light/profile/light/profile_pressed.svg"
+                    "default": ":/icons/light/light/profile_default.svg",
+                    "hover": ":/icons/light/light/profile_hover.svg",
+                    "pressed": ":/icons/light/light/profile_pressed.svg"
                 },
                 "dark": {
-                    "default": ":/icons/dark/profile/dark/profile_default.svg",
-                    "hover": ":/icons/dark/profile/dark/profile_hover.svg",
-                    "pressed": ":/icons/dark/profile/dark/profile_pressed.svg"
+                    "default": ":/icons/dark/dark/profile_default.svg",
+                    "hover": ":/icons/dark/dark/profile_hover.svg",
+                    "pressed": ":/icons/dark/dark/profile_pressed.svg"
                 }
             },
             "settings": {
                 "light": {
-                    "default": ":/icons/light/settings/light/default.svg",
-                    "hover": ":/icons/light/settings/light/hover.svg",
-                    "pressed": ":/icons/light/settings/light/pressed.svg"
+                    "default": ":/icons/light/light/settings_default.svg",
+                    "hover": ":/icons/light/light/settings_hover.svg",
+                    "pressed": ":/icons/light/light/settings_pressed.svg"
                 },
                 "dark": {
-                    "default": ":/icons/dark/settings/dark/default.svg",
-                    "hover": ":/icons/dark/settings/dark/hover.svg",
-                    "pressed": ":/icons/dark/settings/dark/pressed.svg"
+                    "default": ":/icons/dark/dark/settings_default.svg",
+                    "hover": ":/icons/dark/dark/settings_hover.svg",
+                    "pressed": ":/icons/dark/dark/settings_pressed.svg"
                 }
             },
             "logout": {
                 "light": {
-                    "default": ":/icons/light/exit/light/default.svg",
-                    "hover": ":/icons/light/exit/light/hover.svg",
-                    "pressed": ":/icons/light/exit/light/pressed.svg"
+                    "default": ":/icons/light/light/exit_default.svg",
+                    "hover": ":/icons/light/light/exit_hover.svg",
+                    "pressed": ":/icons/light/light/exit_pressed.svg"
                 },
                 "dark": {
-                    "default": ":/icons/dark/exit/dark/default.svg",
-                    "hover": ":/icons/dark/exit/dark/hover.svg",
-                    "pressed": ":/icons/dark/exit/dark/pressed.svg"
+                    "default": ":/icons/dark/dark/exit_default.svg",
+                    "hover": ":/icons/dark/dark/exit_hover.svg",
+                    "pressed": ":/icons/dark/dark/exit_pressed.svg"
                 }
             }
         },
         "toolbar": {
             "update": {
                 "light": {
-                    "default": ":/icons/light/update/light/default.svg",
-                    "hover": ":/icons/light/update/light/hover.svg",
-                    "pressed": ":/icons/light/update/light/clicked.svg",
-                    "disabled": ":/icons/light/update/light/disabled.svg"
+                    "default": ":/icons/light/light/update_default.svg",
+                    "hover": ":/icons/light/light/update_hover.svg",
+                    "pressed": ":/icons/light/light/update_clicked.svg",
+                    "disabled": ":/icons/light/light/update_disabled.svg"
                 },
                 "dark": {
-                    "default": ":/icons/dark/update/dark/default.svg",
-                    "hover": ":/icons/dark/update/dark/hover.svg",  
-                    "pressed": ":/icons/dark/update/dark/clicked.svg",
-                    "disabled": ":/icons/dark/update/dark/disabled.svg"
+                    "default": ":/icons/dark/dark/update_default.svg",
+                    "hover": ":/icons/dark/dark/update_hover.svg",  
+                    "pressed": ":/icons/dark/dark/update_clicked.svg",
+                    "disabled": ":/icons/dark/dark/update_disabled.svg"
                 }
             },
             "edit": {
                 "light": {
-                    "default": ":/icons/light/edit/light/default.svg",
-                    "hover": ":/icons/light/edit/light/hover.svg",
-                    "pressed": ":/icons/light/edit/light/clicked.svg",
-                    "disabled": ":/icons/light/edit/light/disabled.svg"
+                    "default": ":/icons/light/light/edit_default.svg",
+                    "hover": ":/icons/light/light/edit_hover.svg",
+                    "pressed": ":/icons/light/light/edit_clicked.svg",
+                    "disabled": ":/icons/light/light/edit_disabled.svg"
                 },
                 "dark": {
-                    "default": ":/icons/dark/edit/dark/default.svg",
-                    "hover": ":/icons/dark/edit/dark/hover.svg",  
-                    "pressed": ":/icons/dark/edit/dark/clicked.svg",
-                    "disabled": ":/icons/dark/edit/dark/disabled.svg"
+                    "default": ":/icons/dark/dark/edit_default.svg",
+                    "hover": ":/icons/dark/dark/edit_hover.svg",  
+                    "pressed": ":/icons/dark/dark/edit_clicked.svg",
+                    "disabled": ":/icons/dark/dark/edit_disabled.svg"
                 }
             },
             "export": {
                 "light": {
-                    "default": ":/icons/light/export/light/default.svg",
-                    "hover": ":/icons/light/export/light/hover.svg",
-                    "pressed": ":/icons/light/export/light/clicked.svg",
-                    "disabled": ":/icons/light/export/light/disabled.svg"
+                    "default": ":/icons/light/light/export_default.svg",
+                    "hover": ":/icons/light/light/export_hover.svg",
+                    "pressed": ":/icons/light/light/export_clicked.svg",
+                    "disabled": ":/icons/light/light/export_disabled.svg"
                 },
                 "dark": {
-                    "default": ":/icons/dark/export/dark/default.svg",
-                    "hover": ":/icons/dark/export/dark/hover.svg",  
-                    "pressed": ":/icons/dark/export/dark/clicked.svg",
-                    "disabled": ":/icons/dark/export/dark/disabled.svg"
+                    "default": ":/icons/dark/dark/export_default.svg",
+                    "hover": ":/icons/dark/dark/export_hover.svg",  
+                    "pressed": ":/icons/dark/dark/export_clicked.svg",
+                    "disabled": ":/icons/dark/dark/export_disabled.svg"
                 }
             },
             "print": {
                 "light": {
-                    "default": ":/icons/light/print/light/default.svg",
-                    "hover": ":/icons/light/print/light/hover.svg",
-                    "pressed": ":/icons/light/print/light/clicked.svg",
-                    "disabled": ":/icons/light/print/light/disabled.svg"
+                    "default": ":/icons/light/light/print_default.svg",
+                    "hover": ":/icons/light/light/print_hover.svg",
+                    "pressed": ":/icons/light/light/print_clicked.svg",
+                    "disabled": ":/icons/light/light/print_disabled.svg"
                 },
                 "dark": {
-                    "default": ":/icons/dark/print/dark/default.svg",
-                    "hover": ":/icons/dark/print/dark/hover.svg",  
-                    "pressed": ":/icons/dark/print/dark/clicked.svg",
-                    "disabled": ":/icons/dark/print/dark/disabled.svg"
+                    "default": ":/icons/dark/dark/print_default.svg",
+                    "hover": ":/icons/dark/dark/print_hover.svg",  
+                    "pressed": ":/icons/dark/dark/print_clicked.svg",
+                    "disabled": ":/icons/dark/dark/print_disabled.svg"
                 }
             },
             "table_view": {
                 "light": {
-                    "default": ":/icons/light/data_view/light/table_default.svg",
-                    "hover": ":/icons/light/data_view/light/table_hover.svg",  
-                    "pressed": ":/icons/light/data_view/light/table_clicked.svg",
-                    "disabled": ":/icons/light/data_view/light/table_disabled.svg"
+                    "default": ":/icons/light/light/table_default.svg",
+                    "hover": ":/icons/light/light/table_hover.svg",  
+                    "pressed": ":/icons/light/light/table_clicked.svg",
+                    "disabled": ":/icons/light/light/table_disabled.svg"
                 },
                 "dark": {
-                    "default": ":/icons/dark/data_view/dark/table_default.svg",
-                    "hover": ":/icons/dark/data_view/dark/table_hover.svg",  
-                    "pressed": ":/icons/dark/data_view/dark/table_clicked.svg",
-                    "disabled": ":/icons/dark/data_view/dark/table_disabled.svg"
+                    "default": ":/icons/dark/dark/table_default.svg",
+                    "hover": ":/icons/dark/dark/table_hover.svg",  
+                    "pressed": ":/icons/dark/dark/table_clicked.svg",
+                    "disabled": ":/icons/dark/dark/table_disabled.svg"
                 }
             },
             "blocks_view": {
                 "light": {
-                    "default": ":/icons/light/data_view/light/blocks_default.svg",
-                    "hover": ":/icons/light/data_view/light/blocks_hover.svg",  
-                    "pressed": ":/icons/light/data_view/light/blocks_clicked.svg",
-                    "disabled": ":/icons/light/data_view/light/blocks_disabled.svg"
+                    "default": ":/icons/light/light/blocks_default.svg",
+                    "hover": ":/icons/light/light/blocks_hover.svg",  
+                    "pressed": ":/icons/light/light/blocks_clicked.svg",
+                    "disabled": ":/icons/light/light/blocks_disabled.svg"
                 },
                 "dark": {
-                    "default": ":/icons/dark/data_view/dark/blocks_default.svg",
-                    "hover": ":/icons/dark/data_view/dark/blocks_hover.svg",  
-                    "pressed": ":/icons/dark/data_view/dark/blocks_clicked.svg",
-                    "disabled": ":/icons/dark/data_view/dark/blocks_disabled.svg"
+                    "default": ":/icons/dark/dark/blocks_default.svg",
+                    "hover": ":/icons/dark/dark/blocks_hover.svg",  
+                    "pressed": ":/icons/dark/dark/blocks_clicked.svg",
+                    "disabled": ":/icons/dark/dark/blocks_disabled.svg"
                 }
             },
             "back": {
                 "light": {
-                    "default": ":/icons/light/back/light/default.svg",
-                    "hover": ":/icons/light/back/light/hover.svg",
-                    "pressed": ":/icons/light/back/light/clicked.svg",
-                    "disabled": ":/icons/light/back/light/disabled.svg"
+                    "default": ":/icons/light/light/back_default.svg",
+                    "hover": ":/icons/light/light/back_hover.svg",
+                    "pressed": ":/icons/light/light/back_clicked.svg",
+                    "disabled": ":/icons/light/light/back_disabled.svg"
                 },
                 "dark": {
-                    "default": ":/icons/dark/back/dark/default.svg",
-                    "hover": ":/icons/dark/back/dark/hover.svg",  
-                    "pressed": ":/icons/dark/back/dark/clicked.svg",
-                    "disabled": ":/icons/dark/back/dark/disabled.svg"
+                    "default": ":/icons/dark/dark/back_default.svg",
+                    "hover": ":/icons/dark/dark/back_hover.svg",  
+                    "pressed": ":/icons/dark/dark/back_clicked.svg",
+                    "disabled": ":/icons/dark/dark/back_disabled.svg"
                 }
             }
         }

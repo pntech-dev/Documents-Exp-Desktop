@@ -29,11 +29,11 @@ IconLabel {
 }
 
 IconLabel#fided_label {
-	qproperty-icon: url(:/icons/dark/finded/dark.svg);
+	qproperty-icon: url(:/icons/dark/dark/finded_default.svg);
 }
 
 IconLabel#tags_label {
-	qproperty-icon: url(:/icons/dark/tags/dark.svg);
+	qproperty-icon: url(:/icons/dark/dark/tags_default.svg);
 }
 
 /* Info label */
@@ -202,7 +202,7 @@ QCheckBox::indicator:checked {
 	height: 20px;
 	border: 0px;
 	background-color: #C43A3A;
-	image: url(:/icons/dark/check/dark/default.svg);
+	image: url(:/icons/dark/dark/check_default.svg);
 }
 
 QCheckBox::indicator:checked:hover {
@@ -211,7 +211,7 @@ QCheckBox::indicator:checked:hover {
 
 QCheckBox::indicator:checked:disabled {
 	background-color: #5D1717;
-	image: url(:/icons/dark/check/dark/check_dark_disabled.svg);
+	image: url(:/icons/dark/dark/check_disabled.svg);
 }
 
 
@@ -325,8 +325,8 @@ SidebarBlock {
 	qproperty-itemTextHoverColor: #B3B3B3;
 	qproperty-itemTextSelectedColor: #E6E6E6;
 
-	qproperty-groupIcon: url(:/icons/dark/arrow/dark/default.svg);
-	qproperty-groupIconHover: url(:/icons/dark/arrow/dark/hover.svg);
+	qproperty-groupIcon: url(:/icons/dark/dark/arrow_default.svg);
+	qproperty-groupIconHover: url(:/icons/dark/dark/arrow_hover.svg);
 }
 
 QFrame#sidebar_frame {
@@ -354,7 +354,7 @@ QLabel#profile_info_label {
 }
 
 IconLabel#profile_arrow_label {
-	qproperty-icon: url(:/icons/dark/arrow/dark/default.svg);
+	qproperty-icon: url(:/icons/dark/dark/arrow_default.svg);
 	qproperty-iconRotation: 90;
 }
 

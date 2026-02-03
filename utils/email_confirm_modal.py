@@ -84,17 +84,17 @@ class EmailConfirmDialog(QDialog):
         self.ui.cancel_pushButton.clicked.connect(self.cancel_button_clicked)
 
         self.ui.verification_code_lineEdit.set_icon_paths(
-            default_light=":/icons/light/input_fields/code/light/default.svg",
-            default_dark=":/icons/dark/input_fields/code/dark/default.svg",
+            default_light=":/icons/light/light/code_default.svg",
+            default_dark=":/icons/dark/dark/code_default.svg",
 
-            hover_light=":/icons/light/input_fields/code/light/hover.svg",
-            hover_dark=":/icons/dark/input_fields/code/dark/hover.svg",
+            hover_light=":/icons/light/light/code_hover.svg",
+            hover_dark=":/icons/dark/dark/code_hover.svg",
 
-            focus_light=":/icons/light/input_fields/code/light/active.svg",
-            focus_dark=":/icons/dark/input_fields/code/dark/active.svg",
+            focus_light=":/icons/light/light/code_active.svg",
+            focus_dark=":/icons/dark/dark/code_active.svg",
 
-            disabled_light=":/icons/light/input_fields/code/light/disabled.svg",
-            disabled_dark=":/icons/dark/input_fields/code/dark/disabled.svg",
+            disabled_light=":/icons/light/light/code_disabled.svg",
+            disabled_dark=":/icons/dark/dark/code_disabled.svg",
         )
 
 

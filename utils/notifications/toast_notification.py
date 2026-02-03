@@ -50,7 +50,7 @@ class ToastNotification(QFrame, Ui_ToastNotification):
 
         # Programmatically set the icon to avoid SVG scaling issues with stylesheets
         theme_name = theme_manager_singleton.themes.get(theme_manager_singleton.current_theme_id, 'light')
-        icon_path = f":/icons/{theme_name}/notification/{theme_name}/{notification_type}.svg"
+        icon_path = f":/icons/{theme_name}/{theme_name}/notification_{notification_type}.svg"
         
         icon = QIcon(icon_path)
         pixmap = icon.pixmap(32, 32)
@@ -64,9 +64,9 @@ class ToastNotification(QFrame, Ui_ToastNotification):
 
         # Loading icons for the close button states
         self._close_icons = {
-            "default": QIcon(f":/icons/{theme_name}/close/{theme_name}/default.svg"),
-            "hover": QIcon(f":/icons/{theme_name}/close/{theme_name}/hover.svg"),
-            "pressed": QIcon(f":/icons/{theme_name}/close/{theme_name}/clicked.svg"),
+            "default": QIcon(f":/icons/{theme_name}/{theme_name}/close_default.svg"),
+            "hover": QIcon(f":/icons/{theme_name}/{theme_name}/close_hover.svg"),
+            "pressed": QIcon(f":/icons/{theme_name}/{theme_name}/close_clicked.svg"),
         }
         self.close_pushButton.setIcon(self._close_icons["default"])
         self.close_pushButton.installEventFilter(self)

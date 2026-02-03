@@ -290,16 +290,16 @@ class AuthView:
         # Setting icon for theme change button
         self.ui.theme_button.set_icon_paths(
             # light theme
-            light_default=":/icons/light/theme/light/default.svg",
-            light_hover=":/icons/light/theme/light/hover.svg",
-            light_pressed=":/icons/light/theme/light/clicked.svg",
-            light_disabled=":/icons/light/theme/light/disabled.svg",
+            light_default=":/icons/light/light/theme_default.svg",
+            light_hover=":/icons/light/light/theme_hover.svg",
+            light_pressed=":/icons/light/light/theme_clicked.svg",
+            light_disabled=":/icons/light/light/theme_disabled.svg",
             
             # dark theme
-            dark_default=":/icons/dark/theme/dark/default.svg",
-            dark_hover=":/icons/dark/theme/dark/hover.svg",
-            dark_pressed=":/icons/dark/theme/dark/clicked.svg",
-            dark_disabled=":/icons/dark/theme/dark/disabled.svg"
+            dark_default=":/icons/dark/dark/theme_default.svg",
+            dark_hover=":/icons/dark/dark/theme_hover.svg",
+            dark_pressed=":/icons/dark/dark/theme_clicked.svg",
+            dark_disabled=":/icons/dark/dark/theme_disabled.svg"
         )
 
         # Setting up icons for password display checkboxes
@@ -312,22 +312,22 @@ class AuthView:
         for checkbox in self.view_password_checkboxes:
             checkbox.set_icon_paths(
                 # Light theme
-                light_unchecked=":/icons/light/view/light/Default.svg",
-                light_unchecked_hover=":/icons/light/view/light/Hover.svg",
-                light_unchecked_disabled=":/icons/light/view/light/Default Disabled.svg",
+                light_unchecked=":/icons/light/light/view_pass_default.svg",
+                light_unchecked_hover=":/icons/light/light/view_pass_hover.svg",
+                light_unchecked_disabled=":/icons/light/light/view_pass_default_disabled.svg",
                 
-                light_checked=":/icons/light/view/light/Checked.svg",
-                light_checked_hover=":/icons/light/view/light/Checked Hover.svg",
-                light_checked_disabled=":/icons/light/view/light/Checked Disabled.svg",
+                light_checked=":/icons/light/light/view_pass_checked.svg",
+                light_checked_hover=":/icons/light/light/view_pass_checked_hover.svg",
+                light_checked_disabled=":/icons/light/light/view_pass_checked_disabled.svg",
                 
                 # Dark theme
-                dark_unchecked=":/icons/dark/view/dark/Default.svg",
-                dark_unchecked_hover=":/icons/dark/view/dark/Hover.svg",
-                dark_unchecked_disabled=":/icons/dark/view/dark/Default Disabled.svg",
+                dark_unchecked=":/icons/dark/dark/view_pass_default.svg",
+                dark_unchecked_hover=":/icons/dark/dark/view_pass_hover.svg",
+                dark_unchecked_disabled=":/icons/dark/dark/view_pass_default_disabled.svg",
                 
-                dark_checked=":/icons/dark/view/dark/Checked.svg",
-                dark_checked_hover=":/icons/dark/view/dark/Checked Hover.svg",
-                dark_checked_disabled=":/icons/dark/view/dark/Checked Disabled.svg"
+                dark_checked=":/icons/dark/dark/view_pass_checked.svg",
+                dark_checked_hover=":/icons/dark/dark/view_pass_checked_hover.svg",
+                dark_checked_disabled=":/icons/dark/dark/view_pass_checked_disabled.svg"
             )
 
         # Initialize page widget groups
