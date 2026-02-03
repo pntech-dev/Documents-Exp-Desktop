@@ -1,5 +1,33 @@
 <RCC>
   <qresource prefix="/icons/light">
+    <file>back/light/clicked.svg</file>
+    <file>back/light/default.svg</file>
+    <file>back/light/disabled.svg</file>
+    <file>back/light/hover.svg</file>
+    <file>data_view/light/blocks_clicked.svg</file>
+    <file>data_view/light/blocks_default.svg</file>
+    <file>data_view/light/blocks_disabled.svg</file>
+    <file>data_view/light/blocks_hover.svg</file>
+    <file>data_view/light/table_clicked.svg</file>
+    <file>data_view/light/table_default.svg</file>
+    <file>data_view/light/table_disabled.svg</file>
+    <file>data_view/light/table_hover.svg</file>
+    <file>print/light/clicked.svg</file>
+    <file>print/light/default.svg</file>
+    <file>print/light/disabled.svg</file>
+    <file>print/light/hover.svg</file>
+    <file>export/light/clicked.svg</file>
+    <file>export/light/default.svg</file>
+    <file>export/light/disabled.svg</file>
+    <file>export/light/hover.svg</file>
+    <file>update/light/clicked.svg</file>
+    <file>update/light/default.svg</file>
+    <file>update/light/disabled.svg</file>
+    <file>update/light/hover.svg</file>
+    <file>edit/light/clicked.svg</file>
+    <file>edit/light/default.svg</file>
+    <file>edit/light/disabled.svg</file>
+    <file>edit/light/hover.svg</file>
     <file>input_fields/search/light/default.svg</file>
     <file>input_fields/search/light/hover.svg</file>
     <file>input_fields/search/light/active.svg</file>
@@ -11,8 +39,8 @@
     <file>settings/light/hover.svg</file>
     <file>settings/light/pressed.svg</file>
     <file>profile/light/profile_default.svg</file>
-    <file>profile/light/profile_hover.svg</file>  
-    <file>profile/light/profile_pressed.svg</file>  
+    <file>profile/light/profile_hover.svg</file>
+    <file>profile/light/profile_pressed.svg</file>
     <file>profile/light/guest.svg</file>
     <file>profile/light/auth.svg</file>
     <file>tags/light.svg</file>
@@ -57,6 +85,34 @@
     <file>theme/light/hover.svg</file>
   </qresource>
   <qresource prefix="/icons/dark">
+    <file>back/dark/clicked.svg</file>
+    <file>back/dark/default.svg</file>
+    <file>back/dark/disabled.svg</file>
+    <file>back/dark/hover.svg</file>
+    <file>data_view/dark/blocks_clicked.svg</file>
+    <file>data_view/dark/blocks_default.svg</file>
+    <file>data_view/dark/blocks_disabled.svg</file>
+    <file>data_view/dark/blocks_hover.svg</file>
+    <file>data_view/dark/table_clicked.svg</file>
+    <file>data_view/dark/table_default.svg</file>
+    <file>data_view/dark/table_disabled.svg</file>
+    <file>data_view/dark/table_hover.svg</file>
+    <file>print/dark/clicked.svg</file>
+    <file>print/dark/default.svg</file>
+    <file>print/dark/disabled.svg</file>
+    <file>print/dark/hover.svg</file>
+    <file>update/dark/clicked.svg</file>
+    <file>update/dark/default.svg</file>
+    <file>update/dark/disabled.svg</file>
+    <file>update/dark/hover.svg</file>
+    <file>export/dark/clicked.svg</file>
+    <file>export/dark/default.svg</file>
+    <file>export/dark/disabled.svg</file>
+    <file>export/dark/hover.svg</file>
+    <file>edit/dark/clicked.svg</file>
+    <file>edit/dark/default.svg</file>
+    <file>edit/dark/disabled.svg</file>
+    <file>edit/dark/hover.svg</file>
     <file>input_fields/search/dark/default.svg</file>
     <file>input_fields/search/dark/hover.svg</file>
     <file>input_fields/search/dark/active.svg</file>
@@ -68,8 +124,8 @@
     <file>settings/dark/hover.svg</file>
     <file>settings/dark/pressed.svg</file>
     <file>profile/dark/profile_default.svg</file>
-    <file>profile/dark/profile_hover.svg</file>  
-    <file>profile/dark/profile_pressed.svg</file>  
+    <file>profile/dark/profile_hover.svg</file>
+    <file>profile/dark/profile_pressed.svg</file>
     <file>profile/dark/guest.svg</file>
     <file>profile/dark/auth.svg</file>
     <file>tags/dark.svg</file>

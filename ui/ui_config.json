@@ -213,6 +213,106 @@
                     "pressed": ":/icons/dark/exit/dark/pressed.svg"
                 }
             }
+        },
+        "toolbar": {
+            "update": {
+                "light": {
+                    "default": ":/icons/light/update/light/default.svg",
+                    "hover": ":/icons/light/update/light/hover.svg",
+                    "pressed": ":/icons/light/update/light/clicked.svg",
+                    "disabled": ":/icons/light/update/light/disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/update/dark/default.svg",
+                    "hover": ":/icons/dark/update/dark/hover.svg",  
+                    "pressed": ":/icons/dark/update/dark/clicked.svg",
+                    "disabled": ":/icons/dark/update/dark/disabled.svg"
+                }
+            },
+            "edit": {
+                "light": {
+                    "default": ":/icons/light/edit/light/default.svg",
+                    "hover": ":/icons/light/edit/light/hover.svg",
+                    "pressed": ":/icons/light/edit/light/clicked.svg",
+                    "disabled": ":/icons/light/edit/light/disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/edit/dark/default.svg",
+                    "hover": ":/icons/dark/edit/dark/hover.svg",  
+                    "pressed": ":/icons/dark/edit/dark/clicked.svg",
+                    "disabled": ":/icons/dark/edit/dark/disabled.svg"
+                }
+            },
+            "export": {
+                "light": {
+                    "default": ":/icons/light/export/light/default.svg",
+                    "hover": ":/icons/light/export/light/hover.svg",
+                    "pressed": ":/icons/light/export/light/clicked.svg",
+                    "disabled": ":/icons/light/export/light/disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/export/dark/default.svg",
+                    "hover": ":/icons/dark/export/dark/hover.svg",  
+                    "pressed": ":/icons/dark/export/dark/clicked.svg",
+                    "disabled": ":/icons/dark/export/dark/disabled.svg"
+                }
+            },
+            "print": {
+                "light": {
+                    "default": ":/icons/light/print/light/default.svg",
+                    "hover": ":/icons/light/print/light/hover.svg",
+                    "pressed": ":/icons/light/print/light/clicked.svg",
+                    "disabled": ":/icons/light/print/light/disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/print/dark/default.svg",
+                    "hover": ":/icons/dark/print/dark/hover.svg",  
+                    "pressed": ":/icons/dark/print/dark/clicked.svg",
+                    "disabled": ":/icons/dark/print/dark/disabled.svg"
+                }
+            },
+            "table_view": {
+                "light": {
+                    "default": ":/icons/light/data_view/light/table_default.svg",
+                    "hover": ":/icons/light/data_view/light/table_hover.svg",  
+                    "pressed": ":/icons/light/data_view/light/table_clicked.svg",
+                    "disabled": ":/icons/light/data_view/light/table_disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/data_view/dark/table_default.svg",
+                    "hover": ":/icons/dark/data_view/dark/table_hover.svg",  
+                    "pressed": ":/icons/dark/data_view/dark/table_clicked.svg",
+                    "disabled": ":/icons/dark/data_view/dark/table_disabled.svg"
+                }
+            },
+            "blocks_view": {
+                "light": {
+                    "default": ":/icons/light/data_view/light/blocks_default.svg",
+                    "hover": ":/icons/light/data_view/light/blocks_hover.svg",  
+                    "pressed": ":/icons/light/data_view/light/blocks_clicked.svg",
+                    "disabled": ":/icons/light/data_view/light/blocks_disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/data_view/dark/blocks_default.svg",
+                    "hover": ":/icons/dark/data_view/dark/blocks_hover.svg",  
+                    "pressed": ":/icons/dark/data_view/dark/blocks_clicked.svg",
+                    "disabled": ":/icons/dark/data_view/dark/blocks_disabled.svg"
+                }
+            },
+            "back": {
+                "light": {
+                    "default": ":/icons/light/back/light/default.svg",
+                    "hover": ":/icons/light/back/light/hover.svg",
+                    "pressed": ":/icons/light/back/light/clicked.svg",
+                    "disabled": ":/icons/light/back/light/disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/back/dark/default.svg",
+                    "hover": ":/icons/dark/back/dark/hover.svg",  
+                    "pressed": ":/icons/dark/back/dark/clicked.svg",
+                    "disabled": ":/icons/dark/back/dark/disabled.svg"
+                }
+            }
         }
     }
 }

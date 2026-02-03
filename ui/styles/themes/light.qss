@@ -110,6 +110,7 @@ TertiaryButton {
 	border: 1px solid #F2F2F2;
 	color: #4D4D4D;
 	padding: 0px 16px;
+	font-size: 12pt;
 }
 
 TertiaryButton:hover {
@@ -432,3 +433,16 @@ MenuItemWidget[pressed="true"] QLabel { color: #1A1A1A; }
 MenuItemWidget QLabel[danger="true"] { color: #CC3333; }
 MenuItemWidget[hovered="true"] QLabel[danger="true"] { color: #A32929; }
 MenuItemWidget[pressed="true"] QLabel[danger="true"] { color: #D65C5C; }
+
+
+
+/* Toolbar */
+QFrame#toolbar_frame {
+	background-color: none;
+}
+
+QFrame#data_toolbar_frame,
+QFrame#table_toolbar_frame {
+	border-radius: 8px;
+	background-color: #FFFFFF;
+}

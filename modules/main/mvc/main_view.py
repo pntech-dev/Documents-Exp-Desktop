@@ -235,6 +235,207 @@ class Navbar:
 
 
 
+class ToolBar:
+    def __init__(
+            self,
+            update_button,
+            edit_button,
+            export_button,
+            print_button,
+            change_view_button,
+            back_button,
+            icons_config: dict
+    ):
+        self.update_button = update_button
+        self.edit_button = edit_button
+        self.export_button = export_button
+        self.print_button = print_button
+        self.change_view_button = change_view_button
+        self.back_button = back_button
+        self.config = icons_config.get("toolbar", {})
+
+        # Setting icon for update button
+        update_cfg = self.config.get("update", {})
+        self.update_button.set_icon_paths(
+            # light theme
+            light_default=update_cfg.get("light", {}).get("default"),
+            light_hover=update_cfg.get("light", {}).get("hover"),
+            light_pressed=update_cfg.get("light", {}).get("pressed"),
+            light_disabled=update_cfg.get("light", {}).get("disabled"),
+
+            # dark theme
+            dark_default=update_cfg.get("dark", {}).get("default"),
+            dark_hover=update_cfg.get("dark", {}).get("hover"), 
+            dark_pressed=update_cfg.get("dark", {}).get("pressed"),
+            dark_disabled=update_cfg.get("dark", {}).get("disabled")
+        )
+
+        # Setting icon for edit button
+        edit_cfg = self.config.get("edit", {})
+        self.edit_button.set_icon_paths(
+            # light theme
+            light_default=edit_cfg.get("light", {}).get("default"),
+            light_hover=edit_cfg.get("light", {}).get("hover"),
+            light_pressed=edit_cfg.get("light", {}).get("pressed"),
+            light_disabled=edit_cfg.get("light", {}).get("disabled"),
+
+            # dark theme
+            dark_default=edit_cfg.get("dark", {}).get("default"),
+            dark_hover=edit_cfg.get("dark", {}).get("hover"), 
+            dark_pressed=edit_cfg.get("dark", {}).get("pressed"),
+            dark_disabled=edit_cfg.get("dark", {}).get("disabled")
+        )
+
+        # Setting icon for export button
+        export_cfg = self.config.get("export", {})
+        self.export_button.set_icon_paths(
+            # light theme
+            light_default=export_cfg.get("light", {}).get("default"),
+            light_hover=export_cfg.get("light", {}).get("hover"),
+            light_pressed=export_cfg.get("light", {}).get("pressed"),
+            light_disabled=export_cfg.get("light", {}).get("disabled"),
+
+            # dark theme
+            dark_default=export_cfg.get("dark", {}).get("default"),
+            dark_hover=export_cfg.get("dark", {}).get("hover"), 
+            dark_pressed=export_cfg.get("dark", {}).get("pressed"),
+            dark_disabled=export_cfg.get("dark", {}).get("disabled")
+        )
+
+        # Setting icon for print button
+        print_cfg = self.config.get("print", {})
+        self.print_button.set_icon_paths(
+            # light theme
+            light_default=print_cfg.get("light", {}).get("default"),
+            light_hover=print_cfg.get("light", {}).get("hover"),
+            light_pressed=print_cfg.get("light", {}).get("pressed"),
+            light_disabled=print_cfg.get("light", {}).get("disabled"),
+
+            # dark theme
+            dark_default=print_cfg.get("dark", {}).get("default"),
+            dark_hover=print_cfg.get("dark", {}).get("hover"), 
+            dark_pressed=print_cfg.get("dark", {}).get("pressed"),
+            dark_disabled=print_cfg.get("dark", {}).get("disabled")
+        )
+        
+        # Setting icons for change view button
+        self.current_data_view_mode = 0
+        self.table_view_cfg = self.config.get("table_view", {})
+        self.blocks_view_cfg = self.config.get("blocks_view", {})
+        self._set_data_view_icon()
+
+        # Setting icon for back button
+        back_cfg = self.config.get("back", {})
+        self.back_button.set_icon_paths(
+            # light theme
+            light_default=back_cfg.get("light", {}).get("default"),
+            light_hover=back_cfg.get("light", {}).get("hover"),
+            light_pressed=back_cfg.get("light", {}).get("pressed"),
+            light_disabled=back_cfg.get("light", {}).get("disabled"),
+
+            # dark theme
+            dark_default=back_cfg.get("dark", {}).get("default"),
+            dark_hover=back_cfg.get("dark", {}).get("hover"), 
+            dark_pressed=back_cfg.get("dark", {}).get("pressed"),
+            dark_disabled=back_cfg.get("dark", {}).get("disabled")
+        )
+
+
+    def _set_data_view_icon(self) -> None:
+        """
+        Function set icons for change view button,
+        and change current view mode to table or blocks view.
+        """
+        if self.current_data_view_mode == 0: # Table
+            self.change_view_button.set_icon_paths(
+                # light theme
+                light_default=self.table_view_cfg.get("light", {}).get("default"),
+                light_hover=self.table_view_cfg.get("light", {}).get("hover"),
+                light_pressed=self.table_view_cfg.get("light", {}).get("pressed"),
+                light_disabled=self.table_view_cfg.get("light", {}).get("disabled"),
+
+                # dark theme
+                dark_default=self.table_view_cfg.get("dark", {}).get("default"),
+                dark_hover=self.table_view_cfg.get("dark", {}).get("hover"), 
+                dark_pressed=self.table_view_cfg.get("dark", {}).get("pressed"),
+                dark_disabled=self.table_view_cfg.get("dark", {}).get("disabled")
+            )
+
+            self.current_data_view_mode = 1 # Change mode to blocks
+
+        else: # Blocks
+            self.change_view_button.set_icon_paths(
+                # light theme
+                light_default=self.blocks_view_cfg.get("light", {}).get("default"),
+                light_hover=self.blocks_view_cfg.get("light", {}).get("hover"),
+                light_pressed=self.blocks_view_cfg.get("light", {}).get("pressed"),
+                light_disabled=self.blocks_view_cfg.get("light", {}).get("disabled"),
+
+                # dark theme
+                dark_default=self.blocks_view_cfg.get("dark", {}).get("default"),
+                dark_hover=self.blocks_view_cfg.get("dark", {}).get("hover"), 
+                dark_pressed=self.blocks_view_cfg.get("dark", {}).get("pressed"),
+                dark_disabled=self.blocks_view_cfg.get("dark", {}).get("disabled")
+            )
+
+            self.current_data_view_mode = 0 # Change mode to table
+
+    def update_button_clicked(self, handler) -> None:
+        """Connects the update button click signal to a handler.
+
+        Args:
+            handler: The callback function to execute when the button is clicked.
+        """
+        self.update_button.clicked.connect(handler)
+
+    
+    def edit_button_clicked(self, handler) -> None:
+        """Connects the edit button click signal to a handler.
+
+        Args:
+            handler: The callback function to execute when the button is clicked.
+        """
+        self.edit_button.clicked.connect(handler)
+
+
+    def export_button_clicked(self, handler) -> None:
+        """Connects the export button click signal to a handler.
+
+        Args:
+            handler: The callback function to execute when the button is clicked.
+        """
+        self.export_button.clicked.connect(handler)
+
+    
+    def print_button_clicked(self, handler) -> None:
+        """Connects the print button click signal to a handler.
+
+        Args:
+            handler: The callback function to execute when the button is clicked.
+        """
+        self.print_button.clicked.connect(handler)
+
+
+    def change_data_view_button_clicked(self, handler) -> None:
+        """Connects the data view button click signal to a handler.
+
+        Args:
+            handler: The callback function to execute when the button is clicked.
+        """
+        self.change_view_button.clicked.connect(self._set_data_view_icon)
+        self.change_view_button.clicked.connect(handler)
+
+
+    def back_button_clicked(self, handler) -> None:
+        """Connects the back button click signal to a handler.
+
+        Args:
+            handler: The callback function to execute when the button is clicked.
+        """
+        self.back_button.clicked.connect(handler)
+
+
+
 class MainView(QObject):
     """Main view class for the application window."""
 
@@ -276,6 +477,16 @@ class MainView(QObject):
             search_filters_pushButton=self.ui.search_filters_pushButton,
             theme_switch=self.ui.theme_pushButton,
             create_pushButton=self.ui.create_pushButton,
+            icons_config=icons_config
+        )
+
+        self.toolbar = ToolBar(
+            update_button=self.ui.update_pushButton,
+            edit_button=self.ui.edit_pushButton,
+            export_button=self.ui.export_pushButton,
+            print_button=self.ui.print_pushButton,
+            change_view_button=self.ui.change_view_pushButton,
+            back_button=self.ui.back_pushButton,
             icons_config=icons_config
         )
         
@@ -516,3 +727,51 @@ class MainView(QObject):
             handler: The callback function.
         """
         self.sidebar.connect_categories_selection(handler)
+
+    def connect_update_button(self, handler) -> None:
+        """Connects the update button to a handler.
+
+        Args:
+            handler: The callback function.
+        """
+        self.toolbar.update_button_clicked(handler)
+
+    def connect_edit_button(self, handler) -> None:
+        """Connects the edit button to a handler.
+
+        Args:
+            handler: The callback function.
+        """
+        self.toolbar.edit_button_clicked(handler)
+
+    def connect_export_button(self, handler) -> None:
+        """Connects the update export to a handler.
+
+        Args:
+            handler: The callback function.
+        """
+        self.toolbar.export_button_clicked(handler)
+
+    def connect_print_button(self, handler) -> None:
+        """Connects the print button to a handler.
+
+        Args:
+            handler: The callback function.
+        """
+        self.toolbar.print_button_clicked(handler)
+
+    def connect_change_data_view_button(self, handler) -> None:
+        """Connects the change data view button to a handler.
+
+        Args:
+            handler: The callback function.
+        """
+        self.toolbar.change_data_view_button_clicked(handler)
+
+    def connect_back_button(self, handler) -> None:
+        """Connects the back button to a handler.
+
+        Args:
+            handler: The callback function.
+        """
+        self.toolbar.back_button_clicked(handler)

@@ -81,6 +81,36 @@ class MainController(QObject):
                 print(f"Category selected ID: {cat_id}")
 
 
+    def _on_update_button_clicked(self) -> None:
+        """Handles the update button click."""
+        print("Update button clicked")
+
+    
+    def _on_edit_button_clicked(self) -> None:
+        """Handles the edit button click."""
+        print("Edit button clicked")
+
+
+    def _on_export_button_clicked(self) -> None:
+        """Handles the export button click."""
+        print("Export button clicked")
+
+
+    def _on_print_button_clicked(self) -> None:
+        """Handles the print button click."""
+        print("Print button clicked")
+    
+
+    def _on_change_data_view_button_clicked(self) -> None:
+        """Handles the change of data view button click."""
+        print("Change data view button clicked")
+
+
+    def _on_back_button_clicked(self) -> None:
+        """Handles the back button click."""
+        print("Back button clicked")
+
+
     # ====================
     # Controller Methods
     # ====================
@@ -112,6 +142,14 @@ class MainController(QObject):
         self.view.connect_logout(self._on_logout_clicked)
         self.view.connect_departments_selection(self._on_department_selected)
         self.view.connect_categories_selection(self._on_category_selected)
+
+        # Toolbar Buttons
+        self.view.connect_update_button(self._on_update_button_clicked)
+        self.view.connect_edit_button(self._on_edit_button_clicked)
+        self.view.connect_export_button(self._on_export_button_clicked)
+        self.view.connect_print_button(self._on_print_button_clicked)
+        self.view.connect_change_data_view_button(self._on_change_data_view_button_clicked)
+        self.view.connect_back_button(self._on_back_button_clicked)
 
 
     def _load_sidebar_data(self) -> None:
