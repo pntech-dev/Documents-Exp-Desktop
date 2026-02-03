@@ -135,6 +135,16 @@ class MainController(QObject):
             self.view.set_username("Гость")
             self.view.set_user_department("Войдите в аккаунт")
 
+        # TODO Adding data to table on startup
+        docs = [
+            {"code": "КД-01", "name": "Документ 1"},
+            {"code": "КД-02", "name": "Документ 2"},
+            {"code": "КД-03", "name": "Документ 3"},
+            {"code": "КД-04", "name": "Документ 4"},
+            {"code": "КД-05", "name": "Документ 5"},
+        ]
+        self.view.update_documents_table(documents=docs)
+
 
     def _setup_connections(self) -> None:
         """Sets up signal-slot connections."""

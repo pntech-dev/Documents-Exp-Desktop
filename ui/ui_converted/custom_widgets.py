@@ -11,8 +11,8 @@ from PyQt5.QtGui import (
 from PyQt5.QtWidgets import (
     QPushButton, QAbstractItemView, QLabel, QCheckBox, QLineEdit, QTreeView, QMenu, 
     QAction, QStyle, QStyledItemDelegate, QWidget, QStyleOptionViewItem,
-    QStyleOptionButton, QGraphicsDropShadowEffect, QStyleOption,
-    QWidgetAction, QHBoxLayout
+    QStyleOptionButton, QGraphicsDropShadowEffect, QStyleOption, QFrame,
+    QWidgetAction, QHBoxLayout, QTableView
 )
 
 from utils import ThemeManagerInstance
@@ -1613,3 +1613,44 @@ class SidebarBlock(QTreeView):
         if id_:
             self._active_id = str(id_)
             self.itemActivatedById.emit(str(id_))
+
+
+"""=== Table View ==="""
+
+class DocumentsTableView(QTableView):
+    def __init__(self, parent: QWidget | None = None) -> None:
+        """Initializes the custom table view."""
+        super().__init__(parent)
+        
+        # Behavior
+        self.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.setAlternatingRowColors(True)
+        self.setShowGrid(False)
+        self.setFrameShape(QFrame.NoFrame)
+        
+        # Headers
+        self.verticalHeader().setVisible(False)
+        self.verticalHeader().setDefaultSectionSize(44)
+        self.horizontalHeader().setStretchLastSection(True)
+        self.horizontalHeader().setHighlightSections(False)
+        self.horizontalHeader().setSortIndicatorShown(True)
+
+        # Model initialization
+        self._model = QStandardItemModel(self)
+        self.setModel(self._model)
+
+    def set_headers(self, labels: list[str]) -> None:
+        """Sets the horizontal header labels."""
+        self._model.setHorizontalHeaderLabels(labels)
+
+    def set_rows(self, rows: list[list]) -> None:
+        """Replaces the table data with new rows."""
+        self._model.removeRows(0, self._model.rowCount())
+        for row_data in rows:
+            items = []
+            for value in row_data:
+                item = QStandardItem(str(value))
+                item.setEditable(False)
+                items.append(item)
+            self._model.appendRow(items)

@@ -446,3 +446,12 @@ QFrame#table_toolbar_frame {
 	border-radius: 8px;
 	background-color: #FFFFFF;
 }
+
+
+
+/* Document Table */
+DocumentsTableView {
+	background-color: #FFFFFF;
+	border: 1px solid #CCCCCC;
+	border-radius: 8px;
+}

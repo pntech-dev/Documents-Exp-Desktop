@@ -14,7 +14,8 @@ from ui.ui_converted.custom_widgets import (
     ThemeSwitch,
     LogoLabel,
     ProfileIconLabel,
-    ThemeAwareMenu
+    ThemeAwareMenu,
+    DocumentsTableView
 )
 
 
@@ -445,6 +446,38 @@ class ToolBar:
         self.back_button.clicked.connect(handler)
 
 
+class DocumentsList:
+    """Manages the documents table logic and updates."""
+
+    def __init__(self, table_view: DocumentsTableView) -> None:
+        """Initializes the DocumentsList manager.
+
+        Args:
+            table_view: The custom table view widget for documents.
+        """
+        self.table_view = table_view
+        
+        # Default headers configuration
+        self.headers = ["Код", "Наименование"]
+        self.table_view.set_headers(self.headers)
+
+    def update_documents(self, documents: list[dict]) -> None:
+        """Updates the documents table with new items.
+
+        Args:
+            documents: A list of dictionaries representing documents.
+        """
+        rows = []
+        for doc in documents:
+            # Extracting data in the order of headers
+            row = [
+                doc.get("code", ""),
+                doc.get("name", "")
+            ]
+            rows.append(row)
+        
+        self.table_view.set_rows(rows)
+
 
 class MainView(QObject):
     """Main view class for the application window."""
@@ -499,6 +532,8 @@ class MainView(QObject):
             back_button=self.ui.back_pushButton,
             icons_config=icons_config
         )
+
+        self.documents_list = DocumentsList(self.ui.tableView)
         
         self._setup_profile_menu()
 
@@ -676,6 +711,14 @@ class MainView(QObject):
         """
         self.sidebar.update_categories(items)
 
+
+    def update_documents_table(self, documents: list[dict]) -> None:
+        """Updates the documents table with new data.
+
+        Args:
+            documents: List of document dictionaries.
+        """
+        self.documents_list.update_documents(documents)
 
     def set_profile_mode(self, mode: str) -> None:
         """Sets the profile mode ('guest' or 'auth')."""

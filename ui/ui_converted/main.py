@@ -299,7 +299,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_8.addWidget(self.back_pushButton)
         self.horizontalLayout_7.addWidget(self.table_toolbar_frame)
         self.verticalLayout_6.addWidget(self.toolbar_frame)
-        self.tableView = QtWidgets.QTableView(self.main_content_frame)
+        self.tableView = DocumentsTableView(self.main_content_frame)
         self.tableView.setObjectName("tableView")
         self.verticalLayout_6.addWidget(self.tableView)
         self.verticalLayout_4.addWidget(self.main_content_frame)
@@ -325,5 +325,5 @@ class Ui_MainWindow(object):
         self.print_pushButton.setText(_translate("MainWindow", "Печать"))
         self.change_view_pushButton.setText(_translate("MainWindow", "View"))
         self.back_pushButton.setText(_translate("MainWindow", "Назад"))
-from .custom_widgets import IconLabel, IconLineEdit, LogoLabel, PrimaryButton, ProfileIconLabel, SidebarBlock, TertiaryButton
+from .custom_widgets import DocumentsTableView, IconLabel, IconLineEdit, LogoLabel, PrimaryButton, ProfileIconLabel, SidebarBlock, TertiaryButton
 import resources.icons.icons_resources_rc

@@ -771,7 +771,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QTableView" name="tableView"/>
+           <widget class="DocumentsTableView" name="tableView"/>
           </item>
          </layout>
         </widget>
@@ -816,6 +816,11 @@
   <customwidget>
    <class>IconLineEdit</class>
    <extends>QLineEdit</extends>
+   <header>.custom_widgets</header>
+  </customwidget>
+  <customwidget>
+   <class>DocumentsTableView</class>
+   <extends>QTableView</extends>
    <header>.custom_widgets</header>
   </customwidget>
  </customwidgets>
