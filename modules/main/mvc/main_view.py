@@ -380,6 +380,16 @@ class ToolBar:
 
             self.current_data_view_mode = 0 # Change mode to table
 
+
+    def set_ui_visible(self, is_visible: bool) -> None:
+        """Enables or disables UI elements visibility.
+
+        Args:
+            is_enabled: Boolean indicating whether the UI should be enabled.
+        """
+        self.edit_button.setVisible(is_visible)
+
+
     def update_button_clicked(self, handler) -> None:
         """Connects the update button click signal to a handler.
 
@@ -675,6 +685,7 @@ class MainView(QObject):
         is_visible = True if mode == "auth" else False
         self.navbar.set_ui_visible(is_visible)
         self.sidebar.set_ui_visible(is_visible)
+        self.toolbar.set_ui_visible(is_visible)
 
 
     def set_username(self, name: str) -> None:
