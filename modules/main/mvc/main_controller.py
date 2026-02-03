@@ -136,13 +136,12 @@ class MainController(QObject):
             self.view.set_user_department("Войдите в аккаунт")
 
         # TODO Adding data to table on startup
-        docs = [
-            {"code": "КД-01", "name": "Документ 1"},
-            {"code": "КД-02", "name": "Документ 2"},
-            {"code": "КД-03", "name": "Документ 3"},
-            {"code": "КД-04", "name": "Документ 4"},
-            {"code": "КД-05", "name": "Документ 5"},
-        ]
+
+        docs = []
+        for i in range(250):
+            item = {"code": f"КД-0{i+1}", "name": f"Документ {i+1}"}
+            docs.append(item)
+        
         self.view.update_documents_table(documents=docs)
 
 

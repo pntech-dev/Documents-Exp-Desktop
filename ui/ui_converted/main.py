@@ -14,12 +14,13 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1079, 738)
+        MainWindow.resize(1064, 600)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
         MainWindow.setSizePolicy(sizePolicy)
+        MainWindow.setMinimumSize(QtCore.QSize(0, 600))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.centralwidget)
@@ -291,6 +292,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_8.setObjectName("horizontalLayout_8")
         self.change_view_pushButton = TertiaryButton(self.table_toolbar_frame)
         self.change_view_pushButton.setMinimumSize(QtCore.QSize(0, 42))
+        self.change_view_pushButton.setText("")
         self.change_view_pushButton.setObjectName("change_view_pushButton")
         self.horizontalLayout_8.addWidget(self.change_view_pushButton)
         self.back_pushButton = TertiaryButton(self.table_toolbar_frame)
@@ -301,6 +303,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_6.addWidget(self.toolbar_frame)
         self.tableView = DocumentsTableView(self.main_content_frame)
         self.tableView.setObjectName("tableView")
+        self.tableView.horizontalHeader().setStretchLastSection(True)
+        self.tableView.verticalHeader().setStretchLastSection(True)
         self.verticalLayout_6.addWidget(self.tableView)
         self.verticalLayout_4.addWidget(self.main_content_frame)
         self.horizontalLayout.addWidget(self.main_frame)
@@ -323,7 +327,6 @@ class Ui_MainWindow(object):
         self.edit_pushButton.setText(_translate("MainWindow", "Изменить"))
         self.export_pushButton.setText(_translate("MainWindow", "Экспорт"))
         self.print_pushButton.setText(_translate("MainWindow", "Печать"))
-        self.change_view_pushButton.setText(_translate("MainWindow", "View"))
         self.back_pushButton.setText(_translate("MainWindow", "Назад"))
 from .custom_widgets import DocumentsTableView, IconLabel, IconLineEdit, LogoLabel, PrimaryButton, ProfileIconLabel, SidebarBlock, TertiaryButton
 import resources.icons.icons_resources_rc

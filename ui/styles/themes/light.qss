@@ -452,6 +452,99 @@ QFrame#table_toolbar_frame {
 /* Document Table */
 DocumentsTableView {
 	background-color: #FFFFFF;
+	alternate-background-color: #F2F2F2;
+
 	border: 1px solid #CCCCCC;
 	border-radius: 8px;
+
+	font-size: 12pt;
+	color: #333333;
+}
+
+/* Header */
+DocumentsTableView QHeaderView::section {
+
+	background-color: #E6E6E6;
+
+	border: none;
+	border-bottom: 1px solid #D9D9D9;
+	border-right: 1px solid #D9D9D9;
+
+	min-height: 48px;
+
+	font-size: 12pt;
+	color: #1A1A1A;
+}
+
+DocumentsTableView QHeaderView::section:last {
+	border-right: none;
+}
+
+/* Cells */
+DocumentsTableView::item {
+	padding: 16px 8px;
+	border-right: 1px solid #D9D9D9;
+}
+
+DocumentsTableView::item:last {
+	border-right: none;
+}
+
+DocumentsTableView::item:hover {
+	background-color: #F5D6D6;
+	color: #1A1A1A;
+}
+
+DocumentsTableView::item:selected {
+	background-color: #E08585;
+	color: #FFFFFF;
+}
+
+/* ScrollBar */
+/* Vertically */
+QScrollBar:vertical {
+	border: none;
+	background: transparent;
+	width: 14px;
+	margin: 2px;
+}
+
+QScrollBar::handle:vertical {
+	background-color: #CC3333;
+	min-height: 20px;
+	border-radius: 5px;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    border: none;
+    background: none;
+    height: 0px;
+}
+
+/* Horizontally */
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+	background: transparent;
+}
+
+QScrollBar:horizontal {
+	border: none;
+	background: transparent;
+	height: 14px;
+	margin: 2px;
+}
+
+QScrollBar::handle:horizontal {
+	background-color: #CC3333;
+	min-width: 20px;
+	border-radius: 5px;
+}
+
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+	border: none;
+	background: none;
+	width: 0px;
+}
+
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+	background: transparent;
 }

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1079</width>
-    <height>738</height>
+    <width>1064</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -15,6 +15,12 @@
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>0</width>
+    <height>600</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Documents Exp</string>
@@ -747,7 +753,7 @@
                    </size>
                   </property>
                   <property name="text">
-                   <string>View</string>
+                   <string/>
                   </property>
                  </widget>
                 </item>
@@ -771,7 +777,14 @@
            </widget>
           </item>
           <item>
-           <widget class="DocumentsTableView" name="tableView"/>
+           <widget class="DocumentsTableView" name="tableView">
+            <attribute name="horizontalHeaderStretchLastSection">
+             <bool>true</bool>
+            </attribute>
+            <attribute name="verticalHeaderStretchLastSection">
+             <bool>true</bool>
+            </attribute>
+           </widget>
           </item>
          </layout>
         </widget>
