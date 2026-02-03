@@ -328,5 +328,5 @@ class Ui_MainWindow(object):
         self.export_pushButton.setText(_translate("MainWindow", "Экспорт"))
         self.print_pushButton.setText(_translate("MainWindow", "Печать"))
         self.back_pushButton.setText(_translate("MainWindow", "Назад"))
-from .custom_widgets import DocumentsTableView, IconLabel, IconLineEdit, LogoLabel, PrimaryButton, ProfileIconLabel, SidebarBlock, TertiaryButton
+from ..custom_widgets import DocumentsTableView, IconLabel, IconLineEdit, LogoLabel, PrimaryButton, ProfileIconLabel, SidebarBlock, TertiaryButton
 import resources.icons.icons_resources_rc

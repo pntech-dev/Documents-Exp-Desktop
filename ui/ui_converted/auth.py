@@ -740,6 +740,6 @@ class Ui_MainWindow(object):
         self.password_lineEdit_5.setPlaceholderText(_translate("MainWindow", "Введите пароль..."))
         self.change_pushButton.setText(_translate("MainWindow", "Изменить"))
         self.have_account_pushButton_3.setText(_translate("MainWindow", "Не менять пароль"))
-from .custom_widgets import InfoLabel, LogoLabel, PrimaryButton, TertiaryButton, TextButton, ThemeButton, ViewPasswordCheckbox
+from ..custom_widgets import InfoLabel, LogoLabel, PrimaryButton, TertiaryButton, TextButton, ThemeButton, ViewPasswordCheckbox
 import resources.icons.icons_resources_rc
 import resources.logo.logo_resources_rc

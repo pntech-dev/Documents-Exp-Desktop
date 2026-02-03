@@ -115,5 +115,5 @@ class Ui_Dialog(object):
         self.verification_code_lineEdit.setPlaceholderText(_translate("Dialog", "X X X X X X"))
         self.cancel_pushButton.setText(_translate("Dialog", "Отменить"))
         self.accept_pushButton.setText(_translate("Dialog", "Подтвердить"))
-from .custom_widgets import IconLineEdit, PrimaryButton, TertiaryButton
+from ..custom_widgets import IconLineEdit, PrimaryButton, TertiaryButton
 import resources.icons.icons_resources_rc

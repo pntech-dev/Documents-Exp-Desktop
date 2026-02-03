@@ -3,7 +3,7 @@ from PyQt5.QtCore import QObject, pyqtSignal
 
 from .main_view import MainView
 from .main_model import MainModel
-from ui.ui_converted.custom_widgets import SidebarItem, ROLE_ID
+from ui.custom_widgets import SidebarItem, ROLE_ID
 
 
 

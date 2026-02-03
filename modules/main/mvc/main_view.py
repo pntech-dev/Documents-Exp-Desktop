@@ -6,7 +6,7 @@ from PyQt5.QtCore import QEvent, Qt, QObject, QPoint
 
 from ui import MainWindow_UI
 from utils import ThemeManagerInstance
-from ui.ui_converted.custom_widgets import (
+from ui.custom_widgets import (
     SidebarItem,
     SidebarBlock,
     PrimaryButton,
