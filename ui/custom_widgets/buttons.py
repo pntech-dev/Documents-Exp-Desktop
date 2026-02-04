@@ -200,6 +200,12 @@ class TertiaryButton(_IconCustomButton):
         super().__init__(parent=parent)
 
 
+class NoFrameButton(_IconCustomButton):
+    def __init__(self, parent: QWidget | None = None) -> None:
+        """Initializes the tertiary button."""
+        super().__init__(parent=parent)
+
+
 class TextButton(QLabel):
     def __init__(self, parent: QWidget | None = None) -> None:
         """Initializes the text button."""

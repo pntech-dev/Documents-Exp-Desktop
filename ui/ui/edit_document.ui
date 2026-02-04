@@ -523,17 +523,17 @@
   <customwidget>
    <class>PrimaryButton</class>
    <extends>QPushButton</extends>
-   <header>.custom_widgets</header>
+   <header>..custom_widgets</header>
   </customwidget>
   <customwidget>
    <class>TertiaryButton</class>
    <extends>QPushButton</extends>
-   <header>.custom_widgets</header>
+   <header>..custom_widgets</header>
   </customwidget>
   <customwidget>
    <class>NoFrameButton</class>
    <extends>QPushButton</extends>
-   <header>noframebutton.h</header>
+   <header>..custom_widgets</header>
   </customwidget>
  </customwidgets>
  <resources/>

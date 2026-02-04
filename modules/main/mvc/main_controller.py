@@ -4,6 +4,7 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from .main_view import MainView
 from .main_model import MainModel
 from ui.custom_widgets import SidebarItem, ROLE_ID
+from modules.document_editor.document_editor_module import EditorWindow
 
 
 
@@ -35,6 +36,7 @@ class MainController(QObject):
         self.view = view
         self.window = window
         self.mode = mode
+        self.editor_window = None
 
         self._init_ui()
         self._setup_connections()
@@ -90,6 +92,15 @@ class MainController(QObject):
     def _on_edit_button_clicked(self) -> None:
         """Handles the edit button click."""
         print("Edit button clicked")
+        
+        # Если окно уже открыто, просто активируем его, вместо создания нового
+        if self.editor_window and self.editor_window.isVisible():
+            self.editor_window.activateWindow()
+            self.editor_window.raise_()
+            return
+
+        self.editor_window = EditorWindow()
+        self.editor_window.show()
 
 
     def _on_export_button_clicked(self) -> None:

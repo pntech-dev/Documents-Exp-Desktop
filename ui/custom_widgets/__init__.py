@@ -1,6 +1,6 @@
 from .buttons import (
     PrimaryButton, SecondaryButton, TertiaryButton,
-    TextButton, ThemeButton
+    TextButton, ThemeButton, NoFrameButton
 )
 from .labels import (
     LogoLabel, InfoLabel, IconLabel,
