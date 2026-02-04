@@ -78,6 +78,7 @@ class MainController(QObject):
 
             if cat_id:
                 self.model.current_category_id = cat_id
+                self._update_documents_list()
                 print(f"Category selected ID: {cat_id}")
 
 
@@ -136,12 +137,7 @@ class MainController(QObject):
             self.view.set_user_department("Войдите в аккаунт")
 
         # Set documents data
-        documents = []
-        for doc in self.model.documents:
-            if doc["category_id"] == self.model.current_category_id:
-                documents.append(doc)
-        
-        self.view.update_documents_table(documents=documents)
+        self._update_documents_list()
 
 
     def _setup_connections(self) -> None:
@@ -192,3 +188,12 @@ class MainController(QObject):
                 )
             
         self.view.update_categories(cat_items)
+
+    def _update_documents_list(self) -> None:
+        """Updates the documents list based on the current category."""
+        documents = []
+        for doc in self.model.documents:
+            if doc.get("category_id") == self.model.current_category_id:
+                documents.append(doc)
+        
+        self.view.update_documents_table(documents=documents)
