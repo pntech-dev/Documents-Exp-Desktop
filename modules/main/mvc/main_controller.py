@@ -135,14 +135,13 @@ class MainController(QObject):
             self.view.set_username("Гость")
             self.view.set_user_department("Войдите в аккаунт")
 
-        # TODO Adding data to table on startup
-
-        docs = []
-        for i in range(250):
-            item = {"code": f"КД-0{i+1}", "name": f"Документ {i+1}"}
-            docs.append(item)
+        # Set documents data
+        documents = []
+        for doc in self.model.documents:
+            if doc["category_id"] == self.model.current_category_id:
+                documents.append(doc)
         
-        self.view.update_documents_table(documents=docs)
+        self.view.update_documents_table(documents=documents)
 
 
     def _setup_connections(self) -> None:

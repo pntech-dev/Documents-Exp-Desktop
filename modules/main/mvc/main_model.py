@@ -26,6 +26,10 @@ class MainModel:
         self.categories = self._get_categories()
         self.current_category_id = self.categories[0]["id"] if self.categories else None
 
+        # Table data
+        self.documents = self._get_documents()
+
+
 
     def get_user_data(self) -> dict | None:
         token = self._get_user_token()
@@ -117,3 +121,8 @@ class MainModel:
     def _get_categories(self) -> list[dict]:
         categories = self.api.get_categories()
         return categories["categories"]
+    
+
+    def _get_documents(self) -> list[dict]:
+        documents = self.api.get_documents()
+        return documents["documents"]

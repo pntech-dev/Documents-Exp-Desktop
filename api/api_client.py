@@ -46,6 +46,17 @@ class APIClient:
         r.raise_for_status()
 
         return r.json()
+    
+
+    def get_documents(self) -> dict:
+        r = requests.get(
+            url=self.base_url + "/app/documents",
+            timeout=10
+        )
+        
+        r.raise_for_status()
+
+        return r.json()
         
 
     """=== Login ==="""
