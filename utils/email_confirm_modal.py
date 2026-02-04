@@ -1,15 +1,14 @@
 from PyQt5.QtWidgets import (
-    QFrame,
     QDialog, 
-    QWidget,
     QVBoxLayout,
     QApplication,
     QGraphicsDropShadowEffect
 )
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QIntValidator, QColor, QPainter
+from PyQt5.QtGui import QIntValidator, QColor
 
 from ui import EmailConfirm_UI
+from ui.custom_widgets.modal_window import ShadowContainer, ModalOverlay
 
 
 class EmailConfirmDialog(QDialog):
@@ -235,73 +234,3 @@ class EmailConfirmDialog(QDialog):
         y = screen.center().y() - self.height() // 2
 
         self.move(x, y)
-
-
-    def paintEvent(self, event):
-        """Overrides QWidget.paintEvent to do nothing.
-
-        The dialog's background is transparent. All visual content is handled
-        by the child ShadowContainer, which has its own background style. This
-        prevents painting conflicts.
-
-        Args:
-            event (QPaintEvent): The paint event.
-        """
-        pass
-
-
-# Shadow
-class ShadowContainer(QFrame):
-    """A QFrame that serves as the visible background for a custom dialog.
-
-    This container holds the dialog's UI elements. Its primary purpose is to
-    provide a surface to which a QGraphicsDropShadowEffect can be applied
-    and which can be styled (e.g., with rounded corners) via QSS without
-    conflicting with the parent QDialog's properties.
-    """
-    def __init__(self, parent=None):
-        """Initializes the ShadowContainer.
-
-        Args:
-            parent (QWidget, optional): The parent widget. Defaults to None.
-        """
-        super().__init__(parent)
-        self.setFrameStyle(QFrame.NoFrame)
-
-
-# Overlay
-class ModalOverlay(QWidget):
-    """A semi-transparent widget to darken the background of a modal dialog.
-
-    This widget is placed over the parent window to give focus to the modal
-    dialog in front of it.
-
-    Attributes:
-        opacity (int): The alpha value (0-255) for the overlay color.
-    """
-    def __init__(self, parent):
-        """Initializes the ModalOverlay.
-
-        Sets window flags to make it a frameless, transparent overlay that
-        initially does not interact with mouse events.
-
-        Args:
-            parent (QWidget): The parent widget (usually the main window) that
-                the overlay will cover.
-        """
-        super().__init__(parent)
-        self.setAttribute(Qt.WA_TransparentForMouseEvents, False)
-        self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setAttribute(Qt.WA_NoSystemBackground, True)
-        self.setAttribute(Qt.WA_TranslucentBackground, True)
-        self.opacity = 100 # (0–255)
-
-
-    def paintEvent(self, event):
-        """Fills the widget with a semi-transparent black color.
-
-        Args:
-            event (QPaintEvent): The paint event.
-        """
-        painter = QPainter(self)
-        painter.fillRect(self.rect(), QColor(0, 0, 0, self.opacity))

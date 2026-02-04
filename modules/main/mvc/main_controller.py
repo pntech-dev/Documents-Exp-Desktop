@@ -99,7 +99,7 @@ class MainController(QObject):
             self.editor_window.raise_()
             return
 
-        self.editor_window = EditorWindow()
+        self.editor_window = EditorWindow(parent=self.window)
         self.editor_window.show()
 
 

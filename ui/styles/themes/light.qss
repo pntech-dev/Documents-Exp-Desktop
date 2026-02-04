@@ -140,6 +140,29 @@ TertiaryButton:disabled {
 	background-color: #FFFFFF;
 }
 
+/* No Frame Button */
+NoFrameButton {
+	border: 0px;
+	color: #666666;
+	background-color: none;
+	font-size: 12pt;
+	padding: 8px 16px;
+}
+
+NoFrameButton:hover {
+	color: #333333;
+	background-color: #F2F2F2;
+}
+
+NoFrameButton:pressed {
+	color: #1A1A1A;
+	background-color: #D9D9D9;
+}
+
+NoFrameButton:disabled {
+	color: #E6E6E6;
+}
+
 /* Text button */
 TextButton {
 	color: #CC3333;
@@ -293,6 +316,12 @@ QLineEdit:disabled {
 
 /* Email Confirm Window */
 QFrame#emailConfirmContainer {
+    border-radius: 8px;
+    background-color: #FFFFFF;
+}
+
+/* Editor Window */
+QFrame#editorContainer {
     border-radius: 8px;
     background-color: #FFFFFF;
 }

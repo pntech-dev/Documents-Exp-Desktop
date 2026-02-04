@@ -1,24 +1,79 @@
+from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtGui import QColor
+
+
 from .mvc import (
     DocumentEditorModel, DocumentEditorView, DocumentEditorController
 )
 
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import (
+    QDialog, QVBoxLayout, QGraphicsDropShadowEffect, QApplication
+)
+
+from ui.custom_widgets.modal_window import ShadowContainer, ModalOverlay
 
 
 class EditorWindow(QDialog):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, parent=None) -> None:
+        super().__init__(parent)
 
-        # UI Initialization
-        from ui import DocumentEditor_UI
-        self.ui = DocumentEditor_UI()
-        self.ui.setupUi(self)
+        self.overlay = None
+
+        # === Window flags ===
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.Dialog)
+        self.setWindowModality(Qt.ApplicationModal)
+        self.setAttribute(Qt.WA_TranslucentBackground)
+
+        # === Container & Layout ===
+        main_layout = QVBoxLayout(self)
+        main_layout.setContentsMargins(20, 20, 20, 20)
+        
+        self.container = ShadowContainer(self)
+        self.container.setObjectName("editorContainer")
+        main_layout.addWidget(self.container)
+
+        # === Shadow ===
+        shadow = QGraphicsDropShadowEffect()
+        shadow.setBlurRadius(20)
+        shadow.setColor(QColor(0, 0, 0, int(255 * 0.10)))
+        shadow.setOffset(0, 5)
+        self.container.setGraphicsEffect(shadow)
 
         # MVC Initialization
         self.model = DocumentEditorModel()
-        self.view = DocumentEditorView(ui=self.ui)
+        self.view = DocumentEditorView(container=self.container)
         self.controller = DocumentEditorController(
             model=self.model, 
             view=self.view, 
             window=self
         )
+
+    # Center modal on screen
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.create_overlay()
+        QTimer.singleShot(0, self.center_on_screen)
+
+    
+    def closeEvent(self, event):
+        if self.overlay:
+            self.overlay.close()
+        super().closeEvent(event)
+
+
+    def create_overlay(self):
+        if self.parent():
+            # Try to find the top level window to cover
+            parent_window = self.parent().window()
+            self.overlay = ModalOverlay(parent_window)
+            self.overlay.resize(parent_window.size())
+            self.overlay.show()
+            self.overlay.raise_()
+
+
+    def center_on_screen(self):
+        self.adjustSize()
+        screen = QApplication.primaryScreen().availableGeometry()
+        x = screen.center().x() - self.width() // 2
+        y = screen.center().y() - self.height() // 2
+        self.move(x, y)
