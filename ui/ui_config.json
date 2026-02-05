@@ -142,6 +142,20 @@
                 "dark": ":/icons/dark/dark/profile_auth.svg"
             }
         },
+        "close": {
+            "light": {
+                "default": ":/icons/light/light/close_default.svg",
+                "hover": ":/icons/light/light/close_hover.svg",
+                "pressed": ":/icons/light/light/close_clicked.svg",
+                "disabled": ":/icons/light/light/close_disabled.svg"
+            },
+            "dark": {
+                "default": ":/icons/dark/dark/close_default.svg",
+                "hover": ":/icons/dark/dark/close_hover.svg",
+                "pressed": ":/icons/dark/dark/close_clicked.svg",
+                "disabled": ":/icons/dark/dark/close_disabled.svg"
+            }
+        },
         "navbar": {
             "search_input": {
                 "light": {

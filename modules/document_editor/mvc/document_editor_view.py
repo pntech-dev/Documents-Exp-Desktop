@@ -197,6 +197,25 @@ class DocumentEditorView:
 
         icons_config = self.ui_config.get("icons", {})
 
+        # Set the is_danger property to the delete button
+        self.ui.delete_document_pushButton.set_danger(is_danger=True)
+        
+        # Setting icon for close window button
+        close_cfg = icons_config.get("close", {})
+        self.ui.close_pushButton.set_icon_paths(
+            # Light theme
+            light_default=close_cfg.get("light", {}).get("default"),
+            light_hover=close_cfg.get("light", {}).get("hover"),
+            light_pressed=close_cfg.get("light", {}).get("pressed"),
+            light_disabled=close_cfg.get("light", {}).get("disabled"),
+
+            # Dark theme
+            dark_default=close_cfg.get("dark", {}).get("default"),
+            dark_hover=close_cfg.get("dark", {}).get("hover"),
+            dark_pressed=close_cfg.get("dark", {}).get("pressed"),
+            dark_disabled=close_cfg.get("dark", {}).get("disabled")
+        )
+
         self.toolbar = EditorToolBar(
             add_page_button=self.ui.add_page_pushButton,
             duplicate_button=self.ui.duplicate_pushButton,

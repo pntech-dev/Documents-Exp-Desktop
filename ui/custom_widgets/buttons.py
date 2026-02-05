@@ -112,7 +112,7 @@ class _IconCustomButton(QPushButton):
         icon_size = self.iconSize()
         
         has_text = bool(opt.text)
-        
+
         # Use self.icon() directly to ensure we get the correct icon state
         current_icon = self.icon()
         has_icon = not current_icon.isNull()
@@ -201,9 +201,25 @@ class SecondaryButton(_IconCustomButton):
 
 
 class TertiaryButton(_IconCustomButton):
-    def __init__(self, parent: QWidget | None = None) -> None:
+    def __init__(
+            self, 
+            parent: QWidget | None = None, 
+            danger: bool = False
+    ) -> None:
         """Initializes the tertiary button."""
         super().__init__(parent=parent)
+        self.set_danger(danger)
+
+    def set_danger(self, is_danger: bool) -> None:
+        self.setProperty("danger", "true" if is_danger else "false")
+
+    def changeEvent(self, event: QEvent) -> None:
+        if event.type() == QEvent.DynamicPropertyChange:
+            if event.propertyName() == b"danger":
+                self.style().unpolish(self)
+                self.style().polish(self)
+                self.update()
+        super().changeEvent(event)
 
 
 class NoFrameButton(_IconCustomButton):

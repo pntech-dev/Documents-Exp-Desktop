@@ -141,6 +141,29 @@ TertiaryButton:disabled {
 	background-color: #262626;
 }
 
+TertiaryButton[danger="true"] {
+	border: 1px solid #C43A3A;
+	color: #C43A3A;
+}
+
+TertiaryButton[danger="true"]:hover {
+	border: 1px solid #D65A5A;
+	color: #D65A5A;
+	background-color: none;
+}
+
+TertiaryButton[danger="true"]:pressed {
+	border: 1px solid #852222;
+	color: #852222;
+	background-color: none;
+}
+
+TertiaryButton[danger="true"]:disabled {
+	border: 1px solid #4D4D4D;
+	color: #4D4D4D;
+	background-color: none;
+}
+
 /* No Frame Button */
 NoFrameButton {
 	border: 0px;

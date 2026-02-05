@@ -209,7 +209,7 @@ class Ui_Dialog(object):
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
         self.title_label.setText(_translate("Dialog", "Редактирование документа"))
         self.code_label.setText(_translate("Dialog", "Code"))
-        self.dot_label.setText(_translate("Dialog", "•"))
+        self.dot_label.setText(_translate("Dialog", "|"))
         self.name_label.setText(_translate("Dialog", "Document Name"))
         self.add_page_pushButton.setText(_translate("Dialog", "Добавить страницу"))
         self.duplicate_pushButton.setText(_translate("Dialog", "Дублировать"))
@@ -221,3 +221,4 @@ class Ui_Dialog(object):
         self.cancel_pushButton.setText(_translate("Dialog", "Отменить"))
         self.save_pushButton.setText(_translate("Dialog", "Сохранить изменения"))
 from ..custom_widgets import InfoLabel, NoFrameButton, PrimaryButton, TertiaryButton
+import resources.icons.icons_resources_rc

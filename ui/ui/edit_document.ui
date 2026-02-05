@@ -168,7 +168,7 @@
             </font>
            </property>
            <property name="text">
-            <string>•</string>
+            <string>|</string>
            </property>
           </widget>
          </item>
@@ -541,6 +541,8 @@
    <header>..custom_widgets</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../../resources/icons/icons_resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

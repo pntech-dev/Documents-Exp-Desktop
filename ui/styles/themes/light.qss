@@ -117,7 +117,7 @@ SecondaryButton:disabled {
 /* Tertiary button */
 TertiaryButton {
 	border: 1px solid #F2F2F2;
-	color: #4D4D4D;
+	color: #666666;
 	padding: 0px 16px;
 	font-size: 12pt;
 }
@@ -140,27 +140,50 @@ TertiaryButton:disabled {
 	background-color: #FFFFFF;
 }
 
+TertiaryButton[danger="true"] {
+	border: 1px solid #CC3333;
+	color: #CC3333;
+}
+
+TertiaryButton[danger="true"]:hover {
+	border: 1px solid #A32929;
+	color: #A32929;
+	background-color: none;
+}
+
+TertiaryButton[danger="true"]:pressed {
+	border: 1px solid #D65C5C;
+	color: #D65C5C;
+	background-color: none;
+}
+
+TertiaryButton[danger="true"]:disabled {
+	border: 1px solid #F2F2F2;
+	color: #F2F2F2;
+	background-color: none;
+}
+
 /* No Frame Button */
 NoFrameButton {
 	border: 0px;
-	color: #666666;
+	color: #808080;
 	background-color: transparent;
 	font-size: 12pt;
 	padding: 8px 16px;
 }
 
 NoFrameButton:hover {
-	color: #333333;
+	color: #4D4D4D;
 	background-color: #F2F2F2;
 }
 
 NoFrameButton:pressed {
-	color: #1A1A1A;
+	color: #333333;
 	background-color: #D9D9D9;
 }
 
 NoFrameButton:disabled {
-	color: #E6E6E6;
+	color: #F2F2F2;
 }
 
 NoFrameButton[danger="true"] {
