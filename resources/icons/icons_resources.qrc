@@ -1,5 +1,21 @@
 <RCC>
   <qresource prefix="/icons/light">
+    <file>light/trash_clicked.svg</file>
+    <file>light/trash_default.svg</file>
+    <file>light/trash_disabled.svg</file>
+    <file>light/trash_hover.svg</file>
+    <file>light/add_page_clicked.svg</file>
+    <file>light/add_page_default.svg</file>
+    <file>light/add_page_disabled.svg</file>
+    <file>light/add_page_hover.svg</file>
+    <file>light/duplicate_clicked.svg</file>
+    <file>light/duplicate_default.svg</file>
+    <file>light/duplicate_disabled.svg</file>
+    <file>light/duplicate_hover.svg</file>
+    <file>light/import_clicked.svg</file>
+    <file>light/import_default.svg</file>
+    <file>light/import_disabled.svg</file>
+    <file>light/import_hover.svg</file>
     <file>light/arrow_default.svg</file>
     <file>light/arrow_hover.svg</file>
     <file>light/back_clicked.svg</file>
@@ -85,6 +101,22 @@
     <file>light/view_pass_hover.svg</file>
   </qresource>
   <qresource prefix="/icons/dark">
+    <file>dark/add_page_clicked.svg</file>
+    <file>dark/add_page_default.svg</file>
+    <file>dark/add_page_disabled.svg</file>
+    <file>dark/add_page_hover.svg</file>
+    <file>dark/duplicate_clicked.svg</file>
+    <file>dark/duplicate_default.svg</file>
+    <file>dark/duplicate_disabled.svg</file>
+    <file>dark/duplicate_hover.svg</file>
+    <file>dark/import_clicked.svg</file>
+    <file>dark/import_default.svg</file>
+    <file>dark/import_disabled.svg</file>
+    <file>dark/import_hover.svg</file>
+    <file>dark/trash_clicked.svg</file>
+    <file>dark/trash_default.svg</file>
+    <file>dark/trash_disabled.svg</file>
+    <file>dark/trash_hover.svg</file>
     <file>dark/arrow_default.svg</file>
     <file>dark/arrow_hover.svg</file>
     <file>dark/back_clicked.svg</file>

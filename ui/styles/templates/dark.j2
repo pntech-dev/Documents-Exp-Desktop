@@ -141,6 +141,47 @@ TertiaryButton:disabled {
 	background-color: {{ neutral.neutral_100 }};
 }
 
+/* No Frame Button */
+NoFrameButton {
+	border: 0px;
+	color: {{ neutral.neutral_600 }};
+	background-color: transparent;
+	font-size: 12pt;
+	padding: 8px 16px;
+}
+
+NoFrameButton:hover {
+	color: {{ neutral.neutral_800 }};
+	background-color: {{ neutral.neutral_200 }};
+}
+
+NoFrameButton:pressed {
+	color: {{ neutral.neutral_900 }};
+	background-color: {{ neutral.neutral_300 }};
+}
+
+NoFrameButton:disabled {
+	color: {{ neutral.neutral_250 }};
+}
+
+NoFrameButton[danger="true"] {
+	color: {{ accent.accent_500 }};
+}
+
+NoFrameButton[danger="true"]:hover {
+	color: {{ accent.accent_300 }};
+	background-color: {{ accent.accent_700 }};
+}
+
+NoFrameButton[danger="true"]:pressed {
+	color: {{ accent.accent_100 }};
+	background-color: {{ accent.accent_600 }};
+}
+
+NoFrameButton[danger="true"]:disabled {
+	color: {{ accent.accent_700 }};
+}
+
 /* Text button */
 TextButton {
 	color: {{ accent.accent_500 }};
@@ -299,6 +340,24 @@ QFrame#emailConfirmContainer {
     background-color: {{ neutral.neutral_100 }};
 }
 
+/* Editor Window */
+QFrame#editorContainer {
+	border: 1px solid {{ neutral.neutral_250 }};
+    border-radius: 8px;
+    background-color: {{ neutral.neutral_100 }};
+}
+
+QFrame#line, QFrame#line_2, QFrame#line_5 {
+    background-color: {{ neutral.neutral_200 }};
+	border: none;
+	min-width: 1px;
+	max-width: 1px;
+}
+
+#title_label {
+    color: {{ neutral.neutral_900 }};
+    font-size: 14pt;
+}
 
 
 /* MAIN APPLICATION */

@@ -1,6 +1,6 @@
 from PyQt5.QtGui import (
-    QIcon, QPalette, QPaintEvent,
-    QPainter, QFontMetrics, QMouseEvent,
+    QIcon, QMouseEvent, QPaintEvent,
+    QPainter, QFontMetrics, QPalette
 )
 from PyQt5.QtCore import (
     Qt, QEvent, QSize,
@@ -8,7 +8,7 @@ from PyQt5.QtCore import (
 )
 from PyQt5.QtWidgets import (
     QPushButton, QWidget, QLabel,
-    QStyle, QStyleOptionButton
+    QStyleOptionButton, QStyle
 )
 
 from utils import ThemeManagerInstance
@@ -18,6 +18,7 @@ class _IconCustomButton(QPushButton):
     def __init__(self, parent: QWidget | None = None) -> None:
         """Initializes the button with icon support."""
         super().__init__(parent=parent)
+        self.setAttribute(Qt.WA_StyledBackground, True)
         ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
 
         self.icons = {
@@ -79,6 +80,7 @@ class _IconCustomButton(QPushButton):
 
     def paintEvent(self, event: QPaintEvent) -> None:
         """Custom paint event to handle icon and text spacing."""
+        self.ensurePolished()
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
         painter.setRenderHint(QPainter.SmoothPixmapTransform)
@@ -86,15 +88,13 @@ class _IconCustomButton(QPushButton):
         opt = QStyleOptionButton()
         self.initStyleOption(opt)
 
-        # Clear content to draw background only
+        # Clear content to draw background only via style
         original_text = opt.text
         original_icon = opt.icon
         opt.text = ""
         opt.icon = QIcon()
 
-        painter.save()
         self.style().drawControl(QStyle.CE_PushButton, opt, painter, self)
-        painter.restore()
 
         # Restore content
         opt.text = original_text
@@ -103,16 +103,18 @@ class _IconCustomButton(QPushButton):
         # Layout calculations
         spacing = 8
         rect = opt.rect
-
-        # Font
+        
+        # Font metrics
         painter.setFont(self.font())
-        font_metrics = QFontMetrics(self.font())
-        text_width = font_metrics.width(opt.text)
+        fm = QFontMetrics(self.font())
+        text_width = fm.horizontalAdvance(opt.text)
         
         icon_size = self.iconSize()
         
-        current_icon = self.icon()
         has_text = bool(opt.text)
+        
+        # Use self.icon() directly to ensure we get the correct icon state
+        current_icon = self.icon()
         has_icon = not current_icon.isNull()
         
         total_width = 0
@@ -123,27 +125,31 @@ class _IconCustomButton(QPushButton):
         if has_icon and has_text:
             total_width += spacing
             
-        # Center
+        # Center content
         x = rect.left() + (rect.width() - total_width) // 2
+        y_center = rect.top() + rect.height() // 2
         
         # Draw Icon
         if has_icon:
-            icon_y = rect.top() + (rect.height() - icon_size.height()) // 2
-            pixmap = current_icon.pixmap(icon_size, QIcon.Normal, QIcon.Off)
-            painter.drawPixmap(x, icon_y, pixmap)
+            icon_y = y_center - icon_size.height() // 2
+            icon_rect = QRect(x, icon_y, icon_size.width(), icon_size.height())
+            
+            # Determine mode/state for icon
+            mode = QIcon.Disabled if not self.isEnabled() else QIcon.Normal
+            state = QIcon.On if self.isChecked() else QIcon.Off
+            
+            current_icon.paint(painter, icon_rect, Qt.AlignCenter, mode, state)
+            
             x += icon_size.width() + spacing
             
         # Draw Text
         if has_text:
             text_rect = QRect(x, rect.top(), text_width, rect.height())
             
-            # Color from palette (handles QSS states)
-            color = opt.palette.color(QPalette.ButtonText)
-            if not self.isEnabled():
-                color = opt.palette.color(QPalette.Disabled, QPalette.ButtonText)
-            
-            painter.setPen(color)
-            painter.drawText(text_rect, Qt.AlignVCenter | Qt.AlignLeft, opt.text)
+            # Use style to draw text to ensure QSS colors (hover, etc.) are applied
+            opt.rect = text_rect
+            opt.icon = QIcon() # Ensure no icon is drawn by this call
+            self.style().drawControl(QStyle.CE_PushButtonLabel, opt, painter, self)
 
     def _on_theme_changed(self, theme_id: str) -> None:
         """Handles theme change events."""
@@ -201,9 +207,25 @@ class TertiaryButton(_IconCustomButton):
 
 
 class NoFrameButton(_IconCustomButton):
-    def __init__(self, parent: QWidget | None = None) -> None:
-        """Initializes the tertiary button."""
+    def __init__(
+            self, 
+            parent: QWidget | None = None, 
+            danger: bool = False
+    ) -> None:
+        """Initializes the no frame button."""
         super().__init__(parent=parent)
+        self.set_danger(danger)
+
+    def set_danger(self, is_danger: bool) -> None:
+        self.setProperty("danger", "true" if is_danger else "false")
+
+    def changeEvent(self, event: QEvent) -> None:
+        if event.type() == QEvent.DynamicPropertyChange:
+            if event.propertyName() == b"danger":
+                self.style().unpolish(self)
+                self.style().polish(self)
+                self.update()
+        super().changeEvent(event)
 
 
 class TextButton(QLabel):

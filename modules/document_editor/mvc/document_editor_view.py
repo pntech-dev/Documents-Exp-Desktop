@@ -28,12 +28,41 @@ class EditorToolBar:
         self.delete_page_button = delete_page_button
         self.config = icons_config.get("toolbar", {})
 
+        # Set the is_danger property to the delete button
+        self.delete_page_button.set_danger(is_danger=True)
+
         # Setting icon for add page button
         add_page_cfg = self.config.get("add_page", {})
+        self.add_page_button.set_icon_paths(
+            # light theme
+            light_default=add_page_cfg.get("light", {}).get("default"),
+            light_hover=add_page_cfg.get("light", {}).get("hover"),
+            light_pressed=add_page_cfg.get("light", {}).get("pressed"),
+            light_disabled=add_page_cfg.get("light", {}).get("disabled"),
+
+            # dark theme
+            dark_default=add_page_cfg.get("dark", {}).get("default"),
+            dark_hover=add_page_cfg.get("dark", {}).get("hover"),
+            dark_pressed=add_page_cfg.get("dark", {}).get("pressed"),
+            dark_disabled=add_page_cfg.get("dark", {}).get("disabled")
+        )
         
 
         # Setting icon for duplicate button
         duplicate_cfg = self.config.get("duplicate", {})
+        self.duplicate_button.set_icon_paths(
+            # light theme
+            light_default=duplicate_cfg.get("light", {}).get("default"),
+            light_hover=duplicate_cfg.get("light", {}).get("hover"),
+            light_pressed=duplicate_cfg.get("light", {}).get("pressed"),
+            light_disabled=duplicate_cfg.get("light", {}).get("disabled"),
+
+            # dark theme
+            dark_default=duplicate_cfg.get("dark", {}).get("default"),
+            dark_hover=duplicate_cfg.get("dark", {}).get("hover"),
+            dark_pressed=duplicate_cfg.get("dark", {}).get("pressed"),
+            dark_disabled=duplicate_cfg.get("dark", {}).get("disabled")
+        )
 
 
         # Setting icon for print button
@@ -54,7 +83,19 @@ class EditorToolBar:
 
         # Setting icon for import button
         import_cfg = self.config.get("import", {})
+        self.import_button.set_icon_paths(
+            # light theme
+            light_default=import_cfg.get("light", {}).get("default"),
+            light_hover=import_cfg.get("light", {}).get("hover"),
+            light_pressed=import_cfg.get("light", {}).get("pressed"),
+            light_disabled=import_cfg.get("light", {}).get("disabled"),
 
+            # dark theme
+            dark_default=import_cfg.get("dark", {}).get("default"),
+            dark_hover=import_cfg.get("dark", {}).get("hover"),
+            dark_pressed=import_cfg.get("dark", {}).get("pressed"),
+            dark_disabled=import_cfg.get("dark", {}).get("disabled")
+        )
 
         # Setting icon for export button
         export_cfg = self.config.get("export", {})
@@ -73,7 +114,20 @@ class EditorToolBar:
         )
 
         # Setting icon for delete page button
-        delete_cfg = self.config.get("delete", {})
+        delete_cfg = self.config.get("trash", {})
+        self.delete_page_button.set_icon_paths(
+            # light theme
+            light_default=delete_cfg.get("light", {}).get("default"),
+            light_hover=delete_cfg.get("light", {}).get("hover"),
+            light_pressed=delete_cfg.get("light", {}).get("pressed"),
+            light_disabled=delete_cfg.get("light", {}).get("disabled"),
+
+            # dark theme
+            dark_default=delete_cfg.get("dark", {}).get("default"),
+            dark_hover=delete_cfg.get("dark", {}).get("hover"),
+            dark_pressed=delete_cfg.get("dark", {}).get("pressed"),
+            dark_disabled=delete_cfg.get("dark", {}).get("disabled")
+        )
 
 
     def add_page_button_clicked(self, handler) -> None:
