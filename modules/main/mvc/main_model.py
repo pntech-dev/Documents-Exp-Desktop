@@ -28,6 +28,8 @@ class MainModel:
 
         # Table data
         self.documents = self._get_documents()
+        # (x, y): x - id, bool(True, False) if document is page
+        self.selected_document = (None, False)
 
 
 
@@ -40,6 +42,14 @@ class MainModel:
         data = self.api.get_user_data(token)
         
         return data
+    
+
+    def get_document_pages(
+            self, 
+            document_id: int
+    ) -> list[dict]:
+        pages = self.api.get_document_pages(document_id)
+        return pages["pages"]
 
 
     # ====================

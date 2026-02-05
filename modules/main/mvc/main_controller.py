@@ -1,3 +1,5 @@
+import logging
+
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtCore import QObject, pyqtSignal
 
@@ -5,6 +7,11 @@ from .main_view import MainView
 from .main_model import MainModel
 from ui.custom_widgets import SidebarItem, ROLE_ID
 from modules.document_editor.document_editor_module import EditorWindow
+
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 
@@ -37,6 +44,7 @@ class MainController(QObject):
         self.window = window
         self.mode = mode
         self.editor_window = None
+        self.current_documents = []
 
         self._init_ui()
         self._setup_connections()
@@ -55,9 +63,11 @@ class MainController(QObject):
         """
         self.view.set_theme()
 
+
     def _on_logout_clicked(self) -> None:
         """Handles the logout action."""
         self.logout_requested.emit()
+
 
     def _on_department_selected(self, selected, deselected) -> None:
         """Handles department selection change."""
@@ -69,7 +79,7 @@ class MainController(QObject):
             if dept_id:
                 self.model.current_department_id = dept_id
                 self._update_categories_list()
-                print(f"Department selected ID: {dept_id}")
+
 
     def _on_category_selected(self, selected, deselected) -> None:
         """Handles category selection change."""
@@ -81,46 +91,72 @@ class MainController(QObject):
             if cat_id:
                 self.model.current_category_id = cat_id
                 self._update_documents_list()
-                print(f"Category selected ID: {cat_id}")
 
 
     def _on_update_button_clicked(self) -> None:
         """Handles the update button click."""
-        print("Update button clicked")
+        pass
 
     
     def _on_edit_button_clicked(self) -> None:
         """Handles the edit button click."""
-        print("Edit button clicked")
-        
-        # Если окно уже открыто, просто активируем его, вместо создания нового
+        # If the window is already open,
+        # just activate it instead of creating a new one.
         if self.editor_window and self.editor_window.isVisible():
             self.editor_window.activateWindow()
             self.editor_window.raise_()
             return
 
-        self.editor_window = EditorWindow(parent=self.window)
+        # Get selected document pages list
+        pages = self.model.get_document_pages(
+            document_id=self.model.selected_document[0]
+        )
+
+        # Show document editor window
+        self.editor_window = EditorWindow(
+            parent=self.window, 
+            pages=pages
+        )
         self.editor_window.show()
 
 
     def _on_export_button_clicked(self) -> None:
         """Handles the export button click."""
-        print("Export button clicked")
-
+        pass
 
     def _on_print_button_clicked(self) -> None:
         """Handles the print button click."""
-        print("Print button clicked")
-    
+        pass
+
 
     def _on_change_data_view_button_clicked(self) -> None:
         """Handles the change of data view button click."""
-        print("Change data view button clicked")
+        pass
 
 
     def _on_back_button_clicked(self) -> None:
         """Handles the back button click."""
-        print("Back button clicked")
+        pass
+
+
+    def _on_document_selected(self, selected, deselected) -> None:
+        """Handles document selection change."""
+        indexes = selected.indexes()
+        if indexes:
+            current_index = indexes[0]
+            row = current_index.row()
+            
+            if 0 <= row < len(self.current_documents):
+                document = self.current_documents[row]
+                self.model.selected_document = (document.get("id"), document.get("is_page"))
+
+        # Update the document editor button state
+        state=True if self.model.selected_document[0] is not None else False
+        self.view.update_document_editor_state(state=state)                
+
+    def _on_document_double_clicked(self, index) -> None:
+        """Handles document double click."""
+        self._on_edit_button_clicked()
 
 
     # ====================
@@ -165,6 +201,8 @@ class MainController(QObject):
         self.view.connect_print_button(self._on_print_button_clicked)
         self.view.connect_change_data_view_button(self._on_change_data_view_button_clicked)
         self.view.connect_back_button(self._on_back_button_clicked)
+        self.view.connect_document_selection(self._on_document_selected)
+        self.view.connect_document_double_click(self._on_document_double_clicked)
 
 
     def _load_sidebar_data(self) -> None:
@@ -202,9 +240,12 @@ class MainController(QObject):
 
     def _update_documents_list(self) -> None:
         """Updates the documents list based on the current category."""
+        self.model.current_document_id = None
         documents = []
         for doc in self.model.documents:
             if doc.get("category_id") == self.model.current_category_id:
+                doc["is_page"] = False
                 documents.append(doc)
         
+        self.current_documents = documents
         self.view.update_documents_table(documents=documents)

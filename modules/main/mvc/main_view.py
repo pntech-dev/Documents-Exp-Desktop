@@ -1,4 +1,5 @@
 import json
+
 from pathlib import Path
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit
 from PyQt5.QtGui import QIcon
@@ -382,6 +383,15 @@ class ToolBar:
             self.current_data_view_mode = 0 # Change mode to table
 
 
+    def update_edit_button_state(self, is_enabled: bool) -> None:
+        """Updates the state of the edit button.
+
+        Args:
+            is_enabled: Boolean indicating whether the button should be enabled.
+        """
+        self.edit_button.setEnabled(is_enabled)
+
+
     def set_ui_visible(self, is_visible: bool) -> None:
         """Enables or disables UI elements visibility.
 
@@ -477,6 +487,16 @@ class DocumentsList:
             rows.append(row)
         
         self.table_view.set_rows(rows)
+
+    def connect_selection(self, handler) -> None:
+        """Connects to the table selection changed signal."""
+        if self.table_view.selectionModel():
+            self.table_view.selectionModel().selectionChanged.connect(handler)
+
+    def connect_double_click(self, handler) -> None:
+        """Connects to the table double clicked signal."""
+        self.table_view.doubleClicked.connect(handler)
+
 
 
 class MainView(QObject):
@@ -720,6 +740,17 @@ class MainView(QObject):
         """
         self.documents_list.update_documents(documents)
 
+
+    def update_document_editor_state(self, state: bool) -> None:
+        """
+        Updates the document editor button state.
+        
+        Args:
+            state: documents editor button state.
+        """
+        self.toolbar.update_edit_button_state(is_enabled=state)
+
+
     def set_profile_mode(self, mode: str) -> None:
         """Sets the profile mode ('guest' or 'auth')."""
         self.current_mode = mode
@@ -829,3 +860,19 @@ class MainView(QObject):
             handler: The callback function.
         """
         self.toolbar.back_button_clicked(handler)
+
+    def connect_document_selection(self, handler) -> None:
+        """Connects the document table selection signal to a handler.
+
+        Args:
+            handler: The callback function.
+        """
+        self.documents_list.connect_selection(handler)
+
+    def connect_document_double_click(self, handler) -> None:
+        """Connects the document table double click signal to a handler.
+
+        Args:
+            handler: The callback function.
+        """
+        self.documents_list.connect_double_click(handler)

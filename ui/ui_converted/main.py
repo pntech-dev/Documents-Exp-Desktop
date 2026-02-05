@@ -268,6 +268,7 @@ class Ui_MainWindow(object):
         self.update_pushButton.setObjectName("update_pushButton")
         self.horizontalLayout_9.addWidget(self.update_pushButton)
         self.edit_pushButton = TertiaryButton(self.data_toolbar_frame)
+        self.edit_pushButton.setEnabled(False)
         self.edit_pushButton.setMinimumSize(QtCore.QSize(0, 42))
         self.edit_pushButton.setObjectName("edit_pushButton")
         self.horizontalLayout_9.addWidget(self.edit_pushButton)

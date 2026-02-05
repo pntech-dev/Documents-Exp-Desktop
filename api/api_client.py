@@ -197,6 +197,20 @@ class APIClient:
             dict: The JSON response containing the list of documents.
         """
         return self._create_get_api_request(url=self.base_url + "/app/documents")
+    
+
+    def get_document_pages(self, document_id: int) -> dict:
+        """Retrieves the list of pages for a specific document.
+
+        Args:
+            document_id (int): The ID of the document.
+
+        Returns:
+            dict: The JSON response containing the list of pages.
+        """
+        return self._create_get_api_request(
+            url=self.base_url + f"/app/documents/{document_id}/pages"
+        )
 
 
     # ====================

@@ -14,7 +14,11 @@ from ui.custom_widgets.modal_window import ShadowContainer, ModalOverlay
 
 
 class EditorWindow(QDialog):
-    def __init__(self, parent=None) -> None:
+    def __init__(
+            self, 
+            parent=None, 
+            pages: list[dict] = None
+    ) -> None:
         super().__init__(parent)
 
         self.overlay = None
@@ -45,7 +49,8 @@ class EditorWindow(QDialog):
         self.controller = DocumentEditorController(
             model=self.model, 
             view=self.view, 
-            window=self
+            window=self,
+            pages=pages
         )
 
     # Center modal on screen

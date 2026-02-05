@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>925</width>
+    <width>972</width>
     <height>800</height>
    </rect>
   </property>
@@ -36,16 +36,16 @@
     <number>24</number>
    </property>
    <item>
-    <widget class="QFrame" name="header_frame">
+    <widget class="QFrame" name="title_frame">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="spacing">
-       <number>8</number>
+       <number>0</number>
       </property>
       <property name="leftMargin">
        <number>0</number>
@@ -60,79 +60,85 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QFrame" name="title_frame">
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
+       <widget class="QLabel" name="title_label">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
         </property>
-        <property name="frameShadow">
-         <enum>QFrame::Raised</enum>
+        <property name="text">
+         <string>Редактирование документа</string>
         </property>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QLabel" name="title_label">
-           <property name="font">
-            <font>
-             <pointsize>14</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Редактирование документа</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="NoFrameButton" name="close_pushButton">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>42</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-        </layout>
        </widget>
       </item>
       <item>
-       <widget class="QFrame" name="document_data_frame">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="NoFrameButton" name="close_pushButton">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>42</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="document_data_frame">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="spacing">
+       <number>16</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QFrame" name="code_frame">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <layout class="QHBoxLayout" name="horizontalLayout_8">
          <property name="spacing">
           <number>8</number>
          </property>
@@ -150,52 +156,92 @@
          </property>
          <item>
           <widget class="InfoLabel" name="code_label">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="font">
             <font>
              <pointsize>12</pointsize>
             </font>
            </property>
            <property name="text">
-            <string>Code</string>
+            <string>Код:</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="InfoLabel" name="dot_label">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>|</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="InfoLabel" name="name_label">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Document Name</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
+          <widget class="QLineEdit" name="lineEdit_2">
+           <property name="minimumSize">
             <size>
-             <width>40</width>
-             <height>20</height>
+             <width>200</width>
+             <height>42</height>
             </size>
            </property>
-          </spacer>
+           <property name="maximumSize">
+            <size>
+             <width>200</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QFrame" name="name_frame">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <property name="spacing">
+          <number>8</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="InfoLabel" name="name_label">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Наименование</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEdit">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>42</height>
+            </size>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -204,14 +250,14 @@
     </widget>
    </item>
    <item>
-    <widget class="QFrame" name="toolbar_frame">
+    <widget class="QFrame" name="data_frame">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <layout class="QVBoxLayout" name="verticalLayout_3">
       <property name="spacing">
        <number>16</number>
       </property>
@@ -228,41 +274,16 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="TertiaryButton" name="add_page_pushButton">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>42</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Добавить страницу</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="Line" name="line">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QFrame" name="main_tools_frame">
+       <widget class="QFrame" name="toolbar_frame">
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
          <property name="spacing">
-          <number>8</number>
+          <number>16</number>
          </property>
          <property name="leftMargin">
           <number>0</number>
@@ -277,7 +298,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="NoFrameButton" name="duplicate_pushButton">
+          <widget class="TertiaryButton" name="add_page_pushButton">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -290,137 +311,195 @@
             </font>
            </property>
            <property name="text">
-            <string>Дублировать</string>
+            <string>Добавить страницу</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="NoFrameButton" name="print_pushButton">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>42</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Печать</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item>
-       <widget class="Line" name="line_2">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QFrame" name="import_export_tools_frame">
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Raised</enum>
-        </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_4">
-         <property name="spacing">
-          <number>8</number>
-         </property>
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="NoFrameButton" name="import_pushButton">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>42</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Импорт</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="NoFrameButton" name="export_pushButton">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>42</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Экспорт</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="Line" name="line_5">
+          <widget class="Line" name="line">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="NoFrameButton" name="delete_page_pushButton">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>42</height>
-            </size>
+          <widget class="QFrame" name="main_tools_frame">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
            </property>
-           <property name="text">
-            <string>Удалить</string>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <property name="spacing">
+             <number>8</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="NoFrameButton" name="duplicate_pushButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>42</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Дублировать</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="NoFrameButton" name="print_pushButton">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>42</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Печать</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="Line" name="line_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
            </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="import_export_tools_frame">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <property name="spacing">
+             <number>8</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="NoFrameButton" name="import_pushButton">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>42</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Импорт</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="NoFrameButton" name="export_pushButton">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>42</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Экспорт</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="Line" name="line_5">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="NoFrameButton" name="delete_page_pushButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>42</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Удалить</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>
        </widget>
       </item>
+      <item>
+       <widget class="EditorTableView" name="data_tableView">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
      </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="EditorTableView" name="data_tableView">
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>16777215</height>
-      </size>
-     </property>
     </widget>
    </item>
    <item>
@@ -498,6 +577,9 @@
       </item>
       <item>
        <widget class="PrimaryButton" name="save_pushButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="minimumSize">
          <size>
           <width>0</width>

@@ -664,6 +664,9 @@
                 </item>
                 <item>
                  <widget class="TertiaryButton" name="edit_pushButton">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
                   <property name="minimumSize">
                    <size>
                     <width>0</width>
@@ -797,11 +800,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>LogoLabel</class>
-   <extends>QLabel</extends>
-   <header>..custom_widgets</header>
-  </customwidget>
-  <customwidget>
    <class>PrimaryButton</class>
    <extends>QPushButton</extends>
    <header>..custom_widgets</header>
@@ -809,6 +807,11 @@
   <customwidget>
    <class>TertiaryButton</class>
    <extends>QPushButton</extends>
+   <header>..custom_widgets</header>
+  </customwidget>
+  <customwidget>
+   <class>LogoLabel</class>
+   <extends>QLabel</extends>
    <header>..custom_widgets</header>
   </customwidget>
   <customwidget>
