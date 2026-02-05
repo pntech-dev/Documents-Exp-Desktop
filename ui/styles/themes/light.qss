@@ -380,7 +380,8 @@ QFrame#line, QFrame#line_2, QFrame#line_5 {
     font-size: 14pt;
 }
 
-#info_label {
+#document_code_lineEdit, #document_name_lineEdit {
+	color: #1A1A1A;
     font-size: 12pt;
 }
 

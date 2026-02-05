@@ -17,6 +17,7 @@ class EditorWindow(QDialog):
     def __init__(
             self, 
             parent=None, 
+            document_data: dict = None, 
             pages: list[dict] = None
     ) -> None:
         super().__init__(parent)
@@ -44,13 +45,15 @@ class EditorWindow(QDialog):
         self.container.setGraphicsEffect(shadow)
 
         # MVC Initialization
-        self.model = DocumentEditorModel()
+        self.model = DocumentEditorModel(
+            document_data=document_data, 
+            pages=pages
+        )
         self.view = DocumentEditorView(container=self.container)
         self.controller = DocumentEditorController(
             model=self.model, 
             view=self.view, 
             window=self,
-            pages=pages
         )
 
     # Center modal on screen

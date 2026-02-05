@@ -280,6 +280,24 @@ class DocumentEditorView:
 
     # --- public API ---
 
+    def set_document_code(self, code: str) -> None:
+        """Sets the document code.
+
+        Args:
+            code: The document code as a string.
+        """
+        self.ui.document_code_lineEdit.setText(code)
+
+
+    def set_document_name(self, name: str) -> None:
+        """Sets the document name.
+
+        Args:
+            name: The document name as a string.
+        """
+        self.ui.document_name_lineEdit.setText(name)
+
+    
     def cancel_button_clicked(self, handler) -> None:
         """Connects the cancel button click signal to a handler.
 

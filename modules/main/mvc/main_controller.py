@@ -106,6 +106,10 @@ class MainController(QObject):
             self.editor_window.activateWindow()
             self.editor_window.raise_()
             return
+        
+        # Get selected document data
+        document = next((doc for doc in self.current_documents 
+                         if doc.get("id") == self.model.selected_document[0]), {})
 
         # Get selected document pages list
         pages = self.model.get_document_pages(
@@ -114,7 +118,8 @@ class MainController(QObject):
 
         # Show document editor window
         self.editor_window = EditorWindow(
-            parent=self.window, 
+            parent=self.window,
+            document_data=document,
             pages=pages
         )
         self.editor_window.show()
