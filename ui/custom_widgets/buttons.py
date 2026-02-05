@@ -135,7 +135,15 @@ class _IconCustomButton(QPushButton):
             icon_rect = QRect(x, icon_y, icon_size.width(), icon_size.height())
             
             # Determine mode/state for icon
-            mode = QIcon.Disabled if not self.isEnabled() else QIcon.Normal
+            mode = QIcon.Normal
+            if not self.isEnabled():
+                theme_id = ThemeManagerInstance().current_theme_id
+                theme = "light" if theme_id == "0" else "dark"
+                
+                disabled_icon = self.icons[theme].get("disabled")
+                if not disabled_icon or disabled_icon.isNull():
+                    mode = QIcon.Disabled
+
             state = QIcon.On if self.isChecked() else QIcon.Off
             
             current_icon.paint(painter, icon_rect, Qt.AlignCenter, mode, state)

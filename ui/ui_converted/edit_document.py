@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(972, 800)
+        Dialog.resize(576, 396)
         Dialog.setMaximumSize(QtCore.QSize(16777215, 800))
         self.verticalLayout = QtWidgets.QVBoxLayout(Dialog)
         self.verticalLayout.setContentsMargins(24, 24, 24, 24)
@@ -171,6 +171,7 @@ class Ui_Dialog(object):
         self.horizontalLayout_4.setSpacing(8)
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.import_pushButton = NoFrameButton(self.import_export_tools_frame)
+        self.import_pushButton.setEnabled(True)
         self.import_pushButton.setMinimumSize(QtCore.QSize(0, 42))
         font = QtGui.QFont()
         font.setPointSize(12)
@@ -178,6 +179,7 @@ class Ui_Dialog(object):
         self.import_pushButton.setObjectName("import_pushButton")
         self.horizontalLayout_4.addWidget(self.import_pushButton)
         self.export_pushButton = NoFrameButton(self.import_export_tools_frame)
+        self.export_pushButton.setEnabled(True)
         self.export_pushButton.setMinimumSize(QtCore.QSize(0, 42))
         font = QtGui.QFont()
         font.setPointSize(12)

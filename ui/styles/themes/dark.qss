@@ -202,7 +202,7 @@ NoFrameButton[danger="true"]:pressed {
 }
 
 NoFrameButton[danger="true"]:disabled {
-	color: #5D1717;
+	color: #404040;
 }
 
 /* Text button */

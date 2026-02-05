@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>972</width>
-    <height>800</height>
+    <width>576</width>
+    <height>396</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -421,6 +421,9 @@
             </property>
             <item>
              <widget class="NoFrameButton" name="import_pushButton">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
               <property name="minimumSize">
                <size>
                 <width>0</width>
@@ -439,6 +442,9 @@
             </item>
             <item>
              <widget class="NoFrameButton" name="export_pushButton">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
               <property name="minimumSize">
                <size>
                 <width>0</width>
