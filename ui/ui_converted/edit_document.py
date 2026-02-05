@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(925, 713)
+        Dialog.resize(925, 800)
         Dialog.setMaximumSize(QtCore.QSize(16777215, 800))
         self.verticalLayout = QtWidgets.QVBoxLayout(Dialog)
         self.verticalLayout.setContentsMargins(24, 24, 24, 24)
@@ -164,7 +164,7 @@ class Ui_Dialog(object):
         self.horizontalLayout_4.addWidget(self.delete_page_pushButton)
         self.horizontalLayout_5.addWidget(self.import_export_tools_frame)
         self.verticalLayout.addWidget(self.toolbar_frame)
-        self.data_tableView = QtWidgets.QTableView(Dialog)
+        self.data_tableView = EditorTableView(Dialog)
         self.data_tableView.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.data_tableView.setObjectName("data_tableView")
         self.verticalLayout.addWidget(self.data_tableView)
@@ -220,5 +220,5 @@ class Ui_Dialog(object):
         self.delete_document_pushButton.setText(_translate("Dialog", "Удалить документ"))
         self.cancel_pushButton.setText(_translate("Dialog", "Отменить"))
         self.save_pushButton.setText(_translate("Dialog", "Сохранить изменения"))
-from ..custom_widgets import InfoLabel, NoFrameButton, PrimaryButton, TertiaryButton
+from ..custom_widgets import EditorTableView, InfoLabel, NoFrameButton, PrimaryButton, TertiaryButton
 import resources.icons.icons_resources_rc

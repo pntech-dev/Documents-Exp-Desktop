@@ -140,10 +140,33 @@ TertiaryButton:disabled {
 	background-color: {{ neutral.neutral_0 }};
 }
 
+TertiaryButton[danger="true"] {
+	border: 1px solid {{ accent.accent_500 }};
+	color: {{ accent.accent_500 }};
+}
+
+TertiaryButton[danger="true"]:hover {
+	border: 1px solid {{ accent.accent_600 }};
+	color: {{ accent.accent_600 }};
+	background-color: none;
+}
+
+TertiaryButton[danger="true"]:pressed {
+	border: 1px solid {{ accent.accent_400 }};
+	color: {{ accent.accent_400 }};
+	background-color: none;
+}
+
+TertiaryButton[danger="true"]:disabled {
+	border: 1px solid {{ neutral.neutral_50 }};
+	color: {{ neutral.neutral_50 }};
+	background-color: none;
+}
+
 /* No Frame Button */
 NoFrameButton {
 	border: 0px;
-	color: {{ neutral.neutral_600 }};
+	color: {{ neutral.neutral_500 }};
 	background-color: transparent;
 	font-size: 12pt;
 	padding: 8px 16px;
@@ -362,6 +385,7 @@ QFrame#line, QFrame#line_2, QFrame#line_5 {
 }
 
 
+
 /* MAIN APPLICATION */
 
 /* Sidebar */
@@ -526,7 +550,7 @@ DocumentsTableView {
 	background-color: {{ neutral.neutral_0 }};
 	alternate-background-color: {{ neutral.neutral_50 }};
 
-	border: 1px solid {{ neutral.neutral_200 }};
+	border: 1px solid {{ neutral.neutral_150 }};
 	border-radius: 8px;
 
 	font-size: 12pt;
@@ -553,8 +577,8 @@ DocumentsTableView QHeaderView::section:last {
 
 /* Cells */
 DocumentsTableView::item {
-	padding: 16px 8px;
-	border-right: 1px solid {{ neutral.neutral_150 }};
+	padding: 2px 16px;
+	border-right: 1px solid {{ neutral.neutral_100 }};
 }
 
 DocumentsTableView::item:last {
@@ -570,7 +594,6 @@ DocumentsTableView::item:selected {
 	background-color: {{ accent.accent_300 }};
 	color: {{ neutral.neutral_0 }};
 }
-
 
 /* ScrollBar */
 /* Vertically */

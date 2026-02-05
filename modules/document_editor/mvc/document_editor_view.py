@@ -184,6 +184,35 @@ class EditorToolBar:
         self.delete_page_button.clicked.connect(handler)
 
 
+class EditorPagesTable:
+    """Manages the pages table logic and updates."""
+
+    def __init__(self, table_view) -> None:
+        """Initializes the EditorPagesTable manager.
+
+        Args:
+            table_view: The custom table view widget for pages.
+        """
+        self.table_view = table_view
+        
+        # Default headers configuration
+        self.headers = ["", "Наименование", ""]
+        self.table_view.set_headers(self.headers)
+
+    def update_pages(self, pages: list[dict]) -> None:
+        """Updates the pages table with new items.
+
+        Args:
+            pages: A list of dictionaries representing document pages.
+        """
+        rows = []
+        for id, page in enumerate(pages, start=1):
+            rows.append((id, [page.get("name", "")]))
+        
+        self.table_view.set_rows(rows)
+
+
+
 class DocumentEditorView:
     def __init__(self, container):
         # UI Initialization
@@ -225,6 +254,11 @@ class DocumentEditorView:
             delete_page_button=self.ui.delete_page_pushButton,
             icons_config=icons_config
         )
+
+        self.pages_table = EditorPagesTable(
+            table_view=self.ui.data_tableView
+        )
+
 
     def _load_ui_config(self) -> dict:
         """Loads the UI configuration from the JSON file.

@@ -141,6 +141,29 @@ TertiaryButton:disabled {
 	background-color: {{ neutral.neutral_100 }};
 }
 
+TertiaryButton[danger="true"] {
+	border: 1px solid {{ accent.accent_500 }};
+	color: {{ accent.accent_500 }};
+}
+
+TertiaryButton[danger="true"]:hover {
+	border: 1px solid {{ accent.accent_400 }};
+	color: {{ accent.accent_400 }};
+	background-color: none;
+}
+
+TertiaryButton[danger="true"]:pressed {
+	border: 1px solid {{ accent.accent_600 }};
+	color: {{ accent.accent_600 }};
+	background-color: none;
+}
+
+TertiaryButton[danger="true"]:disabled {
+	border: 1px solid {{ neutral.neutral_300 }};
+	color: {{ neutral.neutral_300 }};
+	background-color: none;
+}
+
 /* No Frame Button */
 NoFrameButton {
 	border: 0px;
@@ -360,6 +383,7 @@ QFrame#line, QFrame#line_2, QFrame#line_5 {
 }
 
 
+
 /* MAIN APPLICATION */
 
 /* Sidebar */
@@ -521,8 +545,8 @@ QFrame#table_toolbar_frame {
 
 /* Document Table */
 DocumentsTableView {
-	background-color: {{ neutral.neutral_100 }};
-	alternate-background-color: {{ neutral.neutral_200 }};
+	background-color: {{ neutral.neutral_200 }};
+	alternate-background-color: {{ neutral.neutral_250 }};
 
 	border: 1px solid {{ neutral.neutral_300 }};
 	border-radius: 8px;
@@ -536,8 +560,8 @@ DocumentsTableView QHeaderView::section {
 	background-color: {{ neutral.neutral_200 }};
 
 	border: none;
-	border-bottom: 1px solid {{ neutral.neutral_250 }};
-	border-right: 1px solid {{ neutral.neutral_250 }};
+	border-bottom: 1px solid {{ neutral.neutral_350 }};
+	border-right: 1px solid {{ neutral.neutral_350 }};
 
 	min-height: 48px;
 
@@ -551,8 +575,8 @@ DocumentsTableView QHeaderView::section:last {
 
 /* Cells */
 DocumentsTableView::item {
-	padding: 16px 8px;
-	border-right: 1px solid {{ neutral.neutral_250 }};
+	padding: 2px 16px;
+	border-right: 1px solid {{ neutral.neutral_300 }};
 }
 
 DocumentsTableView::item:last {

@@ -384,6 +384,8 @@ QFrame#line, QFrame#line_2, QFrame#line_5 {
     font-size: 12pt;
 }
 
+
+
 /* MAIN APPLICATION */
 
 /* Sidebar */
@@ -548,7 +550,7 @@ DocumentsTableView {
 	background-color: #FFFFFF;
 	alternate-background-color: #F2F2F2;
 
-	border: 1px solid #CCCCCC;
+	border: 1px solid #D9D9D9;
 	border-radius: 8px;
 
 	font-size: 12pt;
@@ -557,7 +559,6 @@ DocumentsTableView {
 
 /* Header */
 DocumentsTableView QHeaderView::section {
-
 	background-color: #E6E6E6;
 
 	border: none;
@@ -576,8 +577,8 @@ DocumentsTableView QHeaderView::section:last {
 
 /* Cells */
 DocumentsTableView::item {
-	padding: 16px 8px;
-	border-right: 1px solid #D9D9D9;
+	padding: 2px 16px;
+	border-right: 1px solid #E6E6E6;
 }
 
 DocumentsTableView::item:last {

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>925</width>
-    <height>713</height>
+    <height>800</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -414,7 +414,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QTableView" name="data_tableView">
+    <widget class="EditorTableView" name="data_tableView">
      <property name="maximumSize">
       <size>
        <width>16777215</width>
@@ -538,6 +538,11 @@
   <customwidget>
    <class>InfoLabel</class>
    <extends>QLabel</extends>
+   <header>..custom_widgets</header>
+  </customwidget>
+  <customwidget>
+   <class>EditorTableView</class>
+   <extends>QTableView</extends>
    <header>..custom_widgets</header>
   </customwidget>
  </customwidgets>

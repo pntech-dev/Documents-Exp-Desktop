@@ -545,8 +545,8 @@ QFrame#table_toolbar_frame {
 
 /* Document Table */
 DocumentsTableView {
-	background-color: #262626;
-	alternate-background-color: #333333;
+	background-color: #333333;
+	alternate-background-color: #404040;
 
 	border: 1px solid #4D4D4D;
 	border-radius: 8px;
@@ -557,11 +557,11 @@ DocumentsTableView {
 
 /* Header */
 DocumentsTableView QHeaderView::section {
-	background-color: #333333;
+	background-color: #4D4D4D;
 
 	border: none;
-	border-bottom: 1px solid #404040;
-	border-right: 1px solid #404040;
+	border-bottom: 1px solid #595959;
+	border-right: 1px solid #595959;
 
 	min-height: 48px;
 
@@ -575,8 +575,8 @@ DocumentsTableView QHeaderView::section:last {
 
 /* Cells */
 DocumentsTableView::item {
-	padding: 16px 8px;
-	border-right: 1px solid #404040;
+	padding: 2px 16px;
+	border-right: 1px solid #4D4D4D;
 }
 
 DocumentsTableView::item:last {
