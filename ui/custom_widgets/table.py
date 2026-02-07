@@ -327,7 +327,7 @@ class EditorTableView(DocumentsTableView):
         self.setSortingEnabled(False)
         self._model.removeRows(0, self._model.rowCount())
 
-        for row_id, row_data in rows:
+        for row_id, row_name, row_designation in rows:
             items = []
             
             # 1. Checkbox Column
@@ -339,7 +339,7 @@ class EditorTableView(DocumentsTableView):
             items.append(check_item)
             
             # 2. Data Columns
-            for value in row_data:
+            for value in [row_name, row_designation]:
                 item = QStandardItem(str(value))
                 item.setEditable(True)
                 item.setDropEnabled(False)
@@ -360,7 +360,7 @@ class EditorTableView(DocumentsTableView):
             self.horizontalHeader().setSectionResizeMode(last_col, QHeaderView.Fixed)
             self.setColumnWidth(last_col, 40)
             
-        # Stretch the second column (Name)
+        # Stretch the data columns (Name and Designation)
         self.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
 
         self._bulk_update = False

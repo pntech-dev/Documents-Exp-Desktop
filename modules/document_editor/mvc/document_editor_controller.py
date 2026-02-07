@@ -22,6 +22,12 @@ class DocumentEditorController:
         self.model.is_document_edited = True
         self._update_save_document_button_state()
 
+
+    def _on_add_page_button_clicked(self) -> None:
+        """Handles the add page button click event."""
+        self.view.add_new_page()
+        self._on_document_data_changed()
+
     
     def _on_save_button_clicked(self) -> None:
         """Handles the save button click event."""
@@ -51,6 +57,7 @@ class DocumentEditorController:
         """Sets up signal-slot connections."""
         self.view.code_lineedit_text_changed(handler=self._on_document_data_changed)
         self.view.name_lineedit_text_changed(handler=self._on_document_data_changed)
+        self.view.toolbar_add_page_button_clicked(handler=self._on_add_page_button_clicked)
         self.view.save_button_clicked(handler=self._on_save_button_clicked)
         self.view.cancel_button_clicked(handler=self._on_cancel_button_clicked)
         self.view.pages_table_item_changed(handler=self._on_document_data_changed)
@@ -72,12 +79,12 @@ class DocumentEditorController:
         data = []
         if self.model.pages:
             for page in self.model.pages:
-                p_name = page.get("name") or ""
-                p_designation = page.get("designation") or ""
-                full_name = f"{p_name}   |   {p_designation}".strip()
+                name = page.get("name") or ""
+                designation = page.get("designation") or ""
                 data.append({
                     "id": page.get("id"),
-                    "name": full_name
+                    "name": name,
+                    "designation": designation
                 })
 
         # Fill the editor table with a list of pages

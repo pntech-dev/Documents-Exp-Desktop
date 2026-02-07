@@ -2,6 +2,7 @@ import json
 
 from pathlib import Path
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QStandardItem
 
 from ui.custom_widgets import (
     NoFrameButton, PrimaryButton, TertiaryButton
@@ -197,7 +198,7 @@ class EditorPagesTable:
         self.table_view = table_view
         
         # Default headers configuration
-        self.headers = ["", "Наименование", ""]
+        self.headers = ["", "Наименование", "Код", ""]
         self.table_view.set_headers(self.headers)
 
     def update_pages(self, pages: list[dict]) -> None:
@@ -208,7 +209,13 @@ class EditorPagesTable:
         """
         rows = []
         for page in pages:
-            rows.append((page.get("id"), [page.get("name", "")]))
+            rows.append(
+                (
+                    page.get("id"),
+                    page.get("name", ""),
+                    page.get("designation", "")
+                )
+            )
         
         self.table_view.set_rows(rows)
 
@@ -219,7 +226,8 @@ class EditorPagesTable:
         for row in range(model.rowCount()):
             item_id = model.item(row, 0).data(Qt.UserRole)
 
-            name, designation = model.item(row, 1).text().split("   |   ")
+            name = model.item(row, 1).text()
+            designation = model.item(row, 2).text()
             
             pages.append({
                 "id": item_id,
@@ -229,6 +237,45 @@ class EditorPagesTable:
             })
 
         return pages
+
+    def add_new_page(self) -> None:
+        """Adds a new empty page row at the top and starts editing."""
+        model = self.table_view.model()
+        
+        # 1. Checkbox Column
+        check_item = QStandardItem()
+        check_item.setCheckable(True)
+        check_item.setEditable(False)
+        check_item.setDropEnabled(False)
+        check_item.setData(None, Qt.UserRole) 
+        
+        # 2. Name Column
+        name_item = QStandardItem("")
+        name_item.setEditable(True)
+        name_item.setDropEnabled(False)
+
+        # 3. Designation Column
+        designation_item = QStandardItem("")
+        designation_item.setEditable(True)
+        designation_item.setDropEnabled(False)
+        
+        # 4. Drag Handle Column
+        drag_item = QStandardItem()
+        drag_item.setEditable(False)
+        drag_item.setDropEnabled(False)
+        
+        items = [check_item, name_item, designation_item, drag_item]
+        
+        # Insert at top
+        model.insertRow(0, items)
+        
+        # Scroll to top
+        self.table_view.scrollToTop()
+        
+        # Start editing name column
+        index = model.index(0, 1)
+        self.table_view.setCurrentIndex(index)
+        self.table_view.edit(index)
 
     def connect_item_changed(self, handler) -> None:
         """Connects the item changed signal to a handler."""
@@ -357,6 +404,15 @@ class DocumentEditorView:
         """
         self.ui.document_name_lineEdit.textChanged.connect(handler)
 
+    
+    def toolbar_add_page_button_clicked(self, handler) -> None:
+        """Connects the add page button click signal to a handler.
+
+        Args:
+            handler: The callback function to execute when the button is clicked.
+        """
+        self.toolbar.add_page_button.clicked.connect(handler)
+
 
     def save_button_clicked(self, handler) -> None:
         """Connects the save button click signal to a handler.
@@ -381,6 +437,11 @@ class DocumentEditorView:
         """Connects the pages table item changed signal to a handler."""
         self.pages_table.connect_item_changed(handler)
 
+
     def pages_table_row_moved(self, handler) -> None:
         """Connects the pages table row moved signal to a handler."""
         self.pages_table.connect_row_moved(handler)
+
+    def add_new_page(self) -> None:
+        """Adds a new page to the table."""
+        self.pages_table.add_new_page()
