@@ -58,6 +58,12 @@ class EditorWindow(QDialog):
             window=self,
         )
 
+    def keyPressEvent(self, event):
+        """Prevents the window from closing when the Enter key is pressed."""
+        if event.key() in (Qt.Key_Return, Qt.Key_Enter):
+            return
+        super().keyPressEvent(event)
+
     # Center modal on screen
     def showEvent(self, event):
         super().showEvent(event)

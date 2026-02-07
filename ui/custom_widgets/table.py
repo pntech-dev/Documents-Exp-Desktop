@@ -341,7 +341,7 @@ class EditorTableView(DocumentsTableView):
             # 2. Data Columns
             for value in row_data:
                 item = QStandardItem(str(value))
-                item.setEditable(False)
+                item.setEditable(True)
                 item.setDropEnabled(False)
                 items.append(item)
             

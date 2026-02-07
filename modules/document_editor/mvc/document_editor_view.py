@@ -1,6 +1,7 @@
 import json
 
 from pathlib import Path
+from PyQt5.QtCore import Qt
 
 from ui.custom_widgets import (
     NoFrameButton, PrimaryButton, TertiaryButton
@@ -206,10 +207,36 @@ class EditorPagesTable:
             pages: A list of dictionaries representing document pages.
         """
         rows = []
-        for id, page in enumerate(pages, start=1):
-            rows.append((id, [page.get("name", "")]))
+        for page in pages:
+            rows.append((page.get("id"), [page.get("name", "")]))
         
         self.table_view.set_rows(rows)
+
+    def get_pages(self) -> list[dict]:
+        """Returns the list of pages from the table."""
+        pages = []
+        model = self.table_view.model()
+        for row in range(model.rowCount()):
+            item_id = model.item(row, 0).data(Qt.UserRole)
+
+            name, designation = model.item(row, 1).text().split("   |   ")
+            
+            pages.append({
+                "id": item_id,
+                "order_index": row,
+                "designation": designation,
+                "name": name
+            })
+
+        return pages
+
+    def connect_item_changed(self, handler) -> None:
+        """Connects the item changed signal to a handler."""
+        self.table_view.model().itemChanged.connect(handler)
+
+    def connect_row_moved(self, handler) -> None:
+        """Connects the row moved signal to a handler."""
+        self.table_view.rowMoved.connect(handler)
 
 
 
@@ -283,11 +310,10 @@ class DocumentEditorView:
     def get_document_data(self) -> dict:
         data = {
             "code": self.ui.document_code_lineEdit.text(),
-            "name": self.ui.document_name_lineEdit.text()
+            "name": self.ui.document_name_lineEdit.text(),
+            "pages": self.pages_table.get_pages()
         }
-
-        # TODO Write getting data from table rows
-
+        
         return data
 
 
@@ -349,3 +375,12 @@ class DocumentEditorView:
         """
         self.ui.close_pushButton.clicked.connect(handler)
         self.ui.cancel_pushButton.clicked.connect(handler)
+
+    
+    def pages_table_item_changed(self, handler) -> None:
+        """Connects the pages table item changed signal to a handler."""
+        self.pages_table.connect_item_changed(handler)
+
+    def pages_table_row_moved(self, handler) -> None:
+        """Connects the pages table row moved signal to a handler."""
+        self.pages_table.connect_row_moved(handler)
