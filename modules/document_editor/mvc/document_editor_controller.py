@@ -18,15 +18,28 @@ class DocumentEditorController:
     # ====================
 
 
-    def _on_document_data_changed(self):
+    def _on_document_data_changed(self, *args):
         self.model.is_document_edited = True
         self._update_save_document_button_state()
+
+
+    def _on_table_selection_changed(self, *args) -> None:
+        """Updates the delete page button state."""
+        state = self.view.has_selected_pages()
+        self.view.update_delete_page_button_state(state=state)
 
 
     def _on_add_page_button_clicked(self) -> None:
         """Handles the add page button click event."""
         self.view.add_new_page()
         self._on_document_data_changed()
+
+
+    def _on_delete_page_button_clicked(self) -> None:
+        """Handles the delete page button click event."""
+        self.view.delete_selected_pages()
+        self._on_document_data_changed()
+        self._on_table_selection_changed()
 
     
     def _on_save_button_clicked(self) -> None:
@@ -57,11 +70,17 @@ class DocumentEditorController:
         """Sets up signal-slot connections."""
         self.view.code_lineedit_text_changed(handler=self._on_document_data_changed)
         self.view.name_lineedit_text_changed(handler=self._on_document_data_changed)
+
         self.view.toolbar_add_page_button_clicked(handler=self._on_add_page_button_clicked)
-        self.view.save_button_clicked(handler=self._on_save_button_clicked)
-        self.view.cancel_button_clicked(handler=self._on_cancel_button_clicked)
+        self.view.toolbar_delete_page_button_clicked(handler=self._on_delete_page_button_clicked)
+
         self.view.pages_table_item_changed(handler=self._on_document_data_changed)
         self.view.pages_table_row_moved(handler=self._on_document_data_changed)
+        self.view.pages_table_selection_changed(handler=self._on_table_selection_changed)
+        self.view.pages_table_item_changed(handler=self._on_table_selection_changed)
+
+        self.view.cancel_button_clicked(handler=self._on_cancel_button_clicked)
+        self.view.save_button_clicked(handler=self._on_save_button_clicked)
 
     
     def _fill_document_data(self) -> None:
@@ -89,6 +108,9 @@ class DocumentEditorController:
 
         # Fill the editor table with a list of pages
         self.view.pages_table.update_pages(pages=data)
+
+        # Update delete button state
+        self._on_table_selection_changed()
 
     
     def _update_save_document_button_state(self):

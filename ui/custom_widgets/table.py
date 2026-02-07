@@ -18,6 +18,7 @@ from utils import ThemeManagerInstance
 
 
 ROLE_PLACEHOLDER = Qt.UserRole + 99
+ROLE_CHECK_STATE = Qt.UserRole + 1
 
 
 class _HoverDelegate(QStyledItemDelegate):
@@ -55,15 +56,10 @@ class _CheckBoxDelegate(_HoverDelegate):
         if index.data(ROLE_PLACEHOLDER):
             return
 
-        # Remove check indicator feature so base class doesn't draw the default one
-        opt = QStyleOptionViewItem(option)
-        opt.features &= ~QStyleOptionViewItem.HasCheckIndicator
-        
-        # Draw background/selection via base
-        super().paint(painter, opt, index)
+        super().paint(painter, option, index)
         
         # Draw our custom checkbox
-        check_state = index.data(Qt.CheckStateRole)
+        check_state = index.data(ROLE_CHECK_STATE)
         
         btn_opt = QStyleOptionButton()
         box_size = 20
@@ -97,9 +93,9 @@ class _CheckBoxDelegate(_HoverDelegate):
                 
                 if checkbox_rect.contains(event.pos()):
                     if event.type() == QEvent.MouseButtonRelease:
-                        state = index.data(Qt.CheckStateRole)
+                        state = index.data(ROLE_CHECK_STATE)
                         new_state = Qt.Unchecked if state == Qt.Checked else Qt.Checked
-                        model.setData(index, new_state, Qt.CheckStateRole)
+                        model.setData(index, new_state, ROLE_CHECK_STATE)
                     return True # Consume event to prevent row selection
         return super().editorEvent(event, model, option, index)
 
@@ -332,7 +328,7 @@ class EditorTableView(DocumentsTableView):
             
             # 1. Checkbox Column
             check_item = QStandardItem()
-            check_item.setCheckable(True)
+            check_item.setData(Qt.Unchecked, ROLE_CHECK_STATE)
             check_item.setEditable(False)
             check_item.setDropEnabled(False)
             check_item.setData(row_id, Qt.UserRole) # Store ID in the first item
@@ -395,7 +391,7 @@ class EditorTableView(DocumentsTableView):
         """Selects or deselects all row checkboxes."""
         for row in range(self._model.rowCount()):
             item = self._model.item(row, 0)
-            item.setCheckState(Qt.Checked if checked else Qt.Unchecked)
+            item.setData(Qt.Checked if checked else Qt.Unchecked, ROLE_CHECK_STATE)
 
     def startDrag(self, supportedActions):
         indexes = self.selectedIndexes()

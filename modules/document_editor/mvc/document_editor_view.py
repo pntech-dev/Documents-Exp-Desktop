@@ -10,6 +10,8 @@ from ui.custom_widgets import (
 from utils import ThemeManagerInstance
 
 
+ROLE_CHECK_STATE = Qt.UserRole + 1
+
 
 class EditorToolBar:
     def __init__(
@@ -132,6 +134,11 @@ class EditorToolBar:
         )
 
 
+    def update_delete_button_state(self, state: bool) -> None:
+        """Updates the delete page button state."""
+        self.delete_page_button.setEnabled(state)
+
+
     def add_page_button_clicked(self, handler) -> None:
         """Connects the add page button click signal to a handler.
 
@@ -244,7 +251,7 @@ class EditorPagesTable:
         
         # 1. Checkbox Column
         check_item = QStandardItem()
-        check_item.setCheckable(True)
+        check_item.setData(Qt.Unchecked, ROLE_CHECK_STATE)
         check_item.setEditable(False)
         check_item.setDropEnabled(False)
         check_item.setData(None, Qt.UserRole) 
@@ -277,9 +284,52 @@ class EditorPagesTable:
         self.table_view.setCurrentIndex(index)
         self.table_view.edit(index)
 
+
+    def delete_selected_pages(self) -> None:
+        """Deletes selected or checked pages from the table."""
+        model = self.table_view.model()
+        rows_to_delete = set()
+
+        # 1. Get checked rows
+        for row in range(model.rowCount()):
+            if model.item(row, 0).data(ROLE_CHECK_STATE) == Qt.Checked:
+                rows_to_delete.add(row)
+
+        # 2. Get selected rows
+        selection_model = self.table_view.selectionModel()
+        if selection_model.hasSelection():
+            for index in selection_model.selectedRows():
+                rows_to_delete.add(index.row())
+
+        # Delete rows in reverse order to maintain indices
+        for row in sorted(rows_to_delete, reverse=True):
+            model.removeRow(row)
+        
+        self.table_view.clearSelection()
+
+
+    def has_selection_or_checks(self) -> bool:
+        """Checks if any row is selected or any checkbox is checked."""
+        if self.table_view.selectionModel().hasSelection():
+            return True
+            
+        model = self.table_view.model()
+        for row in range(model.rowCount()):
+            if model.item(row, 0).data(ROLE_CHECK_STATE) == Qt.Checked:
+                return True
+        return False
+
+
+    def connect_selection_changed(self, handler) -> None:
+        """Connects the selection changed signal to a handler."""
+        if self.table_view.selectionModel():
+            self.table_view.selectionModel().selectionChanged.connect(handler)
+
+
     def connect_item_changed(self, handler) -> None:
         """Connects the item changed signal to a handler."""
         self.table_view.model().itemChanged.connect(handler)
+
 
     def connect_row_moved(self, handler) -> None:
         """Connects the row moved signal to a handler."""
@@ -354,6 +404,21 @@ class DocumentEditorView:
 
     # --- public API ---
 
+    def add_new_page(self) -> None:
+        """Adds a new page to the table."""
+        self.pages_table.add_new_page()
+
+
+    def has_selected_pages(self) -> bool:
+        """Checks if any page is selected or checked."""
+        return self.pages_table.has_selection_or_checks()
+
+
+    def delete_selected_pages(self) -> None:
+        """Deletes selected or checked pages."""
+        self.pages_table.delete_selected_pages()
+
+
     def get_document_data(self) -> dict:
         data = {
             "code": self.ui.document_code_lineEdit.text(),
@@ -362,6 +427,11 @@ class DocumentEditorView:
         }
         
         return data
+
+
+    def update_delete_page_button_state(self, state: bool) -> None:
+        """Updates the delete page button state."""
+        self.toolbar.update_delete_button_state(state=state)
 
 
     def update_save_button_state(self, state: bool) -> None:
@@ -411,7 +481,16 @@ class DocumentEditorView:
         Args:
             handler: The callback function to execute when the button is clicked.
         """
-        self.toolbar.add_page_button.clicked.connect(handler)
+        self.toolbar.add_page_button_clicked(handler)
+
+    
+    def toolbar_delete_page_button_clicked(self, handler) -> None:
+        """Connects the delete page button click signal to a handler.
+
+        Args:
+            handler: The callback function to execute when the button is clicked.
+        """
+        self.toolbar.delete_page_button_clicked(handler)
 
 
     def save_button_clicked(self, handler) -> None:
@@ -432,6 +511,10 @@ class DocumentEditorView:
         self.ui.close_pushButton.clicked.connect(handler)
         self.ui.cancel_pushButton.clicked.connect(handler)
 
+    def pages_table_selection_changed(self, handler) -> None:
+        """Connects the pages table selection changed signal to a handler."""
+        self.pages_table.connect_selection_changed(handler)
+
     
     def pages_table_item_changed(self, handler) -> None:
         """Connects the pages table item changed signal to a handler."""
@@ -441,7 +524,3 @@ class DocumentEditorView:
     def pages_table_row_moved(self, handler) -> None:
         """Connects the pages table row moved signal to a handler."""
         self.pages_table.connect_row_moved(handler)
-
-    def add_new_page(self) -> None:
-        """Adds a new page to the table."""
-        self.pages_table.add_new_page()
