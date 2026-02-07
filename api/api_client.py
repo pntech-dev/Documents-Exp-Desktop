@@ -211,6 +211,22 @@ class APIClient:
         return self._create_get_api_request(
             url=self.base_url + f"/app/documents/{document_id}/pages"
         )
+    
+
+    def update_document(self, document_id: int, data: dict) -> dict:
+        """Updates a document.
+
+        Args:
+            document_id (int): The ID of the document to update.
+            data (dict): The updated document data.
+
+        Returns:
+            dict: The JSON response confirming the update.
+        """
+        return self._create_patch_api_request(
+            url=self.base_url + f"/app/documents/{document_id}",
+            json=data
+        )
 
 
     # ====================

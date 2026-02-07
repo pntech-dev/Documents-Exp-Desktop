@@ -76,7 +76,7 @@ class MainController(QObject):
             index = indexes[0]
             dept_id = index.data(ROLE_ID)
 
-            if dept_id:
+            if dept_id and dept_id != self.model.current_department_id:
                 self.model.current_department_id = dept_id
                 self._update_categories_list()
 
@@ -88,7 +88,7 @@ class MainController(QObject):
             index = indexes[0]
             cat_id = index.data(ROLE_ID)
 
-            if cat_id:
+            if cat_id and cat_id != self.model.current_category_id:
                 self.model.current_category_id = cat_id
                 self._update_documents_list()
 
@@ -122,6 +122,7 @@ class MainController(QObject):
             document_data=document,
             pages=pages
         )
+        self.editor_window.document_saved.connect(self._on_document_saved)
         self.editor_window.show()
 
 
@@ -159,9 +160,16 @@ class MainController(QObject):
         state=True if self.model.selected_document[0] is not None else False
         self.view.update_document_editor_state(state=state)                
 
+
     def _on_document_double_clicked(self, index) -> None:
         """Handles document double click."""
         self._on_edit_button_clicked()
+
+
+    def _on_document_saved(self) -> None:
+        """Handles the document saved event."""
+        self.model.refresh_data()
+        self._update_app_data()
 
 
     # ====================
@@ -254,3 +262,31 @@ class MainController(QObject):
         
         self.current_documents = documents
         self.view.update_documents_table(documents=documents)
+
+    
+    def _update_app_data(self):
+        """Updates the application data."""
+        # TODO Rewrite the data update so that it includes the search results
+        
+        # Save current selection to restore it after reload
+        saved_dept_id = self.model.current_department_id
+        saved_cat_id = self.model.current_category_id
+
+        self._load_sidebar_data()
+        
+        # Restore department
+        if saved_dept_id:
+            # If the update triggered an auto-selection (e.g. first item), 
+            # the model might have changed. We force it back.
+            if self.model.current_department_id != saved_dept_id:
+                self.model.current_department_id = saved_dept_id
+                self._update_categories_list()
+
+            self.view.select_department(saved_dept_id)
+
+        # Restore category
+        if saved_cat_id:
+            self.model.current_category_id = saved_cat_id
+            self.view.select_category(saved_cat_id)
+
+        self._update_documents_list()

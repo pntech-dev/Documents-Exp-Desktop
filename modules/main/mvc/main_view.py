@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import QEvent, Qt, QObject, QPoint
+from PyQt5.QtCore import QEvent, Qt, QObject, QPoint, QItemSelectionModel
 
 from ui import MainWindow_UI
 from utils import ThemeManagerInstance
@@ -16,7 +16,8 @@ from ui.custom_widgets import (
     LogoLabel,
     ProfileIconLabel,
     ThemeAwareMenu,
-    DocumentsTableView
+    DocumentsTableView,
+    ROLE_ID
 )
 
 
@@ -141,6 +142,40 @@ class Sidebar:
         """Connects to the categories tree selection changed signal."""
         if self.categories_tree.selectionModel():
             self.categories_tree.selectionModel().selectionChanged.connect(handler)
+
+    def select_department(self, dept_id: int) -> None:
+        """Selects a department by ID."""
+        self._select_item_by_id(self.departments_tree, dept_id)
+
+    def select_category(self, cat_id: int) -> None:
+        """Selects a category by ID."""
+        self._select_item_by_id(self.categories_tree, cat_id)
+
+    def _select_item_by_id(self, tree_view: SidebarBlock, item_id: int) -> None:
+        """Selects an item in the tree view by its ID (ROLE_ID)."""
+        model = tree_view.model()
+        if not model:
+            return
+            
+        start_index = model.index(0, 0)
+        
+        indexes = model.match(
+            start_index, 
+            ROLE_ID, 
+            item_id, 
+            1, 
+            Qt.MatchRecursive | Qt.MatchExactly
+        )
+        
+        if indexes:
+            index = indexes[0]
+            selection_model = tree_view.selectionModel()
+            if selection_model:
+                selection_model.setCurrentIndex(
+                    index, 
+                    QItemSelectionModel.ClearAndSelect | QItemSelectionModel.Rows
+                )
+                tree_view.scrollTo(index)
 
 
 class Navbar:
@@ -778,6 +813,14 @@ class MainView(QObject):
             dept: The user's department as a string.
         """
         self.sidebar.set_user_department(dept=dept)
+
+    def select_department(self, dept_id: int) -> None:
+        """Selects a department by ID."""
+        self.sidebar.select_department(dept_id)
+
+    def select_category(self, cat_id: int) -> None:
+        """Selects a category by ID."""
+        self.sidebar.select_category(cat_id)
 
 
     def connect_theme_switch(self, handler) -> None:

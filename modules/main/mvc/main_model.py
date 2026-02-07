@@ -52,6 +52,13 @@ class MainModel:
         return pages["pages"]
 
 
+    def refresh_data(self) -> None:
+        """Refreshes the data from the API."""
+        self.departments = self._get_departments()
+        self.categories = self._get_categories()
+        self.documents = self._get_documents()
+
+
     # ====================
     # Model Methods
     # ====================

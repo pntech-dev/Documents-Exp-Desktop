@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QColor
 
 
@@ -14,6 +14,8 @@ from ui.custom_widgets.modal_window import ShadowContainer, ModalOverlay
 
 
 class EditorWindow(QDialog):
+    document_saved = pyqtSignal()
+
     def __init__(
             self, 
             parent=None, 

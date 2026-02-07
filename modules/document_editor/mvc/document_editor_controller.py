@@ -17,6 +17,20 @@ class DocumentEditorController:
     # Handlers
     # ====================
 
+
+    def _on_document_data_changed(self):
+        self.model.is_document_edited = True
+        self._update_save_document_button_state()
+
+    
+    def _on_save_button_clicked(self) -> None:
+        """Handles the save button click event."""
+        data = self.view.get_document_data()
+        self.model.save_document(data=data)
+        self.window.document_saved.emit()
+        self.window.close()
+
+
     def _on_cancel_button_clicked(self) -> None:
         """Handles the cancel button click event."""
         self.window.close()
@@ -35,6 +49,9 @@ class DocumentEditorController:
 
     def _setup_connections(self) -> None:
         """Sets up signal-slot connections."""
+        self.view.code_lineedit_text_changed(handler=self._on_document_data_changed)
+        self.view.name_lineedit_text_changed(handler=self._on_document_data_changed)
+        self.view.save_button_clicked(handler=self._on_save_button_clicked)
         self.view.cancel_button_clicked(handler=self._on_cancel_button_clicked)
 
     
@@ -60,3 +77,8 @@ class DocumentEditorController:
 
         # Fill the editor table with a list of pages
         self.view.pages_table.update_pages(pages=data)
+
+    
+    def _update_save_document_button_state(self):
+        """Updates the save document button state."""
+        self.view.update_save_button_state(state=self.model.is_document_edited)

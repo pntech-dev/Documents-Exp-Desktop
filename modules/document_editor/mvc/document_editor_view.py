@@ -280,6 +280,22 @@ class DocumentEditorView:
 
     # --- public API ---
 
+    def get_document_data(self) -> dict:
+        data = {
+            "code": self.ui.document_code_lineEdit.text(),
+            "name": self.ui.document_name_lineEdit.text()
+        }
+
+        # TODO Write getting data from table rows
+
+        return data
+
+
+    def update_save_button_state(self, state: bool) -> None:
+        """Updates the save document button state."""
+        self.ui.save_pushButton.setEnabled(state)
+
+
     def set_document_code(self, code: str) -> None:
         """Sets the document code.
 
@@ -296,6 +312,33 @@ class DocumentEditorView:
             name: The document name as a string.
         """
         self.ui.document_name_lineEdit.setText(name)
+
+
+    def code_lineedit_text_changed(self, handler) -> None:
+        """Connects the code line edit text changed signal to a handler.
+
+        Args:
+            handler: The callback function to execute when the text changes.
+        """
+        self.ui.document_code_lineEdit.textChanged.connect(handler)
+
+
+    def name_lineedit_text_changed(self, handler) -> None:
+        """Connects the name line edit text changed signal to a handler.
+
+        Args:
+            handler: The callback function to execute when the text changes.
+        """
+        self.ui.document_name_lineEdit.textChanged.connect(handler)
+
+
+    def save_button_clicked(self, handler) -> None:
+        """Connects the save button click signal to a handler.
+
+        Args:
+            handler: The callback function to execute when the button is clicked.
+        """
+        self.ui.save_pushButton.clicked.connect(handler)
 
     
     def cancel_button_clicked(self, handler) -> None:
