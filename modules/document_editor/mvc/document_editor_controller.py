@@ -49,7 +49,41 @@ class DocumentEditorController:
 
     def _on_print_button_clicked(self) -> None:
         """Handles the print button click event."""
-        print("Print button clicked")
+        from PyQt5.QtPrintSupport import QPrinter, QPrintDialog
+        from PyQt5.QtGui import QTextDocument
+
+        data = self.view.get_document_data()
+        
+        code = data.get("code", "")
+        name = data.get("name", "")
+        pages = data.get("pages", [])
+
+        # 1. Generate rows HTML
+        rows_html = ""
+        for page in pages:
+            p_name = page.get("name", "")
+            p_designation = page.get("designation", "")
+            rows_html += f"<tr><td>{p_name}</td><td>{p_designation}</td></tr>"
+
+        # 2. Load template
+        try:
+            # Path to: project_root/resources/templates/print_document.html
+            root_dir = Path(__file__).resolve().parents[3]
+            template_path = root_dir / "resources" / "templates" / "print_document.html"
+            
+            with open(template_path, "r", encoding="utf-8") as f:
+                html = f.read().format(code=code, name=name, rows=rows_html)
+        except Exception as e:
+            print(f"Error loading print template: {e}")
+            return
+
+        printer = QPrinter(QPrinter.HighResolution)
+        dialog = QPrintDialog(printer, self.window)
+
+        if dialog.exec_() == QPrintDialog.Accepted:
+            document = QTextDocument()
+            document.setHtml(html)
+            document.print_(printer)
 
 
     def _on_import_button_clicked(self) -> None:
