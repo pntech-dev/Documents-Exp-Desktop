@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt, QTimer, pyqtSignal
+from PyQt5.QtCore import Qt, QTimer, pyqtSignal, QPoint
 from PyQt5.QtGui import QColor
 
 
@@ -34,6 +34,7 @@ class EditorWindow(QDialog):
         # === Container & Layout ===
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(20, 20, 20, 20)
+        main_layout.setAlignment(Qt.AlignCenter)
         
         self.container = ShadowContainer(self)
         self.container.setObjectName("editorContainer")
@@ -58,6 +59,9 @@ class EditorWindow(QDialog):
             window=self,
         )
 
+        # Set initial geometry to prevent flickering
+        self.center_on_screen()
+
     def keyPressEvent(self, event):
         """Prevents the window from closing when the Enter key is pressed."""
         if event.key() in (Qt.Key_Return, Qt.Key_Enter):
@@ -68,7 +72,7 @@ class EditorWindow(QDialog):
     def showEvent(self, event):
         super().showEvent(event)
         self.create_overlay()
-        QTimer.singleShot(0, self.center_on_screen)
+        self.center_on_screen()
 
     
     def closeEvent(self, event):
@@ -88,8 +92,13 @@ class EditorWindow(QDialog):
 
 
     def center_on_screen(self):
-        self.adjustSize()
-        screen = QApplication.primaryScreen().availableGeometry()
-        x = screen.center().x() - self.width() // 2
-        y = screen.center().y() - self.height() // 2
-        self.move(x, y)
+        if self.parent():
+            parent = self.parent().window()
+            self.resize(parent.size())
+            self.move(parent.mapToGlobal(QPoint(0, 0)))
+        else:
+            self.adjustSize()
+            screen = QApplication.primaryScreen().availableGeometry()
+            x = screen.center().x() - self.width() // 2
+            y = screen.center().y() - self.height() // 2
+            self.move(x, y)

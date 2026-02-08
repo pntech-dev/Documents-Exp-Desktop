@@ -1,5 +1,9 @@
 from pathlib import Path
+from PyQt5.QtGui import QTextDocument
 from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtPrintSupport import QPrinter, QPrintDialog
+
+from utils import NotificationService
 
 
 
@@ -14,6 +18,10 @@ class DocumentEditorController:
         self.view = view
         self.window = window
 
+        # Setup Notification Service
+        NotificationService().set_main_window(self.window)
+
+        # Initialize UI
         self._init_ui()
         self._setup_connections()
 
@@ -49,9 +57,6 @@ class DocumentEditorController:
 
     def _on_print_button_clicked(self) -> None:
         """Handles the print button click event."""
-        from PyQt5.QtPrintSupport import QPrinter, QPrintDialog
-        from PyQt5.QtGui import QTextDocument
-
         data = self.view.get_document_data()
         
         code = data.get("code", "")
@@ -85,6 +90,19 @@ class DocumentEditorController:
             document.setHtml(html)
             document.print_(printer)
 
+            # Show notification
+            NotificationService().show_toast(
+                notification_type="success",
+                title="Печать документа",
+                message="Документ успешно напечатан."
+            )
+        else:
+            NotificationService().show_toast(
+                notification_type="info",
+                title="Печать документа",
+                message="Печать отменена пользователем."
+            )
+
 
     def _on_import_button_clicked(self) -> None:
         """Handles the import button click event."""
@@ -105,6 +123,25 @@ class DocumentEditorController:
                 
                 self.view.pages_table.update_pages(pages=combined_pages)
                 self._on_document_data_changed()
+
+                # Show notification
+                NotificationService().show_toast(
+                    notification_type="success",
+                    title="Импорт страниц документа",
+                    message="Страницы документа успешно импортированы."
+                )
+            else:
+                NotificationService().show_toast(
+                    notification_type="warning",
+                    title="Импорт страниц документа",
+                    message="Не удалось найти подходящую таблицу для импорта."
+                )
+        else:
+            NotificationService().show_toast(
+                notification_type="info",
+                title="Импорт страниц документа",
+                message="Импорт отменен пользователем."
+            )
 
 
     def _on_export_button_clicked(self) -> None:
@@ -127,6 +164,19 @@ class DocumentEditorController:
                 path=str(path_obj.parent), 
                 filename=path_obj.name, 
                 data=data
+            )
+
+            # Show notification
+            NotificationService().show_toast(
+                notification_type="success",
+                title="Экспорт документа",
+                message="Документ успешно экспортирован."
+            )
+        else:
+            NotificationService().show_toast(
+                notification_type="info",
+                title="Экспорт документа",
+                message="Экспорт отменен пользователем."
             )
 
 

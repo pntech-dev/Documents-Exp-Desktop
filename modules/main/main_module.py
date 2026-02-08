@@ -1,6 +1,6 @@
 from ui import MainWindow_UI
+from utils import ThemeManagerInstance
 from .mvc import MainModel, MainView, MainController
-from utils import ThemeManagerInstance, NotificationService
 
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QMainWindow
@@ -15,8 +15,6 @@ class MainWindow(QMainWindow):
         # Application work mode ('guest' - Guest mode, 'auth' - Authorized mode)
         self.mode = mode
 
-        print(self.mode)
-
         # UI Initialization
         self.ui = MainWindow_UI()
         self.ui.setupUi(self)
@@ -24,14 +22,6 @@ class MainWindow(QMainWindow):
 
         # Set theme
         self.theme_manager = ThemeManagerInstance()
-
-        # Setup Notification Service
-        NotificationService().set_main_window(self)
-        NotificationService().show_toast(
-            notification_type="info",
-            title="Главное окно",
-            message="Добро пожаловать!"
-        )
 
         # MVC Initialization
         self.model = MainModel()
