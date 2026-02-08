@@ -1,3 +1,8 @@
+from pathlib import Path
+from PyQt5.QtWidgets import QFileDialog
+
+
+
 class DocumentEditorController:
     def __init__(
             self, 
@@ -42,6 +47,39 @@ class DocumentEditorController:
         self._on_document_data_changed()
 
 
+    def _on_print_button_clicked(self) -> None:
+        """Handles the print button click event."""
+        print("Print button clicked")
+
+
+    def _on_import_button_clicked(self) -> None:
+        """Handles the import button click event."""
+        print("Import button clicked")
+
+
+    def _on_export_button_clicked(self) -> None:
+        """Handles the export button click event."""
+        data = self.view.get_document_data()
+        filename = f"{data.get('code')} - {data.get('name')}.docx"
+        # Replace slashes to prevent path interpretation issues
+        filename = filename.replace("/", "_").replace("\\", "_")
+
+        file_path, _ = QFileDialog.getSaveFileName(
+            self.window,
+            "Экспорт в Word",
+            str(Path.home() / filename),
+            "Word Documents (*.docx)"
+        )
+
+        if file_path:
+            path_obj = Path(file_path)
+            self.model.export_to_docx(
+                path=str(path_obj.parent), 
+                filename=path_obj.name, 
+                data=data
+            )
+
+
     def _on_delete_page_button_clicked(self) -> None:
         """Handles the delete page button click event."""
         self.view.delete_selected_pages()
@@ -80,6 +118,9 @@ class DocumentEditorController:
 
         self.view.toolbar_add_page_button_clicked(handler=self._on_add_page_button_clicked)
         self.view.toolbar_duplicate_page_button_clicked(handler=self._on_duplicate_page_button_clicked)
+        self.view.toolbar_print_button_clicked(handler=self._on_print_button_clicked)
+        self.view.toolbar_import_button_clicked(handler=self._on_import_button_clicked)
+        self.view.toolbar_export_button_clicked(handler=self._on_export_button_clicked)
         self.view.toolbar_delete_page_button_clicked(handler=self._on_delete_page_button_clicked)
 
         self.view.pages_table_item_changed(handler=self._on_document_data_changed)

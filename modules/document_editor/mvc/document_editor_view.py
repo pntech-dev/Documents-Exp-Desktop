@@ -570,6 +570,33 @@ class DocumentEditorView:
         self.toolbar.duplicate_button_clicked(handler)
 
     
+    def toolbar_print_button_clicked(self, handler) -> None:
+        """Connects the print button click signal to a handler.
+
+        Args:
+            handler: The callback function to execute when the button is clicked.
+        """
+        self.toolbar.print_button_clicked(handler)
+
+
+    def toolbar_import_button_clicked(self, handler) -> None:
+        """Connects the import button click signal to a handler.
+
+        Args:
+            handler: The callback function to execute when the button is clicked.
+        """
+        self.toolbar.import_button_clicked(handler)
+
+
+    def toolbar_export_button_clicked(self, handler) -> None:
+        """Connects the export button click signal to a handler.
+
+        Args:
+            handler: The callback function to execute when the button is clicked.
+        """
+        self.toolbar.export_button_clicked(handler)
+
+    
     def toolbar_delete_page_button_clicked(self, handler) -> None:
         """Connects the delete page button click signal to a handler.
 
