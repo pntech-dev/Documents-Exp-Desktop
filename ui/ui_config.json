@@ -271,6 +271,20 @@
                     "disabled": ":/icons/dark/dark/edit_disabled.svg"
                 }
             },
+            "show_pages": {
+                "light": {
+                    "default": ":/icons/light/light/pages_default.svg",
+                    "hover": ":/icons/light/light/pages_hover.svg",
+                    "pressed": ":/icons/light/light/pages_clicked.svg",
+                    "disabled": ":/icons/light/light/pages_disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/pages_default.svg",
+                    "hover": ":/icons/dark/dark/pages_hover.svg",  
+                    "pressed": ":/icons/dark/dark/pages_clicked.svg",
+                    "disabled": ":/icons/dark/dark/pages_disabled.svg"
+                }
+            },
             "duplicate": {
                 "light": {
                     "default": ":/icons/light/light/duplicate_default.svg",

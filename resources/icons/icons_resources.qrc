@@ -57,6 +57,10 @@
     <file>light/notification_success.svg</file>
     <file>light/notification_warning.svg</file>
     <file>light/notification_warning_red.svg</file>
+    <file>light/pages_default.svg</file>
+    <file>light/pages_hover.svg</file>
+    <file>light/pages_clicked.svg</file>
+    <file>light/pages_disabled.svg</file>
     <file>light/password_active.svg</file>
     <file>light/password_default.svg</file>
     <file>light/password_disabled.svg</file>
@@ -159,6 +163,10 @@
     <file>dark/notification_success.svg</file>
     <file>dark/notification_warning.svg</file>
     <file>dark/notification_warning_red.svg</file>
+    <file>dark/pages_default.svg</file>
+    <file>dark/pages_hover.svg</file>
+    <file>dark/pages_clicked.svg</file>
+    <file>dark/pages_disabled.svg</file>
     <file>dark/password_active.svg</file>
     <file>dark/password_default.svg</file>
     <file>dark/password_disabled.svg</file>

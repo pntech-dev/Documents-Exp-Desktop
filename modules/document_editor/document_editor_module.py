@@ -20,6 +20,7 @@ class EditorWindow(QDialog):
     def __init__(
             self, 
             parent=None, 
+            mode: str = None,
             document_data: dict = None, 
             pages: list[dict] = None
     ) -> None:
@@ -55,6 +56,7 @@ class EditorWindow(QDialog):
         )
         self.view = DocumentEditorView(container=self.container)
         self.controller = DocumentEditorController(
+            mode=mode,
             model=self.model, 
             view=self.view, 
             window=self,

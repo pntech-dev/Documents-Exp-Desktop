@@ -307,22 +307,6 @@ class ToolBar:
             dark_disabled=update_cfg.get("dark", {}).get("disabled")
         )
 
-        # Setting icon for edit button
-        edit_cfg = self.config.get("edit", {})
-        self.edit_button.set_icon_paths(
-            # light theme
-            light_default=edit_cfg.get("light", {}).get("default"),
-            light_hover=edit_cfg.get("light", {}).get("hover"),
-            light_pressed=edit_cfg.get("light", {}).get("pressed"),
-            light_disabled=edit_cfg.get("light", {}).get("disabled"),
-
-            # dark theme
-            dark_default=edit_cfg.get("dark", {}).get("default"),
-            dark_hover=edit_cfg.get("dark", {}).get("hover"), 
-            dark_pressed=edit_cfg.get("dark", {}).get("pressed"),
-            dark_disabled=edit_cfg.get("dark", {}).get("disabled")
-        )
-
         # Setting icon for export button
         export_cfg = self.config.get("export", {})
         self.export_button.set_icon_paths(
@@ -427,13 +411,37 @@ class ToolBar:
         self.edit_button.setEnabled(is_enabled)
 
 
-    def set_ui_visible(self, is_visible: bool) -> None:
+    def set_ui_mode(self, can_edit: bool) -> None:
         """Enables or disables UI elements visibility.
 
         Args:
             is_enabled: Boolean indicating whether the UI should be enabled.
         """
-        self.edit_button.setVisible(is_visible)
+        edit_cfg = None
+        
+        if can_edit:
+            self.edit_button.setText("Изменить")
+            edit_cfg = self.config.get("edit", {})
+            
+        else:
+            self.edit_button.setText("Страницы")
+            edit_cfg = self.config.get("show_pages", {})
+            
+
+        # Setting icon for edit button
+        self.edit_button.set_icon_paths(
+                # light theme
+                light_default=edit_cfg.get("light", {}).get("default"),
+                light_hover=edit_cfg.get("light", {}).get("hover"),
+                light_pressed=edit_cfg.get("light", {}).get("pressed"),
+                light_disabled=edit_cfg.get("light", {}).get("disabled"),
+
+                # dark theme
+                dark_default=edit_cfg.get("dark", {}).get("default"),
+                dark_hover=edit_cfg.get("dark", {}).get("hover"), 
+                dark_pressed=edit_cfg.get("dark", {}).get("pressed"),
+                dark_disabled=edit_cfg.get("dark", {}).get("disabled")
+            )
 
 
     def update_button_clicked(self, handler) -> None:
@@ -792,9 +800,9 @@ class MainView(QObject):
         self.sidebar.set_profile_mode(mode)
 
         is_visible = True if mode == "auth" else False
-        self.navbar.set_ui_visible(is_visible)
-        self.sidebar.set_ui_visible(is_visible)
-        self.toolbar.set_ui_visible(is_visible)
+        self.navbar.set_ui_visible(is_visible=is_visible)
+        self.sidebar.set_ui_visible(is_visible=is_visible)
+        self.toolbar.set_ui_mode(can_edit=is_visible)
 
 
     def set_username(self, name: str) -> None:

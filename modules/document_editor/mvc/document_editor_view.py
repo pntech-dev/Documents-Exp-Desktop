@@ -515,6 +515,17 @@ class DocumentEditorView:
         """Updates the save document button state."""
         self.ui.save_pushButton.setEnabled(state)
 
+    
+    def set_mode_visibility(self, can_edit: bool) -> None:
+        """Sets the mode visibility."""
+        self.ui.title_label.setText(
+            "Редактор документа" if can_edit else "Просмотр документа"
+        )
+        self.ui.document_code_lineEdit.setReadOnly(not can_edit)
+        self.ui.document_name_lineEdit.setReadOnly(not can_edit)
+        self.ui.toolbar_frame.setVisible(can_edit)
+        self.ui.buttons_frame.setVisible(can_edit)
+
 
     def set_document_code(self, code: str) -> None:
         """Sets the document code.

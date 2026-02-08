@@ -11,10 +11,12 @@ from utils.delete_info_modal import DeleteInfoDialog
 class DocumentEditorController:
     def __init__(
             self, 
+            mode,
             model, 
             view, 
             window,
-    ):
+    ): 
+        self.mode = mode
         self.model = model
         self.view = view
         self.window = window
@@ -207,6 +209,9 @@ class DocumentEditorController:
 
     def _init_ui(self) -> None:
         """Initializes the UI with default data."""
+        can_edit = True if self.mode == "auth" else False
+        self.view.set_mode_visibility(can_edit=can_edit)
+
         self._fill_document_data()
         self._fill_pages_table()
 

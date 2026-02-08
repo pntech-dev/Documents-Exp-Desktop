@@ -118,6 +118,7 @@ class MainController(QObject):
 
         # Show document editor window
         self.editor_window = EditorWindow(
+            mode=self.mode,
             parent=self.window,
             document_data=document,
             pages=pages
