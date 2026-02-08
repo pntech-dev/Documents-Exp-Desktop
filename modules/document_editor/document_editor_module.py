@@ -15,6 +15,7 @@ from ui.custom_widgets.modal_window import ShadowContainer, ModalOverlay
 
 class EditorWindow(QDialog):
     document_saved = pyqtSignal()
+    document_deleted = pyqtSignal()
 
     def __init__(
             self, 

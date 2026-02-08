@@ -606,13 +606,13 @@ class DocumentEditorView:
         self.toolbar.delete_page_button_clicked(handler)
 
 
-    def save_button_clicked(self, handler) -> None:
-        """Connects the save button click signal to a handler.
+    def delete_document_button_clicked(self, handler) -> None:
+        """Connects the delete document button click signal to a handler
 
         Args:
             handler: The callback function to execute when the button is clicked.
         """
-        self.ui.save_pushButton.clicked.connect(handler)
+        self.ui.delete_document_pushButton.clicked.connect(handler)
 
     
     def cancel_button_clicked(self, handler) -> None:
@@ -623,6 +623,16 @@ class DocumentEditorView:
         """
         self.ui.close_pushButton.clicked.connect(handler)
         self.ui.cancel_pushButton.clicked.connect(handler)
+
+
+    def save_button_clicked(self, handler) -> None:
+        """Connects the save button click signal to a handler.
+
+        Args:
+            handler: The callback function to execute when the button is clicked.
+        """
+        self.ui.save_pushButton.clicked.connect(handler)
+
 
     def pages_table_selection_changed(self, handler) -> None:
         """Connects the pages table selection changed signal to a handler."""

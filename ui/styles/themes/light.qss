@@ -386,6 +386,35 @@ QFrame#line, QFrame#line_2, QFrame#line_5 {
 }
 
 
+/* Delete Info Window */
+QFrame#deleteInfoContainer {
+    border-radius: 8px;
+	border: 1px solid #E6E6E6;
+    background-color: #FFFFFF;
+}
+
+#deleteInfoContainer QFrame#info_frame {
+	border-radius: 8px;
+	background-color: #F5D6D6;
+}
+
+#deleteInfoContainer QFrame#text_frame,
+#deleteInfoContainer QFrame#icon_frame, 
+#deleteInfoContainer #icon_label,
+#deleteInfoContainer #title_label,
+#deleteInfoContainer #text_label {
+    background-color: transparent;
+}
+
+#deleteInfoContainer #title_label {
+    color: #CC3333;
+}
+
+#deleteInfoContainer #text_label {
+    color: #4D4D4D;
+}
+
+
 
 /* MAIN APPLICATION */
 

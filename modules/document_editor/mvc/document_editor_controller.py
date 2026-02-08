@@ -1,9 +1,10 @@
 from pathlib import Path
 from PyQt5.QtGui import QTextDocument
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog, QDialog
 from PyQt5.QtPrintSupport import QPrinter, QPrintDialog
 
 from utils import NotificationService
+from utils.delete_info_modal import DeleteInfoDialog
 
 
 
@@ -96,12 +97,6 @@ class DocumentEditorController:
                 title="Печать документа",
                 message="Документ успешно напечатан."
             )
-        else:
-            NotificationService().show_toast(
-                notification_type="info",
-                title="Печать документа",
-                message="Печать отменена пользователем."
-            )
 
 
     def _on_import_button_clicked(self) -> None:
@@ -132,16 +127,10 @@ class DocumentEditorController:
                 )
             else:
                 NotificationService().show_toast(
-                    notification_type="warning",
+                    notification_type="error",
                     title="Импорт страниц документа",
                     message="Не удалось найти подходящую таблицу для импорта."
                 )
-        else:
-            NotificationService().show_toast(
-                notification_type="info",
-                title="Импорт страниц документа",
-                message="Импорт отменен пользователем."
-            )
 
 
     def _on_export_button_clicked(self) -> None:
@@ -172,12 +161,6 @@ class DocumentEditorController:
                 title="Экспорт документа",
                 message="Документ успешно экспортирован."
             )
-        else:
-            NotificationService().show_toast(
-                notification_type="info",
-                title="Экспорт документа",
-                message="Экспорт отменен пользователем."
-            )
 
 
     def _on_delete_page_button_clicked(self) -> None:
@@ -185,6 +168,23 @@ class DocumentEditorController:
         self.view.delete_selected_pages()
         self._on_document_data_changed()
         self._on_table_selection_changed()
+
+
+    def _on_delete_document_button_clicked(self) -> None:
+        """Handles the delete document button click event."""
+        dialog = DeleteInfoDialog(parent=self.window)
+        
+        if dialog.exec_() == QDialog.Accepted:
+            self.model.delete_document()
+            self.window.document_deleted.emit()
+            self.window.close()
+            
+            # Show notification
+            NotificationService().show_toast(
+                notification_type="success",
+                title="Удаление документа",
+                message="Документ успешно удален."
+            )
 
     
     def _on_save_button_clicked(self) -> None:
@@ -228,6 +228,7 @@ class DocumentEditorController:
         self.view.pages_table_selection_changed(handler=self._on_table_selection_changed)
         self.view.pages_table_item_changed(handler=self._on_table_selection_changed)
 
+        self.view.delete_document_button_clicked(handler=self._on_delete_document_button_clicked)
         self.view.cancel_button_clicked(handler=self._on_cancel_button_clicked)
         self.view.save_button_clicked(handler=self._on_save_button_clicked)
 

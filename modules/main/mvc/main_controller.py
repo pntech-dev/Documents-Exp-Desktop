@@ -122,7 +122,8 @@ class MainController(QObject):
             document_data=document,
             pages=pages
         )
-        self.editor_window.document_saved.connect(self._on_document_saved)
+        self.editor_window.document_saved.connect(self._on_document_changed)
+        self.editor_window.document_deleted.connect(self._on_document_changed)
         self.editor_window.show()
 
 
@@ -166,8 +167,8 @@ class MainController(QObject):
         self._on_edit_button_clicked()
 
 
-    def _on_document_saved(self) -> None:
-        """Handles the document saved event."""
+    def _on_document_changed(self) -> None:
+        """Handles the document change event."""
         self.model.refresh_data()
         self._update_app_data()
 

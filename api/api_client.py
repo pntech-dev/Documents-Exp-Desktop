@@ -227,6 +227,20 @@ class APIClient:
             url=self.base_url + f"/app/documents/{document_id}",
             json=data
         )
+    
+
+    def delete_document(self, document_id: int) -> dict:
+        """Deletes a document.
+        
+        Args:
+            document_id (int): The ID of the document to delete.
+
+        Returns:
+            dict: The JSON response confirming the deletion.
+        """
+        return self._create_delete_api_request(
+            url=self.base_url + f"/app/documents/{document_id}"
+        )
 
 
     # ====================
@@ -303,6 +317,31 @@ class APIClient:
             **kwargs
         )
         
+        request.raise_for_status()
+
+        return request.json()
+    
+
+    def _create_delete_api_request(self, url: str, timeout: int = 10, **kwargs):
+        """Creates and executes a DELETE request.
+
+        Args:
+            url (str): The URL for the request.
+            timeout (int, optional): Request timeout in seconds. Defaults to 10.
+            **kwargs: Arbitrary keyword arguments passed to requests.delete.
+
+        Returns:
+            dict: The JSON response from the server.
+
+        Raises:
+            requests.exceptions.HTTPError: If the HTTP request returned an unsuccessful status code.
+        """
+        request = requests.delete(
+            url=url,
+            timeout=timeout,
+            **kwargs
+        )
+
         request.raise_for_status()
 
         return request.json()
