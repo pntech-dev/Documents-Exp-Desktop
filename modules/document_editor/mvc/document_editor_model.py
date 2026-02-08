@@ -79,6 +79,41 @@ class DocumentEditorModel:
         doc.save(str(full_path))
 
 
+    def import_from_docx(self, file_path: str) -> list[dict]:
+        """Imports pages from a Word document."""
+        doc = docx.Document(file_path)
+        pages = []
+
+        for table in doc.tables:
+            if not table.rows:
+                continue
+            
+            # Check headers in the first row
+            headers = [cell.text.strip() for cell in table.rows[0].cells]
+            if len(headers) != 2:
+                continue
+            
+            if "Наименование" in headers and "Код" in headers:
+                name_index = headers.index("Наименование")
+                code_index = headers.index("Код")
+
+                # Iterate over data rows
+                for row in table.rows[1:]:
+                    cells = row.cells
+                    if len(cells) > max(name_index, code_index):
+                        pages.append({
+                            "id": None, # New page has no ID
+                            "name": cells[name_index].text.strip(),
+                            "designation": cells[code_index].text.strip()
+                        })
+                
+                # Stop after finding and processing the first valid table
+                if pages:
+                    break
+        
+        return pages
+
+
     # ====================
     # Model Methods
     # ====================

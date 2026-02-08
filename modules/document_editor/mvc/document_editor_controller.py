@@ -88,7 +88,23 @@ class DocumentEditorController:
 
     def _on_import_button_clicked(self) -> None:
         """Handles the import button click event."""
-        print("Import button clicked")
+        file_path, _ = QFileDialog.getOpenFileName(
+            self.window,
+            "Импорт из Word",
+            str(Path.home()),
+            "Word Documents (*.docx)"
+        )
+
+        if file_path:
+            imported_pages = self.model.import_from_docx(file_path)
+            
+            if imported_pages:
+                current_data = self.view.get_document_data()
+                current_pages = current_data.get("pages", [])
+                combined_pages = current_pages + imported_pages
+                
+                self.view.pages_table.update_pages(pages=combined_pages)
+                self._on_document_data_changed()
 
 
     def _on_export_button_clicked(self) -> None:
