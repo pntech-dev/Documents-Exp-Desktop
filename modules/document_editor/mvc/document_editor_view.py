@@ -1,7 +1,7 @@
 import json
 
 from pathlib import Path
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QItemSelectionModel
 from PyQt5.QtGui import QStandardItem
 
 from ui.custom_widgets import (
@@ -132,6 +132,11 @@ class EditorToolBar:
             dark_pressed=delete_cfg.get("dark", {}).get("pressed"),
             dark_disabled=delete_cfg.get("dark", {}).get("disabled")
         )
+
+
+    def update_duplicate_page_button_state(self, state: bool) -> None:
+        """Updates the duplicate page button state."""
+        self.duplicate_button.setEnabled(state)
 
 
     def update_delete_button_state(self, state: bool) -> None:
@@ -308,6 +313,68 @@ class EditorPagesTable:
         self.table_view.clearSelection()
 
 
+    def duplicate_selected_pages(self) -> None:
+        """Duplicates selected or checked pages."""
+        model = self.table_view.model()
+        rows_to_duplicate = set()
+
+        # 1. Get checked rows
+        for row in range(model.rowCount()):
+            if model.item(row, 0).data(ROLE_CHECK_STATE) == Qt.Checked:
+                rows_to_duplicate.add(row)
+
+        # 2. Get selected rows
+        selection_model = self.table_view.selectionModel()
+        if selection_model.hasSelection():
+            for index in selection_model.selectedRows():
+                rows_to_duplicate.add(index.row())
+
+        # Clear selection before adding new rows
+        self.table_view.clearSelection()
+
+        # Duplicate rows in reverse order to maintain indices relative to originals
+        for row in sorted(rows_to_duplicate, reverse=True):
+            # Get original data
+            original_check_state = model.item(row, 0).data(ROLE_CHECK_STATE)
+            original_name = model.item(row, 1).text()
+            original_designation = model.item(row, 2).text()
+            
+            # Create new items
+            # 1. Checkbox Column
+            check_item = QStandardItem()
+            check_item.setData(original_check_state, ROLE_CHECK_STATE)
+            check_item.setEditable(False)
+            check_item.setDropEnabled(False)
+            check_item.setData(None, Qt.UserRole) # No ID for new page
+            
+            # 2. Name Column
+            name_item = QStandardItem(original_name)
+            name_item.setEditable(True)
+            name_item.setDropEnabled(False)
+
+            # 3. Designation Column
+            designation_item = QStandardItem(original_designation)
+            designation_item.setEditable(True)
+            designation_item.setDropEnabled(False)
+            
+            # 4. Drag Handle Column
+            drag_item = QStandardItem()
+            drag_item.setEditable(False)
+            drag_item.setDropEnabled(False)
+            
+            items = [check_item, name_item, designation_item, drag_item]
+            
+            # Insert below the original row
+            insert_row = row + 1
+            model.insertRow(insert_row, items)
+
+            # Select the new row
+            selection_model.select(
+                model.index(insert_row, 0), 
+                QItemSelectionModel.Select | QItemSelectionModel.Rows
+            )
+
+
     def has_selection_or_checks(self) -> bool:
         """Checks if any row is selected or any checkbox is checked."""
         if self.table_view.selectionModel().hasSelection():
@@ -418,6 +485,11 @@ class DocumentEditorView:
         """Deletes selected or checked pages."""
         self.pages_table.delete_selected_pages()
 
+    
+    def duplicate_selected_pages(self) -> None:
+        """Duplicates selected or checked pages."""
+        self.pages_table.duplicate_selected_pages()
+
 
     def get_document_data(self) -> dict:
         data = {
@@ -427,6 +499,11 @@ class DocumentEditorView:
         }
         
         return data
+    
+
+    def update_duplicate_button_state(self, state: bool) -> None:
+        """Updates the duplicate page button state."""
+        self.toolbar.update_duplicate_page_button_state(state)
 
 
     def update_delete_page_button_state(self, state: bool) -> None:
@@ -482,6 +559,15 @@ class DocumentEditorView:
             handler: The callback function to execute when the button is clicked.
         """
         self.toolbar.add_page_button_clicked(handler)
+
+
+    def toolbar_duplicate_page_button_clicked(self, handler) -> None:
+        """Connects the duplicate page button click signal to a handler.
+
+        Args:
+            handler: The callback function to execute when the button is clicked.
+        """
+        self.toolbar.duplicate_button_clicked(handler)
 
     
     def toolbar_delete_page_button_clicked(self, handler) -> None:

@@ -26,12 +26,19 @@ class DocumentEditorController:
     def _on_table_selection_changed(self, *args) -> None:
         """Updates the delete page button state."""
         state = self.view.has_selected_pages()
+        self.view.update_duplicate_button_state(state=state)
         self.view.update_delete_page_button_state(state=state)
 
 
     def _on_add_page_button_clicked(self) -> None:
         """Handles the add page button click event."""
         self.view.add_new_page()
+        self._on_document_data_changed()
+
+
+    def _on_duplicate_page_button_clicked(self) -> None:
+        """Handles the duplicate page button click event."""
+        self.view.duplicate_selected_pages()
         self._on_document_data_changed()
 
 
@@ -72,6 +79,7 @@ class DocumentEditorController:
         self.view.name_lineedit_text_changed(handler=self._on_document_data_changed)
 
         self.view.toolbar_add_page_button_clicked(handler=self._on_add_page_button_clicked)
+        self.view.toolbar_duplicate_page_button_clicked(handler=self._on_duplicate_page_button_clicked)
         self.view.toolbar_delete_page_button_clicked(handler=self._on_delete_page_button_clicked)
 
         self.view.pages_table_item_changed(handler=self._on_document_data_changed)
