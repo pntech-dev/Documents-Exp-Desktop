@@ -563,18 +563,11 @@ MenuItemWidget[hovered="true"] QLabel[danger="true"] { color: #D65A5A; }
 MenuItemWidget[pressed="true"] QLabel[danger="true"] { color: #852222; }
 
 
-
 /* Toolbar */
 QFrame#toolbar_frame {
-	background-color: none;
-}
-
-QFrame#data_toolbar_frame,
-QFrame#table_toolbar_frame {
 	border-radius: 8px;
 	background-color: #262626;
 }
-
 
 
 /* Document Table */

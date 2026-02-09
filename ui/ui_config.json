@@ -188,6 +188,10 @@
             "create": {
                 "light": ":/icons/light/light/create_default.svg",
                 "dark": ":/icons/dark/dark/create_default.svg"
+            },
+            "arrow_create": {
+                "light": ":/icons/light/light/arrow_create.svg",
+                "dark": ":/icons/dark/dark/arrow_create.svg"
             }
         },
         "menu": {

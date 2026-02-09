@@ -187,6 +187,7 @@ class Navbar:
             search_filters_pushButton: TertiaryButton,
             theme_switch: ThemeSwitch,
             create_pushButton: PrimaryButton,
+            create_popover_pushButton: PrimaryButton,
             icons_config: dict
     ) -> None:
         """Initializes the Navbar manager.
@@ -201,6 +202,7 @@ class Navbar:
         self.search_filters_pushButton = search_filters_pushButton
         self.theme_switch = theme_switch
         self.create_pushButton = create_pushButton
+        self.create_popover_pushButton = create_popover_pushButton
         self.config = icons_config.get("navbar", {})
 
         # Setting icon fot search line
@@ -254,6 +256,25 @@ class Navbar:
             dark_disabled=dark_create
         )
 
+        # Setting icon for create popover button
+        create_cfg = self.config.get("arrow_create", {})
+        light_arrow_create = create_cfg.get("light")
+        dark_arrow_create = create_cfg.get("dark")
+
+        self.create_popover_pushButton.set_icon_paths(
+            # light theme
+            light_default=light_arrow_create,
+            light_hover=light_arrow_create,
+            light_pressed=light_arrow_create,
+            light_disabled=light_arrow_create,
+            
+            # dark theme
+            dark_default=dark_arrow_create,
+            dark_hover=dark_arrow_create,
+            dark_pressed=dark_arrow_create,
+            dark_disabled=dark_arrow_create
+        )
+
     def set_ui_visible(self, is_visible: bool) -> None:
         """Enables or disables UI elements visibility.
 
@@ -280,7 +301,6 @@ class ToolBar:
             export_button,
             print_button,
             change_view_button,
-            back_button,
             icons_config: dict
     ):
         self.update_button = update_button
@@ -288,7 +308,6 @@ class ToolBar:
         self.export_button = export_button
         self.print_button = print_button
         self.change_view_button = change_view_button
-        self.back_button = back_button
         self.config = icons_config.get("toolbar", {})
 
         # Setting icon for update button
@@ -344,22 +363,6 @@ class ToolBar:
         self.table_view_cfg = self.config.get("table_view", {})
         self.blocks_view_cfg = self.config.get("blocks_view", {})
         self._set_data_view_icon()
-
-        # Setting icon for back button
-        back_cfg = self.config.get("back", {})
-        self.back_button.set_icon_paths(
-            # light theme
-            light_default=back_cfg.get("light", {}).get("default"),
-            light_hover=back_cfg.get("light", {}).get("hover"),
-            light_pressed=back_cfg.get("light", {}).get("pressed"),
-            light_disabled=back_cfg.get("light", {}).get("disabled"),
-
-            # dark theme
-            dark_default=back_cfg.get("dark", {}).get("default"),
-            dark_hover=back_cfg.get("dark", {}).get("hover"), 
-            dark_pressed=back_cfg.get("dark", {}).get("pressed"),
-            dark_disabled=back_cfg.get("dark", {}).get("disabled")
-        )
 
 
     def _set_data_view_icon(self) -> None:
@@ -490,14 +493,6 @@ class ToolBar:
         self.change_view_button.clicked.connect(handler)
 
 
-    def back_button_clicked(self, handler) -> None:
-        """Connects the back button click signal to a handler.
-
-        Args:
-            handler: The callback function to execute when the button is clicked.
-        """
-        self.back_button.clicked.connect(handler)
-
 
 class DocumentsList:
     """Manages the documents table logic and updates."""
@@ -583,6 +578,7 @@ class MainView(QObject):
             search_filters_pushButton=self.ui.search_filters_pushButton,
             theme_switch=self.ui.theme_pushButton,
             create_pushButton=self.ui.create_pushButton,
+            create_popover_pushButton=self.ui.create_popover_pushButton,
             icons_config=icons_config
         )
 
@@ -592,7 +588,6 @@ class MainView(QObject):
             export_button=self.ui.export_pushButton,
             print_button=self.ui.print_pushButton,
             change_view_button=self.ui.change_view_pushButton,
-            back_button=self.ui.back_pushButton,
             icons_config=icons_config
         )
 
@@ -822,9 +817,11 @@ class MainView(QObject):
         """
         self.sidebar.set_user_department(dept=dept)
 
+
     def select_department(self, dept_id: int) -> None:
         """Selects a department by ID."""
         self.sidebar.select_department(dept_id)
+
 
     def select_category(self, cat_id: int) -> None:
         """Selects a category by ID."""
@@ -904,13 +901,6 @@ class MainView(QObject):
         """
         self.toolbar.change_data_view_button_clicked(handler)
 
-    def connect_back_button(self, handler) -> None:
-        """Connects the back button to a handler.
-
-        Args:
-            handler: The callback function.
-        """
-        self.toolbar.back_button_clicked(handler)
 
     def connect_document_selection(self, handler) -> None:
         """Connects the document table selection signal to a handler.

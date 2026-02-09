@@ -142,11 +142,6 @@ class MainController(QObject):
         pass
 
 
-    def _on_back_button_clicked(self) -> None:
-        """Handles the back button click."""
-        pass
-
-
     def _on_document_selected(self, selected, deselected) -> None:
         """Handles document selection change."""
         indexes = selected.indexes()
@@ -215,7 +210,6 @@ class MainController(QObject):
         self.view.connect_export_button(self._on_export_button_clicked)
         self.view.connect_print_button(self._on_print_button_clicked)
         self.view.connect_change_data_view_button(self._on_change_data_view_button_clicked)
-        self.view.connect_back_button(self._on_back_button_clicked)
         self.view.connect_document_selection(self._on_document_selected)
         self.view.connect_document_double_click(self._on_document_double_clicked)
 
