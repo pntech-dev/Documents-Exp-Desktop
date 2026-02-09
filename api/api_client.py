@@ -213,6 +213,22 @@ class APIClient:
         )
     
 
+    def search_data(self, category_id: int, query: str) -> dict:
+        """Searches the data based on the provided query.
+
+        Args:
+            category_id (int): The ID of the category.
+            query (str): The search query.
+
+        Returns:
+            dict: The JSON response containing the search results.
+        """
+        return self._create_get_api_request(
+            url=self.base_url + f"/app/category_search",
+            params={"category_id": category_id, "query": query}
+        )
+    
+
     def create_document(self, data: dict) -> dict:
         """Creates a new document.
 

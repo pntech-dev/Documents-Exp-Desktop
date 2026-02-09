@@ -289,6 +289,15 @@ class Navbar:
         self.create_popover_pushButton.setVisible(is_visible)
 
     
+    def search_lineedit_text_changed(self, handler) -> None:
+        """Connect the search line edit signal to a handler.
+
+        Args:
+            handler: The callback function to execute when the text changes.
+        """
+        self.search_lineedit.textChanged.connect(handler)
+
+
     def theme_switcher_clicked(self, handler) -> None:
         """Connects the theme switcher click signal to a handler.
 
@@ -826,6 +835,11 @@ class MainView(QObject):
     def get_documents_list(self) -> list[dict]:
         """Returns the DocumentsList instance."""
         return self.documents_list.get_table_data()
+    
+
+    def get_search_text(self) -> str:
+        """Returns the search line edit text."""
+        return self.navbar.search_lineedit.text()  
 
 
     def set_theme(self) -> None:
@@ -910,6 +924,11 @@ class MainView(QObject):
     def select_category(self, cat_id: int) -> None:
         """Selects a category by ID."""
         self.sidebar.select_category(cat_id)
+
+
+    def connect_search_lineedit(self, handler) -> None:
+        """Connects the search line edit text changed signal to a handler."""
+        self.navbar.search_lineedit_text_changed(handler)
 
 
     def connect_theme_switch(self, handler) -> None:

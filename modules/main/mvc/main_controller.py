@@ -2,7 +2,7 @@ import logging
 import re
 
 from pathlib import Path
-from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtCore import QObject, pyqtSignal, QTimer
 from PyQt5.QtWidgets import QMainWindow, QFileDialog
 from PyQt5.QtGui import QTextDocument
 from PyQt5.QtPrintSupport import QPrinter, QPrintDialog
@@ -51,6 +51,12 @@ class MainController(QObject):
         self.editor_window = None
         self.current_documents = []
 
+        # Search debounce timer
+        self.search_timer = QTimer()
+        self.search_timer.setSingleShot(True)
+        self.search_timer.setInterval(200)
+        self.search_timer.timeout.connect(self._perform_search)
+
         # Setup Notification Service
         NotificationService().set_main_window(self.window)
 
@@ -61,6 +67,54 @@ class MainController(QObject):
     # ====================
     # Controller Handlers
     # ====================
+
+
+    def _on_search_lineedit_text_changed(self) -> None:
+        """Handles the search line edit text change."""
+        search_text = self.view.get_search_text()
+        
+        # If empty, update immediately without delay
+        if not search_text:
+            self.search_timer.stop()
+            self._update_documents_list()
+            return
+        
+        # Restart timer for debounce
+        self.search_timer.start()
+
+
+    def _perform_search(self) -> None:
+        """Executes the search request after delay."""
+        search_text = self.view.get_search_text()
+        if not search_text:
+            return
+
+        search_result = self.model.search_data(query=search_text)
+
+        # Optimization: Create a lookup map for documents to avoid O(N) search in loop
+        docs_map = {doc["id"]: doc for doc in self.model.documents}
+
+        data = []
+        for result in search_result.get("result", []):
+            if result.get("category_id") is not None:
+                data.append(result)
+            else:
+                # Fast lookup
+                document = docs_map.get(result.get("document_id"), {})
+                
+                result["code"] = document.get("code")
+                result["name"] = f"{result.get('name')} ({result.get('designation')})"
+                result["is_page"] = True
+                
+                data.append(result)
+        
+        # Natural sort: splits string into text and number parts for correct ordering (e.g. 2 before 10)
+        data.sort(key=lambda x: [
+            int(c) if c.isdigit() else c.lower() for c in re.split(r'(\d+)', str(x.get("code") or ""))
+        ])
+
+        self.current_documents = data
+        self.view.update_documents_table(documents=data)
 
 
     def _on_theme_switcher_clicked(self, checked: bool) -> None:
@@ -110,7 +164,11 @@ class MainController(QObject):
                 self.model.current_department_id = dept_id
                 self.model.current_category_id = None
                 self._update_categories_list()
-                self._update_documents_list()
+                
+                if self.view.get_search_text():
+                    self._on_search_lineedit_text_changed()
+                else:
+                    self._update_documents_list()
 
 
     def _on_category_selected(self, selected, deselected) -> None:
@@ -122,10 +180,16 @@ class MainController(QObject):
 
             if cat_id is not None and cat_id != self.model.current_category_id:
                 self.model.current_category_id = cat_id
-                self._update_documents_list()
+                if self.view.get_search_text():
+                    self._on_search_lineedit_text_changed()
+                else:
+                    self._update_documents_list()
         else:
             self.model.current_category_id = None
-            self._update_documents_list()
+            if self.view.get_search_text():
+                self._on_search_lineedit_text_changed()
+            else:
+                self._update_documents_list()
 
 
     def _on_update_button_clicked(self) -> None:
@@ -143,13 +207,29 @@ class MainController(QObject):
             self.editor_window.raise_()
             return
         
+        selected_id, is_page = self.model.selected_document
+        
+        if selected_id is None:
+            return
+
+        document_id = selected_id
+
+        if is_page:
+            selected_item = next(
+                (item for item in self.current_documents 
+                 if item.get("id") == selected_id and item.get("is_page")), 
+                None
+            )
+            if selected_item:
+                document_id = selected_item.get("document_id")
+        
         # Get selected document data
-        document = next((doc for doc in self.current_documents 
-                         if doc.get("id") == self.model.selected_document[0]), {})
+        document = next((doc for doc in self.model.documents 
+                         if doc.get("id") == document_id), {})
 
         # Get selected document pages list
         pages = self.model.get_document_pages(
-            document_id=self.model.selected_document[0]
+            document_id=document_id
         )
 
         # Show document editor window
@@ -318,6 +398,7 @@ class MainController(QObject):
         self.view.connect_categories_selection(self._on_category_selected)
 
         # Navbar
+        self.view.connect_search_lineedit(self._on_search_lineedit_text_changed)
         self.view.connect_theme_switch(self._on_theme_switcher_clicked)
         self.view.connect_create_button(self._on_create_button_clicked)
 
@@ -405,7 +486,10 @@ class MainController(QObject):
             if cat_exists:
                 self.view.select_category(saved_cat_id)
             
-            self._update_documents_list()
+            if self.view.get_search_text():
+                self._on_search_lineedit_text_changed()
+            else:
+                self._update_documents_list()
 
         elif self.model.departments:
             # Select first department
@@ -418,3 +502,8 @@ class MainController(QObject):
             ) == first_dept_id]
             if first_dept_cats:
                 self.view.select_category(first_dept_cats[0]["id"])
+            
+            if self.view.get_search_text():
+                self._on_search_lineedit_text_changed()
+            else:
+                self._update_documents_list()

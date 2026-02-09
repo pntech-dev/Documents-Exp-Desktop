@@ -60,6 +60,21 @@ class MainModel:
         self.documents = self._get_documents()
 
 
+    def search_data(self, query: str) -> list[dict]:
+        """Searches the data based on the provided query."""
+        results = []
+
+        if not query:
+            return results
+
+        results = self.api.search_data(
+            category_id=self.current_category_id, 
+            query=query
+        )
+
+        return results
+
+
     def export_to_docx(
             self, 
             path: str, 
