@@ -213,9 +213,9 @@ class DocumentsTableView(QTableView):
         self.verticalHeader().setMinimumSectionSize(44)
         self.horizontalHeader().setStretchLastSection(True)
         self.horizontalHeader().setHighlightSections(False)
-        self.horizontalHeader().setSortIndicatorShown(True)
+        self.horizontalHeader().setSortIndicatorShown(False)
         self.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
-        self.setSortingEnabled(True)
+        self.setSortingEnabled(False)
 
         # Model initialization
         self._model = QStandardItemModel(self)
@@ -252,7 +252,6 @@ class DocumentsTableView(QTableView):
         """Replaces the table data with new rows."""
         # Optimization: Disable updates and sorting during bulk insertion
         self.setUpdatesEnabled(False)
-        self.setSortingEnabled(False)
 
         self._model.removeRows(0, self._model.rowCount())
         for row_data in rows:
@@ -263,7 +262,6 @@ class DocumentsTableView(QTableView):
                 items.append(item)
             self._model.appendRow(items)
 
-        self.setSortingEnabled(True)
         self.setUpdatesEnabled(True)
         self.resizeRowsToContents()
 

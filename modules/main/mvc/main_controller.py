@@ -1,4 +1,5 @@
 import logging
+import re
 
 from pathlib import Path
 from PyQt5.QtCore import QObject, pyqtSignal
@@ -348,6 +349,11 @@ class MainController(QObject):
                 doc["is_page"] = False
                 documents.append(doc)
         
+        # Natural sort: splits string into text and number parts for correct ordering (e.g. 2 before 10)
+        documents.sort(key=lambda x: [
+            int(c) if c.isdigit() else c.lower() for c in re.split(r'(\d+)', str(x.get("code") or ""))
+        ])
+
         self.current_documents = documents
         self.view.update_documents_table(documents=documents)
 
