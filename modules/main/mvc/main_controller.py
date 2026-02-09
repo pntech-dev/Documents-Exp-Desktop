@@ -3,6 +3,8 @@ import logging
 from pathlib import Path
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QMainWindow, QFileDialog
+from PyQt5.QtGui import QTextDocument
+from PyQt5.QtPrintSupport import QPrinter, QPrintDialog
 
 from .main_view import MainView
 from .main_model import MainModel
@@ -182,7 +184,47 @@ class MainController(QObject):
 
     def _on_print_button_clicked(self) -> None:
         """Handles the print button click."""
-        pass
+        data = self.view.get_documents_list()
+        
+        department = next((dept.get("name") for dept in self.model.departments 
+                           if dept.get("id") == self.model.current_department_id), "")
+        category = next((cat.get("name") for cat in self.model.categories 
+                         if cat.get("id") == self.model.current_category_id), "")
+
+        # 1. Generate rows HTML
+        rows_html = ""
+        for doc in data:
+            d_code = doc.get("code", "")
+            d_name = doc.get("name", "")
+            # Using Name first to match the template structure from DocumentEditor
+            rows_html += f"<tr><td>{d_name}</td><td>{d_code}</td></tr>"
+
+        # 2. Load template
+        try:
+            # Path to: project_root/resources/templates/print_document.html
+            root_dir = Path(__file__).resolve().parents[3]
+            template_path = root_dir / "resources" / "templates" / "print_document.html"
+            
+            with open(template_path, "r", encoding="utf-8") as f:
+                html = f.read().format(code=department, name=category, rows=rows_html)
+        except Exception as e:
+            print(f"Error loading print template: {e}")
+            return
+
+        printer = QPrinter(QPrinter.HighResolution)
+        dialog = QPrintDialog(printer, self.window)
+
+        if dialog.exec_() == QPrintDialog.Accepted:
+            document = QTextDocument()
+            document.setHtml(html)
+            document.print_(printer)
+
+            # Show notification
+            NotificationService().show_toast(
+                notification_type="success",
+                title="Печать списка",
+                message="Список документов успешно напечатан."
+            )
 
 
     def _on_change_data_view_button_clicked(self) -> None:
