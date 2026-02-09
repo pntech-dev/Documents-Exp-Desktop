@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(576, 396)
+        Dialog.resize(715, 413)
         Dialog.setMaximumSize(QtCore.QSize(16777215, 800))
         self.verticalLayout = QtWidgets.QVBoxLayout(Dialog)
         self.verticalLayout.setContentsMargins(24, 24, 24, 24)
@@ -186,11 +186,8 @@ class Ui_Dialog(object):
         self.export_pushButton.setFont(font)
         self.export_pushButton.setObjectName("export_pushButton")
         self.horizontalLayout_4.addWidget(self.export_pushButton)
-        self.line_5 = QtWidgets.QFrame(self.import_export_tools_frame)
-        self.line_5.setFrameShape(QtWidgets.QFrame.VLine)
-        self.line_5.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.line_5.setObjectName("line_5")
-        self.horizontalLayout_4.addWidget(self.line_5)
+        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_4.addItem(spacerItem1)
         self.delete_page_pushButton = NoFrameButton(self.import_export_tools_frame)
         self.delete_page_pushButton.setEnabled(False)
         self.delete_page_pushButton.setMinimumSize(QtCore.QSize(0, 42))
@@ -221,8 +218,8 @@ class Ui_Dialog(object):
         self.delete_document_pushButton.setFont(font)
         self.delete_document_pushButton.setObjectName("delete_document_pushButton")
         self.horizontalLayout_6.addWidget(self.delete_document_pushButton)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_6.addItem(spacerItem1)
+        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_6.addItem(spacerItem2)
         self.cancel_pushButton = TertiaryButton(self.buttons_frame)
         self.cancel_pushButton.setMinimumSize(QtCore.QSize(0, 42))
         font = QtGui.QFont()
@@ -260,4 +257,3 @@ class Ui_Dialog(object):
         self.save_pushButton.setText(_translate("Dialog", "Сохранить изменения"))
 from ..custom_widgets import EditorTableView, InfoLabel, NoFrameButton, PrimaryButton, TertiaryButton
 import resources.icons.icons_resources_rc
-

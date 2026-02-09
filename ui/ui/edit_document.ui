@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>576</width>
-    <height>396</height>
+    <width>715</width>
+    <height>413</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -462,11 +462,17 @@
              </widget>
             </item>
             <item>
-             <widget class="Line" name="line_5">
+             <spacer name="horizontalSpacer_2">
               <property name="orientation">
-               <enum>Qt::Vertical</enum>
+               <enum>Qt::Horizontal</enum>
               </property>
-             </widget>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
             </item>
             <item>
              <widget class="NoFrameButton" name="delete_page_pushButton">

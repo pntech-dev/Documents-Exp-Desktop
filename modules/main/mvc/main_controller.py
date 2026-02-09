@@ -76,9 +76,11 @@ class MainController(QObject):
             index = indexes[0]
             dept_id = index.data(ROLE_ID)
 
-            if dept_id and dept_id != self.model.current_department_id:
+            if dept_id is not None and dept_id != self.model.current_department_id:
                 self.model.current_department_id = dept_id
+                self.model.current_category_id = None
                 self._update_categories_list()
+                self._update_documents_list()
 
 
     def _on_category_selected(self, selected, deselected) -> None:
@@ -88,14 +90,18 @@ class MainController(QObject):
             index = indexes[0]
             cat_id = index.data(ROLE_ID)
 
-            if cat_id and cat_id != self.model.current_category_id:
+            if cat_id is not None and cat_id != self.model.current_category_id:
                 self.model.current_category_id = cat_id
                 self._update_documents_list()
+        else:
+            self.model.current_category_id = None
+            self._update_documents_list()
 
 
     def _on_update_button_clicked(self) -> None:
         """Handles the update button click."""
-        pass
+        self.model.refresh_data()
+        self._update_app_data()
 
     
     def _on_edit_button_clicked(self) -> None:
@@ -235,7 +241,9 @@ class MainController(QObject):
         """Updates the categories list based on the current department."""
         cat_items = []
         for cat in self.model.categories:
-            if self.model.current_department_id and cat.get("group_id") == self.model.current_department_id:
+            if self.model.current_department_id is not None and cat.get(
+                "group_id"
+            ) == self.model.current_department_id:
                 cat_items.append(
                     SidebarItem(
                         id=cat["id"], 
@@ -270,19 +278,25 @@ class MainController(QObject):
 
         self._load_sidebar_data()
         
-        # Restore department
-        if saved_dept_id:
-            # If the update triggered an auto-selection (e.g. first item), 
-            # the model might have changed. We force it back.
-            if self.model.current_department_id != saved_dept_id:
-                self.model.current_department_id = saved_dept_id
-                self._update_categories_list()
+        # Check if saved department exists
+        dept_exists = any(d["id"] == saved_dept_id for d in self.model.departments)
 
+        if dept_exists:
             self.view.select_department(saved_dept_id)
+            
+            # Restore category
+            cat_exists = any(c["id"] == saved_cat_id for c in self.model.categories)
+            if cat_exists:
+                self.view.select_category(saved_cat_id)
 
-        # Restore category
-        if saved_cat_id:
-            self.model.current_category_id = saved_cat_id
-            self.view.select_category(saved_cat_id)
+        elif self.model.departments:
+            # Select first department
+            first_dept_id = self.model.departments[0]["id"]
+            self.view.select_department(first_dept_id)
 
-        self._update_documents_list()
+            # Select first category of the new department
+            first_dept_cats = [c for c in self.model.categories if c.get(
+                "group_id"
+            ) == first_dept_id]
+            if first_dept_cats:
+                self.view.select_category(first_dept_cats[0]["id"])
