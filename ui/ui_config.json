@@ -401,6 +401,50 @@
                     "disabled": ":/icons/dark/dark/trash_disabled.svg"
                 }
             }
+        },
+        "documents": {
+            "department": {
+                "light": {
+                    "default": ":/icons/light/light/department_default.svg",
+                    "hover": ":/icons/light/light/department_hover.svg",
+                    "pressed": ":/icons/light/light/department_clicked.svg",
+                    "disabled": ":/icons/light/light/department_disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/department_default.svg",
+                    "hover": ":/icons/dark/dark/department_hover.svg",  
+                    "pressed": ":/icons/dark/dark/department_clicked.svg",
+                    "disabled": ":/icons/dark/dark/department_disabled.svg"
+                }
+            },
+            "category": {
+                "light": {
+                    "default": ":/icons/light/light/category_default.svg",
+                    "hover": ":/icons/light/light/category_hover.svg",
+                    "pressed": ":/icons/light/light/category_clicked.svg",
+                    "disabled": ":/icons/light/light/category_disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/category_default.svg",
+                    "hover": ":/icons/dark/dark/category_hover.svg",  
+                    "pressed": ":/icons/dark/dark/category_clicked.svg",
+                    "disabled": ":/icons/dark/dark/category_disabled.svg"
+                }
+            },
+            "document": {
+                "light": {
+                    "default": ":/icons/light/light/document_default.svg",
+                    "hover": ":/icons/light/light/document_hover.svg",
+                    "pressed": ":/icons/light/light/document_clicked.svg",
+                    "disabled": ":/icons/light/light/document_disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/document_default.svg",
+                    "hover": ":/icons/dark/dark/document_hover.svg",  
+                    "pressed": ":/icons/dark/dark/document_clicked.svg",
+                    "disabled": ":/icons/dark/dark/document_disabled.svg"
+                }
+            }
         }
     }
 }

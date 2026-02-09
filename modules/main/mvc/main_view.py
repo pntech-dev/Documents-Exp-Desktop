@@ -143,13 +143,16 @@ class Sidebar:
         if self.categories_tree.selectionModel():
             self.categories_tree.selectionModel().selectionChanged.connect(handler)
 
+
     def select_department(self, dept_id: int) -> None:
         """Selects a department by ID."""
         self._select_item_by_id(self.departments_tree, dept_id)
 
+
     def select_category(self, cat_id: int) -> None:
         """Selects a category by ID."""
         self._select_item_by_id(self.categories_tree, cat_id)
+
 
     def _select_item_by_id(self, tree_view: SidebarBlock, item_id: int) -> None:
         """Selects an item in the tree view by its ID (ROLE_ID)."""
@@ -282,6 +285,8 @@ class Navbar:
             is_enabled: Boolean indicating whether the UI should be enabled.
         """
         self.create_pushButton.setVisible(is_visible)
+        self.create_popover_pushButton.setVisible(is_visible)
+
     
     def theme_switcher_clicked(self, handler) -> None:
         """Connects the theme switcher click signal to a handler.
@@ -556,6 +561,7 @@ class MainView(QObject):
         self.user_profile_action = None
         self.settings_action = None
         self.logout_action = None
+        self.create_menu = None
 
         # Replacing the standard theme button with a custom switcher
         self._replace_theme_button()
@@ -594,6 +600,7 @@ class MainView(QObject):
         self.documents_list = DocumentsList(self.ui.tableView)
         
         self._setup_profile_menu()
+        self._setup_create_menu()
 
 
     def _setup_profile_menu(self) -> None:
@@ -647,6 +654,54 @@ class MainView(QObject):
             dark_pressed=logout_icons.get("dark", {}).get("pressed"),
             danger_action=True
         )
+
+
+    def _setup_create_menu(self) -> None:
+        """Configures the create popover menu."""
+        self.create_menu = ThemeAwareMenu(self.ui.create_popover_pushButton)
+        
+        department_icons = self.ui_config.get("icons", {}).get("documents", {}).get("department", {})
+        self.create_menu.add_theme_action(
+            text="Отдел",
+            light_default=department_icons.get("light", {}).get("default"),
+            light_hover=department_icons.get("light", {}).get("hover"),
+            light_pressed=department_icons.get("light", {}).get("pressed"),
+            dark_default=department_icons.get("dark", {}).get("default"),
+            dark_hover=department_icons.get("dark", {}).get("hover"),
+            dark_pressed=department_icons.get("dark", {}).get("pressed")
+        )
+
+        category_icons = self.ui_config.get("icons", {}).get("documents", {}).get("category", {})
+        self.create_menu.add_theme_action(
+            text="Категорию",
+            light_default=category_icons.get("light", {}).get("default"),
+            light_hover=category_icons.get("light", {}).get("hover"),
+            light_pressed=category_icons.get("light", {}).get("pressed"),
+            dark_default=category_icons.get("dark", {}).get("default"),
+            dark_hover=category_icons.get("dark", {}).get("hover"),
+            dark_pressed=category_icons.get("dark", {}).get("pressed")
+        )
+
+        document_icons = self.ui_config.get("icons", {}).get("documents", {}).get("document", {})
+        self.create_menu.add_theme_action(
+            text="Документ",
+            light_default=document_icons.get("light", {}).get("default"),
+            light_hover=document_icons.get("light", {}).get("hover"),
+            light_pressed=document_icons.get("light", {}).get("pressed"),
+            dark_default=document_icons.get("dark", {}).get("default"),
+            dark_hover=document_icons.get("dark", {}).get("hover"),
+            dark_pressed=document_icons.get("dark", {}).get("pressed")
+        )
+        
+        self.ui.create_popover_pushButton.clicked.connect(self._show_create_menu)
+
+
+    def _show_create_menu(self) -> None:
+        """Shows the create menu."""
+        button = self.ui.create_popover_pushButton
+        pos = button.mapToGlobal(QPoint(0, button.height()))
+        self.create_menu.exec_(pos)
+
 
     def eventFilter(self, source: QObject, event: QEvent) -> bool:
         if source == self.ui.profile_frame and event.type() == QEvent.MouseButtonPress:
