@@ -1,12 +1,14 @@
 import logging
 
-from PyQt5.QtWidgets import QMainWindow
+from pathlib import Path
 from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtWidgets import QMainWindow, QFileDialog
 
 from .main_view import MainView
 from .main_model import MainModel
 from ui.custom_widgets import SidebarItem, ROLE_ID
 from modules.document_editor.document_editor_module import EditorWindow
+from utils import NotificationService
 
 
 
@@ -45,6 +47,9 @@ class MainController(QObject):
         self.mode = mode
         self.editor_window = None
         self.current_documents = []
+
+        # Setup Notification Service
+        NotificationService().set_main_window(self.window)
 
         self._init_ui()
         self._setup_connections()
@@ -135,8 +140,45 @@ class MainController(QObject):
 
 
     def _on_export_button_clicked(self) -> None:
-        """Handles the export button click."""
-        pass
+        """Handles the export button click event."""
+        data = self.view.get_documents_list()
+        department = next((dept.get("name") for dept in self.model.departments 
+                           if dept.get("id") == self.model.current_department_id), {})
+        category = next((cat.get("name") for cat in self.model.categories 
+                         if cat.get("id") == self.model.current_category_id), {})
+        
+        data = {
+            "department": department,
+            "category": category,
+            "documents": data
+        }
+    
+        filename = f"{department} - {category}.docx"
+        # Replace slashes to prevent path interpretation issues
+        filename = filename.replace("/", "_").replace("\\", "_")
+
+        file_path, _ = QFileDialog.getSaveFileName(
+            self.window,
+            "Экспорт в Word",
+            str(Path.home() / filename),
+            "Word Documents (*.docx)"
+        )
+
+        if file_path:
+            path_obj = Path(file_path)
+            self.model.export_to_docx(
+                path=str(path_obj.parent), 
+                filename=path_obj.name, 
+                data=data
+            )
+
+            # Show notification
+            NotificationService().show_toast(
+                notification_type="success",
+                title="Экспорт документа",
+                message="Документ успешно экспортирован."
+            )
+
 
     def _on_print_button_clicked(self) -> None:
         """Handles the print button click."""

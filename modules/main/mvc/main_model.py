@@ -1,5 +1,6 @@
 import yaml
 import json
+import docx
 import keyring
 import logging
 
@@ -57,6 +58,39 @@ class MainModel:
         self.departments = self._get_departments()
         self.categories = self._get_categories()
         self.documents = self._get_documents()
+
+
+    def export_to_docx(
+            self, 
+            path: str, 
+            filename: str, 
+            data: dict = None
+    ) -> None:
+        """Exports the document data to a Word document.
+
+        Args:
+            path: The path to save the Word document.
+            filename: The name of the Word document.
+            data: The document data as a dictionary.
+        """
+        doc = docx.Document()
+
+        doc.add_heading(f"{data.get('department')} - {data.get('category')}", 1)
+
+        table = doc.add_table(rows=1, cols=2)
+        table.style = 'Table Grid'
+
+        hdr_cells = table.rows[0].cells
+        hdr_cells[0].text = 'Код'
+        hdr_cells[1].text = 'Наименование'
+
+        for document in data.get("documents", []):
+            row_cells = table.add_row().cells
+            row_cells[0].text = str(document.get("code", "") or "")
+            row_cells[1].text = str(document.get("name", "") or "")
+
+        full_path = Path(path) / filename
+        doc.save(str(full_path))
 
 
     # ====================

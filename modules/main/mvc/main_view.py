@@ -514,6 +514,19 @@ class DocumentsList:
         self.headers = ["Код", "Наименование"]
         self.table_view.set_headers(self.headers)
 
+
+    def get_table_data(self) -> list[dict]:
+        """Returns the table data."""
+        data = []
+        model = self.table_view.model()
+        for row in range(model.rowCount()):
+            data.append({
+                "code": model.index(row, 0).data(),
+                "name": model.index(row, 1).data()
+            })
+        return data
+    
+
     def update_documents(self, documents: list[dict]) -> None:
         """Updates the documents table with new items.
 
@@ -798,6 +811,11 @@ class MainView(QObject):
             return {}
 
     # --- public API ---
+
+    def get_documents_list(self) -> list[dict]:
+        """Returns the DocumentsList instance."""
+        return self.documents_list.get_table_data()
+
 
     def set_theme(self) -> None:
         """Switches the application's theme.
