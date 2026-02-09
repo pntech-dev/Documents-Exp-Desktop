@@ -9,12 +9,14 @@ from api.api_client import APIClient
 
 class DocumentEditorModel:
     def __init__(
-            self, 
+            self,
+            category_id: int = None,
             document_data: dict = None, 
             pages: list[dict] = None
     ) -> None:
-        self.document_data = document_data
-        self.pages = pages
+        self.category_id = category_id
+        self.document_data = document_data if document_data is not None else {}
+        self.pages = pages if pages is not None else []
 
         self.config_data = self._load_config()
 
@@ -114,10 +116,16 @@ class DocumentEditorModel:
 
 
     def save_document(self, data: dict) -> None:
-        self.api.update_document(
-            document_id=self.document_data.get("id"), 
-            data=data
-        )
+        id = self.document_data.get("id", None)
+
+        if id is None:
+            data["category_id"] = self.category_id
+            self.api.create_document(data=data)
+        else:
+            self.api.update_document(
+                document_id=self.document_data.get("id"), 
+                data=data
+            )
 
 
     # ====================

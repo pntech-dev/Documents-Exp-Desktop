@@ -213,6 +213,21 @@ class APIClient:
         )
     
 
+    def create_document(self, data: dict) -> dict:
+        """Creates a new document.
+
+        Args:
+            data (dict): The document data.
+
+        Returns:
+            dict: The JSON response confirming the creation.
+        """
+        return self._create_post_api_request(
+            url=self.base_url + "/app/documents",
+            json=data
+        )
+    
+
     def update_document(self, document_id: int, data: dict) -> dict:
         """Updates a document.
 

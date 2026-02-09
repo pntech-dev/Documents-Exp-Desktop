@@ -21,6 +21,7 @@ class EditorWindow(QDialog):
             self, 
             parent=None, 
             mode: str = None,
+            category_id: int = None,
             document_data: dict = None, 
             pages: list[dict] = None
     ) -> None:
@@ -51,6 +52,7 @@ class EditorWindow(QDialog):
 
         # MVC Initialization
         self.model = DocumentEditorModel(
+            category_id=category_id,
             document_data=document_data, 
             pages=pages
         )

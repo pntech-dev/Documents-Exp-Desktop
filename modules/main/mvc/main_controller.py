@@ -72,6 +72,28 @@ class MainController(QObject):
         self.view.set_theme()
 
 
+    def _on_create_button_clicked(self) -> None:
+        """Handles the create button click."""
+        # If the window is already open,
+        # just activate it instead of creating a new one.
+        if self.editor_window and self.editor_window.isVisible():
+            self.editor_window.activateWindow()
+            self.editor_window.raise_()
+            return
+        
+        # Show document editor window
+        self.editor_window = EditorWindow(
+            mode=self.mode,
+            parent=self.window,
+            category_id=self.model.current_category_id,
+            document_data={},
+            pages=[]
+        )
+        self.editor_window.document_saved.connect(self._on_document_changed)
+        self.editor_window.document_deleted.connect(self._on_document_changed)
+        self.editor_window.show()
+
+
     def _on_logout_clicked(self) -> None:
         """Handles the logout action."""
         self.logout_requested.emit()
@@ -289,11 +311,15 @@ class MainController(QObject):
 
 
     def _setup_connections(self) -> None:
-        """Sets up signal-slot connections."""
-        self.view.connect_theme_switch(self._on_theme_switcher_clicked)
+        """Sets up signal-slot connections."""      
+        # Sidebar
         self.view.connect_logout(self._on_logout_clicked)
         self.view.connect_departments_selection(self._on_department_selected)
         self.view.connect_categories_selection(self._on_category_selected)
+
+        # Navbar
+        self.view.connect_theme_switch(self._on_theme_switcher_clicked)
+        self.view.connect_create_button(self._on_create_button_clicked)
 
         # Toolbar Buttons
         self.view.connect_update_button(self._on_update_button_clicked)
@@ -378,6 +404,8 @@ class MainController(QObject):
             cat_exists = any(c["id"] == saved_cat_id for c in self.model.categories)
             if cat_exists:
                 self.view.select_category(saved_cat_id)
+            
+            self._update_documents_list()
 
         elif self.model.departments:
             # Select first department

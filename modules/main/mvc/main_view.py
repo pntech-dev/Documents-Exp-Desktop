@@ -199,6 +199,7 @@ class Navbar:
             search_filters_pushButton: The button for search filters.
             theme_switch: The custom widget for switching themes.
             create_pushButton: The primary button for creating new items.
+            create_popover_pushButton: The primary button for creating new items.
             icons_config: Dictionary containing icon paths configuration.
         """
         self.search_lineedit = search_lineedit
@@ -295,6 +296,16 @@ class Navbar:
             handler: The callback function to execute when the switch is clicked.
         """
         self.theme_switch.clicked.connect(handler)
+
+
+    def create_document_button_clicked(self, handler) -> None:
+        """Connects the create document button click signal to a handler.
+
+        Args:
+            handler: The callback function to execute when the button is clicked. 
+        """
+
+        self.create_pushButton.clicked.connect(handler)
 
 
 
@@ -908,6 +919,15 @@ class MainView(QObject):
             handler: The callback function.
         """
         self.navbar.theme_switcher_clicked(handler)
+
+    
+    def connect_create_button(self, handler) -> None:
+        """Connects the create button to a handler.
+        Args:
+            handler: The callback function.
+        """
+        self.navbar.create_document_button_clicked(handler)
+
 
     def connect_logout(self, handler) -> None:
         """Connects the logout action to a handler.

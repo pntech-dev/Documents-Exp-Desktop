@@ -240,8 +240,8 @@ class DocumentEditorController:
     
     def _fill_document_data(self) -> None:
         """Fills the document data with default values."""
-        self.view.set_document_code(code=self.model.document_data.get("code"))
-        self.view.set_document_name(name=self.model.document_data.get("name"))
+        self.view.set_document_code(code=self.model.document_data.get("code") or "")
+        self.view.set_document_name(name=self.model.document_data.get("name") or "")
 
 
     def _fill_pages_table(self) -> None:
