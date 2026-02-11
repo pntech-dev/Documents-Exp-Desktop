@@ -27,6 +27,7 @@ ROLE_IS_GROUP = Qt.UserRole + 4
 
 @dataclass
 class SidebarItem:
+    """Data class representing an item in the sidebar."""
     id: str
     title: str
     count: int = 0

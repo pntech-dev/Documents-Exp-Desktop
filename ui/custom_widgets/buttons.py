@@ -15,6 +15,9 @@ from utils import ThemeManagerInstance
 
 
 class _IconCustomButton(QPushButton):
+    """
+    Base class for custom buttons with icon support and theme awareness.
+    """
     def __init__(self, parent: QWidget | None = None) -> None:
         """Initializes the button with icon support."""
         super().__init__(parent=parent)
@@ -31,6 +34,25 @@ class _IconCustomButton(QPushButton):
         self._pressed = False
 
         self.setIconSize(QSize(20, 20))
+
+    def set_danger(self, is_danger: bool) -> None:
+        """
+        Sets the danger state of the button.
+
+        Args:
+            is_danger (bool): True to enable danger style, False otherwise.
+        """
+        self.setProperty("danger", "true" if is_danger else "false")
+
+    def changeEvent(self, event: QEvent) -> None:
+        if event.type() == QEvent.DynamicPropertyChange:
+            if event.propertyName() == b"danger":
+                self.style().unpolish(self)
+                self.style().polish(self)
+                self.update()
+        if event.type() == QEvent.EnabledChange:
+            self._update_icon()
+        super().changeEvent(event)
 
     def set_icon_paths(self,
                        light_default: str | None = None, light_hover: str | None = None, 
@@ -189,12 +211,6 @@ class _IconCustomButton(QPushButton):
             self._update_icon()
         super().mouseReleaseEvent(event)
 
-    def changeEvent(self, event: QEvent) -> None:
-        """Handles widget state change events."""
-        if event.type() == QEvent.EnabledChange:
-            self._update_icon()
-        super().changeEvent(event)
-
 
 class PrimaryButton(_IconCustomButton):
     def __init__(self, parent: QWidget | None = None) -> None:
@@ -218,17 +234,6 @@ class TertiaryButton(_IconCustomButton):
         super().__init__(parent=parent)
         self.set_danger(danger)
 
-    def set_danger(self, is_danger: bool) -> None:
-        self.setProperty("danger", "true" if is_danger else "false")
-
-    def changeEvent(self, event: QEvent) -> None:
-        if event.type() == QEvent.DynamicPropertyChange:
-            if event.propertyName() == b"danger":
-                self.style().unpolish(self)
-                self.style().polish(self)
-                self.update()
-        super().changeEvent(event)
-
 
 class NoFrameButton(_IconCustomButton):
     def __init__(
@@ -239,17 +244,6 @@ class NoFrameButton(_IconCustomButton):
         """Initializes the no frame button."""
         super().__init__(parent=parent)
         self.set_danger(danger)
-
-    def set_danger(self, is_danger: bool) -> None:
-        self.setProperty("danger", "true" if is_danger else "false")
-
-    def changeEvent(self, event: QEvent) -> None:
-        if event.type() == QEvent.DynamicPropertyChange:
-            if event.propertyName() == b"danger":
-                self.style().unpolish(self)
-                self.style().polish(self)
-                self.update()
-        super().changeEvent(event)
 
 
 class TextButton(QLabel):

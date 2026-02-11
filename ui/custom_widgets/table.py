@@ -188,6 +188,15 @@ class CheckBoxHeader(QHeaderView):
 
 
 class DocumentsTableView(QTableView):
+    """
+    Custom QTableView for displaying documents.
+
+    Features:
+    - Row selection
+    - Custom hover effect
+    - No grid
+    - Alternating row colors
+    """
     def __init__(self, parent: QWidget | None = None) -> None:
         """Initializes the custom table view."""
         super().__init__(parent)
@@ -245,11 +254,21 @@ class DocumentsTableView(QTableView):
         super().leaveEvent(event)
 
     def set_headers(self, labels: list[str]) -> None:
-        """Sets the horizontal header labels."""
+        """
+        Sets the horizontal header labels.
+
+        Args:
+            labels (list[str]): List of header labels.
+        """
         self._model.setHorizontalHeaderLabels(labels)
 
     def set_rows(self, rows: list[list]) -> None:
-        """Replaces the table data with new rows."""
+        """
+        Replaces the table data with new rows.
+
+        Args:
+            rows (list[list]): List of rows, where each row is a list of values.
+        """
         # Optimization: Disable updates and sorting during bulk insertion
         self.setUpdatesEnabled(False)
 
@@ -264,6 +283,23 @@ class DocumentsTableView(QTableView):
 
         self.setUpdatesEnabled(True)
         self.resizeRowsToContents()
+
+    def add_rows(self, rows: list[list]) -> None:
+        """
+        Appends new rows to the table.
+
+        Args:
+            rows (list[list]): List of rows to append.
+        """
+        self.setUpdatesEnabled(False)
+        for row_data in rows:
+            items = []
+            for value in row_data:
+                item = QStandardItem(str(value))
+                item.setEditable(False)
+                items.append(item)
+            self._model.appendRow(items)
+        self.setUpdatesEnabled(True)
 
 
 class EditorTableView(DocumentsTableView):

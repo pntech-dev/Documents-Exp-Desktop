@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import (
 )
 
 from ui.custom_widgets.modal_window import ShadowContainer, ModalOverlay
+from utils import NotificationService
 
 
 class EditorWindow(QDialog):
@@ -83,6 +84,10 @@ class EditorWindow(QDialog):
     def closeEvent(self, event):
         if self.overlay:
             self.overlay.close()
+        
+        if self.parent():
+            NotificationService().set_main_window(self.parent())
+
         super().closeEvent(event)
 
 

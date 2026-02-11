@@ -1,17 +1,16 @@
 from PyQt5.QtWidgets import (
     QDialog, 
     QVBoxLayout,
-    QApplication,
     QGraphicsDropShadowEffect
 )
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIntValidator, QColor
 
 from ui import EmailConfirm_UI
-from ui.custom_widgets.modal_window import ShadowContainer, ModalOverlay
+from ui.custom_widgets.modal_window import ShadowContainer, BaseModalDialog
 
 
-class EmailConfirmDialog(QDialog):
+class EmailConfirmDialog(BaseModalDialog):
     """A modal dialog for entering a 6-digit email verification code.
 
     This dialog is designed to be frameless and centered on the screen, with a
@@ -36,13 +35,6 @@ class EmailConfirmDialog(QDialog):
             parent (QWidget, optional): The parent widget. Defaults to None.
         """
         super().__init__(parent)
-
-        self.overlay = None
-
-        # === Window flags ===
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.Dialog)
-        self.setWindowModality(Qt.ApplicationModal)
-        self.setAttribute(Qt.WA_TranslucentBackground)
 
         # === Setup UI ===
         self.ui = EmailConfirm_UI()
@@ -152,85 +144,3 @@ class EmailConfirmDialog(QDialog):
         Closes the dialog, which is equivalent to rejecting it.
         """
         self.close()
-
-
-    def accept(self):
-        """Overrides the default QDialog.accept() method.
-
-        Ensures the background overlay is closed before calling the parent
-        class's accept method.
-        """
-        if self.overlay:
-            self.overlay.close()
-            
-        super().accept()
-
-
-    def reject(self):
-        """Overrides the default QDialog.reject() method.
-
-        Ensures the background overlay is closed before calling the parent
-        class's reject method.
-        """
-        if self.overlay:
-            self.overlay.close()
-        super().reject()
-
-    # Center modal on screen
-    def showEvent(self, event):
-        """Overrides QWidget.showEvent to set up the dialog's appearance.
-
-        Creates the background overlay and triggers the centering logic after
-        the dialog is shown, ensuring all geometry calculations are complete.
-
-        Args:
-            event (QShowEvent): The show event.
-        """
-        super().showEvent(event)
-        self.create_overlay()
-        QTimer.singleShot(0, self.center_on_screen)
-
-    
-    def closeEvent(self, event):
-        """Overrides QWidget.closeEvent to clean up the overlay.
-
-        Ensures that the background overlay is closed whenever the dialog is
-        closed, regardless of whether it was accepted or rejected.
-
-        Args:
-            event (QCloseEvent): The close event.
-        """
-        if self.overlay:
-            self.overlay.close()
-
-        super().closeEvent(event)
-
-
-    def create_overlay(self):
-        """Creates and displays the modal overlay.
-
-        If the dialog has a parent, it creates a ModalOverlay instance that
-        is a child of the parent window, resizes it to cover the entire
-        parent, and shows it.
-        """
-        if self.parent():
-            self.overlay = ModalOverlay(self.parent().window())
-            self.overlay.resize(self.parent().window().size())
-            self.overlay.show()
-            self.overlay.raise_()
-
-
-    def center_on_screen(self):
-        """Calculates and applies the centered position on the screen.
-
-        This method ensures the dialog is perfectly centered on the primary
-        monitor's availabel geometry. It's called via a QTimer.singleShot to
-        run after the layout has been fully processed.
-        """
-        self.adjustSize() # Ensure final size with shadow container
-
-        screen = QApplication.primaryScreen().availableGeometry()
-        x = screen.center().x() - self.width() // 2
-        y = screen.center().y() - self.height() // 2
-
-        self.move(x, y)

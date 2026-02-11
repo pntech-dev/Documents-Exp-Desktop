@@ -1,9 +1,13 @@
 import docx
-import yaml
+import logging
+import keyring
+import requests
 
 from pathlib import Path
 
 from api.api_client import APIClient
+from utils.app_paths import get_app_data_dir, get_local_data_dir
+from utils.file_utils import load_config, read_json
 
 
 
@@ -18,11 +22,11 @@ class DocumentEditorModel:
         self.document_data = document_data if document_data is not None else {}
         self.pages = pages if pages is not None else []
 
-        self.config_data = self._load_config()
+        self.config_data = load_config()
 
         # Constants
-        self.APP_DIR = Path.home() / 'AppData' / 'Roaming' / 'Documents Exp'
-        self.LOCAL_DIR = Path.home() / 'AppData' / 'Local' / 'Documents Exp'
+        self.APP_DIR = get_app_data_dir()
+        self.LOCAL_DIR = get_local_data_dir()
         self.LOCAL_DIR_LAST_LOGGED = self.LOCAL_DIR / "last_logged.json"
 
         # API Client Initialization
@@ -45,18 +49,27 @@ class DocumentEditorModel:
             if len(headers) != 2:
                 continue
             
-            if "Наименование" in headers and "Код" in headers:
-                name_index = headers.index("Наименование")
-                code_index = headers.index("Код")
+            # Flexible header search
+            headers_map = {h.lower(): i for i, h in enumerate(headers)}
+            
+            name_synonyms = ["наименование", "название", "имя", "name", "title"]
+            code_synonyms = ["код", "шифр", "обозначение", "code", "designation"]
+            
+            name_index = next((headers_map[s] for s in name_synonyms if s in headers_map), -1)
+            code_index = next((headers_map[s] for s in code_synonyms if s in headers_map), -1)
+
+            if name_index != -1 and code_index != -1:
 
                 # Iterate over data rows
                 for row in table.rows[1:]:
                     cells = row.cells
                     if len(cells) > max(name_index, code_index):
+                        name_text = cells[name_index].text.strip()
+                        code_text = cells[code_index].text.strip()
                         pages.append({
                             "id": None, # New page has no ID
-                            "name": cells[name_index].text.strip(),
-                            "designation": cells[code_index].text.strip()
+                            "name": name_text,
+                            "designation": code_text
                         })
                 
                 # Stop after finding and processing the first valid table
@@ -110,22 +123,30 @@ class DocumentEditorModel:
 
 
     def delete_document(self) -> None:
-        self.api.delete_document(
-            document_id=self.document_data.get("id")
-        )
+        def _action(token):
+            self.api.delete_document(
+                document_id=self.document_data.get("id"),
+                token=token
+            )
+        
+        self._execute_with_retry(_action)
 
 
     def save_document(self, data: dict) -> None:
         id = self.document_data.get("id", None)
 
-        if id is None:
-            data["category_id"] = self.category_id
-            self.api.create_document(data=data)
-        else:
-            self.api.update_document(
-                document_id=self.document_data.get("id"), 
-                data=data
-            )
+        def _action(token):
+            if id is None:
+                data["category_id"] = self.category_id
+                self.api.create_document(data=data, token=token)
+            else:
+                self.api.update_document(
+                    document_id=self.document_data.get("id"), 
+                    data=data,
+                    token=token
+                )
+        
+        self._execute_with_retry(_action)
 
 
     # ====================
@@ -133,23 +154,58 @@ class DocumentEditorModel:
     # ====================
 
     
-    def _load_config(self) -> dict:
+    def _get_user_token(self) -> str | None:
+        last_logged = read_json(self.LOCAL_DIR_LAST_LOGGED)
+
+        if not last_logged:
+            return None
+
+        user_id = last_logged["user_id"]
+
+        access_token = keyring.get_password(
+            service_name="Documents Exp",
+            username=f"access_token_{user_id}"
+        )
+
+        return access_token
+
+
+    def _execute_with_retry(self, func):
+        """Executes an API call with automatic token refresh on 401 error."""
+        token = self._get_user_token()
+        if not token:
+            return
+
         try:
-            config_path = Path(Path.cwd(), "config.yaml")
+            func(token)
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 401:
+                logging.info("Token expired, refreshing...")
+                new_token = self._refresh_tokens()
+                if new_token:
+                    func(new_token)
+                    return
+            raise e
 
-            with open(config_path, 'r') as file:
-                config = yaml.safe_load(file)
 
-            return config
-        
-        except FileNotFoundError:
-            print("Configuration file not found.")
-            return {}
-        
-        except yaml.YAMLError as e:
-            print(f"Error parsing configuration file: {e}")
-            return {}
-        
+    def _refresh_tokens(self) -> str | None:
+        """Refreshes tokens using the stored refresh token."""
+        last_logged = read_json(self.LOCAL_DIR_LAST_LOGGED)
+        if not last_logged: return None
+        user_id = last_logged.get("user_id")
+        if not user_id: return None
+
+        try:
+            refresh_token = keyring.get_password("Documents Exp", f"refresh_token_{user_id}")
+            if not refresh_token: return None
+            
+            new_tokens = self.api.refresh(refresh_token)
+            
+            # Save new tokens
+            keyring.set_password("Documents Exp", f"access_token_{user_id}", new_tokens["access_token"])
+            keyring.set_password("Documents Exp", f"refresh_token_{user_id}", new_tokens["refresh_token"])
+            
+            return new_tokens["access_token"]
         except Exception as e:
-            print(f"An unexpected error occurred: {e}")
-            return {}
+            logging.error(f"Token refresh failed: {e}")
+            return None

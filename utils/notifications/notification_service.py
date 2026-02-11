@@ -56,6 +56,9 @@ class NotificationService(metaclass=Singleton):
         Args:
             main_window (QWidget): The main window of the application.
         """
+        if self.main_window == main_window:
+            return
+
         if self.main_window:
             self.main_window.removeEventFilter(self.resize_filter)
 

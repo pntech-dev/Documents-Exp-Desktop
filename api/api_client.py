@@ -9,6 +9,7 @@ class APIClient:
             base_url (str): The base URL for the API.
         """
         self.base_url = base_url.rstrip("/")
+        self.session = requests.Session()
 
 
     # ====================
@@ -27,7 +28,7 @@ class APIClient:
             dict: The JSON response from the API containing user data.
         """
         headers = {"Authorization": f"Bearer {token}"}
-        return self._create_get_api_request(
+        return self._request("GET",
             url=self.base_url + "/auth/user", 
             headers=headers
         )
@@ -58,7 +59,7 @@ class APIClient:
             dict: The JSON response containing authentication tokens.
         """
         payload = {"email": email, "password": password}
-        return self._create_post_api_request(
+        return self._request("POST",
             url=self.base_url + "/auth/login", 
             json=payload
         )   
@@ -78,7 +79,7 @@ class APIClient:
             dict: The JSON response confirming signup.
         """
         payload = {"code": code, "email": email, "password": password}
-        return self._create_patch_api_request(
+        return self._request("PATCH",
             url=self.base_url + "/auth/signup/verify-code",
             json=payload
         )
@@ -94,7 +95,7 @@ class APIClient:
             dict: The JSON response confirming the code was sent.
         """
         payload = {"email": email}
-        return self._create_post_api_request(
+        return self._request("POST",
             url=self.base_url + "/auth/signup/send-code",
             json=payload
         )
@@ -112,7 +113,7 @@ class APIClient:
             dict: The JSON response containing new tokens.
         """
         payload = {"refresh_token": refresh_token}
-        return self._create_post_api_request(
+        return self._request("POST",
             url=self.base_url + "/auth/token/refresh",
             json=payload
         )
@@ -130,7 +131,7 @@ class APIClient:
             dict: The JSON response confirming the request.
         """
         payload = {"email": email}
-        return self._create_post_api_request(
+        return self._request("POST",
             url=self.base_url + "/auth/forgot-password/request-reset",
             json=payload
         )
@@ -147,7 +148,7 @@ class APIClient:
             dict: The JSON response confirming email verification.
         """
         payload = {"email": email, "code": code}
-        return self._create_post_api_request(
+        return self._request("POST",
             url=self.base_url + "/auth/forgot-password/confirm-email", 
             json=payload
         )
@@ -164,7 +165,7 @@ class APIClient:
             dict: The JSON response confirming the password reset.
         """
         payload = {"reset_token": reset_token, "password": password}
-        return self._create_patch_api_request(
+        return self._request("PATCH",
             url=self.base_url + "/auth/forgot-password/reset-password",
             json=payload
         )
@@ -178,7 +179,7 @@ class APIClient:
         Returns:
             dict: The JSON response containing the list of departments.
         """
-        return self._create_get_api_request(url=self.base_url + "/app/groups")
+        return self._request("GET", url=self.base_url + "/app/groups")
 
     
     def get_categories(self) -> dict:
@@ -187,17 +188,50 @@ class APIClient:
         Returns:
             dict: The JSON response containing the list of categories.
         """
-        return self._create_get_api_request(url=self.base_url + "/app/categories")
+        return self._request("GET", url=self.base_url + "/app/categories")
     
 
-    def get_documents(self) -> dict:   
+    def get_documents(self, category_id: int = None, limit: int = 50, offset: int = 0) -> dict:   
         """Retrieves the list of documents.
 
         Returns:
             dict: The JSON response containing the list of documents.
         """
-        return self._create_get_api_request(url=self.base_url + "/app/documents")
+        params = {"limit": limit, "offset": offset}
+        if category_id is not None:
+            params["category_id"] = category_id
+
+        return self._request("GET", url=self.base_url + "/app/documents", params=params)
     
+
+    def get_document(self, document_id: int) -> dict:
+        """Retrieves a specific document by ID.
+
+        Since direct GET /documents/{id} might be 405, we try fallbacks.
+        """
+        # Strategy 1: Try filtering the list by ID
+        try:
+            response = self._request("GET",
+                url=self.base_url + "/app/documents", 
+                params={"id": document_id}
+            )
+            documents = response.get("documents", [])
+            for doc in documents:
+                if doc.get("id") == document_id:
+                    return doc
+        except Exception:
+            pass
+
+        # Strategy 2: Try getting pages, maybe document metadata is included there
+        try:
+            response = self.get_document_pages(document_id)
+            if "document" in response:
+                return response["document"]
+        except Exception:
+            pass
+            
+        return {}
+
 
     def get_document_pages(self, document_id: int) -> dict:
         """Retrieves the list of pages for a specific document.
@@ -208,7 +242,7 @@ class APIClient:
         Returns:
             dict: The JSON response containing the list of pages.
         """
-        return self._create_get_api_request(
+        return self._request("GET",
             url=self.base_url + f"/app/documents/{document_id}/pages"
         )
     
@@ -223,13 +257,13 @@ class APIClient:
         Returns:
             dict: The JSON response containing the search results.
         """
-        return self._create_get_api_request(
+        return self._request("GET",
             url=self.base_url + f"/app/category_search",
             params={"category_id": category_id, "query": query}
         )
     
 
-    def create_document(self, data: dict) -> dict:
+    def create_document(self, data: dict, token: str) -> dict:
         """Creates a new document.
 
         Args:
@@ -238,13 +272,15 @@ class APIClient:
         Returns:
             dict: The JSON response confirming the creation.
         """
-        return self._create_post_api_request(
+        headers = {"Authorization": f"Bearer {token}"}
+        return self._request("POST",
             url=self.base_url + "/app/documents",
+            headers=headers,
             json=data
         )
     
 
-    def update_document(self, document_id: int, data: dict) -> dict:
+    def update_document(self, document_id: int, data: dict, token: str) -> dict:
         """Updates a document.
 
         Args:
@@ -254,13 +290,15 @@ class APIClient:
         Returns:
             dict: The JSON response confirming the update.
         """
-        return self._create_patch_api_request(
+        headers = {"Authorization": f"Bearer {token}"}
+        return self._request("PATCH",
             url=self.base_url + f"/app/documents/{document_id}",
+            headers=headers,
             json=data
         )
     
 
-    def delete_document(self, document_id: int) -> dict:
+    def delete_document(self, document_id: int, token: str) -> dict:
         """Deletes a document.
         
         Args:
@@ -269,8 +307,10 @@ class APIClient:
         Returns:
             dict: The JSON response confirming the deletion.
         """
-        return self._create_delete_api_request(
-            url=self.base_url + f"/app/documents/{document_id}"
+        headers = {"Authorization": f"Bearer {token}"}
+        return self._request("DELETE",
+            url=self.base_url + f"/app/documents/{document_id}",
+            headers=headers
         )
 
 
@@ -278,101 +318,8 @@ class APIClient:
     # API Client Methods
     # ====================
 
-    def _create_get_api_request(self, url: str, timeout: int = 10, **kwargs):
-        """Creates and executes a GET request.
-
-        Args:
-            url (str): The URL for the request.
-            timeout (int, optional): Request timeout in seconds. Defaults to 10.
-            **kwargs: Arbitrary keyword arguments passed to requests.get.
-
-        Returns:
-            dict: The JSON response from the server.
-
-        Raises:
-            requests.exceptions.HTTPError: If the HTTP request returned an unsuccessful status code.
-        """
-        request = requests.get(
-            url=url,
-            timeout=timeout,
-            **kwargs
-        )
-
+    def _request(self, method: str, url: str, timeout: int = 10, **kwargs) -> dict:
+        """Generic method for making API requests."""
+        request = self.session.request(method, url, timeout=timeout, **kwargs)
         request.raise_for_status()
-
-        return request.json()
-    
-
-    def _create_post_api_request(self, url: str, timeout: int = 10, **kwargs):
-        """Creates and executes a POST request.
-
-        Args:
-            url (str): The URL for the request.
-            timeout (int, optional): Request timeout in seconds. Defaults to 10.
-            **kwargs: Arbitrary keyword arguments passed to requests.post.
-
-        Returns:
-            dict: The JSON response from the server.
-
-        Raises:
-            requests.exceptions.HTTPError: If the HTTP request returned an unsuccessful status code.
-        """
-        request = requests.post(
-            url=url,
-            timeout=timeout,
-            **kwargs
-        )
-
-        request.raise_for_status()
-
-        return request.json()
-    
-
-    def _create_patch_api_request(self, url: str, timeout: int = 10, **kwargs):
-        """Creates and executes a PATCH request.
-
-        Args:
-            url (str): The URL for the request.
-            timeout (int, optional): Request timeout in seconds. Defaults to 10.
-            **kwargs: Arbitrary keyword arguments passed to requests.patch.
-
-        Returns:
-            dict: The JSON response from the server.
-
-        Raises:
-            requests.exceptions.HTTPError: If the HTTP request returned an unsuccessful status code.
-        """
-        request = requests.patch(
-            url=url,
-            timeout=timeout,
-            **kwargs
-        )
-        
-        request.raise_for_status()
-
-        return request.json()
-    
-
-    def _create_delete_api_request(self, url: str, timeout: int = 10, **kwargs):
-        """Creates and executes a DELETE request.
-
-        Args:
-            url (str): The URL for the request.
-            timeout (int, optional): Request timeout in seconds. Defaults to 10.
-            **kwargs: Arbitrary keyword arguments passed to requests.delete.
-
-        Returns:
-            dict: The JSON response from the server.
-
-        Raises:
-            requests.exceptions.HTTPError: If the HTTP request returned an unsuccessful status code.
-        """
-        request = requests.delete(
-            url=url,
-            timeout=timeout,
-            **kwargs
-        )
-
-        request.raise_for_status()
-
         return request.json()

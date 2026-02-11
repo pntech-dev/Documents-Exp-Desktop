@@ -1,27 +1,18 @@
 from PyQt5.QtWidgets import (
-    QDialog, 
     QVBoxLayout,
-    QApplication,
     QGraphicsDropShadowEffect
 )
-from PyQt5.QtCore import Qt, QTimer, QSize
+from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QColor, QIcon
 
 from ui.ui_converted.delete_info import Ui_Dialog as DeleteInfo_UI
-from ui.custom_widgets.modal_window import ShadowContainer, ModalOverlay
+from ui.custom_widgets.modal_window import ShadowContainer, BaseModalDialog
 from utils import ThemeManagerInstance
 
 
-class DeleteInfoDialog(QDialog):
+class DeleteInfoDialog(BaseModalDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-
-        self.overlay = None
-
-        # === Window flags ===
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.Dialog)
-        self.setWindowModality(Qt.ApplicationModal)
-        self.setAttribute(Qt.WA_TranslucentBackground)
 
         # === Setup UI ===
         self.ui = DeleteInfo_UI()
@@ -78,45 +69,3 @@ class DeleteInfoDialog(QDialog):
 
     def _on_theme_changed(self, theme_id: str):
         self._update_icon()
-
-    def accept(self):
-        if self.overlay:
-            self.overlay.close()
-        super().accept()
-
-    def reject(self):
-        if self.overlay:
-            self.overlay.close()
-        super().reject()
-
-    # Center modal on screen
-    def showEvent(self, event):
-        super().showEvent(event)
-        self.create_overlay()
-        QTimer.singleShot(0, self.center_on_screen)
-    
-    def closeEvent(self, event):
-        if self.overlay:
-            self.overlay.close()
-        super().closeEvent(event)
-
-    def create_overlay(self):
-        if self.parent():
-            self.overlay = ModalOverlay(self.parent().window())
-            self.overlay.resize(self.parent().window().size())
-            self.overlay.show()
-            self.overlay.raise_()
-
-    def center_on_screen(self):
-        self.adjustSize()
-
-        if self.parent():
-            parent = self.parent().window()
-            x = parent.x() + (parent.width() - self.width()) // 2
-            y = parent.y() + (parent.height() - self.height()) // 2
-            self.move(x, y)
-        else:
-            screen = QApplication.primaryScreen().availableGeometry()
-            x = screen.center().x() - self.width() // 2
-            y = screen.center().y() - self.height() // 2
-            self.move(x, y)

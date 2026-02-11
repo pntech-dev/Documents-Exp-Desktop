@@ -18,7 +18,6 @@ class MainWindow(QMainWindow):
         # UI Initialization
         self.ui = MainWindow_UI()
         self.ui.setupUi(self)
-        self.showMaximized()
 
         # Set theme
         self.theme_manager = ThemeManagerInstance()

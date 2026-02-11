@@ -1,5 +1,3 @@
-import yaml
-import json
 import docx
 import keyring
 import logging
@@ -7,18 +5,20 @@ import logging
 from pathlib import Path
 
 from api.api_client import APIClient
+from utils.app_paths import get_app_data_dir, get_local_data_dir
+from utils.file_utils import load_config, read_json
 
 
 class MainModel:
     def __init__(self) -> None:
-        self.config_data = self._load_config()
+        self.config_data = load_config()
 
         # API Client Initialization
         self.api = APIClient(base_url=self.config_data.get("base_url", None))
         
         # Constants
-        self.APP_DIR = Path.home() / 'AppData' / 'Roaming' / 'Documents Exp'
-        self.LOCAL_DIR = Path.home() / 'AppData' / 'Local' / 'Documents Exp'
+        self.APP_DIR = get_app_data_dir()
+        self.LOCAL_DIR = get_local_data_dir()
         self.LOCAL_DIR_LAST_LOGGED = self.LOCAL_DIR / "last_logged.json"
 
         # Sidebar data
@@ -28,7 +28,7 @@ class MainModel:
         self.current_category_id = self.categories[0]["id"] if self.categories else None
 
         # Table data
-        self.documents = self._get_documents()
+        self.documents = [] # Will be loaded via pagination
         # (x, y): x - id, bool(True, False) if document is page
         self.selected_document = (None, False)
 
@@ -45,6 +45,11 @@ class MainModel:
         return data
     
 
+    def get_document(self, document_id: int) -> dict:
+        """Retrieves a specific document by ID."""
+        return self.api.get_document(document_id)
+
+
     def get_document_pages(
             self, 
             document_id: int
@@ -57,7 +62,13 @@ class MainModel:
         """Refreshes the data from the API."""
         self.departments = self._get_departments()
         self.categories = self._get_categories()
-        self.documents = self._get_documents()
+        # Documents will be refreshed by the controller resetting pagination
+
+
+    def fetch_documents(self, category_id: int, limit: int, offset: int) -> list[dict]:
+        """Fetches a page of documents for a specific category."""
+        response = self.api.get_documents(category_id=category_id, limit=limit, offset=offset)
+        return response.get("documents", [])
 
 
     def search_data(self, query: str) -> list[dict]:
@@ -112,59 +123,10 @@ class MainModel:
     # Model Methods
     # ====================
 
-    
-    def _load_config(self) -> dict:
-        try:
-            config_path = Path(Path.cwd(), "config.yaml")
-
-            with open(config_path, 'r') as file:
-                config = yaml.safe_load(file)
-
-            return config
-        
-        except FileNotFoundError:
-            print("Configuration file not found.")
-            return {}
-        
-        except yaml.YAMLError as e:
-            print(f"Error parsing configuration file: {e}")
-            return {}
-        
-        except Exception as e:
-            print(f"An unexpected error occurred: {e}")
-            return {}
-        
-        
-    def _read_json(self, file_path: Path) -> dict | None:
-        """Reads and parses a JSON file.
-
-        Args:
-            file_path: The path to the JSON file.
-
-        Returns:
-            A dictionary with the JSON data or None if the file doesn't exist
-            or an error occurs during reading or parsing.
-        """
-        if not file_path.exists():
-            return None
-        
-        try:
-            with open(file_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-
-            return data
-        
-        except json.JSONDecodeError:
-            logging.error(msg="JSONDecodeError", exc_info=True)
-            return None
-        
-        except Exception as e:
-            logging.error(msg=e, exc_info=True)
-            return None
         
 
     def _get_user_token(self) -> str | None:
-        last_logged = self._read_json(self.LOCAL_DIR_LAST_LOGGED)
+        last_logged = read_json(self.LOCAL_DIR_LAST_LOGGED)
 
         if not last_logged:
             return None
@@ -188,7 +150,3 @@ class MainModel:
         categories = self.api.get_categories()
         return categories["categories"]
     
-
-    def _get_documents(self) -> list[dict]:
-        documents = self.api.get_documents()
-        return documents["documents"]

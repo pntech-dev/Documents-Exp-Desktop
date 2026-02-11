@@ -1,3 +1,4 @@
+import logging
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtCore import pyqtSignal, QObject
 
@@ -5,6 +6,8 @@ from .auth_view import AuthView
 from .auth_model import AuthModel
 from core.worker import APIWorker
 from utils.fields_validators import FieldValidator
+from utils import NotificationService
+from utils.error_messages import get_friendly_error_message
 from utils.email_confirm_modal import EmailConfirmDialog
 
 
@@ -121,6 +124,11 @@ class AuthController(QObject):
         # Clear lineedits
         self.view.signup_page.clear_lineedits()
 
+        NotificationService().show_toast(
+            notification_type="success",
+            title="Регистрация успешна",
+            message="Аккаунт создан. Добро пожаловать!"
+        )
         # Switch to main window
         self.login_successful.emit("auth")
     
@@ -138,7 +146,12 @@ class AuthController(QObject):
             email (str): The user's email address.
             password (str): The user's chosen password.
         """
-        print(data)
+        logging.info(f"Signup data received: {data}")
+        NotificationService().show_toast(
+            notification_type="info",
+            title="Код отправлен",
+            message=f"Код подтверждения отправлен на {email}"
+        )
         code = EmailConfirmDialog.get_code(parent=self.auth_window)
 
         # Create success callback
@@ -175,7 +188,6 @@ class AuthController(QObject):
         # Clear lineedits
         self.view.forgot_page_reset_password.clear_lineedits()
 
-        from utils import NotificationService
         NotificationService().show_toast(notification_type="success",
                                          title="Пароль успешно изменён",
                                          message="Ваш пароль успешно изменён!")
@@ -211,7 +223,7 @@ class AuthController(QObject):
             data (dict): Data from the initial reset request (unused).
             email (str): The email address to which the code was sent.
         """
-        print(data)
+        logging.info(f"Reset password data received: {data}")
         code = EmailConfirmDialog.get_code(parent=self.auth_window)
 
         # Create success callback
@@ -635,4 +647,10 @@ class AuthController(QObject):
         Args:
             exception (Exception): The exception object caught by the worker.
         """
-        print(exception)
+        logging.error(f"Worker error: {exception}", exc_info=True)
+        message = get_friendly_error_message(exception)
+        NotificationService().show_toast(
+            notification_type="error",
+            title="Ошибка",
+            message=message
+        )

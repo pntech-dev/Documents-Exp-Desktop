@@ -1,14 +1,26 @@
+import logging
 from pathlib import Path
 from PyQt5.QtGui import QTextDocument
 from PyQt5.QtWidgets import QFileDialog, QDialog
 from PyQt5.QtPrintSupport import QPrinter, QPrintDialog
 
 from utils import NotificationService
+from utils.error_messages import get_friendly_error_message
 from utils.delete_info_modal import DeleteInfoDialog
 
 
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+
+
 class DocumentEditorController:
+    """
+    Controller for the document editor window.
+
+    Manages the logic for creating, editing, and saving documents and their pages.
+    """
     def __init__(
             self, 
             mode,
@@ -35,6 +47,7 @@ class DocumentEditorController:
 
 
     def _on_document_data_changed(self, *args):
+        """Handles changes in document data to update UI state."""
         self.model.is_document_edited = True
         self._update_save_document_button_state()
 
@@ -82,7 +95,7 @@ class DocumentEditorController:
             with open(template_path, "r", encoding="utf-8") as f:
                 html = f.read().format(code=code, name=name, rows=rows_html)
         except Exception as e:
-            print(f"Error loading print template: {e}")
+            logging.error(f"Error loading print template: {e}", exc_info=True)
             return
 
         printer = QPrinter(QPrinter.HighResolution)
@@ -111,28 +124,32 @@ class DocumentEditorController:
         )
 
         if file_path:
-            imported_pages = self.model.import_from_docx(file_path)
-            
-            if imported_pages:
-                current_data = self.view.get_document_data()
-                current_pages = current_data.get("pages", [])
-                combined_pages = current_pages + imported_pages
+            try:
+                imported_pages = self.model.import_from_docx(file_path)
                 
-                self.view.pages_table.update_pages(pages=combined_pages)
-                self._on_document_data_changed()
+                if imported_pages:
+                    current_data = self.view.get_document_data()
+                    current_pages = current_data.get("pages", [])
+                    combined_pages = current_pages + imported_pages
+                    
+                    self.view.pages_table.update_pages(pages=combined_pages)
+                    self._on_document_data_changed()
 
-                # Show notification
-                NotificationService().show_toast(
-                    notification_type="success",
-                    title="Импорт страниц документа",
-                    message="Страницы документа успешно импортированы."
-                )
-            else:
-                NotificationService().show_toast(
-                    notification_type="error",
-                    title="Импорт страниц документа",
-                    message="Не удалось найти подходящую таблицу для импорта."
-                )
+                    # Show notification
+                    NotificationService().show_toast(
+                        notification_type="success",
+                        title="Импорт страниц документа",
+                        message="Страницы документа успешно импортированы."
+                    )
+                else:
+                    NotificationService().show_toast(
+                        notification_type="error",
+                        title="Импорт страниц документа",
+                        message="Не удалось найти подходящую таблицу для импорта."
+                    )
+            except Exception as e:
+                msg = get_friendly_error_message(e)
+                NotificationService().show_toast("error", "Ошибка импорта", msg)
 
 
     def _on_export_button_clicked(self) -> None:
@@ -151,18 +168,22 @@ class DocumentEditorController:
 
         if file_path:
             path_obj = Path(file_path)
-            self.model.export_to_docx(
-                path=str(path_obj.parent), 
-                filename=path_obj.name, 
-                data=data
-            )
+            try:
+                self.model.export_to_docx(
+                    path=str(path_obj.parent), 
+                    filename=path_obj.name, 
+                    data=data
+                )
 
-            # Show notification
-            NotificationService().show_toast(
-                notification_type="success",
-                title="Экспорт документа",
-                message="Документ успешно экспортирован."
-            )
+                # Show notification
+                NotificationService().show_toast(
+                    notification_type="success",
+                    title="Экспорт документа",
+                    message="Документ успешно экспортирован."
+                )
+            except Exception as e:
+                msg = get_friendly_error_message(e)
+                NotificationService().show_toast("error", "Ошибка экспорта", msg)
 
 
     def _on_delete_page_button_clicked(self) -> None:
@@ -177,24 +198,67 @@ class DocumentEditorController:
         dialog = DeleteInfoDialog(parent=self.window)
         
         if dialog.exec_() == QDialog.Accepted:
-            self.model.delete_document()
-            self.window.document_deleted.emit()
-            self.window.close()
-            
-            # Show notification
-            NotificationService().show_toast(
-                notification_type="success",
-                title="Удаление документа",
-                message="Документ успешно удален."
-            )
+            try:
+                doc_name = self.model.document_data.get("name", "")
+                doc_code = self.model.document_data.get("code", "")
+
+                self.model.delete_document()
+                logger.info(f"Document deleted: {doc_name} ({doc_code})")
+                self.window.document_deleted.emit()
+                
+                if self.window.parent():
+                    NotificationService().set_main_window(self.window.parent())
+
+                self.window.close()
+                
+                # Show notification
+                NotificationService().show_toast(
+                    notification_type="success",
+                    title="Удаление документа",
+                    message="Документ успешно удален."
+                )
+            except Exception as e:
+                msg = get_friendly_error_message(e)
+                NotificationService().show_toast("error", "Ошибка удаления", msg)
 
     
     def _on_save_button_clicked(self) -> None:
         """Handles the save button click event."""
-        data = self.view.get_document_data()
-        self.model.save_document(data=data)
-        self.window.document_saved.emit()
-        self.window.close()
+        try:
+            data = self.view.get_document_data()
+            is_creation = self.model.document_data.get("id") is None
+
+            self.model.save_document(data=data)
+            
+            doc_name = data.get("name", "")
+            doc_code = data.get("code", "")
+            if is_creation:
+                logger.info(f"Document created: {doc_name} ({doc_code})")
+            else:
+                logger.info(f"Document updated: {doc_name} ({doc_code})")
+
+            self.window.document_saved.emit()
+            
+            if self.window.parent():
+                NotificationService().set_main_window(self.window.parent())
+
+            self.window.close()
+            
+            if is_creation:
+                NotificationService().show_toast(
+                    notification_type="success",
+                    title="Создано",
+                    message="Документ успешно создан."
+                )
+            else:
+                NotificationService().show_toast(
+                    notification_type="success",
+                    title="Сохранено",
+                    message="Документ успешно сохранен."
+                )
+        except Exception as e:
+            msg = get_friendly_error_message(e)
+            NotificationService().show_toast("error", "Ошибка сохранения", msg)
 
 
     def _on_cancel_button_clicked(self) -> None:

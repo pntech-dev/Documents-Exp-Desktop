@@ -564,6 +564,21 @@ class DocumentsList:
         
         self.table_view.set_rows(rows)
 
+    def append_documents(self, documents: list[dict]) -> None:
+        """Appends new documents to the table."""
+        rows = []
+        for doc in documents:
+            row = [
+                doc.get("code", ""),
+                doc.get("name", "")
+            ]
+            rows.append(row)
+        self.table_view.add_rows(rows)
+
+    def clear(self) -> None:
+        """Clears the table."""
+        self.table_view.set_rows([])
+
     def connect_selection(self, handler) -> None:
         """Connects to the table selection changed signal."""
         if self.table_view.selectionModel():
@@ -572,6 +587,10 @@ class DocumentsList:
     def connect_double_click(self, handler) -> None:
         """Connects to the table double clicked signal."""
         self.table_view.doubleClicked.connect(handler)
+
+    def connect_scroll_changed(self, handler) -> None:
+        """Connects to the vertical scrollbar value changed signal."""
+        self.table_view.verticalScrollBar().valueChanged.connect(handler)
 
 
 
@@ -590,11 +609,23 @@ class MainView(QObject):
         self.ui_config = self._load_ui_config()
         self.current_mode = "guest"
 
+
+        # Disabled until the next update
+        for ui_element in[
+            self.ui.search_filters_pushButton,
+            self.ui.navbar_info_frame,
+            self.ui.change_view_pushButton,
+            self.ui.profile_info_label
+        ]:
+            ui_element.setVisible(False)
+
+
         self.profile_menu = None
         self.user_profile_action = None
         self.settings_action = None
         self.logout_action = None
         self.create_menu = None
+        self.create_document_action = None
 
         # Replacing the standard theme button with a custom switcher
         self._replace_theme_button()
@@ -693,30 +724,34 @@ class MainView(QObject):
         """Configures the create popover menu."""
         self.create_menu = ThemeAwareMenu(self.ui.create_popover_pushButton)
         
-        department_icons = self.ui_config.get("icons", {}).get("documents", {}).get("department", {})
-        self.create_menu.add_theme_action(
-            text="Отдел",
-            light_default=department_icons.get("light", {}).get("default"),
-            light_hover=department_icons.get("light", {}).get("hover"),
-            light_pressed=department_icons.get("light", {}).get("pressed"),
-            dark_default=department_icons.get("dark", {}).get("default"),
-            dark_hover=department_icons.get("dark", {}).get("hover"),
-            dark_pressed=department_icons.get("dark", {}).get("pressed")
-        )
 
-        category_icons = self.ui_config.get("icons", {}).get("documents", {}).get("category", {})
-        self.create_menu.add_theme_action(
-            text="Категорию",
-            light_default=category_icons.get("light", {}).get("default"),
-            light_hover=category_icons.get("light", {}).get("hover"),
-            light_pressed=category_icons.get("light", {}).get("pressed"),
-            dark_default=category_icons.get("dark", {}).get("default"),
-            dark_hover=category_icons.get("dark", {}).get("hover"),
-            dark_pressed=category_icons.get("dark", {}).get("pressed")
-        )
+        # Disabled until the next update
+
+        # department_icons = self.ui_config.get("icons", {}).get("documents", {}).get("department", {})
+        # self.create_menu.add_theme_action(
+        #     text="Отдел",
+        #     light_default=department_icons.get("light", {}).get("default"),
+        #     light_hover=department_icons.get("light", {}).get("hover"),
+        #     light_pressed=department_icons.get("light", {}).get("pressed"),
+        #     dark_default=department_icons.get("dark", {}).get("default"),
+        #     dark_hover=department_icons.get("dark", {}).get("hover"),
+        #     dark_pressed=department_icons.get("dark", {}).get("pressed")
+        # )
+
+        # category_icons = self.ui_config.get("icons", {}).get("documents", {}).get("category", {})
+        # self.create_menu.add_theme_action(
+        #     text="Категорию",
+        #     light_default=category_icons.get("light", {}).get("default"),
+        #     light_hover=category_icons.get("light", {}).get("hover"),
+        #     light_pressed=category_icons.get("light", {}).get("pressed"),
+        #     dark_default=category_icons.get("dark", {}).get("default"),
+        #     dark_hover=category_icons.get("dark", {}).get("hover"),
+        #     dark_pressed=category_icons.get("dark", {}).get("pressed")
+        # )
+
 
         document_icons = self.ui_config.get("icons", {}).get("documents", {}).get("document", {})
-        self.create_menu.add_theme_action(
+        self.create_document_action = self.create_menu.add_theme_action(
             text="Документ",
             light_default=document_icons.get("light", {}).get("default"),
             light_hover=document_icons.get("light", {}).get("hover"),
@@ -876,6 +911,14 @@ class MainView(QObject):
         """
         self.documents_list.update_documents(documents)
 
+    def append_documents_table(self, documents: list[dict]) -> None:
+        """Appends documents to the table."""
+        self.documents_list.append_documents(documents)
+
+    def clear_documents_table(self) -> None:
+        """Clears the documents table."""
+        self.documents_list.clear()
+
 
     def update_document_editor_state(self, state: bool) -> None:
         """
@@ -946,6 +989,8 @@ class MainView(QObject):
             handler: The callback function.
         """
         self.navbar.create_document_button_clicked(handler)
+        if self.create_document_action:
+            self.create_document_action.triggered.connect(handler)
 
 
     def connect_logout(self, handler) -> None:
@@ -1029,3 +1074,11 @@ class MainView(QObject):
             handler: The callback function.
         """
         self.documents_list.connect_double_click(handler)
+
+    def connect_documents_scroll(self, handler) -> None:
+        """Connects the documents table scroll signal to a handler.
+
+        Args:
+            handler: The callback function.
+        """
+        self.documents_list.connect_scroll_changed(handler)

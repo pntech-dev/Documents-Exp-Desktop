@@ -9,9 +9,11 @@ from PyQt5.QtPrintSupport import QPrinter, QPrintDialog
 
 from .main_view import MainView
 from .main_model import MainModel
+from core.worker import APIWorker
 from ui.custom_widgets import SidebarItem, ROLE_ID
 from modules.document_editor.document_editor_module import EditorWindow
 from utils import NotificationService
+from utils.error_messages import get_friendly_error_message
 
 
 
@@ -50,6 +52,14 @@ class MainController(QObject):
         self.mode = mode
         self.editor_window = None
         self.current_documents = []
+        self.search_worker = None
+        self.is_updating_data = False
+
+        # Pagination state
+        self.limit = 100
+        self.offset = 0
+        self.is_loading = False
+        self.has_more = True
 
         # Search debounce timer
         self.search_timer = QTimer()
@@ -89,32 +99,16 @@ class MainController(QObject):
         if not search_text:
             return
 
-        search_result = self.model.search_data(query=search_text)
-
-        # Optimization: Create a lookup map for documents to avoid O(N) search in loop
-        docs_map = {doc["id"]: doc for doc in self.model.documents}
-
-        data = []
-        for result in search_result.get("result", []):
-            if result.get("category_id") is not None:
-                data.append(result)
-            else:
-                # Fast lookup
-                document = docs_map.get(result.get("document_id"), {})
-                
-                result["code"] = document.get("code")
-                result["name"] = f"{result.get('name')} ({result.get('designation')})"
-                result["is_page"] = True
-                
-                data.append(result)
-        
-        # Natural sort: splits string into text and number parts for correct ordering (e.g. 2 before 10)
-        data.sort(key=lambda x: [
-            int(c) if c.isdigit() else c.lower() for c in re.split(r'(\d+)', str(x.get("code") or ""))
-        ])
-
-        self.current_documents = data
-        self.view.update_documents_table(documents=data)
+        # Use APIWorker to prevent UI freezing during search
+        # Pass a copy of current_documents to be thread-safe
+        self.search_worker = APIWorker(
+            self._search_data_task, 
+            query=search_text, 
+            current_docs=list(self.current_documents)
+        )
+        self.search_worker.finished.connect(self._on_search_finished)
+        self.search_worker.error.connect(self._on_search_error)
+        self.search_worker.start()
 
 
     def _on_theme_switcher_clicked(self, checked: bool) -> None:
@@ -155,6 +149,9 @@ class MainController(QObject):
 
     def _on_department_selected(self, selected, deselected) -> None:
         """Handles department selection change."""
+        if self.is_updating_data:
+            return
+
         indexes = selected.indexes()
         if indexes:
             index = indexes[0]
@@ -163,16 +160,21 @@ class MainController(QObject):
             if dept_id is not None and dept_id != self.model.current_department_id:
                 self.model.current_department_id = dept_id
                 self.model.current_category_id = None
+                
+                # Explicitly clear documents to avoid showing stale data from previous department
+                self._update_documents_list()
+                
                 self._update_categories_list()
                 
                 if self.view.get_search_text():
                     self._on_search_lineedit_text_changed()
-                else:
-                    self._update_documents_list()
 
 
     def _on_category_selected(self, selected, deselected) -> None:
         """Handles category selection change."""
+        if self.is_updating_data:
+            return
+
         indexes = selected.indexes()
         if indexes:
             index = indexes[0]
@@ -194,8 +196,18 @@ class MainController(QObject):
 
     def _on_update_button_clicked(self) -> None:
         """Handles the update button click."""
-        self.model.refresh_data()
-        self._update_app_data()
+        try:
+            self.model.refresh_data()
+            self._update_app_data()
+            self._update_documents_list() # Reload list
+            NotificationService().show_toast(
+                notification_type="success",
+                title="Обновлено",
+                message="Данные успешно обновлены."
+            )
+        except Exception as e:
+            msg = get_friendly_error_message(e)
+            NotificationService().show_toast("error", "Ошибка обновления", msg)
 
     
     def _on_edit_button_clicked(self) -> None:
@@ -224,8 +236,15 @@ class MainController(QObject):
                 document_id = selected_item.get("document_id")
         
         # Get selected document data
-        document = next((doc for doc in self.model.documents 
-                         if doc.get("id") == document_id), {})
+        # Search in current_documents which contains loaded data
+        document = next((doc for doc in self.current_documents if doc.get("id") == document_id), {})
+
+        # If document not found in current list (e.g. search result page), fetch it
+        if not document and document_id:
+            try:
+                document = self.model.get_document(document_id)
+            except Exception as e:
+                logger.error(f"Error fetching document details: {e}")
 
         # Get selected document pages list
         pages = self.model.get_document_pages(
@@ -271,18 +290,22 @@ class MainController(QObject):
 
         if file_path:
             path_obj = Path(file_path)
-            self.model.export_to_docx(
-                path=str(path_obj.parent), 
-                filename=path_obj.name, 
-                data=data
-            )
+            try:
+                self.model.export_to_docx(
+                    path=str(path_obj.parent), 
+                    filename=path_obj.name, 
+                    data=data
+                )
 
-            # Show notification
-            NotificationService().show_toast(
-                notification_type="success",
-                title="Экспорт документа",
-                message="Документ успешно экспортирован."
-            )
+                # Show notification
+                NotificationService().show_toast(
+                    notification_type="success",
+                    title="Экспорт документа",
+                    message="Документ успешно экспортирован."
+                )
+            except Exception as e:
+                msg = get_friendly_error_message(e)
+                NotificationService().show_toast("error", "Ошибка экспорта", msg)
 
 
     def _on_print_button_clicked(self) -> None:
@@ -311,7 +334,7 @@ class MainController(QObject):
             with open(template_path, "r", encoding="utf-8") as f:
                 html = f.read().format(code=department, name=category, rows=rows_html)
         except Exception as e:
-            print(f"Error loading print template: {e}")
+            logging.error(f"Error loading print template: {e}", exc_info=True)
             return
 
         printer = QPrinter(QPrinter.HighResolution)
@@ -345,6 +368,8 @@ class MainController(QObject):
             if 0 <= row < len(self.current_documents):
                 document = self.current_documents[row]
                 self.model.selected_document = (document.get("id"), document.get("is_page"))
+        else:
+            self.model.selected_document = (None, False)
 
         # Update the document editor button state
         state=True if self.model.selected_document[0] is not None else False
@@ -361,6 +386,93 @@ class MainController(QObject):
         self.model.refresh_data()
         self._update_app_data()
 
+    
+    def _on_table_scroll(self, value: int) -> None:
+        """Handles table scroll to load more data."""
+        # Prevent double load on clear, if list is empty, or if searching
+        # (Search results are not paginated via infinite scroll in this implementation)
+        if len(self.current_documents) == 0 or self.view.get_search_text():
+            return
+
+        scrollbar = self.view.ui.tableView.verticalScrollBar()
+
+        # Load more if scrolled to bottom (within 20px)
+        # Using a pixel threshold is safer than percentage for large lists
+        if value >= scrollbar.maximum() - 20 and not self.is_loading and self.has_more:
+             self._load_more_documents()
+
+    
+    def _search_data_task(self, query: str, current_docs: list) -> list:
+        """Background task logic for searching."""
+        search_result = self.model.search_data(query=query)
+
+        # Optimization: Create a lookup map for documents
+        docs_map = {
+            doc["id"]: doc 
+            for doc in current_docs 
+            if not doc.get("is_page")
+        } 
+        
+        # Identify and fetch missing parent documents
+        missing_doc_ids = set()
+        for result in search_result.get("result", []):
+            if not result.get("category_id"): # It's a page
+                doc_id = result.get("document_id")
+                if doc_id and doc_id not in docs_map:
+                    missing_doc_ids.add(doc_id)
+        
+        for doc_id in missing_doc_ids:
+            try:
+                doc = self.model.get_document(doc_id)
+                if doc: docs_map[doc_id] = doc
+            except Exception: pass
+
+        data = []
+        for result in search_result.get("result", []):
+            if result.get("category_id") is not None:
+                data.append(result)
+            else:
+                # Fast lookup
+                document = docs_map.get(result.get("document_id"), {})
+                
+                # Try to get code from loaded documents, or fallback to result data
+                code = document.get("code")
+                if not code:
+                    code = result.get("document_code")
+                
+                if not code:
+                    doc_obj = result.get("document")
+                    if isinstance(doc_obj, dict):
+                        code = doc_obj.get("code")
+                
+                result["code"] = code if code else ""
+                
+                name = result.get('name') or ""
+                designation = result.get('designation') or ""
+                result["name"] = f"{name} ({designation})"
+                result["is_page"] = True
+                
+                data.append(result)
+        
+        # Natural sort
+        data.sort(key=self._get_natural_sort_key)
+        return data
+
+    def _on_search_finished(self, data: list) -> None:
+        """Handles successful search completion."""
+        # Ignore results from stale workers (if a new search started)
+        if self.sender() != self.search_worker:
+            return
+            
+        self.current_documents = data
+        self.view.update_documents_table(documents=data)
+
+    def _on_search_error(self, error: Exception) -> None:
+        """Handles search errors."""
+        if self.sender() != self.search_worker:
+            return
+        msg = get_friendly_error_message(error)
+        NotificationService().show_toast("error", "Ошибка поиска", msg)
 
     # ====================
     # Controller Methods
@@ -410,6 +522,7 @@ class MainController(QObject):
         self.view.connect_change_data_view_button(self._on_change_data_view_button_clicked)
         self.view.connect_document_selection(self._on_document_selected)
         self.view.connect_document_double_click(self._on_document_double_clicked)
+        self.view.connect_documents_scroll(self._on_table_scroll)
 
 
     def _load_sidebar_data(self) -> None:
@@ -450,60 +563,114 @@ class MainController(QObject):
     def _update_documents_list(self) -> None:
         """Updates the documents list based on the current category."""
         self.model.current_document_id = None
-        documents = []
-        for doc in self.model.documents:
-            if doc.get("category_id") == self.model.current_category_id:
-                doc["is_page"] = False
-                documents.append(doc)
         
-        # Natural sort: splits string into text and number parts for correct ordering (e.g. 2 before 10)
-        documents.sort(key=lambda x: [
-            int(c) if c.isdigit() else c.lower() for c in re.split(r'(\d+)', str(x.get("code") or ""))
-        ])
+        # Reset pagination
+        self.offset = 0
+        self.has_more = True
+        self.current_documents = []
+        self.view.clear_documents_table()
+        
+        self._load_more_documents()
 
-        self.current_documents = documents
-        self.view.update_documents_table(documents=documents)
+    def _load_more_documents(self) -> None:
+        """Loads the next page of documents."""
+        # Do not load more if loading, no category selected, or SEARCH IS ACTIVE
+        if self.is_loading or self.model.current_category_id is None or self.view.get_search_text():
+            return
+
+        self.is_loading = True
+        try:
+            docs = self.model.fetch_documents(self.model.current_category_id, self.limit, self.offset)
+            
+            if not docs:
+                self.has_more = False
+                return
+
+            # Duplicate protection: Check if new docs are already in current_documents
+            # This prevents infinite loops if API ignores offset
+            existing_ids = {doc["id"] for doc in self.current_documents}
+            new_docs = [doc for doc in docs if doc["id"] not in existing_ids]
+            
+            # Natural sort: splits string into text and number parts for correct ordering (e.g. 2 before 10)
+            new_docs.sort(key=self._get_natural_sort_key)
+
+            if not new_docs:
+                self.has_more = False
+                return
+
+            if len(docs) < self.limit:
+                self.has_more = False
+            
+            self.offset += self.limit
+            self.current_documents.extend(new_docs)
+            self.view.append_documents_table(new_docs)
+
+            # If content still fits in view (no scrollbar), try loading more to fill the screen
+            if self.has_more and self.view.ui.tableView.verticalScrollBar().maximum() <= 0:
+                QTimer.singleShot(0, self._load_more_documents)
+
+        except Exception as e:
+            logging.error(f"Error loading documents: {e}")
+        finally:
+            self.is_loading = False
 
     
     def _update_app_data(self):
         """Updates the application data."""
-        # TODO Rewrite the data update so that it includes the search results
+        self.is_updating_data = True
         
-        # Save current selection to restore it after reload
-        saved_dept_id = self.model.current_department_id
-        saved_cat_id = self.model.current_category_id
+        try:
+            # Save current selection to restore it after reload
+            saved_dept_id = self.model.current_department_id
+            saved_cat_id = self.model.current_category_id
 
-        self._load_sidebar_data()
-        
-        # Check if saved department exists
-        dept_exists = any(d["id"] == saved_dept_id for d in self.model.departments)
+            self._load_sidebar_data()
+            
+            # Check if saved department exists
+            dept_exists = any(d["id"] == saved_dept_id for d in self.model.departments)
 
+            if dept_exists:
+                self.view.select_department(saved_dept_id)
+                
+                # Restore category
+                cat_exists = any(c["id"] == saved_cat_id for c in self.model.categories)
+                if cat_exists:
+                    self.view.select_category(saved_cat_id)
+                else:
+                    self.model.current_category_id = None
+        finally:
+            self.is_updating_data = False
+
+        # Trigger update manually after state is restored
         if dept_exists:
-            self.view.select_department(saved_dept_id)
-            
-            # Restore category
-            cat_exists = any(c["id"] == saved_cat_id for c in self.model.categories)
-            if cat_exists:
-                self.view.select_category(saved_cat_id)
-            
             if self.view.get_search_text():
-                self._on_search_lineedit_text_changed()
+                # Perform search immediately, bypassing debounce timer
+                self._perform_search()
             else:
                 self._update_documents_list()
 
-        elif self.model.departments:
-            # Select first department
-            first_dept_id = self.model.departments[0]["id"]
-            self.view.select_department(first_dept_id)
 
-            # Select first category of the new department
-            first_dept_cats = [c for c in self.model.categories if c.get(
-                "group_id"
-            ) == first_dept_id]
-            if first_dept_cats:
-                self.view.select_category(first_dept_cats[0]["id"])
+    def _get_natural_sort_key(self, doc: dict) -> list:
+        """
+        Generates a sort key for natural sorting.
+
+        Args:
+            doc (dict): The document dictionary.
+
+        Returns:
+            list: A list representing the sort key.
+        """
+        code = str(doc.get("code") or "").strip()
+        
+        # Empty codes at the end
+        if not code:
+            return [1]
             
-            if self.view.get_search_text():
-                self._on_search_lineedit_text_changed()
-            else:
-                self._update_documents_list()
+        # Split into text and number parts
+        parts = [
+            int(c) if c.isdigit() else c.lower() 
+            for c in re.split(r'(\d+)', code)
+        ]
+        
+        # Non-empty codes start with 0
+        return [0] + parts

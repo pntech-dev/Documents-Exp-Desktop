@@ -15,11 +15,6 @@ class AuthWindow(QMainWindow):
 
         # Setup Notification Service
         NotificationService().set_main_window(self)
-        NotificationService().show_toast(
-            notification_type="info",
-            title="Авторизация",
-            message="Добро пожаловать!"
-        )
 
         # MVC Initialization
         self.model = AuthModel()

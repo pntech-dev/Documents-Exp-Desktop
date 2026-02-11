@@ -309,6 +309,11 @@
              </property>
              <item>
               <widget class="QLabel" name="profile_name_label">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
                <property name="text">
                 <string>Гость</string>
                </property>
@@ -573,7 +578,7 @@
               <number>0</number>
              </property>
              <item>
-              <widget class="IconLabel" name="fided_label">
+              <widget class="IconLabel" name="finded_label">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
