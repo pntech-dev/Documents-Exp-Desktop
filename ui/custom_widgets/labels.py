@@ -3,9 +3,10 @@ from PyQt5.QtGui import (
     QPalette
 )
 from PyQt5.QtCore import (
-    QSize, Qt, QRect,
+    QSize, Qt, QRect, QRectF,
     pyqtProperty
 )
+from PyQt5.QtSvg import QSvgRenderer
 from PyQt5.QtWidgets import (
     QLabel, QWidget, QStyle, 
     QStyleOption
@@ -235,3 +236,67 @@ class ProfileIconLabel(IconLabel):
 
     def _on_theme_changed(self, theme_id: str) -> None:
         self._update_icon()
+
+
+class SlideLabel(QLabel):
+    def __init__(self, parent: QWidget | None = None) -> None:
+        """Initializes the slide label."""
+        super().__init__(parent=parent)
+        self._renderer = QSvgRenderer()
+        ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
+        self.svg_paths = {"light": None, "dark": None}
+
+    def set_svg_paths(self, light: str | None = None, dark: str | None = None) -> None:
+        """Sets the paths to the SVG files."""
+        self.svg_paths["light"] = light
+        self.svg_paths["dark"] = dark
+        self._update_image()
+
+    def _update_image(self) -> None:
+        theme_id = ThemeManagerInstance().current_theme_id
+        theme = "light" if theme_id == "0" else "dark"
+        
+        path = self.svg_paths.get(theme)
+        if path:
+            self._renderer.load(path)
+        else:
+            self._renderer = QSvgRenderer()
+        self.update()
+
+    def _on_theme_changed(self, theme_id: str) -> None:
+        self._update_image()
+
+    def paintEvent(self, event: QPaintEvent) -> None:
+        """Paints the SVG image proportionally centered."""
+        if not self._renderer.isValid():
+            super().paintEvent(event)
+            return
+
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setRenderHint(QPainter.SmoothPixmapTransform)
+
+        # Draw background (supports QSS)
+        opt = QStyleOption()
+        opt.initFrom(self)
+        self.style().drawPrimitive(QStyle.PE_Widget, opt, painter, self)
+
+        # Calculate scaled rect preserving aspect ratio
+        view_rect = self.rect()
+        svg_size = self._renderer.defaultSize()
+        
+        if svg_size.isEmpty():
+            return
+
+        # Scale factor (fit inside)
+        scale = min(view_rect.width() / svg_size.width(), view_rect.height() / svg_size.height())
+        
+        new_w = svg_size.width() * scale
+        new_h = svg_size.height() * scale
+        
+        # Center position
+        x = (view_rect.width() - new_w) / 2
+        y = (view_rect.height() - new_h) / 2
+        
+        target_rect = QRectF(x, y, new_w, new_h)
+        self._renderer.render(painter, target_rect)

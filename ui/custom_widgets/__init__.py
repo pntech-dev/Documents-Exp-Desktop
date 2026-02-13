@@ -4,7 +4,7 @@ from .buttons import (
 )
 from .labels import (
     LogoLabel, InfoLabel, IconLabel,
-    ProfileIconLabel
+    ProfileIconLabel, SlideLabel
 )
 from .switchers import ThemeSwitch
 from .lineedits import IconLineEdit

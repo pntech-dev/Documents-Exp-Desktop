@@ -1,7 +1,9 @@
 from PyQt5.QtWidgets import QLineEdit, QCheckBox, QPushButton
 
 from ui import AuthWindow_UI
+from ui.custom_widgets import SlideLabel
 from utils import ThemeManagerInstance
+import resources.slides.slides_resources_rc
 
 
 class AuthPageWidgetGroup:
@@ -252,6 +254,22 @@ class AuthPageWidgetGroup:
             self.confirm_password_field.textChanged.connect(handler)
 
 
+class AuthSlider:
+    def __init__(self, slides) -> None:
+        self.slides_widget = slides
+        self.current_slide = 1
+
+        for i in range(self.slides_widget.count()):
+            page = self.slides_widget.widget(i)
+            
+            img_label = page.findChild(SlideLabel)
+            if img_label:
+                img_label.set_svg_paths(
+                    light=f":/light/light/slide_{i + 1}.svg",
+                    dark=f":/dark/dark/slide_{i + 1}.svg"
+                )
+
+
 class AuthView:
     """The main View class for the authentication window.
 
@@ -375,6 +393,8 @@ class AuthView:
             "change_password_change_page": self.ui.change_password_change_page
         }
 
+        # Initialize slides
+        self.slides = AuthSlider(slides=self.ui.slider)
 
 
     def set_theme(self) -> None:
