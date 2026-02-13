@@ -1,4 +1,5 @@
-from PyQt5.QtWidgets import QLineEdit, QCheckBox, QPushButton
+from PyQt5.QtWidgets import QLineEdit, QCheckBox, QPushButton, QGraphicsOpacityEffect
+from PyQt5.QtCore import QTimer, QPropertyAnimation, QEasingCurve
 
 from ui import AuthWindow_UI
 from ui.custom_widgets import SlideLabel
@@ -257,7 +258,6 @@ class AuthPageWidgetGroup:
 class AuthSlider:
     def __init__(self, slides) -> None:
         self.slides_widget = slides
-        self.current_slide = 1
 
         for i in range(self.slides_widget.count()):
             page = self.slides_widget.widget(i)
@@ -268,6 +268,56 @@ class AuthSlider:
                     light=f":/light/light/slide_{i + 1}.svg",
                     dark=f":/dark/dark/slide_{i + 1}.svg"
                 )
+
+        # Setup auto-switch timer
+        self.timer = QTimer()
+        self.timer.timeout.connect(self._switch_slide)
+        self.timer.start(7000)
+
+    def _switch_slide(self) -> None:
+        """Switches to the next slide with fade animation."""
+        count = self.slides_widget.count()
+        if count == 0:
+            return
+            
+        current_index = self.slides_widget.currentIndex()
+        next_index = (current_index + 1) % count
+        
+        current_widget = self.slides_widget.widget(current_index)
+        next_widget = self.slides_widget.widget(next_index)
+        
+        # Fade Out
+        self.effect_out = QGraphicsOpacityEffect(current_widget)
+        current_widget.setGraphicsEffect(self.effect_out)
+        
+        self.anim_out = QPropertyAnimation(self.effect_out, b"opacity")
+        self.anim_out.setDuration(300)
+        self.anim_out.setStartValue(1.0)
+        self.anim_out.setEndValue(0.0)
+        self.anim_out.setEasingCurve(QEasingCurve.OutQuad)
+        
+        self.anim_out.finished.connect(
+            lambda: self._on_fade_out_finished(next_index, current_widget, next_widget)
+        )
+        self.anim_out.start()
+
+    def _on_fade_out_finished(self, next_index, current_widget, next_widget) -> None:
+        current_widget.setGraphicsEffect(None)
+        self.slides_widget.setCurrentIndex(next_index)
+        
+        # Fade In
+        self.effect_in = QGraphicsOpacityEffect(next_widget)
+        self.effect_in.setOpacity(0.0)
+        next_widget.setGraphicsEffect(self.effect_in)
+        
+        self.anim_in = QPropertyAnimation(self.effect_in, b"opacity")
+        self.anim_in.setDuration(300)
+        self.anim_in.setStartValue(0.0)
+        self.anim_in.setEndValue(1.0)
+        self.anim_in.setEasingCurve(QEasingCurve.InQuad)
+        
+        self.anim_in.finished.connect(lambda: next_widget.setGraphicsEffect(None))
+        self.anim_in.start()
 
 
 class AuthView:

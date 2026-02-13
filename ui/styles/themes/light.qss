@@ -37,12 +37,20 @@ IconLabel#tags_label {
 }
 
 /* Slider */
-QLabel#title_label {
+QLabel#title_label,
+#title_label_2, 
+#title_label_3, 
+#title_label_4, 
+#title_label_5{
 	color: #1A1A1A;
 	font-size: 16pt;
 }
 
-QLabel#text_label {
+QLabel#text_label,
+#text_label_2, 
+#text_label_3, 
+#text_label_4, 
+#text_label_5{
 	color: #4D4D4D;
 	font-size: 12pt;
 }
