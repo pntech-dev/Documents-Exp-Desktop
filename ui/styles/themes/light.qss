@@ -361,6 +361,12 @@ QFrame#emailConfirmContainer {
     background-color: #FFFFFF;
 }
 
+/* Create Department Window */
+QFrame#createDepartmentContainer {
+    border-radius: 8px;
+    background-color: #FFFFFF;
+}
+
 /* Editor Window */
 QFrame#editorContainer {
 	border: 1px solid #E6E6E6;

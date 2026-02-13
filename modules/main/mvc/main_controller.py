@@ -12,6 +12,7 @@ from .main_model import MainModel
 from core.worker import APIWorker
 from ui.custom_widgets import SidebarItem, ROLE_ID
 from modules.document_editor.document_editor_module import EditorWindow
+from modules.create_department import CreateDepartment
 from utils import NotificationService
 from utils.error_messages import get_friendly_error_message
 
@@ -118,6 +119,49 @@ class MainController(QObject):
         themes for the application.
         """
         self.view.set_theme()
+
+    
+    def _on_craete_department_clicked(self) -> None:
+        """"Handles the create department action button click."""
+        try:
+            # Show create department window
+            department_name = CreateDepartment.get_name(parent=self.window)
+
+            if not department_name:
+                return
+
+            data = self.model.create_department(name=department_name)
+            new_id = data.get("id")
+
+            if new_id:
+                # Refresh data to include the new department
+                self.model.refresh_data()
+
+                # Set new department as current department
+                self.model.current_department_id = new_id
+                self.model.current_category_id = None
+
+                logger.info(f"Created department: {department_name}")
+                NotificationService().show_toast(
+                    notification_type="success",
+                    title="Создание отдела",
+                    message=f"Отдел: {data['name']} успешно создан."
+                )
+
+                # Update UI
+                self._load_sidebar_data()
+                
+                # Select the new department in the sidebar
+                QTimer.singleShot(50, lambda: self.view.select_department(new_id))
+                self._update_documents_list()
+
+        except Exception as e:
+            logger.error(f"Error creating department: {e}")
+            NotificationService().show_toast(
+                notification_type="error",
+                title="Создание отдела",
+                message=f"Произошла ошибка в процессе создания отдела"
+            )
 
 
     def _on_create_button_clicked(self) -> None:
@@ -513,6 +557,7 @@ class MainController(QObject):
         self.view.connect_search_lineedit(self._on_search_lineedit_text_changed)
         self.view.connect_theme_switch(self._on_theme_switcher_clicked)
         self.view.connect_create_button(self._on_create_button_clicked)
+        self.view.connect_create_department(self._on_craete_department_clicked)
 
         # Toolbar Buttons
         self.view.connect_update_button(self._on_update_button_clicked)

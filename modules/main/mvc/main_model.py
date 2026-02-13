@@ -56,6 +56,14 @@ class MainModel:
     ) -> list[dict]:
         pages = self.api.get_document_pages(document_id)
         return pages["pages"]
+    
+
+    def create_department(self, name: str) -> dict:
+        """Create new department"""
+        data = {"name": name}
+        token = self._get_user_token()
+        response = self.api.create_department(data=data, token=token)
+        return response
 
 
     def refresh_data(self) -> None:

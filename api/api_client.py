@@ -180,6 +180,23 @@ class APIClient:
             dict: The JSON response containing the list of departments.
         """
         return self._request("GET", url=self.base_url + "/app/groups")
+    
+
+    def create_department(self, data: dict, token: str) -> dict:
+        """Creates a new department.
+
+        Args:
+            data (dict): The department name.
+
+        Returns:
+            dict: The JSON response confirming the creation.
+        """
+        headers = {"Authorization": f"Bearer {token}"}
+        return self._request("POST",
+            url=self.base_url + "/app/groups",
+            headers=headers,
+            json=data
+        )
 
     
     def get_categories(self) -> dict:

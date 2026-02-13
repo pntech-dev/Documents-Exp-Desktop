@@ -626,6 +626,7 @@ class MainView(QObject):
         self.logout_action = None
         self.create_menu = None
         self.create_document_action = None
+        self.create_department_action = None
 
         # Replacing the standard theme button with a custom switcher
         self._replace_theme_button()
@@ -723,21 +724,21 @@ class MainView(QObject):
     def _setup_create_menu(self) -> None:
         """Configures the create popover menu."""
         self.create_menu = ThemeAwareMenu(self.ui.create_popover_pushButton)
+
+        department_icons = self.ui_config.get("icons", {}).get("documents", {}).get("department", {})
+        self.create_department_action = self.create_menu.add_theme_action(
+            text="Отдел",
+            light_default=department_icons.get("light", {}).get("default"),
+            light_hover=department_icons.get("light", {}).get("hover"),
+            light_pressed=department_icons.get("light", {}).get("pressed"),
+            dark_default=department_icons.get("dark", {}).get("default"),
+            dark_hover=department_icons.get("dark", {}).get("hover"),
+            dark_pressed=department_icons.get("dark", {}).get("pressed")
+        )
         
-
+        
         # Disabled until the next update
-
-        # department_icons = self.ui_config.get("icons", {}).get("documents", {}).get("department", {})
-        # self.create_menu.add_theme_action(
-        #     text="Отдел",
-        #     light_default=department_icons.get("light", {}).get("default"),
-        #     light_hover=department_icons.get("light", {}).get("hover"),
-        #     light_pressed=department_icons.get("light", {}).get("pressed"),
-        #     dark_default=department_icons.get("dark", {}).get("default"),
-        #     dark_hover=department_icons.get("dark", {}).get("hover"),
-        #     dark_pressed=department_icons.get("dark", {}).get("pressed")
-        # )
-
+        
         # category_icons = self.ui_config.get("icons", {}).get("documents", {}).get("category", {})
         # self.create_menu.add_theme_action(
         #     text="Категорию",
@@ -983,6 +984,16 @@ class MainView(QObject):
         self.navbar.theme_switcher_clicked(handler)
 
     
+    def connect_create_department(self, handler) -> None:
+        """Connects the create department action to a handler.
+
+        Args:
+            handler: The callback function.
+        """
+        if self.create_department_action:
+            self.create_department_action.triggered.connect(handler)
+
+    
     def connect_create_button(self, handler) -> None:
         """Connects the create button to a handler.
         Args:
@@ -1002,6 +1013,7 @@ class MainView(QObject):
         if self.profile_menu:
             self.logout_action.triggered.connect(handler)
 
+
     def connect_departments_selection(self, handler) -> None:
         """Connects the departments selection signal to a handler.
 
@@ -1009,6 +1021,7 @@ class MainView(QObject):
             handler: The callback function.
         """
         self.sidebar.connect_departments_selection(handler)
+
 
     def connect_categories_selection(self, handler) -> None:
         """Connects the categories selection signal to a handler.
@@ -1018,6 +1031,7 @@ class MainView(QObject):
         """
         self.sidebar.connect_categories_selection(handler)
 
+
     def connect_update_button(self, handler) -> None:
         """Connects the update button to a handler.
 
@@ -1025,6 +1039,7 @@ class MainView(QObject):
             handler: The callback function.
         """
         self.toolbar.update_button_clicked(handler)
+
 
     def connect_edit_button(self, handler) -> None:
         """Connects the edit button to a handler.
@@ -1034,6 +1049,7 @@ class MainView(QObject):
         """
         self.toolbar.edit_button_clicked(handler)
 
+
     def connect_export_button(self, handler) -> None:
         """Connects the update export to a handler.
 
@@ -1042,6 +1058,7 @@ class MainView(QObject):
         """
         self.toolbar.export_button_clicked(handler)
 
+
     def connect_print_button(self, handler) -> None:
         """Connects the print button to a handler.
 
@@ -1049,6 +1066,7 @@ class MainView(QObject):
             handler: The callback function.
         """
         self.toolbar.print_button_clicked(handler)
+
 
     def connect_change_data_view_button(self, handler) -> None:
         """Connects the change data view button to a handler.
@@ -1067,6 +1085,7 @@ class MainView(QObject):
         """
         self.documents_list.connect_selection(handler)
 
+
     def connect_document_double_click(self, handler) -> None:
         """Connects the document table double click signal to a handler.
 
@@ -1074,6 +1093,7 @@ class MainView(QObject):
             handler: The callback function.
         """
         self.documents_list.connect_double_click(handler)
+
 
     def connect_documents_scroll(self, handler) -> None:
         """Connects the documents table scroll signal to a handler.
