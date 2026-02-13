@@ -242,6 +242,20 @@ class APIClient:
         return self._request("GET", url=self.base_url + "/app/categories")
     
 
+    def create_category(self, data: dict, token: str) -> dict:
+        """Creates a new category.
+
+        Returns:
+            dict: The JSON response confirming the creation.
+        """
+        headers = {"Authorization": f"Bearer {token}"}
+        return self._request("POST",
+            url=self.base_url + "/app/categories",
+            headers=headers,
+            json=data
+        )
+    
+
     def get_documents(self, category_id: int = None, limit: int = 50, offset: int = 0) -> dict:   
         """Retrieves the list of documents.
 

@@ -15,6 +15,9 @@ from modules.document_editor.document_editor_module import EditorWindow
 from modules.departments_editings import (
     EditDepartment, CreateDepartment
 )
+from modules.categories_editings import (
+    CreateCategory
+)
 from utils import NotificationService
 from utils.error_messages import get_friendly_error_message
 
@@ -163,6 +166,48 @@ class MainController(QObject):
                 notification_type="error",
                 title="Создание отдела",
                 message=f"Произошла ошибка в процессе создания отдела"
+            )
+
+    
+    def _on_craete_category_clicked(self) -> None:
+        """"Handles the create category action button click."""
+        try:
+            # Show create category window
+            category_name = CreateCategory.get_name(parent=self.window)
+
+            if not category_name:
+                return
+
+            data = self.model.create_category(name=category_name)
+            new_id = data.get("id")
+
+            if new_id:
+                # Refresh data to include the new category
+                self.model.refresh_data()
+
+                # Set new category as current category
+                self.model.current_category_id = new_id
+
+                logger.info(f"Created category: {category_name}")
+                NotificationService().show_toast(
+                    notification_type="success",
+                    title="Создание категории",
+                    message=f"Категория: {data['name']} успешно создана."
+                )
+
+                # Update UI
+                self._load_sidebar_data()
+                
+                # Select the new department in the sidebar
+                QTimer.singleShot(50, lambda: self.view.select_category(new_id))
+                self._update_documents_list()
+
+        except Exception as e:
+            logger.error(f"Error creating category: {e}")
+            NotificationService().show_toast(
+                notification_type="error",
+                title="Создание категории",
+                message=f"Произошла ошибка в процессе создания категории"
             )
 
 
@@ -602,6 +647,7 @@ class MainController(QObject):
         self.view.connect_theme_switch(self._on_theme_switcher_clicked)
         self.view.connect_create_button(self._on_create_button_clicked)
         self.view.connect_create_department(self._on_craete_department_clicked)
+        self.view.connect_create_category(self._on_craete_category_clicked)
 
         # Toolbar Buttons
         self.view.connect_update_button(self._on_update_button_clicked)

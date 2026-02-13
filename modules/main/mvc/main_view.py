@@ -644,6 +644,7 @@ class MainView(QObject):
         self.create_menu = None
         self.create_document_action = None
         self.create_department_action = None
+        self.create_category_action = None
 
         # Replacing the standard theme button with a custom switcher
         self._replace_theme_button()
@@ -753,20 +754,16 @@ class MainView(QObject):
             dark_pressed=department_icons.get("dark", {}).get("pressed")
         )
         
-        
-        # Disabled until the next update
-        
-        # category_icons = self.ui_config.get("icons", {}).get("documents", {}).get("category", {})
-        # self.create_menu.add_theme_action(
-        #     text="Категорию",
-        #     light_default=category_icons.get("light", {}).get("default"),
-        #     light_hover=category_icons.get("light", {}).get("hover"),
-        #     light_pressed=category_icons.get("light", {}).get("pressed"),
-        #     dark_default=category_icons.get("dark", {}).get("default"),
-        #     dark_hover=category_icons.get("dark", {}).get("hover"),
-        #     dark_pressed=category_icons.get("dark", {}).get("pressed")
-        # )
-
+        category_icons = self.ui_config.get("icons", {}).get("documents", {}).get("category", {})
+        self.create_category_action = self.create_menu.add_theme_action(
+            text="Категорию",
+            light_default=category_icons.get("light", {}).get("default"),
+            light_hover=category_icons.get("light", {}).get("hover"),
+            light_pressed=category_icons.get("light", {}).get("pressed"),
+            dark_default=category_icons.get("dark", {}).get("default"),
+            dark_hover=category_icons.get("dark", {}).get("hover"),
+            dark_pressed=category_icons.get("dark", {}).get("pressed")
+        )
 
         document_icons = self.ui_config.get("icons", {}).get("documents", {}).get("document", {})
         self.create_document_action = self.create_menu.add_theme_action(
@@ -1009,6 +1006,16 @@ class MainView(QObject):
         """
         if self.create_department_action:
             self.create_department_action.triggered.connect(handler)
+
+
+    def connect_create_category(self, handler) -> None:
+        """Connects the create category action to a handler.
+
+        Args:
+            handler: The callback function.
+        """
+        if self.create_category_action:
+            self.create_category_action.triggered.connect(handler)
 
     
     def connect_create_button(self, handler) -> None:

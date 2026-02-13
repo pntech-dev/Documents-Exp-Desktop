@@ -1,6 +1,7 @@
 import docx
 import keyring
 import logging
+import requests
 
 from pathlib import Path
 
@@ -61,24 +62,27 @@ class MainModel:
     def create_department(self, name: str) -> dict:
         """Create new department"""
         data = {"name": name}
-        token = self._get_user_token()
-        response = self.api.create_department(data=data, token=token)
-        return response
+        return self._make_authorized_request(self.api.create_department, data=data)
 
 
     def edit_department(self, name: str, department_id: int):
         """Edit department data"""
         data = {"name": name}
-        token = self._get_user_token()
-        response = self.api.edit_department(data=data, token=token, department_id=department_id)
-        return response
+        return self._make_authorized_request(self.api.edit_department, data=data, department_id=department_id)
 
 
     def delete_department(self, department_id: int):
         """Delete department"""
-        token = self._get_user_token()
-        response = self.api.delete_department(token=token, department_id=department_id)
-        return response
+        return self._make_authorized_request(self.api.delete_department, department_id=department_id)
+    
+
+    def create_category(self, name: str) -> dict:
+        """Create new category"""
+        data = {
+            "group_id": self.current_department_id,
+            "name": name
+        }
+        return self._make_authorized_request(self.api.create_category, data=data)
 
 
     def refresh_data(self) -> None:
@@ -145,6 +149,40 @@ class MainModel:
     # ====================
     # Model Methods
     # ====================
+
+    def _make_authorized_request(self, api_method, **kwargs):
+        """Executes an API request with automatic token refresh on 401."""
+        try:
+            token = self._get_user_token()
+            return api_method(token=token, **kwargs)
+        except requests.exceptions.HTTPError as e:
+            if e.response is not None and e.response.status_code == 401:
+                logging.info("Access token expired. Refreshing...")
+                if self._refresh_tokens():
+                    token = self._get_user_token()
+                    return api_method(token=token, **kwargs)
+            raise e
+
+    def _refresh_tokens(self) -> bool:
+        """Refreshes the access token using the refresh token."""
+        try:
+            last_logged = read_json(self.LOCAL_DIR_LAST_LOGGED)
+            if not last_logged:
+                return False
+            
+            user_id = last_logged.get("user_id")
+            refresh_token = keyring.get_password("Documents Exp", f"refresh_token_{user_id}")
+            
+            if not refresh_token:
+                return False
+                
+            tokens = self.api.refresh(refresh_token)
+            keyring.set_password("Documents Exp", f"access_token_{user_id}", tokens["access_token"])
+            keyring.set_password("Documents Exp", f"refresh_token_{user_id}", tokens["refresh_token"])
+            return True
+        except Exception as e:
+            logging.error(f"Failed to refresh tokens: {e}")
+            return False
 
         
 
