@@ -1,5 +1,6 @@
 import logging
 import re
+import requests
 
 from pathlib import Path
 from PyQt5.QtCore import QObject, pyqtSignal, QTimer
@@ -161,12 +162,7 @@ class MainController(QObject):
                 self._update_documents_list()
 
         except Exception as e:
-            logger.error(f"Error creating department: {e}")
-            NotificationService().show_toast(
-                notification_type="error",
-                title="Создание отдела",
-                message=f"Произошла ошибка в процессе создания отдела"
-            )
+            self._handle_error(e, "Создание отдела")
 
     
     def _on_craete_category_clicked(self) -> None:
@@ -199,12 +195,7 @@ class MainController(QObject):
                 self._update_app_data()
 
         except Exception as e:
-            logger.error(f"Error creating category: {e}")
-            NotificationService().show_toast(
-                notification_type="error",
-                title="Создание категории",
-                message=f"Произошла ошибка в процессе создания категории"
-            )
+            self._handle_error(e, "Создание категории")
 
 
     def _on_edit_department_clicked(self, dept_id: str) -> None:
@@ -212,39 +203,42 @@ class MainController(QObject):
         department = next((dept for dept in self.model.departments if str(dept.get("id")) == str(dept_id)), None)
         
         if department:
-            current_name = department.get("name", "")
-            action, new_name = EditDepartment.show_dialog(parent=self.window, current_name=current_name)
-            
-            if action == "edit":
-                if new_name and new_name != current_name:
-                    self.model.edit_department(name=new_name, department_id=int(dept_id))
+            try:
+                current_name = department.get("name", "")
+                action, new_name = EditDepartment.show_dialog(parent=self.window, current_name=current_name)
+                
+                if action == "edit":
+                    if new_name and new_name != current_name:
+                        self.model.edit_department(name=new_name, department_id=int(dept_id))
+                        self.model.refresh_data()
+
+                        logger.info(f"Department updated: {new_name}")
+                        NotificationService().show_toast(
+                            notification_type="success",
+                            title="Изменение отдела",
+                            message=f"Отдел: {new_name} успешно изменен."
+                        )
+                        self._update_app_data()
+                
+                elif action == "delete":
+                    self.model.delete_department(department_id=int(dept_id))
                     self.model.refresh_data()
 
-                    logger.info(f"Department updated: {new_name}")
+                    # If the deleted department was the current one, reset selection
+                    if str(self.model.current_department_id) == str(dept_id):
+                        self.model.current_department_id = self.model.departments[0]["id"] if self.model.departments else None
+                        self.model.current_category_id = None
+                        self._update_documents_list()
+
+                    logger.info(f"Department deleted: {current_name}")
                     NotificationService().show_toast(
                         notification_type="success",
                         title="Изменение отдела",
-                        message=f"Отдел: {new_name} успешно изменен."
+                        message=f"Отдел: {current_name} успешно удален."
                     )
                     self._update_app_data()
-            
-            elif action == "delete":
-                self.model.delete_department(department_id=int(dept_id))
-                self.model.refresh_data()
-
-                # If the deleted department was the current one, reset selection
-                if str(self.model.current_department_id) == str(dept_id):
-                    self.model.current_department_id = self.model.departments[0]["id"] if self.model.departments else None
-                    self.model.current_category_id = None
-                    self._update_documents_list()
-
-                logger.info(f"Department deleted: {current_name}")
-                NotificationService().show_toast(
-                    notification_type="success",
-                    title="Изменение отдела",
-                    message=f"Отдел: {current_name} успешно удален."
-                )
-                self._update_app_data()
+            except Exception as e:
+                self._handle_error(e, "Изменение отдела")
 
 
     def _on_edit_category_clicked(self, cat_id: str) -> None:
@@ -252,38 +246,41 @@ class MainController(QObject):
         category = next((cat for cat in self.model.categories if str(cat.get("id")) == str(cat_id)), None)
         
         if category:
-            current_name = category.get("name", "")
-            action, new_name = EditCategory.show_dialog(parent=self.window, current_name=current_name)
-            
-            if action == "edit":
-                if new_name and new_name != current_name:
-                    self.model.edit_category(name=new_name, category_id=int(cat_id))
+            try:
+                current_name = category.get("name", "")
+                action, new_name = EditCategory.show_dialog(parent=self.window, current_name=current_name)
+                
+                if action == "edit":
+                    if new_name and new_name != current_name:
+                        self.model.edit_category(name=new_name, category_id=int(cat_id))
+                        self.model.refresh_data()
+
+                        logger.info(f"Category updated: {new_name}")
+                        NotificationService().show_toast(
+                            notification_type="success",
+                            title="Изменение категории",
+                            message=f"Категория: {new_name} успешно изменена."
+                        )
+                        self._update_app_data()
+                
+                elif action == "delete":
+                    self.model.delete_category(category_id=int(cat_id))
                     self.model.refresh_data()
 
-                    logger.info(f"Category updated: {new_name}")
+                    # If the deleted category was the current one, reset selection
+                    if str(self.model.current_category_id) == str(cat_id):
+                        self.model.current_category_id = None
+                        self._update_documents_list()
+
+                    logger.info(f"Category deleted: {current_name}")
                     NotificationService().show_toast(
                         notification_type="success",
                         title="Изменение категории",
-                        message=f"Категория: {new_name} успешно изменена."
+                        message=f"Категория: {current_name} успешно удалена."
                     )
                     self._update_app_data()
-            
-            elif action == "delete":
-                self.model.delete_category(category_id=int(cat_id))
-                self.model.refresh_data()
-
-                # If the deleted category was the current one, reset selection
-                if str(self.model.current_category_id) == str(cat_id):
-                    self.model.current_category_id = None
-                    self._update_documents_list()
-
-                logger.info(f"Category deleted: {current_name}")
-                NotificationService().show_toast(
-                    notification_type="success",
-                    title="Изменение категории",
-                    message=f"Категория: {current_name} успешно удалена."
-                )
-                self._update_app_data()
+            except Exception as e:
+                self._handle_error(e, "Изменение категории")
 
 
     def _on_create_button_clicked(self) -> None:
@@ -372,8 +369,7 @@ class MainController(QObject):
                 message="Данные успешно обновлены."
             )
         except Exception as e:
-            msg = get_friendly_error_message(e)
-            NotificationService().show_toast("error", "Ошибка обновления", msg)
+            self._handle_error(e, "Ошибка обновления")
 
     
     def _on_edit_button_clicked(self) -> None:
@@ -470,8 +466,7 @@ class MainController(QObject):
                     message="Документ успешно экспортирован."
                 )
             except Exception as e:
-                msg = get_friendly_error_message(e)
-                NotificationService().show_toast("error", "Ошибка экспорта", msg)
+                self._handle_error(e, "Ошибка экспорта")
 
 
     def _on_print_button_clicked(self) -> None:
@@ -637,8 +632,7 @@ class MainController(QObject):
         """Handles search errors."""
         if self.sender() != self.search_worker:
             return
-        msg = get_friendly_error_message(error)
-        NotificationService().show_toast("error", "Ошибка поиска", msg)
+        self._handle_error(error, "Ошибка поиска")
 
     # ====================
     # Controller Methods
@@ -780,7 +774,7 @@ class MainController(QObject):
                 QTimer.singleShot(0, self._load_more_documents)
 
         except Exception as e:
-            logging.error(f"Error loading documents: {e}")
+            self._handle_error(e, "Ошибка загрузки документов")
         finally:
             self.is_loading = False
 
@@ -851,3 +845,23 @@ class MainController(QObject):
         
         # Non-empty codes start with 0
         return [0] + parts
+
+
+    def _handle_error(self, e: Exception, title: str = "Ошибка") -> None:
+        """Handles exceptions, checking for auth errors."""
+        if isinstance(e, requests.exceptions.HTTPError) and e.response is not None and e.response.status_code == 401:
+            logger.warning(f"Session expired (401) during {title}. Logging out.")
+            self.logout_requested.emit()
+            NotificationService().show_toast(
+                notification_type="warning",
+                title="Сессия истекла",
+                message="Срок действия сессии истек. Пожалуйста, войдите снова."
+            )
+        else:
+            logger.error(f"{title}: {e}")
+            msg = get_friendly_error_message(e)
+            NotificationService().show_toast(
+                notification_type="error",
+                title=title,
+                message=msg
+            )
