@@ -86,6 +86,10 @@
     <file>light/profile_guest.svg</file>
     <file>light/profile_hover.svg</file>
     <file>light/profile_pressed.svg</file>
+    <file>light/rename_default.svg</file>
+    <file>light/rename_hover.svg</file>
+    <file>light/rename_active.svg</file>
+    <file>light/rename_disabled.svg</file>
     <file>light/search_active.svg</file>
     <file>light/search_default.svg</file>
     <file>light/search_disabled.svg</file>
@@ -208,6 +212,10 @@
     <file>dark/profile_guest.svg</file>
     <file>dark/profile_hover.svg</file>
     <file>dark/profile_pressed.svg</file>
+    <file>dark/rename_default.svg</file>
+    <file>dark/rename_hover.svg</file>
+    <file>dark/rename_active.svg</file>
+    <file>dark/rename_disabled.svg</file>
     <file>dark/search_active.svg</file>
     <file>dark/search_default.svg</file>
     <file>dark/search_disabled.svg</file>

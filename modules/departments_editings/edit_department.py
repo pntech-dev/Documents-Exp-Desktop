@@ -28,6 +28,20 @@ class EditDepartment(BaseModalDialog):
         # Set the is_danger property to the delete button
         self.ui.delete_department_pushButton.set_danger(is_danger=True)
 
+        self.ui.name_lineEdit.set_icon_paths(
+            # light theme
+            default_light=":/icons/light/light/rename_default.svg",
+            hover_light=":/icons/light/light/rename_hover.svg",
+            focus_light=":/icons/light/light/rename_active.svg",
+            disabled_light=":/icons/light/light/rename_disabled.svg",
+            
+            # dark theme
+            default_dark=":/icons/dark/dark/rename_default.svg",
+            hover_dark=":/icons/dark/dark/rename_hover.svg",
+            focus_dark=":/icons/dark/dark/rename_active.svg",
+            disabled_dark=":/icons/dark/dark/rename_disabled.svg",
+        )
+
         # Take layout from UI
         original_layout = self.layout()
 
