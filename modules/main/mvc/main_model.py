@@ -62,18 +62,28 @@ class MainModel:
     def create_department(self, name: str) -> dict:
         """Create new department"""
         data = {"name": name}
-        return self._make_authorized_request(self.api.create_department, data=data)
+        return self._make_authorized_request(
+            self.api.create_department, 
+            data=data
+        )
 
 
     def edit_department(self, name: str, department_id: int):
         """Edit department data"""
         data = {"name": name}
-        return self._make_authorized_request(self.api.edit_department, data=data, department_id=department_id)
+        return self._make_authorized_request(
+            self.api.edit_department, 
+            data=data, 
+            department_id=department_id
+        )
 
 
     def delete_department(self, department_id: int):
         """Delete department"""
-        return self._make_authorized_request(self.api.delete_department, department_id=department_id)
+        return self._make_authorized_request(
+            self.api.delete_department, 
+            department_id=department_id
+        )
     
 
     def create_category(self, name: str) -> dict:
@@ -82,7 +92,28 @@ class MainModel:
             "group_id": self.current_department_id,
             "name": name
         }
-        return self._make_authorized_request(self.api.create_category, data=data)
+        return self._make_authorized_request(
+            self.api.create_category, 
+            data=data
+        )
+    
+
+    def edit_category(self, name: str, category_id: int):
+        """Edit category data"""
+        data = {"name": name}
+        return self._make_authorized_request(
+            self.api.edit_category, 
+            data=data, 
+            category_id=category_id
+        )
+
+    
+    def delete_category(self, category_id: int):
+        """Delete category"""
+        return self._make_authorized_request(
+            self.api.delete_category, 
+            category_id=category_id
+        )
 
 
     def refresh_data(self) -> None:
@@ -92,9 +123,18 @@ class MainModel:
         # Documents will be refreshed by the controller resetting pagination
 
 
-    def fetch_documents(self, category_id: int, limit: int, offset: int) -> list[dict]:
+    def fetch_documents(
+            self, 
+            category_id: int, 
+            limit: int, 
+            offset: int
+    ) -> list[dict]:
         """Fetches a page of documents for a specific category."""
-        response = self.api.get_documents(category_id=category_id, limit=limit, offset=offset)
+        response = self.api.get_documents(
+            category_id=category_id, 
+            limit=limit, 
+            offset=offset
+        )
         return response.get("documents", [])
 
 
@@ -155,6 +195,7 @@ class MainModel:
         try:
             token = self._get_user_token()
             return api_method(token=token, **kwargs)
+        
         except requests.exceptions.HTTPError as e:
             if e.response is not None and e.response.status_code == 401:
                 logging.info("Access token expired. Refreshing...")
@@ -162,6 +203,7 @@ class MainModel:
                     token = self._get_user_token()
                     return api_method(token=token, **kwargs)
             raise e
+
 
     def _refresh_tokens(self) -> bool:
         """Refreshes the access token using the refresh token."""
@@ -171,19 +213,29 @@ class MainModel:
                 return False
             
             user_id = last_logged.get("user_id")
-            refresh_token = keyring.get_password("Documents Exp", f"refresh_token_{user_id}")
+            refresh_token = keyring.get_password(
+                "Documents Exp", 
+                f"refresh_token_{user_id}"
+            )
             
             if not refresh_token:
                 return False
                 
             tokens = self.api.refresh(refresh_token)
-            keyring.set_password("Documents Exp", f"access_token_{user_id}", tokens["access_token"])
-            keyring.set_password("Documents Exp", f"refresh_token_{user_id}", tokens["refresh_token"])
+            keyring.set_password(
+                "Documents Exp", 
+                f"access_token_{user_id}", 
+                tokens["access_token"]
+            )
+            keyring.set_password(
+                "Documents Exp", 
+                f"refresh_token_{user_id}", 
+                tokens["refresh_token"]
+            )
             return True
         except Exception as e:
             logging.error(f"Failed to refresh tokens: {e}")
             return False
-
         
 
     def _get_user_token(self) -> str | None:

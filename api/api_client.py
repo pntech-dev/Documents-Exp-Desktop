@@ -256,6 +256,40 @@ class APIClient:
         )
     
 
+    def edit_category(self, data: dict, token: str, category_id: int) -> dict:
+        """Edits an existing category.
+
+        Args:
+            data (dict): The updated category name.
+            category_id (int): The ID of the category to edit.
+
+        Returns:
+            dict: The JSON response confirming the edit.
+        """
+        headers = {"Authorization": f"Bearer {token}"}
+        return self._request("PATCH",
+            url=self.base_url + f"/app/categories/{category_id}",
+            headers=headers,
+            json=data
+        )
+    
+
+    def delete_category(self, token: str, category_id: int) -> dict:
+        """Deletes a category.
+
+        Args:
+            category_id (int): The ID of the category.
+
+        Returns:
+            dict: The JSON response confirming the deletion.
+        """
+        headers = {"Authorization": f"Bearer {token}"}
+        return self._request("DELETE",
+            url=self.base_url + f"/app/categories/{category_id}",
+            headers=headers
+        )
+    
+
     def get_documents(self, category_id: int = None, limit: int = 50, offset: int = 0) -> dict:   
         """Retrieves the list of documents.
 

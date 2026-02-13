@@ -16,7 +16,7 @@ from modules.departments_editings import (
     EditDepartment, CreateDepartment
 )
 from modules.categories_editings import (
-    CreateCategory
+    CreateCategory, EditCategory
 )
 from utils import NotificationService
 from utils.error_messages import get_friendly_error_message
@@ -195,12 +195,8 @@ class MainController(QObject):
                     message=f"Категория: {data['name']} успешно создана."
                 )
 
-                # Update UI
-                self._load_sidebar_data()
-                
-                # Select the new department in the sidebar
-                QTimer.singleShot(50, lambda: self.view.select_category(new_id))
-                self._update_documents_list()
+                # Update UI and restore selection
+                self._update_app_data()
 
         except Exception as e:
             logger.error(f"Error creating category: {e}")
@@ -230,6 +226,7 @@ class MainController(QObject):
                         title="Изменение отдела",
                         message=f"Отдел: {new_name} успешно изменен."
                     )
+                    self._update_app_data()
             
             elif action == "delete":
                 self.model.delete_department(department_id=int(dept_id))
@@ -247,9 +244,46 @@ class MainController(QObject):
                     title="Изменение отдела",
                     message=f"Отдел: {current_name} успешно удален."
                 )
+                self._update_app_data()
 
-        # Update UI
-        self._load_sidebar_data()
+
+    def _on_edit_category_clicked(self, cat_id: str) -> None:
+        """Handles the edit category button click."""
+        category = next((cat for cat in self.model.categories if str(cat.get("id")) == str(cat_id)), None)
+        
+        if category:
+            current_name = category.get("name", "")
+            action, new_name = EditCategory.show_dialog(parent=self.window, current_name=current_name)
+            
+            if action == "edit":
+                if new_name and new_name != current_name:
+                    self.model.edit_category(name=new_name, category_id=int(cat_id))
+                    self.model.refresh_data()
+
+                    logger.info(f"Category updated: {new_name}")
+                    NotificationService().show_toast(
+                        notification_type="success",
+                        title="Изменение категории",
+                        message=f"Категория: {new_name} успешно изменена."
+                    )
+                    self._update_app_data()
+            
+            elif action == "delete":
+                self.model.delete_category(category_id=int(cat_id))
+                self.model.refresh_data()
+
+                # If the deleted category was the current one, reset selection
+                if str(self.model.current_category_id) == str(cat_id):
+                    self.model.current_category_id = None
+                    self._update_documents_list()
+
+                logger.info(f"Category deleted: {current_name}")
+                NotificationService().show_toast(
+                    notification_type="success",
+                    title="Изменение категории",
+                    message=f"Категория: {current_name} успешно удалена."
+                )
+                self._update_app_data()
 
 
     def _on_create_button_clicked(self) -> None:
@@ -641,6 +675,7 @@ class MainController(QObject):
         self.view.connect_departments_selection(self._on_department_selected)
         self.view.connect_categories_selection(self._on_category_selected)
         self.view.connect_department_edit(self._on_edit_department_clicked)
+        self.view.connect_category_edit(self._on_edit_category_clicked)
 
         # Navbar
         self.view.connect_search_lineedit(self._on_search_lineedit_text_changed)
@@ -772,7 +807,14 @@ class MainController(QObject):
                 if cat_exists:
                     self.view.select_category(saved_cat_id)
                 else:
-                    self.model.current_category_id = None
+                    # If category was deleted or not selected, select the first one if available
+                    # to match SidebarBlock behavior (which selects first item on reset)
+                    dept_cats = [c for c in self.model.categories if c.get("group_id") == saved_dept_id]
+                    if dept_cats:
+                        self.model.current_category_id = dept_cats[0]["id"]
+                        self.view.select_category(self.model.current_category_id)
+                    else:
+                        self.model.current_category_id = None
         finally:
             self.is_updating_data = False
 

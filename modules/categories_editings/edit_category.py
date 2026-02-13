@@ -6,18 +6,26 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIntValidator, QColor
 
-from ui import CreateCategory_UI
+from ui import EditCategory_UI
 from ui.custom_widgets.modal_window import ShadowContainer, BaseModalDialog
+from utils.delete_info_modal import DeleteInfoDialog
 
 
-
-class CreateCategory(BaseModalDialog):
-    def __init__(self, parent):
+class EditCategory(BaseModalDialog):
+    def __init__(self, parent, current_name: str = None):
         super().__init__(parent)
+        self.parent_window = parent
+        self.current_name = current_name
+        self.action = None
 
         # === Setup UI ===
-        self.ui = CreateCategory_UI()
+        self.ui = EditCategory_UI()
         self.ui.setupUi(self)
+
+        self.ui.name_lineEdit.setText(current_name)
+
+        # Set the is_danger property to the delete button
+        self.ui.delete_department_pushButton.set_danger(is_danger=True)
 
         self.ui.name_lineEdit.set_icon_paths(
             # light theme
@@ -39,7 +47,7 @@ class CreateCategory(BaseModalDialog):
         # Create a container widget that will hold the UI and have the shadow
         container = ShadowContainer(self)
         container.setLayout(original_layout)
-        container.setObjectName("createCategoryContainer")
+        container.setObjectName("editCategoryContainer")
 
         # Reparent UI frames into container
         self.ui.texts_frame.setParent(container)
@@ -63,60 +71,49 @@ class CreateCategory(BaseModalDialog):
         self.ui.name_lineEdit.textChanged.connect(self.name_lineedit_changed)
         self.ui.accept_pushButton.clicked.connect(self.accept_button_clicked)
         self.ui.cancel_pushButton.clicked.connect(self.cancel_button_clicked)
+        self.ui.delete_department_pushButton.clicked.connect(self.delete_button_clicked)
 
     
     @staticmethod
-    def get_name(parent=None):
-        """Creates, shows the dialog, and returns the entered name.
-
-        This static method provides a convenient way to use the dialog. It
-        handles the creation, execution, and result retrieval.
-
-        Args:
-            parent (QWidget, optional): The parent widget. Defaults to None.
-
-        Returns:
-            str: The new category name if the user clicks 'Accept'.
-            None: If the user cancels or closes the dialog.
-        """
-        dialog = CreateCategory(parent)
+    def show_dialog(parent=None, current_name=""):
+        """Creates, shows the dialog, and returns the action and entered name."""
+        dialog = EditCategory(parent, current_name)
         if dialog.exec_() == QDialog.Accepted:
-            return dialog.get_category_name()
+            return dialog.action, dialog.get_category_name()
         
-        return None
+        return None, None
     
 
     # Handlers
     def name_lineedit_changed(self):
-        """Handles text changes in the new category name line edit.
-
-        Enables the 'Accept' button if and only if the text length is
-        exactly 6 characters.
-        """
+        """Handles text changes in the line edit."""
         text = self.ui.name_lineEdit.text()
-        self.ui.accept_pushButton.setEnabled(len(text) > 0)
+        self.ui.accept_pushButton.setEnabled(text != self.current_name)
 
 
     def get_category_name(self):
-        """Retrieves the category name from the line edit.
-
-        Returns:
-            str: The text currently in the verification code line edit.
-        """
+        """Retrieves the category name from the line edit."""
         return self.ui.name_lineEdit.text()
 
 
     def accept_button_clicked(self):
-        """Handles the 'Accept' button click.
-
-        Accepts the dialog, causing it to close and return QDialog.Accepted.
-        """
+        """Handles the 'Accept' button click."""
+        self.action = "edit"
         self.accept()
 
 
     def cancel_button_clicked(self):
-        """Handles the 'Cancel' button click.
-
-        Closes the dialog, which is equivalent to rejecting it.
-        """
+        """Handles the 'Cancel' button click."""
         self.close()
+
+    
+    def delete_button_clicked(self):
+        """Handles the 'Delete' button click"""
+        dialog = DeleteInfoDialog(
+            parent=self.parent_window, 
+            info_type="category"
+        )
+        
+        if dialog.exec_() == QDialog.Accepted:
+            self.action = "delete"
+            self.accept()

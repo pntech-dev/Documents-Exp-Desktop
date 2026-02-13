@@ -361,18 +361,35 @@ QLineEdit:disabled {
 QFrame#emailConfirmContainer {
     border-radius: 8px;
     background-color: #262626;
+	border: 1px solid #404040;
 }
 
 /* Create Department Window */
 QFrame#createDepartmentContainer {
     border-radius: 8px;
     background-color: #262626;
+	border: 1px solid #404040;
 }
 
 /* Edit Department Window */
 QFrame#editDepartmentContainer {
     border-radius: 8px;
     background-color: #262626;
+	border: 1px solid #404040;
+}
+
+/* Create Category Window */
+QFrame#createCategoryContainer {
+    border-radius: 8px;
+    background-color: #262626;
+	border: 1px solid #404040;
+}
+
+/* Edit Category Window */
+QFrame#editCategoryContainer {
+    border-radius: 8px;
+    background-color: #262626;
+	border: 1px solid #404040;
 }
 
 /* Editor Window */

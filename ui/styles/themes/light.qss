@@ -373,6 +373,18 @@ QFrame#editDepartmentContainer {
     background-color: #FFFFFF;
 }
 
+/* Create Category Window */
+QFrame#createCategoryContainer {
+    border-radius: 8px;
+    background-color: #FFFFFF;
+}
+
+/* Edit Category Window */
+QFrame#editCategoryContainer {
+    border-radius: 8px;
+    background-color: #FFFFFF;
+}
+
 /* Editor Window */
 QFrame#editorContainer {
 	border: 1px solid #E6E6E6;
