@@ -123,30 +123,19 @@ class DocumentEditorModel:
 
 
     def delete_document(self) -> None:
-        def _action(token):
-            self.api.delete_document(
-                document_id=self.document_data.get("id"),
-                token=token
-            )
-        
-        self._execute_with_retry(_action)
+        self._make_authorized_request(
+            self.api.delete_document,
+            document_id=self.document_data.get("id")
+        )
 
 
     def save_document(self, data: dict) -> None:
-        id = self.document_data.get("id", None)
-
-        def _action(token):
-            if id is None:
-                data["category_id"] = self.category_id
-                self.api.create_document(data=data, token=token)
-            else:
-                self.api.update_document(
-                    document_id=self.document_data.get("id"), 
-                    data=data,
-                    token=token
-                )
-        
-        self._execute_with_retry(_action)
+        doc_id = self.document_data.get("id")
+        if doc_id is None:
+            data["category_id"] = self.category_id
+            self._make_authorized_request(self.api.create_document, data=data)
+        else:
+            self._make_authorized_request(self.api.update_document, document_id=doc_id, data=data)
 
 
     # ====================
@@ -170,42 +159,37 @@ class DocumentEditorModel:
         return access_token
 
 
-    def _execute_with_retry(self, func):
-        """Executes an API call with automatic token refresh on 401 error."""
-        token = self._get_user_token()
-        if not token:
-            return
-
+    def _make_authorized_request(self, api_method, **kwargs):
+        """Executes an API request with automatic token refresh on 401."""
         try:
-            func(token)
+            token = self._get_user_token()
+            return api_method(token=token, **kwargs)
         except requests.exceptions.HTTPError as e:
-            if e.response.status_code == 401:
-                logging.info("Token expired, refreshing...")
-                new_token = self._refresh_tokens()
-                if new_token:
-                    func(new_token)
-                    return
+            if e.response is not None and e.response.status_code == 401:
+                logging.info("Access token expired. Refreshing...")
+                if self._refresh_tokens():
+                    token = self._get_user_token()
+                    return api_method(token=token, **kwargs)
             raise e
 
 
-    def _refresh_tokens(self) -> str | None:
+    def _refresh_tokens(self) -> bool:
         """Refreshes tokens using the stored refresh token."""
-        last_logged = read_json(self.LOCAL_DIR_LAST_LOGGED)
-        if not last_logged: return None
-        user_id = last_logged.get("user_id")
-        if not user_id: return None
-
         try:
+            last_logged = read_json(self.LOCAL_DIR_LAST_LOGGED)
+            if not last_logged:
+                return False
+            
+            user_id = last_logged.get("user_id")
             refresh_token = keyring.get_password("Documents Exp", f"refresh_token_{user_id}")
-            if not refresh_token: return None
             
-            new_tokens = self.api.refresh(refresh_token)
-            
-            # Save new tokens
-            keyring.set_password("Documents Exp", f"access_token_{user_id}", new_tokens["access_token"])
-            keyring.set_password("Documents Exp", f"refresh_token_{user_id}", new_tokens["refresh_token"])
-            
-            return new_tokens["access_token"]
+            if not refresh_token:
+                return False
+                
+            tokens = self.api.refresh(refresh_token)
+            keyring.set_password("Documents Exp", f"access_token_{user_id}", tokens["access_token"])
+            keyring.set_password("Documents Exp", f"refresh_token_{user_id}", tokens["refresh_token"])
+            return True
         except Exception as e:
-            logging.error(f"Token refresh failed: {e}")
-            return None
+            logging.error(f"Failed to refresh tokens: {e}")
+            return False
