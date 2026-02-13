@@ -274,7 +274,8 @@ class DocumentEditorController:
     def _init_ui(self) -> None:
         """Initializes the UI with default data."""
         can_edit = True if self.mode == "auth" else False
-        self.view.set_mode_visibility(can_edit=can_edit)
+        is_creation = self.model.document_data.get("id") is None
+        self.view.set_mode_visibility(can_edit=can_edit, is_creation=is_creation)
 
         self._fill_document_data()
         self._fill_pages_table()
