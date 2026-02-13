@@ -398,8 +398,51 @@ class AuthView:
                 dark_checked_disabled=":/icons/dark/dark/view_pass_checked_disabled.svg"
             )
 
-        # Initialize page widget groups
+        # Setting icon for email lineedits
+        mail_lineedits = [
+            self.ui.email_lineEdit,
+            self.ui.email_lineEdit_2,
+            self.ui.email_lineEdit_3,
+        ]
+        for mail_lineedit in mail_lineedits:
+            mail_lineedit.set_icon_paths(
+                # light theme
+                default_light=":/icons/light/light/mail_default.svg",
+                hover_light=":/icons/light/light/mail_hover.svg",
+                focus_light=":/icons/light/light/mail_active.svg",
+                disabled_light=":/icons/light/light/mail_disabled.svg",
 
+                # dark theme
+                default_dark=":/icons/dark/dark/mail_default.svg",
+                hover_dark=":/icons/dark/dark/mail_hover.svg",
+                focus_dark=":/icons/dark/dark/mail_active.svg",
+                disabled_dark=":/icons/dark/dark/mail_disabled.svg"
+            )
+
+        # Setting icon for password lineedits
+        password_lineedits = [
+            self.ui.password_lineEdit,
+            self.ui.password_lineEdit_2,
+            self.ui.password_lineEdit_3,
+            self.ui.password_lineEdit_4,
+            self.ui.password_lineEdit_5
+        ]
+        for password_lineedit in password_lineedits:
+            password_lineedit.set_icon_paths(
+                # light theme
+                default_light=":/icons/light/light/password_default.svg",
+                hover_light=":/icons/light/light/password_hover.svg",
+                focus_light=":/icons/light/light/password_active.svg",
+                disabled_light=":/icons/light/light/password_disabled.svg",
+
+                # dark theme
+                default_dark=":/icons/dark/dark/password_default.svg",
+                hover_dark=":/icons/dark/dark/password_hover.svg",
+                focus_dark=":/icons/dark/dark/password_active.svg",
+                disabled_dark=":/icons/dark/dark/password_disabled.svg"
+            )
+
+        # Initialize page widget groups
         self.login_page = AuthPageWidgetGroup(
             email_field=self.ui.email_lineEdit,
             password_field=self.ui.password_lineEdit,
@@ -414,7 +457,7 @@ class AuthView:
         self.signup_page = AuthPageWidgetGroup(
             email_field=self.ui.email_lineEdit_2,
             password_field=self.ui.password_lineEdit_2,
-            confirm_password_field=self.ui.password_lineEdit_4,
+            confirm_password_field=self.ui.password_lineEdit_3,
             view_password_checkbox=self.ui.view_password_checkBox_2,
             auto_login_checkbox=self.ui.auto_login_checkBox_2,
             submit_button=self.ui.create_pushButton,
@@ -428,7 +471,7 @@ class AuthView:
         )
 
         self.forgot_page_reset_password = AuthPageWidgetGroup(
-            password_field=self.ui.password_lineEdit_6,
+            password_field=self.ui.password_lineEdit_4,
             confirm_password_field=self.ui.password_lineEdit_5,
             view_password_checkbox=self.ui.view_password_checkBox_3,
             submit_button=self.ui.change_pushButton,

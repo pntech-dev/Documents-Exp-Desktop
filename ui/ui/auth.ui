@@ -371,7 +371,7 @@
                            </widget>
                           </item>
                           <item>
-                           <widget class="QLineEdit" name="email_lineEdit">
+                           <widget class="IconLineEdit" name="email_lineEdit">
                             <property name="minimumSize">
                              <size>
                               <width>0</width>
@@ -484,7 +484,7 @@
                            </widget>
                           </item>
                           <item>
-                           <widget class="QLineEdit" name="password_lineEdit">
+                           <widget class="IconLineEdit" name="password_lineEdit">
                             <property name="minimumSize">
                              <size>
                               <width>0</width>
@@ -848,7 +848,7 @@
                         </widget>
                        </item>
                        <item>
-                        <widget class="QLineEdit" name="email_lineEdit_2">
+                        <widget class="IconLineEdit" name="email_lineEdit_2">
                          <property name="minimumSize">
                           <size>
                            <width>0</width>
@@ -961,7 +961,7 @@
                         </widget>
                        </item>
                        <item>
-                        <widget class="QLineEdit" name="password_lineEdit_2">
+                        <widget class="IconLineEdit" name="password_lineEdit_2">
                          <property name="minimumSize">
                           <size>
                            <width>0</width>
@@ -1030,7 +1030,7 @@
                         </widget>
                        </item>
                        <item>
-                        <widget class="QLineEdit" name="password_lineEdit_4">
+                        <widget class="IconLineEdit" name="password_lineEdit_3">
                          <property name="minimumSize">
                           <size>
                            <width>0</width>
@@ -1313,7 +1313,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLineEdit" name="email_lineEdit_3">
+                     <widget class="IconLineEdit" name="email_lineEdit_3">
                       <property name="minimumSize">
                        <size>
                         <width>0</width>
@@ -1614,7 +1614,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLineEdit" name="password_lineEdit_6">
+                     <widget class="IconLineEdit" name="password_lineEdit_4">
                       <property name="minimumSize">
                        <size>
                         <width>0</width>
@@ -1683,7 +1683,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLineEdit" name="password_lineEdit_5">
+                     <widget class="IconLineEdit" name="password_lineEdit_5">
                       <property name="minimumSize">
                        <size>
                         <width>0</width>
@@ -2326,6 +2326,11 @@
   <customwidget>
    <class>TertiaryButton</class>
    <extends>QPushButton</extends>
+   <header>..custom_widgets</header>
+  </customwidget>
+  <customwidget>
+   <class>IconLineEdit</class>
+   <extends>QLineEdit</extends>
    <header>..custom_widgets</header>
   </customwidget>
   <customwidget>
