@@ -67,6 +67,18 @@ class Sidebar:
             auth_dark=self.config.get("profile", {}).get("auth", {}).get("dark")
         )
 
+        # Setting icon for edit button in sidebar
+        edit_cfg = self.config.get("sidebar", {}).get("edit", {})
+        self.departments_tree.set_edit_icon_paths(
+            light_default=edit_cfg.get("light", {}).get("default"),
+            light_hover=edit_cfg.get("light", {}).get("hover"),
+            light_pressed=edit_cfg.get("light", {}).get("pressed"),
+            
+            dark_default=edit_cfg.get("dark", {}).get("default"),
+            dark_hover=edit_cfg.get("dark", {}).get("hover"),
+            dark_pressed=edit_cfg.get("dark", {}).get("pressed"),
+        )
+
 
     def update_departments(self, items: list[SidebarItem]) -> None:
         """Updates the departments tree with new items.
@@ -179,6 +191,11 @@ class Sidebar:
                     QItemSelectionModel.ClearAndSelect | QItemSelectionModel.Rows
                 )
                 tree_view.scrollTo(index)
+
+
+    def connect_department_edit(self, handler) -> None:
+        """Connects to the department edit button clicked signal."""
+        self.departments_tree.editItemClicked.connect(handler)
 
 
 class Navbar:
@@ -1030,6 +1047,15 @@ class MainView(QObject):
             handler: The callback function.
         """
         self.sidebar.connect_categories_selection(handler)
+
+
+    def connect_department_edit(self, handler) -> None:
+        """Connects the department edit signal to a handler.
+
+        Args:
+            handler: The callback function.
+        """
+        self.sidebar.connect_department_edit(handler)
 
 
     def connect_update_button(self, handler) -> None:

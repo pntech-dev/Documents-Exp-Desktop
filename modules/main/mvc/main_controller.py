@@ -12,7 +12,9 @@ from .main_model import MainModel
 from core.worker import APIWorker
 from ui.custom_widgets import SidebarItem, ROLE_ID
 from modules.document_editor.document_editor_module import EditorWindow
-from modules.create_department import CreateDepartment
+from modules.departments_editings import (
+    EditDepartment, CreateDepartment
+)
 from utils import NotificationService
 from utils.error_messages import get_friendly_error_message
 
@@ -162,6 +164,47 @@ class MainController(QObject):
                 title="Создание отдела",
                 message=f"Произошла ошибка в процессе создания отдела"
             )
+
+
+    def _on_edit_department_clicked(self, dept_id: str) -> None:
+        """Handles the edit department button click."""
+        department = next((dept for dept in self.model.departments if str(dept.get("id")) == str(dept_id)), None)
+        
+        if department:
+            current_name = department.get("name", "")
+            action, new_name = EditDepartment.show_dialog(parent=self.window, current_name=current_name)
+            
+            if action == "edit":
+                if new_name and new_name != current_name:
+                    self.model.edit_department(name=new_name, department_id=int(dept_id))
+                    self.model.refresh_data()
+
+                    logger.info(f"Department updated: {new_name}")
+                    NotificationService().show_toast(
+                        notification_type="success",
+                        title="Изменение отдела",
+                        message=f"Отдел: {new_name} успешно изменен."
+                    )
+            
+            elif action == "delete":
+                self.model.delete_department(department_id=int(dept_id))
+                self.model.refresh_data()
+
+                # If the deleted department was the current one, reset selection
+                if str(self.model.current_department_id) == str(dept_id):
+                    self.model.current_department_id = self.model.departments[0]["id"] if self.model.departments else None
+                    self.model.current_category_id = None
+                    self._update_documents_list()
+
+                logger.info(f"Department deleted: {current_name}")
+                NotificationService().show_toast(
+                    notification_type="success",
+                    title="Изменение отдела",
+                    message=f"Отдел: {current_name} успешно удален."
+                )
+
+        # Update UI
+        self._load_sidebar_data()
 
 
     def _on_create_button_clicked(self) -> None:
@@ -552,6 +595,7 @@ class MainController(QObject):
         self.view.connect_logout(self._on_logout_clicked)
         self.view.connect_departments_selection(self._on_department_selected)
         self.view.connect_categories_selection(self._on_category_selected)
+        self.view.connect_department_edit(self._on_edit_department_clicked)
 
         # Navbar
         self.view.connect_search_lineedit(self._on_search_lineedit_text_changed)

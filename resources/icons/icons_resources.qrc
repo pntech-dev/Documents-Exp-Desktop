@@ -45,6 +45,9 @@
     <file>light/edit_default.svg</file>
     <file>light/edit_disabled.svg</file>
     <file>light/edit_hover.svg</file>
+    <file>light/edit_sidebar_default.svg</file>
+    <file>light/edit_sidebar_clicked.svg</file>
+    <file>light/edit_sidebar_hover.svg</file>
     <file>light/exit_default.svg</file>
     <file>light/exit_hover.svg</file>
     <file>light/exit_pressed.svg</file>
@@ -164,6 +167,9 @@
     <file>dark/edit_default.svg</file>
     <file>dark/edit_disabled.svg</file>
     <file>dark/edit_hover.svg</file>
+    <file>dark/edit_sidebar_default.svg</file>
+    <file>dark/edit_sidebar_clicked.svg</file>
+    <file>dark/edit_sidebar_hover.svg</file>
     <file>dark/exit_default.svg</file>
     <file>dark/exit_hover.svg</file>
     <file>dark/exit_pressed.svg</file>

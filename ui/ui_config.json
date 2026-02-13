@@ -1,4 +1,4 @@
-{   
+{
     "paths": {
         "themes_path": "ui/styles/themes/",
         "templates_path": "ui/styles/templates/"
@@ -116,7 +116,7 @@
                     "warning_300": "#D2A568",
                     "warning_100": "#E3CFA5"
                 },
-                
+
                 "error": {
                     "error_700": "#441511",
                     "error_500": "#8F2C23",
@@ -154,6 +154,20 @@
                 "hover": ":/icons/dark/dark/close_hover.svg",
                 "pressed": ":/icons/dark/dark/close_clicked.svg",
                 "disabled": ":/icons/dark/dark/close_disabled.svg"
+            }
+        },
+        "sidebar": {
+            "edit": {
+                "light": {
+                    "default": ":/icons/light/light/edit_sidebar_default.svg",
+                    "hover": ":/icons/light/light/edit_sidebar_hover.svg",
+                    "pressed": ":/icons/light/light/edit_sidebar_clicked.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/edit_sidebar_default.svg",
+                    "hover": ":/icons/dark/dark/edit_sidebar_hover.svg",
+                    "pressed": ":/icons/dark/dark/edit_sidebar_clicked.svg"
+                }
             }
         },
         "navbar": {
@@ -242,7 +256,7 @@
                 },
                 "dark": {
                     "default": ":/icons/dark/dark/add_page_default.svg",
-                    "hover": ":/icons/dark/dark/add_page_hover.svg",  
+                    "hover": ":/icons/dark/dark/add_page_hover.svg",
                     "pressed": ":/icons/dark/dark/add_page_clicked.svg",
                     "disabled": ":/icons/dark/dark/add_page_disabled.svg"
                 }
@@ -256,7 +270,7 @@
                 },
                 "dark": {
                     "default": ":/icons/dark/dark/update_default.svg",
-                    "hover": ":/icons/dark/dark/update_hover.svg",  
+                    "hover": ":/icons/dark/dark/update_hover.svg",
                     "pressed": ":/icons/dark/dark/update_clicked.svg",
                     "disabled": ":/icons/dark/dark/update_disabled.svg"
                 }
@@ -270,7 +284,7 @@
                 },
                 "dark": {
                     "default": ":/icons/dark/dark/edit_default.svg",
-                    "hover": ":/icons/dark/dark/edit_hover.svg",  
+                    "hover": ":/icons/dark/dark/edit_hover.svg",
                     "pressed": ":/icons/dark/dark/edit_clicked.svg",
                     "disabled": ":/icons/dark/dark/edit_disabled.svg"
                 }
@@ -284,7 +298,7 @@
                 },
                 "dark": {
                     "default": ":/icons/dark/dark/pages_default.svg",
-                    "hover": ":/icons/dark/dark/pages_hover.svg",  
+                    "hover": ":/icons/dark/dark/pages_hover.svg",
                     "pressed": ":/icons/dark/dark/pages_clicked.svg",
                     "disabled": ":/icons/dark/dark/pages_disabled.svg"
                 }
@@ -298,7 +312,7 @@
                 },
                 "dark": {
                     "default": ":/icons/dark/dark/duplicate_default.svg",
-                    "hover": ":/icons/dark/dark/duplicate_hover.svg",  
+                    "hover": ":/icons/dark/dark/duplicate_hover.svg",
                     "pressed": ":/icons/dark/dark/duplicate_clicked.svg",
                     "disabled": ":/icons/dark/dark/duplicate_disabled.svg"
                 }
@@ -312,7 +326,7 @@
                 },
                 "dark": {
                     "default": ":/icons/dark/dark/import_default.svg",
-                    "hover": ":/icons/dark/dark/import_hover.svg",  
+                    "hover": ":/icons/dark/dark/import_hover.svg",
                     "pressed": ":/icons/dark/dark/import_clicked.svg",
                     "disabled": ":/icons/dark/dark/import_disabled.svg"
                 }
@@ -326,7 +340,7 @@
                 },
                 "dark": {
                     "default": ":/icons/dark/dark/export_default.svg",
-                    "hover": ":/icons/dark/dark/export_hover.svg",  
+                    "hover": ":/icons/dark/dark/export_hover.svg",
                     "pressed": ":/icons/dark/dark/export_clicked.svg",
                     "disabled": ":/icons/dark/dark/export_disabled.svg"
                 }
@@ -340,7 +354,7 @@
                 },
                 "dark": {
                     "default": ":/icons/dark/dark/print_default.svg",
-                    "hover": ":/icons/dark/dark/print_hover.svg",  
+                    "hover": ":/icons/dark/dark/print_hover.svg",
                     "pressed": ":/icons/dark/dark/print_clicked.svg",
                     "disabled": ":/icons/dark/dark/print_disabled.svg"
                 }
@@ -348,13 +362,13 @@
             "table_view": {
                 "light": {
                     "default": ":/icons/light/light/table_default.svg",
-                    "hover": ":/icons/light/light/table_hover.svg",  
+                    "hover": ":/icons/light/light/table_hover.svg",
                     "pressed": ":/icons/light/light/table_clicked.svg",
                     "disabled": ":/icons/light/light/table_disabled.svg"
                 },
                 "dark": {
                     "default": ":/icons/dark/dark/table_default.svg",
-                    "hover": ":/icons/dark/dark/table_hover.svg",  
+                    "hover": ":/icons/dark/dark/table_hover.svg",
                     "pressed": ":/icons/dark/dark/table_clicked.svg",
                     "disabled": ":/icons/dark/dark/table_disabled.svg"
                 }
@@ -362,13 +376,13 @@
             "blocks_view": {
                 "light": {
                     "default": ":/icons/light/light/blocks_default.svg",
-                    "hover": ":/icons/light/light/blocks_hover.svg",  
+                    "hover": ":/icons/light/light/blocks_hover.svg",
                     "pressed": ":/icons/light/light/blocks_clicked.svg",
                     "disabled": ":/icons/light/light/blocks_disabled.svg"
                 },
                 "dark": {
                     "default": ":/icons/dark/dark/blocks_default.svg",
-                    "hover": ":/icons/dark/dark/blocks_hover.svg",  
+                    "hover": ":/icons/dark/dark/blocks_hover.svg",
                     "pressed": ":/icons/dark/dark/blocks_clicked.svg",
                     "disabled": ":/icons/dark/dark/blocks_disabled.svg"
                 }
@@ -382,7 +396,7 @@
                 },
                 "dark": {
                     "default": ":/icons/dark/dark/back_default.svg",
-                    "hover": ":/icons/dark/dark/back_hover.svg",  
+                    "hover": ":/icons/dark/dark/back_hover.svg",
                     "pressed": ":/icons/dark/dark/back_clicked.svg",
                     "disabled": ":/icons/dark/dark/back_disabled.svg"
                 }
@@ -396,7 +410,7 @@
                 },
                 "dark": {
                     "default": ":/icons/dark/dark/trash_default.svg",
-                    "hover": ":/icons/dark/dark/trash_hover.svg",  
+                    "hover": ":/icons/dark/dark/trash_hover.svg",
                     "pressed": ":/icons/dark/dark/trash_clicked.svg",
                     "disabled": ":/icons/dark/dark/trash_disabled.svg"
                 }
@@ -412,7 +426,7 @@
                 },
                 "dark": {
                     "default": ":/icons/dark/dark/department_default.svg",
-                    "hover": ":/icons/dark/dark/department_hover.svg",  
+                    "hover": ":/icons/dark/dark/department_hover.svg",
                     "pressed": ":/icons/dark/dark/department_clicked.svg",
                     "disabled": ":/icons/dark/dark/department_disabled.svg"
                 }
@@ -426,7 +440,7 @@
                 },
                 "dark": {
                     "default": ":/icons/dark/dark/category_default.svg",
-                    "hover": ":/icons/dark/dark/category_hover.svg",  
+                    "hover": ":/icons/dark/dark/category_hover.svg",
                     "pressed": ":/icons/dark/dark/category_clicked.svg",
                     "disabled": ":/icons/dark/dark/category_disabled.svg"
                 }
@@ -440,7 +454,7 @@
                 },
                 "dark": {
                     "default": ":/icons/dark/dark/document_default.svg",
-                    "hover": ":/icons/dark/dark/document_hover.svg",  
+                    "hover": ":/icons/dark/dark/document_hover.svg",
                     "pressed": ":/icons/dark/dark/document_clicked.svg",
                     "disabled": ":/icons/dark/dark/document_disabled.svg"
                 }

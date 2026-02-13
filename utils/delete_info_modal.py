@@ -11,12 +11,36 @@ from utils import ThemeManagerInstance
 
 
 class DeleteInfoDialog(BaseModalDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, info_type: str = None):
         super().__init__(parent)
+        self.info_type = info_type
 
         # === Setup UI ===
         self.ui = DeleteInfo_UI()
         self.ui.setupUi(self)
+
+        self.delete_info_type = {
+            "department": {
+                "title": "Удаление отдела",
+                "text": "Удаление отдела является необратимым действием.\n - Все документы отдела и их страницы будут удалены.",
+                "accept_text": "Удалить отдел"
+            },
+            "category": {
+                "title": "Удаление категории",
+                "text": "Удаление категории является необратимым действием.\n - Все документы категории и их страницы будут удалены.",
+                "accept_text": "Удалить категорию"
+            },
+            "document": {
+                "title": "Удаление документа",
+                "text": "Удаление документа является необратимым действием.\n - Все страницы документа будут удалены.",
+                "accept_text": "Удалить документ"
+            }
+        }
+
+        if self.info_type in self.delete_info_type.keys():
+            self.ui.title_label.setText(self.delete_info_type[self.info_type]["title"])
+            self.ui.text_label.setText(self.delete_info_type[self.info_type]["text"])
+            self.ui.delete_pushButton.setText(self.delete_info_type[self.info_type]["accept_text"])
 
         # Take layout from UI
         original_layout = self.layout()

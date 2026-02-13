@@ -367,6 +367,12 @@ QFrame#createDepartmentContainer {
     background-color: #FFFFFF;
 }
 
+/* Edit Department Window */
+QFrame#editDepartmentContainer {
+    border-radius: 8px;
+    background-color: #FFFFFF;
+}
+
 /* Editor Window */
 QFrame#editorContainer {
 	border: 1px solid #E6E6E6;

@@ -195,7 +195,7 @@ class DocumentEditorController:
 
     def _on_delete_document_button_clicked(self) -> None:
         """Handles the delete document button click event."""
-        dialog = DeleteInfoDialog(parent=self.window)
+        dialog = DeleteInfoDialog(parent=self.window, info_type="document")
         
         if dialog.exec_() == QDialog.Accepted:
             try:

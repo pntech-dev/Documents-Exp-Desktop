@@ -197,6 +197,40 @@ class APIClient:
             headers=headers,
             json=data
         )
+    
+
+    def edit_department(self, data: dict, token: str, department_id: int) -> dict:
+        """Edits an existing department.
+
+        Args:
+            data (dict): The updated department name.
+            department_id (int): The ID of the department to edit.
+
+        Returns:
+            dict: The JSON response confirming the edit.
+        """
+        headers = {"Authorization": f"Bearer {token}"}
+        return self._request("PATCH",
+            url=self.base_url + f"/app/groups/{department_id}",
+            headers=headers,
+            json=data
+        )
+    
+
+    def delete_department(self, token: str, department_id: int) -> dict:
+        """Deletes a department.
+
+        Args:
+            department_id (int): The ID of the department.
+
+        Returns:
+            dict: The JSON response confirming the deletion.
+        """
+        headers = {"Authorization": f"Bearer {token}"}
+        return self._request("DELETE",
+            url=self.base_url + f"/app/groups/{department_id}",
+            headers=headers
+        )
 
     
     def get_categories(self) -> dict:

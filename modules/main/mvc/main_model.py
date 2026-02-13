@@ -66,6 +66,21 @@ class MainModel:
         return response
 
 
+    def edit_department(self, name: str, department_id: int):
+        """Edit department data"""
+        data = {"name": name}
+        token = self._get_user_token()
+        response = self.api.edit_department(data=data, token=token, department_id=department_id)
+        return response
+
+
+    def delete_department(self, department_id: int):
+        """Delete department"""
+        token = self._get_user_token()
+        response = self.api.delete_department(token=token, department_id=department_id)
+        return response
+
+
     def refresh_data(self) -> None:
         """Refreshes the data from the API."""
         self.departments = self._get_departments()

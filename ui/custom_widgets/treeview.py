@@ -7,8 +7,8 @@ from PyQt5.QtGui import (
     QPainter, QPalette, QFontMetrics
 )
 from PyQt5.QtCore import (
-    Qt, QRect, pyqtSignal, 
-    QModelIndex, pyqtProperty, QSize
+    Qt, QRect, pyqtSignal, QEvent, QAbstractItemModel,
+    QModelIndex, pyqtProperty, QSize, QPersistentModelIndex, QPoint
 )
 from PyQt5.QtWidgets import (
     QTreeView, QWidget, QStyledItemDelegate,
@@ -130,6 +130,8 @@ class _DeptDelegate(QStyledItemDelegate):
         x = option.rect.left() + self.pad_l
         y = option.rect.top()
         h = option.rect.height()
+        
+        right_edge = option.rect.right() - self.pad_r
 
         # Text colors
         # Default color if nothing matched
@@ -194,6 +196,28 @@ class _DeptDelegate(QStyledItemDelegate):
 
         x += self.icon_sz + self.gap
 
+        # Edit Button (only for selected items)
+        edit_btn_w = 0
+        if is_selected and not is_group and not disabled:
+            edit_icon = QIcon()
+            if view and hasattr(view, "get_edit_icon"):
+                edit_icon = view.get_edit_icon(index)
+
+            if not edit_icon.isNull():
+                edit_btn_w = self.icon_sz
+                edit_rect = QRect(
+                    right_edge - edit_btn_w,
+                    y + (h - edit_btn_w) // 2,
+                    edit_btn_w,
+                    edit_btn_w
+                )
+                
+                mode = QIcon.Normal
+                edit_icon.paint(painter, edit_rect, Qt.AlignCenter, mode=mode)
+                
+                # Shift right edge for badge/text
+                right_edge -= (edit_btn_w + self.gap)
+
         # Badge on the right (only for items)
         badge_w = 0
         count = index.data(ROLE_COUNT)
@@ -211,7 +235,7 @@ class _DeptDelegate(QStyledItemDelegate):
             badge_w = max(32, fm_b.horizontalAdvance(count_str) + self.badge_pad_x * 2)
 
             badge_rect = QRect(
-                option.rect.right() - self.pad_r - badge_w,
+                right_edge - badge_w,
                 y + (h - self.badge_h) // 2,
                 badge_w,
                 self.badge_h,
@@ -267,6 +291,9 @@ class _DeptDelegate(QStyledItemDelegate):
 
             # Draw text with correct positioning
             painter.drawText(text_x, baseline_y, count_str)
+            
+            # Shift right edge for text
+            right_edge -= (badge_w + self.gap)
 
         # Text (with elide so it doesn't overlap the badge)
         title = str(index.data(Qt.DisplayRole) or "")
@@ -276,7 +303,7 @@ class _DeptDelegate(QStyledItemDelegate):
         painter.setFont(font)
         painter.setPen(text_color)
 
-        text_right = option.rect.right() - self.pad_r - (badge_w + 10 if badge_w else 0)
+        text_right = right_edge
         text_rect = QRect(x, y, max(0, text_right - x), h)
 
         fm = QFontMetrics(font)
@@ -292,6 +319,7 @@ class SidebarBlock(QTreeView):
     Dynamically load items via set_items().
     """
     itemActivatedById = pyqtSignal(str)  # emits id on click/enter
+    editItemClicked = pyqtSignal(str)    # emits id on edit button click
 
     def __init__(self, parent: QWidget | None = None) -> None:
         """Initializes the sidebar block."""
@@ -315,6 +343,13 @@ class SidebarBlock(QTreeView):
         # Map id -> item for fast updates
         self._items_by_id: dict[str, QStandardItem] = {}
         self._active_id: str | None = None
+        
+        self.edit_icons = {
+            "light": {"default": None, "hover": None, "pressed": None, "disabled": None},
+            "dark": {"default": None, "hover": None, "pressed": None, "disabled": None}
+        }
+        self._edit_hovered_idx = QPersistentModelIndex()
+        self._edit_pressed_idx = QPersistentModelIndex()
 
         self.clicked.connect(self._on_clicked)
         ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
@@ -472,6 +507,65 @@ class SidebarBlock(QTreeView):
         if not idx.isValid():
             return None
         return idx.data(ROLE_ID)
+
+    def set_edit_icon_paths(
+            self,
+            light_default: str | None = None, light_hover: str | None = None, 
+            light_pressed: str | None = None, light_disabled: str | None = None,
+            dark_default: str | None = None, dark_hover: str | None = None, 
+            dark_pressed: str | None = None, dark_disabled: str | None = None
+    ) -> None:
+        """Sets the edit icon paths for different states and themes."""
+        mapping = {
+            ("light", "default"): light_default,
+            ("light", "hover"): light_hover,
+            ("light", "pressed"): light_pressed,
+            ("light", "disabled"): light_disabled,
+            ("dark", "default"): dark_default,
+            ("dark", "hover"): dark_hover,
+            ("dark", "pressed"): dark_pressed,
+            ("dark", "disabled"): dark_disabled,
+        }
+        for (theme, state), path in mapping.items():
+            self.edit_icons[theme][state] = QIcon(path) if path else None
+        self.viewport().update()
+
+    def get_edit_icon(self, index: QModelIndex) -> QIcon:
+        """Returns the edit icon for the given index based on state."""
+        theme_id = ThemeManagerInstance().current_theme_id
+        theme = "light" if theme_id == "0" else "dark"
+        
+        state = "default"
+        # Check if item is disabled (using ROLE_DISABLED as per delegate)
+        if index.data(ROLE_DISABLED):
+            state = "disabled"
+        elif index == self._edit_pressed_idx:
+            state = "pressed"
+        elif index == self._edit_hovered_idx:
+            state = "hover"
+            
+        icon = self.edit_icons[theme].get(state)
+        if not icon or icon.isNull():
+            icon = self.edit_icons[theme].get("default")
+            
+        return icon if icon else QIcon()
+
+    def _is_over_edit_button(self, pos: QPoint, index: QModelIndex) -> bool:
+        """Checks if the position is over the edit button of the item."""
+        if not index.isValid(): return False
+        
+        rect = self.visualRect(index)
+        pad_r = 16
+        icon_sz = 20
+        
+        right_edge = rect.right() - pad_r
+        btn_rect = QRect(
+            right_edge - icon_sz,
+            rect.top() + (rect.height() - icon_sz) // 2,
+            icon_sz,
+            icon_sz
+        )
+        return btn_rect.contains(pos)
     
     def _on_theme_changed(self, theme_id: str) -> None:
         """Handles theme change events."""
@@ -481,24 +575,84 @@ class SidebarBlock(QTreeView):
         """Handles mouse press events."""
         if event.button() == Qt.LeftButton:
             index = self.indexAt(event.pos())
-            if index.isValid() and index.data(ROLE_IS_GROUP):
-                # Intercept click on group: only collapse/expand
-                self.setUpdatesEnabled(False)
-                if self.isExpanded(index):
-                    self.collapse(index)
-                else:
-                    self.expand(index)
-                    # Restore selection if the active item is inside this group
-                    if self._active_id:
-                        item = self._items_by_id.get(self._active_id)
-                        if item:
-                            idx = item.index()
-                            if idx.isValid() and idx.parent() == index:
-                                self.setCurrentIndex(idx)
-                self.setUpdatesEnabled(True)
-                event.accept()
-                return
+            if index.isValid():
+                is_group = index.data(ROLE_IS_GROUP)
+                
+                if is_group:
+                    # Intercept click on group: only collapse/expand
+                    self.setUpdatesEnabled(False)
+                    if self.isExpanded(index):
+                        self.collapse(index)
+                    else:
+                        self.expand(index)
+                        # Restore selection if the active item is inside this group
+                        if self._active_id:
+                            item = self._items_by_id.get(self._active_id)
+                            if item:
+                                idx = item.index()
+                                if idx.isValid() and idx.parent() == index:
+                                    self.setCurrentIndex(idx)
+                    self.setUpdatesEnabled(True)
+                    event.accept()
+                    return
+                
+                # Check edit button press
+                is_selected = self.selectionModel().isSelected(index)
+                if is_selected and not is_group:
+                    if self._is_over_edit_button(event.pos(), index):
+                        self._edit_pressed_idx = QPersistentModelIndex(index)
+                        self.viewport().update(self.visualRect(index))
+
         super().mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+        """Handles mouse release events."""
+        if event.button() == Qt.LeftButton:
+            if self._edit_pressed_idx.isValid():
+                idx = QModelIndex(self._edit_pressed_idx)
+                self._edit_pressed_idx = QPersistentModelIndex()
+                if idx.isValid():
+                    self.viewport().update(self.visualRect(idx))
+                    
+                    # Check if released over the button
+                    if self._is_over_edit_button(event.pos(), idx):
+                        id_ = idx.data(ROLE_ID)
+                        if id_:
+                            self.editItemClicked.emit(str(id_))
+        super().mouseReleaseEvent(event)
+
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
+        """Handles mouse move events for hover effects."""
+        index = self.indexAt(event.pos())
+        old_hover = self._edit_hovered_idx
+        
+        if index.isValid():
+            is_selected = self.selectionModel().isSelected(index)
+            is_group = index.data(ROLE_IS_GROUP)
+            if is_selected and not is_group:
+                if self._is_over_edit_button(event.pos(), index):
+                    if old_hover != index:
+                        self._edit_hovered_idx = QPersistentModelIndex(index)
+                        self.viewport().update(self.visualRect(index))
+                        if old_hover.isValid():
+                            self.viewport().update(self.visualRect(QModelIndex(old_hover)))
+                    super().mouseMoveEvent(event)
+                    return
+
+        # If not over button or not valid
+        if old_hover.isValid():
+            self._edit_hovered_idx = QPersistentModelIndex()
+            self.viewport().update(self.visualRect(QModelIndex(old_hover)))
+            
+        super().mouseMoveEvent(event)
+
+    def leaveEvent(self, event: QEvent) -> None:
+        """Handles mouse leave events."""
+        if self._edit_hovered_idx.isValid():
+            idx = self._edit_hovered_idx
+            self._edit_hovered_idx = QPersistentModelIndex()
+            self.viewport().update(self.visualRect(QModelIndex(idx)))
+        super().leaveEvent(event)
 
     # ---------- Internal ----------
     def _on_clicked(self, index: QModelIndex) -> None:
