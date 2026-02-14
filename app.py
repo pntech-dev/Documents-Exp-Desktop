@@ -1,11 +1,13 @@
 import os
 import sys
+import ctypes
 import requests
 import logging
 from logging.handlers import RotatingFileHandler
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
+from PyQt5.QtGui import QIcon
 
 from modules import AuthWindow
 from core.worker import APIWorker
@@ -30,10 +32,17 @@ class Application:
     """
     def __init__(self):
         """Initializes the Application, sets up logging, theme, and checks for auto-login."""
+        # Fix for Windows taskbar icon
+        if sys.platform == "win32":
+            myappid = 'pntech.documents_exp.desktop.3.0'
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+
         QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
         QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
 
         self.app = QApplication(sys.argv)
+        self.app.setWindowIcon(QIcon(":/light/logo_icon_light.svg"))
+
         self.main_window = None
         self.auth_window = None
 

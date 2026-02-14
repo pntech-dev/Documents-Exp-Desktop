@@ -151,9 +151,29 @@ class Sidebar:
         """Enables or disables UI elements visibility.
 
         Args:
-            is_enabled: Boolean indicating whether the UI should be enabled.
+            is_visible: Boolean indicating whether the UI should be enabled.
         """
-        pass
+        if is_visible:
+            # Restore icons
+            edit_cfg = self.config.get("sidebar", {}).get("edit", {})
+            
+            for tree in [self.departments_tree, self.categories_tree]:
+                tree.set_edit_icon_paths(
+                    light_default=edit_cfg.get("light", {}).get("default"),
+                    light_hover=edit_cfg.get("light", {}).get("hover"),
+                    light_pressed=edit_cfg.get("light", {}).get("pressed"),
+                    
+                    dark_default=edit_cfg.get("dark", {}).get("default"),
+                    dark_hover=edit_cfg.get("dark", {}).get("hover"),
+                    dark_pressed=edit_cfg.get("dark", {}).get("pressed"),
+                )
+        else:
+            # Clear icons to hide buttons
+            for tree in [self.departments_tree, self.categories_tree]:
+                tree.set_edit_icon_paths(
+                    light_default=None, light_hover=None, light_pressed=None,
+                    dark_default=None, dark_hover=None, dark_pressed=None
+                )
 
 
     def connect_departments_selection(self, handler) -> None:
@@ -480,6 +500,9 @@ class ToolBar:
         Args:
             is_enabled: Boolean indicating whether the UI should be enabled.
         """
+        self.export_button.setVisible(can_edit)
+        self.print_button.setVisible(can_edit)
+
         edit_cfg = None
         
         if can_edit:
@@ -755,6 +778,10 @@ class MainView(QObject):
             dark_pressed=logout_icons.get("dark", {}).get("pressed"),
             danger_action=True
         )
+
+        # Disable unimplemented actions
+        self.user_profile_action.setVisible(False)
+        self.settings_action.setVisible(False)
 
 
     def _setup_create_menu(self) -> None:

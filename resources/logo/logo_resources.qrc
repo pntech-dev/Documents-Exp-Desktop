@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="light">
+    <file>logo_icon_light.svg</file>
     <file>logo_light.svg</file>
   </qresource>
   <qresource prefix="dark">
