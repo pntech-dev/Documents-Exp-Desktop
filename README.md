@@ -18,19 +18,19 @@ Desktop client application for searching, storing, and managing enterprise docum
 
 Secure login screen with auto-login capability. Supports Guest mode for read-only access.
 
-![auth_window](screenshots/auth.png)
+![auth_window](screenshots/auth_window.gif)
 
 ### Main Window:
 
 Displays the hierarchy of Departments and Categories. Features a document table with infinite scrolling and search.
 
-![main_window](screenshots/main.png)
+![main_window](screenshots/main_window.png)
 
 ### Document Editor:
 
 Allows authorized users to create, edit, and manage document pages. Supports drag-and-drop reordering.
 
-![editor_window](screenshots/editor.png)
+![editor_window](screenshots/document_editor.png)
 
 ---
 

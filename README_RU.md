@@ -18,19 +18,19 @@
 
 Безопасный вход в систему с возможностью авто-входа. Поддержка режима "Гость" для просмотра.
 
-![auth_window](screenshots/auth.png)
+![auth_window](screenshots/auth_window.gif)
 
 ### Главное окно
 
 Отображение иерархии Отделов и Категорий. Таблица документов с бесконечной прокруткой и поиском.
 
-![main_window](screenshots/main.png)
+![main_window](screenshots/main_window.png)
 
 ### Редактор документов
 
 Позволяет авторизованным пользователям создавать, редактировать и управлять страницами документа. Поддержка Drag-and-Drop.
 
-![editor_window](screenshots/editor.png)
+![editor_window](screenshots/document_editor.png)
 
 ---
 
