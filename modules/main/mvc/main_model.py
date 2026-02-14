@@ -26,7 +26,13 @@ class MainModel:
         self.departments = self._get_departments()
         self.current_department_id = self.departments[0]["id"] if self.departments else None
         self.categories = self._get_categories()
-        self.current_category_id = self.categories[0]["id"] if self.categories else None
+        
+        self.current_category_id = None
+        if self.current_department_id and self.categories:
+            for cat in self.categories:
+                if cat.get("group_id") == self.current_department_id:
+                    self.current_category_id = cat["id"]
+                    break
 
         # Table data
         self.documents = [] # Will be loaded via pagination
