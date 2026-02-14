@@ -30,6 +30,7 @@ class MenuItemWidget(QWidget):
         self.setAttribute(Qt.WA_StyledBackground)
         
         self.setProperty("danger", danger)
+        self.setProperty("is_disabled", "true" if not self.isEnabled() else "false")
 
         self.icons = {
             "light": {"default": None, "hover": None, "pressed": None, "disabled": None},
@@ -156,7 +157,13 @@ class MenuItemWidget(QWidget):
 
     def changeEvent(self, event: QEvent) -> None:
         if event.type() == QEvent.EnabledChange:
+            self.setProperty("is_disabled", "true" if not self.isEnabled() else "false")
             self._update_icon()
+            self.style().unpolish(self)
+            self.style().polish(self)
+            self.text_label.style().unpolish(self.text_label)
+            self.text_label.style().polish(self.text_label)
+            self.update()
         super().changeEvent(event)
 
 
@@ -184,8 +191,14 @@ class ThemeAwareMenu(QMenu):
         
         # Теперь все элементы - это QWidgetAction с MenuItemWidget
         action = QWidgetAction(self)
-        widget = MenuItemWidget(text, action, danger=danger_action, parent=self)
+        widget = MenuItemWidget(text, action, danger=danger_action)
         action.setDefaultWidget(widget)
+
+        # Sync enabled state
+        def sync_state():
+            widget.setEnabled(action.isEnabled())
+        action.changed.connect(sync_state)
+        sync_state()
         
         # Backward compatibility for simple light/dark icon arguments
         if light_icon and "light_default" not in icon_kwargs:

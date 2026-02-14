@@ -586,17 +586,18 @@ MenuItemWidget {
     background-color: transparent;
     border-radius: 4px;
 }
-MenuItemWidget[hovered="true"] {
+MenuItemWidget[hovered="true"][is_disabled="false"] {
     background-color: #F2F2F2;
 }
-MenuItemWidget[pressed="true"] {
+MenuItemWidget[pressed="true"][is_disabled="false"] {
     background-color: #CCCCCC;
 }
 
 /* Menu Item Text Colors */
-MenuItemWidget QLabel { color: #666666; }
-MenuItemWidget[hovered="true"] QLabel { color: #4D4D4D; }
+MenuItemWidget QLabel { color: #333333; }
+MenuItemWidget[hovered="true"] QLabel { color: #1A1A1A; }
 MenuItemWidget[pressed="true"] QLabel { color: #1A1A1A; }
+MenuItemWidget[is_disabled="true"] QLabel { color: #B3B3B3; }
 
 /* Danger Text Overrides */
 MenuItemWidget QLabel[danger="true"] { color: #CC3333; }

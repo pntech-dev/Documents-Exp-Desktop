@@ -586,17 +586,18 @@ MenuItemWidget {
     background-color: transparent;
     border-radius: 4px;
 }
-MenuItemWidget[hovered="true"] {
+MenuItemWidget[hovered="true"][is_disabled="false"] {
     background-color: {{ neutral.neutral_50 }};
 }
-MenuItemWidget[pressed="true"] {
+MenuItemWidget[pressed="true"][is_disabled="false"] {
     background-color: {{ neutral.neutral_200 }};
 }
 
 /* Menu Item Text Colors */
-MenuItemWidget QLabel { color: {{ neutral.neutral_600 }}; }
-MenuItemWidget[hovered="true"] QLabel { color: {{ neutral.neutral_700 }}; }
+MenuItemWidget QLabel { color: {{ neutral.neutral_800 }}; }
+MenuItemWidget[hovered="true"] QLabel { color: {{ neutral.neutral_900 }}; }
 MenuItemWidget[pressed="true"] QLabel { color: {{ neutral.neutral_900 }}; }
+MenuItemWidget[is_disabled="true"] QLabel { color: {{ neutral.neutral_300 }}; }
 
 /* Danger Text Overrides */
 MenuItemWidget QLabel[danger="true"] { color: {{ accent.accent_500 }}; }

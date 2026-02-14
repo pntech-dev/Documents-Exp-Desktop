@@ -1,11 +1,11 @@
-import logging
 import re
+import logging
 import requests
 
 from pathlib import Path
+from PyQt5.QtGui import QTextDocument
 from PyQt5.QtCore import QObject, pyqtSignal, QTimer
 from PyQt5.QtWidgets import QMainWindow, QFileDialog
-from PyQt5.QtGui import QTextDocument
 from PyQt5.QtPrintSupport import QPrinter, QPrintDialog
 
 from .main_view import MainView
@@ -160,6 +160,8 @@ class MainController(QObject):
                 # Select the new department in the sidebar
                 QTimer.singleShot(50, lambda: self.view.select_department(new_id))
                 self._update_documents_list()
+                self._update_create_category_state()
+                self._update_create_document_state()
 
         except Exception as e:
             self._handle_error(e, "Создание отдела")
@@ -325,12 +327,14 @@ class MainController(QObject):
                 self.model.current_category_id = None
                 
                 # Explicitly clear documents to avoid showing stale data from previous department
-                self._update_documents_list()
-                
+                self._update_documents_list()                
                 self._update_categories_list()
                 
                 if self.view.get_search_text():
                     self._on_search_lineedit_text_changed()
+
+                self._update_create_category_state()
+                self._update_create_document_state()
 
 
     def _on_category_selected(self, selected, deselected) -> None:
@@ -355,6 +359,9 @@ class MainController(QObject):
                 self._on_search_lineedit_text_changed()
             else:
                 self._update_documents_list()
+
+        self._update_create_category_state()
+        self._update_create_document_state()
 
 
     def _on_update_button_clicked(self) -> None:
@@ -660,6 +667,8 @@ class MainController(QObject):
 
         # Set documents data
         self._update_documents_list()
+        self._update_create_category_state()
+        self._update_create_document_state()
 
 
     def _setup_connections(self) -> None:
@@ -706,6 +715,7 @@ class MainController(QObject):
         self.view.update_departments(dept_items)
         self._update_categories_list()
 
+
     def _update_categories_list(self) -> None:
         """Updates the categories list based on the current department."""
         cat_items = []
@@ -724,6 +734,7 @@ class MainController(QObject):
             
         self.view.update_categories(cat_items)
 
+
     def _update_documents_list(self) -> None:
         """Updates the documents list based on the current category."""
         self.model.current_document_id = None
@@ -735,6 +746,7 @@ class MainController(QObject):
         self.view.clear_documents_table()
         
         self._load_more_documents()
+
 
     def _load_more_documents(self) -> None:
         """Loads the next page of documents."""
@@ -820,6 +832,9 @@ class MainController(QObject):
             else:
                 self._update_documents_list()
 
+        self._update_create_category_state()
+        self._update_create_document_state()
+
 
     def _get_natural_sort_key(self, doc: dict) -> list:
         """
@@ -845,6 +860,18 @@ class MainController(QObject):
         
         # Non-empty codes start with 0
         return [0] + parts
+    
+
+    def _update_create_category_state(self) -> None:
+        """Updates the state of the create category button."""
+        state = self.model.current_department_id is not None
+        self.view.set_category_creation_enabled(state)
+
+
+    def _update_create_document_state(self) -> None:
+        """Updates the state of the create document button."""
+        state = self.model.current_category_id is not None
+        self.view.set_document_creation_enabled(state)
 
 
     def _handle_error(self, e: Exception, title: str = "Ошибка") -> None:

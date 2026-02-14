@@ -201,7 +201,10 @@
             },
             "create": {
                 "light": ":/icons/light/light/create_default.svg",
-                "dark": ":/icons/dark/dark/create_default.svg"
+                "dark": {
+                    "default": ":/icons/dark/dark/create_default.svg",
+                    "disabled": ":/icons/dark/dark/create_disabled.svg"
+                }
             },
             "arrow_create": {
                 "light": ":/icons/light/light/arrow_create.svg",

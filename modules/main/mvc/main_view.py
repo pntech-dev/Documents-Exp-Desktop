@@ -304,15 +304,10 @@ class Navbar:
         self.create_pushButton.set_icon_paths(
             # light theme
             light_default=light_create,
-            light_hover=light_create,
-            light_pressed=light_create,
-            light_disabled=light_create,
             
             # dark theme
-            dark_default=dark_create,
-            dark_hover=dark_create,
-            dark_pressed=dark_create,
-            dark_disabled=dark_create
+            dark_default=dark_create["default"],
+            dark_disabled=dark_create["disabled"]
         )
 
         # Setting icon for create popover button
@@ -342,6 +337,16 @@ class Navbar:
         """
         self.create_pushButton.setVisible(is_visible)
         self.create_popover_pushButton.setVisible(is_visible)
+
+    
+    def set_create_category_enabled(self, enabled: bool) -> None:
+        """Sets the enabled state of the create category button."""
+        self.create_pushButton.setEnabled(enabled)
+
+
+    def set_create_document_enabled(self, enabled: bool) -> None:
+        """Sets the enabled state of the create document button."""
+        self.create_pushButton.setEnabled(enabled)
 
     
     def search_lineedit_text_changed(self, handler) -> None:
@@ -794,9 +799,11 @@ class MainView(QObject):
             light_default=department_icons.get("light", {}).get("default"),
             light_hover=department_icons.get("light", {}).get("hover"),
             light_pressed=department_icons.get("light", {}).get("pressed"),
+            light_disabled=department_icons.get("light", {}).get("disabled"),
             dark_default=department_icons.get("dark", {}).get("default"),
             dark_hover=department_icons.get("dark", {}).get("hover"),
-            dark_pressed=department_icons.get("dark", {}).get("pressed")
+            dark_pressed=department_icons.get("dark", {}).get("pressed"),
+            dark_disabled=department_icons.get("dark", {}).get("disabled")
         )
         
         category_icons = self.ui_config.get("icons", {}).get("documents", {}).get("category", {})
@@ -805,9 +812,11 @@ class MainView(QObject):
             light_default=category_icons.get("light", {}).get("default"),
             light_hover=category_icons.get("light", {}).get("hover"),
             light_pressed=category_icons.get("light", {}).get("pressed"),
+            light_disabled=category_icons.get("light", {}).get("disabled"),
             dark_default=category_icons.get("dark", {}).get("default"),
             dark_hover=category_icons.get("dark", {}).get("hover"),
-            dark_pressed=category_icons.get("dark", {}).get("pressed")
+            dark_pressed=category_icons.get("dark", {}).get("pressed"),
+            dark_disabled=category_icons.get("dark", {}).get("disabled")
         )
 
         document_icons = self.ui_config.get("icons", {}).get("documents", {}).get("document", {})
@@ -816,9 +825,11 @@ class MainView(QObject):
             light_default=document_icons.get("light", {}).get("default"),
             light_hover=document_icons.get("light", {}).get("hover"),
             light_pressed=document_icons.get("light", {}).get("pressed"),
+            light_disabled=document_icons.get("light", {}).get("disabled"),
             dark_default=document_icons.get("dark", {}).get("default"),
             dark_hover=document_icons.get("dark", {}).get("hover"),
-            dark_pressed=document_icons.get("dark", {}).get("pressed")
+            dark_pressed=document_icons.get("dark", {}).get("pressed"),
+            dark_disabled=document_icons.get("dark", {}).get("disabled")
         )
         
         self.ui.create_popover_pushButton.clicked.connect(self._show_create_menu)
@@ -1001,6 +1012,20 @@ class MainView(QObject):
         self.navbar.set_ui_visible(is_visible=is_visible)
         self.sidebar.set_ui_visible(is_visible=is_visible)
         self.toolbar.set_ui_mode(can_edit=is_visible)
+
+
+    def set_category_creation_enabled(self, enabled: bool) -> None:
+        """Enables or disables category creation UI elements."""
+        self.navbar.set_create_category_enabled(enabled)
+        if self.create_category_action:
+            self.create_category_action.setEnabled(enabled)
+
+
+    def set_document_creation_enabled(self, enabled: bool) -> None:
+        """Enables or disables document creation UI elements."""
+        self.navbar.set_create_document_enabled(enabled)
+        if self.create_document_action:
+            self.create_document_action.setEnabled(enabled)
 
 
     def set_username(self, name: str) -> None:

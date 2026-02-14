@@ -159,9 +159,6 @@
         <property name="text">
          <string/>
         </property>
-        <property name="maxLength">
-         <number>6</number>
-        </property>
         <property name="placeholderText">
          <string>Технологическая документация</string>
         </property>
@@ -249,17 +246,17 @@
   <customwidget>
    <class>PrimaryButton</class>
    <extends>QPushButton</extends>
-   <header>..custom_widgets</header>
+   <header>.custom_widgets</header>
   </customwidget>
   <customwidget>
    <class>TertiaryButton</class>
    <extends>QPushButton</extends>
-   <header>..custom_widgets</header>
+   <header>.custom_widgets</header>
   </customwidget>
   <customwidget>
    <class>IconLineEdit</class>
    <extends>QLineEdit</extends>
-   <header>..custom_widgets</header>
+   <header>.custom_widgets</header>
   </customwidget>
  </customwidgets>
  <resources>

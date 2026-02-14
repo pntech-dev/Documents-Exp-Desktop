@@ -155,6 +155,7 @@
     <file>dark/code_disabled.svg</file>
     <file>dark/code_hover.svg</file>
     <file>dark/create_default.svg</file>
+    <file>dark/create_disabled.svg</file>
     <file>dark/department_clicked.svg</file>
     <file>dark/department_default.svg</file>
     <file>dark/department_disabled.svg</file>

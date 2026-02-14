@@ -67,7 +67,6 @@ class Ui_Dialog(object):
         self.name_lineEdit.setStyleSheet("")
         self.name_lineEdit.setInputMask("")
         self.name_lineEdit.setText("")
-        self.name_lineEdit.setMaxLength(6)
         self.name_lineEdit.setObjectName("name_lineEdit")
         self.verticalLayout_2.addWidget(self.name_lineEdit)
         self.verticalLayout_3.addWidget(self.name_frame)
