@@ -519,6 +519,11 @@ class DocumentEditorView:
         return data
     
 
+    def update_generate_button_state(self, state: bool) -> None:
+        """Updates the generate tags button state."""
+        self.ui.generate_tags_pushButton.setEnabled(state)
+    
+
     def update_duplicate_button_state(self, state: bool) -> None:
         """Updates the duplicate page button state."""
         self.toolbar.update_duplicate_page_button_state(state)
@@ -559,7 +564,7 @@ class DocumentEditorView:
             tags: A list of tags as strings.
         """
         for tag in tags:
-            self.ui.tags_lineedit_frame.add_tag(tag["name"])
+            self.ui.tags_lineedit_frame.add_tag(tag)
 
 
     def set_document_code(self, code: str) -> None:
@@ -605,6 +610,15 @@ class DocumentEditorView:
             handler: The callback function to execute when the text changes.
         """
         self.ui.tags_lineedit_frame.tagsChanged.connect(handler)
+
+
+    def generate_tags_button_clicked(self, handler) -> None:
+        """Connects the generate tags button click signal to a handler.
+
+        Args:
+            handler: The callback function to execute when the button is clicked.
+        """
+        self.ui.generate_tags_pushButton.clicked.connect(handler)
 
     
     def toolbar_add_page_button_clicked(self, handler) -> None:

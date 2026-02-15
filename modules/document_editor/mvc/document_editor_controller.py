@@ -1,3 +1,4 @@
+import re
 import logging
 from pathlib import Path
 from PyQt5.QtGui import QTextDocument
@@ -49,6 +50,7 @@ class DocumentEditorController:
     def _on_document_data_changed(self, *args):
         """Handles changes in document data to update UI state."""
         self.model.is_document_edited = True
+        self._update_generate_button_state()
         self._update_save_document_button_state()
 
 
@@ -58,6 +60,55 @@ class DocumentEditorController:
         self.view.update_duplicate_button_state(state=state)
         self.view.update_delete_page_button_state(state=state)
 
+
+    def _generate_tags(self) -> None:
+        """Handles the generate tags button click event."""
+        document_data = self.view.get_document_data()
+
+        # Get tags from document name
+        document_tags = {}
+        document_name_tags = re.sub(r"[^\w\s]", "", document_data.get("name", "")).split()
+        
+        for tag in document_name_tags:
+            if len(tag) < 4: continue
+            tag_lower = tag.lower()
+            document_tags[tag_lower] = document_tags.get(tag_lower, 0) + 1
+
+        # Get tags from document pages
+        pages_tags = {}
+        for page in document_data.get("pages", []):
+            page_tags = re.sub(r"[^\w\s]", "", page.get("name")).split()
+
+            for tag in page_tags:
+                if len(tag) < 4: continue
+                tag_lower = tag.lower()
+                pages_tags[tag_lower] = pages_tags.get(tag_lower, 0) + 1
+
+        # Return if not tags from document name and pages
+        if not document_tags and not pages_tags:
+            return
+        
+        # Helper to get sorted tags
+        def get_sorted_tags(tags_dict):
+            sorted_items = sorted(tags_dict.items(), key=lambda item: item[1], reverse=True)
+            return [tag.capitalize() for tag, count in sorted_items]
+
+        name_candidates = get_sorted_tags(document_tags)
+        page_candidates = get_sorted_tags(pages_tags)
+
+        # Priority list construction:
+        # 1. Top 2 from Name
+        # 2. Top 3 from Pages
+        # 3. Rest from Name
+        # 4. Rest from Pages
+        priority_list = name_candidates[:2] + page_candidates[:3] + name_candidates[2:] + page_candidates[3:]
+        
+        # Filter duplicates and take top 5
+        tags = list(dict.fromkeys(priority_list))[:5]
+        
+        if tags:
+            self.view.set_document_tags(tags=tags)
+        
 
     def _on_add_page_button_clicked(self) -> None:
         """Handles the add page button click event."""
@@ -287,6 +338,7 @@ class DocumentEditorController:
         self.view.code_lineedit_text_changed(handler=self._on_document_data_changed)
         self.view.name_lineedit_text_changed(handler=self._on_document_data_changed)
         self.view.tags_lineedit_text_changed(handler=self._on_document_data_changed)
+        self.view.generate_tags_button_clicked(handler=self._generate_tags)
 
         self.view.toolbar_add_page_button_clicked(handler=self._on_add_page_button_clicked)
         self.view.toolbar_duplicate_page_button_clicked(handler=self._on_duplicate_page_button_clicked)
@@ -307,7 +359,11 @@ class DocumentEditorController:
 
     def _fill_document_tags(self) -> None:
         """Fills the document tags with data."""
-        self.view.set_document_tags(tags=self.model.document_data.get("tags", []))
+        tags = []
+        for tag in self.model.document_data.get("tags", []):
+            tags.append(tag.get("name"))
+
+        self.view.set_document_tags(tags=tags)
 
     
     def _fill_document_data(self) -> None:
@@ -338,6 +394,12 @@ class DocumentEditorController:
 
         # Update delete button state
         self._on_table_selection_changed()
+
+
+    def _update_generate_button_state(self):
+        """Updates the generate tags button state."""
+        state = False if len(self.view.get_document_data().get("tags")) == 5 else True
+        self.view.update_generate_button_state(state=state)
 
     
     def _update_save_document_button_state(self):
