@@ -1,57 +1,257 @@
-# DocumentsExp: 2.1.4
+# Documents Exp
 
-**DocumentsExp** is a powerful software solution designed to automate the management and processing of folder lists. It provides an efficient way to work with a database of folders, display different types of folders, and search through them.
+> Russian version available: [README_RU.md](README_RU.md)
 
-## Changes in version 2.1.4
+![Python](https://img.shields.io/badge/Python-3.14-blue)
+![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey)
+![Framework](https://img.shields.io/badge/Framework-PyQt5-39a)
+![Architecture](https://img.shields.io/badge/Architecture-MVC-orange)
+![License](https://img.shields.io/badge/License-MIT-success)
 
-### Functional Enhancements
-- **Fixed a bug of incorrect writing of data and word to the database.**
-- **Fixing a bug that caused the search to fail**
+Desktop client application for searching, storing, and managing enterprise documentation. Built with Python and PyQt5, utilizing a robust MVC architecture and communicating with a remote REST API.
 
-## What's New in Version 2
+---
 
-### Functional Enhancements
-- **Settings Menu**: A new settings menu has been added, allowing for enhanced customization and management of folder groups, categories, and lists.
-  - Add, edit, or delete groups, categories, and lists for better organization.
-  - Download templates for filling out categories and lists.
-- **Search Enhancements**: The search system has been improved to provide smarter and more accurate results.
-- **Temporary Workspace Mode**: A new mode has been developed that allows users to work in an isolated environment. Changes are tracked and merged with the main directory only when confirmed, ensuring safe experimentation.
-- **Back Navigation with Memory**: A back button has been added, enabling users to return to their previous location with the last state preserved.
-- **Clear Search Button**: Quickly reset the search field with a single click.
-- **Performance Improvements**: The application now runs 1.5x faster, ensuring smoother and more efficient operation.
+## 🖼 Screenshots
 
-### UI/UX Improvements
-- **Intuitive Navigation**: The new settings menu and additional buttons make the interface even more user-friendly.
-- **Streamlined Workflow**: Improved response times and added functionality contribute to a better overall experience.
+### Authorization window:
 
-## Features
+Secure login screen with auto-login capability. Supports Guest mode for read-only access.
 
-### Folder Management
-- **Folder Database**: Stores a comprehensive list of folders, allowing for easy retrieval and management.
-- **Folder Categorization**: Organize folders by type, category, or group for quick access.
-- **Double-click Folder Access**: Open the contents of any folder instantly with a double-click.
+![auth_window](screenshots/auth_window.gif)
 
-### Customization Options
-- **Settings Menu**:
-  - Add groups, categories, and lists for a personalized folder structure.
-  - Delete unwanted groups, categories, or lists effortlessly.
-  - Download templates to streamline data input.
+### Main Window:
 
-### Search and Navigation
-- **Advanced Search**: Locate folders and contents more efficiently with the improved search algorithm.
-- **Clear Search Field**: Reset search criteria instantly with the new clear button.
-- **Back Navigation**: Return to the last visited location with preserved context.
+Displays the hierarchy of Departments and Categories. Features a document table with infinite scrolling and search.
 
-### Temporary Workspace Mode
-- **Isolated Workspace**: Make changes in a temporary environment without affecting the main directory.
-- **Change Tracking**: Only modified files are merged back into the main directory upon confirmation, ensuring minimal disruption.
+![main_window](screenshots/main_window.png)
 
-### Performance
-- **Optimized Speed**: The application now operates 1.5x faster, reducing load times and improving user experience.
+### Document Editor:
 
-## Key Benefits
-- **Enhanced Productivity**: Automates folder management and streamlines workflows.
-- **Smarter Search**: Quickly find what you need with an advanced and user-friendly search system.
-- **Safe Experimentation**: Temporary Workspace Mode ensures that only confirmed changes affect the main directory.
-- **Improved Organization**: New settings menu makes folder categorization and grouping easier than ever.
-- **Faster Operation**: Increased performance saves time and enhances responsiveness.
+Allows authorized users to create, edit, and manage document pages. Supports drag-and-drop reordering.
+
+![editor_window](screenshots/document_editor.png)
+
+---
+
+## 📌 Overview
+
+**Documents Exp** is designed to streamline the management of technical documentation within an organization. It provides a structured view of documents categorized by departments and allows for efficient searching and editing.
+
+The application ensures data consistency by interacting with a central REST API and supports different access modes for guests and authorized personnel.
+
+---
+
+## 🎯 Key Features
+
+### ✅ Document Management
+
+- **Hierarchy:** Organized by **Departments** and **Categories**.
+- **Navigation:** Sidebar navigation with badge counters.
+- **Search:** Real-time search by document code or name with debounce.
+- **Sorting:** "Natural Sort" order for intuitive code listing.
+- **Pagination:** Infinite scrolling for large datasets.
+
+### ✅ Two Access Modes
+
+#### 🔐 Authorized Mode
+
+- Full access to **Create**, **Edit**, and **Delete** documents.
+- Manage structure (Departments/Categories).
+- Import/Export functionality.
+
+#### 👤 Guest Mode
+
+- Read-only access.
+- Search and view documents.
+- No editing privileges.
+
+### ✅ Document Editor
+
+- **Page Management:** Add, Edit, Duplicate, and Delete pages.
+- **Drag-and-Drop:** Reorder pages intuitively.
+- **Word Integration:**
+    - **Import:** Parse pages directly from `.docx` tables.
+    - **Export:** Generate formatted `.docx` files.
+- **Printing:** Built-in printing support.
+
+### ✅ Security & Auth
+
+- **JWT Authentication:** Secure Access/Refresh token flow.
+- **Auto-Login:** Secure session persistence using system **Keyring**.
+- **Account Management:** Sign up, Email verification, Password reset.
+
+### ✅ UI/UX Highlights
+
+- **Modern Interface:** Clean PyQt5 design.
+- **Theming:** Dynamic **Light** and **Dark** themes (Jinja2 generated).
+- **Responsiveness:** Adaptive layouts.
+- **Feedback:** Toast notifications for user actions.
+
+---
+
+## 🧩 Who is this for?
+
+✅ **Engineering Departments**: For storing technical specifications and drawings.  
+✅ **Enterprises**: To maintain a centralized repository of documentation.  
+✅ **Managers**: To organize workflow and document structure.
+
+---
+
+## 🧠 What this project demonstrates
+
+✅ **MVC Architecture**: Strict separation of concerns (Model-View-Controller).  
+✅ **PyQt5 Mastery**: Custom widgets, signals/slots, event filtering, animations.  
+✅ **Asynchronous Programming**: Non-blocking UI using `QThread` for API calls.  
+✅ **REST API Integration**: Robust HTTP client with session handling and error management.  
+✅ **Security Best Practices**: Safe token storage and validation.  
+✅ **Dynamic Theming**: Using template engines (Jinja2) for QSS generation.
+
+---
+
+## 🏗 Architecture
+
+The project follows the **MVC (Model-View-Controller)** pattern to ensure separation of concerns and maintainability.
+
+```
+┌──────┐     ┌────────────┐     ┌───────┐
+│ View │ <-- │ Controller │ --> │ Model │
+└──────┘     └────────────┘     └───────┘
+  UI           Logic            Data/API
+```
+
+- **View:** Handles UI rendering and user events (PyQt5).
+- **Controller:** Orchestrates logic, handles signals, and communicates between View and Model.
+- **Model:** Manages data, API communication, and business logic.
+
+---
+
+## 🛠 Tech Stack
+
+- **Language:** Python 3.14
+- **GUI Framework:** PyQt5
+- **API Communication:** Requests (with Session handling)
+- **Security:** Keyring (for token storage)
+- **Templating:** Jinja2 (for dynamic QSS generation)
+- **Document Handling:** python-docx
+
+---
+
+## 🔧 Installation
+
+1. Clone the repository:
+
+    ```bash
+    git clone https://github.com/your-repo/documents-exp-desktop.git
+    cd documents-exp-desktop
+    ```
+
+2. Install dependencies:
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+3. Configure the application:
+   Edit `config.yaml` to set your API URL:
+
+    ```yaml
+    base_url: "http://127.0.0.1:8000"
+    ```
+
+4. Run the application:
+    ```bash
+    python app.py
+    ```
+
+---
+
+## 📂 Project Structure
+
+```
+DOCUMENTS-EXP-DESKTOP/
+│ app.py
+│ config.yaml
+│ requirements.txt
+│ README.md
+│
+├─ api/
+│ └─ api_client.py
+│
+├─ core/
+│ └─ worker.py
+│
+├─ modules/
+│ ├─ auth/
+│ ├─ main/
+│ ├─ document_editor/
+│ ├─ departments_editings/
+│ └─ categories_editings/
+│
+├─ resources/
+│ ├─ icons/
+│ ├─ logo/
+│ ├─ slides/
+│ └─ templates/
+│
+├─ ui/
+│ ├─ custom_widgets/
+│ ├─ styles/
+│ └─ ui_converted/
+│
+└─ utils/
+  ├─ notifications/
+  └─ ...
+```
+
+---
+
+## 🔒 Security Model
+
+✅ JWT Authentication  
+✅ Secure token storage (Keyring)  
+✅ No plaintext password saving  
+✅ Session management  
+✅ Safe for internal distribution
+
+---
+
+## 🚦 Project Status
+
+✅ Active  
+✅ Under active development  
+✅ New features planned  
+✅ Regular updates
+
+---
+
+## 📜 License
+
+MIT License
+
+Copyright (c) 2025 Pavel (PN Tech)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## 👤 Author
+
+**Pavel (PN Tech)**
+Python desktop and web developer, UI/UX designer, electronics engineer

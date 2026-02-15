@@ -1,0 +1,712 @@
+/* Remove focus outline */
+* {
+	outline: none;
+}
+
+QAbstractItemView {
+	outline: 0;
+}
+
+QWidget {
+	background-color: {{ neutral.neutral_0 }};
+}
+
+
+/* Logo */
+LogoLabel {
+	background-repeat: no-repeat;
+    background-position: left;
+}
+
+
+/* QLabel */
+QLabel {
+	color: {{ neutral.neutral_900 }};
+}
+
+IconLabel {
+	font-size: 10pt;
+}
+
+IconLabel#fided_label {
+	qproperty-icon: url(:/icons/light/light/finded_default.svg);
+}
+
+IconLabel#tags_label {
+	qproperty-icon: url(:/icons/light/light/tags_default.svg);
+}
+
+/* Slider */
+QLabel#title_label,
+#title_label_2, 
+#title_label_3, 
+#title_label_4, 
+#title_label_5{
+	color: {{ neutral.neutral_900 }};
+	font-size: 16pt;
+}
+
+QLabel#text_label,
+#text_label_2, 
+#text_label_3, 
+#text_label_4, 
+#text_label_5{
+	color: {{ neutral.neutral_700 }};
+	font-size: 12pt;
+}
+
+/* Info label */
+InfoLabel {
+	color: {{ neutral.neutral_700 }};
+}
+
+
+/* Buttons */
+QPushButton {
+	border-radius: 8px;
+}
+
+/* Theme button */
+ThemeButton {
+	border: 0px;
+	background-repeat: no-repeat;
+    background-position: left;
+}
+
+ThemeButton:hover {
+	background-color: {{ neutral.neutral_0 }};
+}
+
+ThemeButton:pressed {
+	background-color: {{ neutral.neutral_0 }};
+}
+
+ThemeButton:disabled {
+	background-color: {{ neutral.neutral_0 }};
+}
+
+/* Primary button */
+PrimaryButton {
+	border: 0px;
+	color: {{ neutral.neutral_0 }};
+	background-color: {{ accent.accent_500 }};
+	font-weight: bold;
+	font-size: 12pt;
+	padding: 0px 16px;
+}
+
+PrimaryButton:hover {
+	background-color: {{ accent.accent_600 }};
+}
+
+PrimaryButton:pressed {
+	background-color: {{ accent.accent_400 }};
+}
+
+PrimaryButton:disabled {
+	background-color: {{ neutral.neutral_50 }};
+}
+
+/* Secondary button */
+SecondaryButton {
+	border: 1px solid {{ neutral.neutral_100 }};
+	color: {{ neutral.neutral_600 }};
+	background-color: {{ neutral.neutral_50 }};
+	padding: 0px 16px;
+}
+
+SecondaryButton:hover {
+	border: 1px solid {{ neutral.neutral_200 }};
+	color: {{ neutral.neutral_700 }};
+	background-color: {{ neutral.neutral_150 }};
+}
+
+SecondaryButton:pressed {
+	border: 1px solid {{ neutral.neutral_300 }};
+	color: {{ neutral.neutral_800 }};
+	background-color: {{ neutral.neutral_200 }};
+}
+
+SecondaryButton:disabled {
+	border: 1px solid {{ neutral.neutral_50 }};
+	color: {{ neutral.neutral_50 }};
+	background-color: {{ neutral.neutral_0 }};
+}
+
+/* Tertiary button */
+TertiaryButton {
+	border: 1px solid {{ neutral.neutral_50 }};
+	color: {{ neutral.neutral_600 }};
+	padding: 0px 16px;
+	font-size: 12pt;
+}
+
+TertiaryButton:hover {
+	border: 1px solid {{ neutral.neutral_100 }};
+	color: {{ neutral.neutral_700 }};
+	background-color: {{ neutral.neutral_50 }};
+}
+
+TertiaryButton:pressed {
+	border: 1px solid {{ neutral.neutral_150 }};
+	color: {{ neutral.neutral_800 }};
+	background-color: {{ neutral.neutral_100 }};
+}
+
+TertiaryButton:disabled {
+	border: 1px solid {{ neutral.neutral_50 }};
+	color: {{ neutral.neutral_50 }};
+	background-color: {{ neutral.neutral_0 }};
+}
+
+TertiaryButton[danger="true"] {
+	border: 1px solid {{ accent.accent_500 }};
+	color: {{ accent.accent_500 }};
+}
+
+TertiaryButton[danger="true"]:hover {
+	border: 1px solid {{ accent.accent_600 }};
+	color: {{ accent.accent_600 }};
+	background-color: none;
+}
+
+TertiaryButton[danger="true"]:pressed {
+	border: 1px solid {{ accent.accent_400 }};
+	color: {{ accent.accent_400 }};
+	background-color: none;
+}
+
+TertiaryButton[danger="true"]:disabled {
+	border: 1px solid {{ neutral.neutral_50 }};
+	color: {{ neutral.neutral_50 }};
+	background-color: none;
+}
+
+/* No Frame Button */
+NoFrameButton {
+	border: 0px;
+	color: {{ neutral.neutral_500 }};
+	background-color: transparent;
+	font-size: 12pt;
+	padding: 8px 16px;
+}
+
+NoFrameButton:hover {
+	color: {{ neutral.neutral_800 }};
+	background-color: {{ neutral.neutral_50 }};
+}
+
+NoFrameButton:pressed {
+	color: {{ neutral.neutral_900 }};
+	background-color: {{ neutral.neutral_150 }};
+}
+
+NoFrameButton:disabled {
+	color: {{ neutral.neutral_100 }};
+}
+
+NoFrameButton[danger="true"] {
+	color: {{ accent.accent_500 }};
+}
+
+NoFrameButton[danger="true"]:hover {
+	color: {{ accent.accent_600 }};
+	background-color: {{ accent.accent_100 }};
+}
+
+NoFrameButton[danger="true"]:pressed {
+	color: {{ accent.accent_700 }};
+	background-color: {{ accent.accent_300 }};
+}
+
+NoFrameButton[danger="true"]:disabled {
+	color: {{ neutral.neutral_100 }};
+}
+
+/* Text button */
+TextButton {
+	color: {{ accent.accent_500 }};
+}
+
+TextButton:hover {
+	color: {{ accent.accent_600 }};
+}
+
+TextButton:pressed {
+	color: {{ accent.accent_400 }};
+}
+
+TextButton:disabled {
+	color: {{ accent.accent_100 }};
+}
+
+
+/* CheckBox */
+QCheckBox {
+	spacing: 8px;
+	color: {{ neutral.neutral_600 }};
+}
+
+QCheckBox:hover {
+	color: {{ neutral.neutral_800 }};
+}
+
+QCheckBox:disabled {
+	color: {{ neutral.neutral_50 }};
+}
+
+QCheckBox:checked {
+	color: {{ neutral.neutral_900 }};
+}
+
+QCheckBox:checked:disabled {
+	color: {{ neutral.neutral_100 }};
+}
+
+QCheckBox::indicator {
+	width: 18px;
+	height: 18px;
+	border: 1px solid {{ neutral.neutral_500 }};
+	border-radius: 4px;
+	background-color: {{ neutral.neutral_0 }};
+}
+
+QCheckBox::indicator:hover {
+	border: 1px solid {{ neutral.neutral_700 }};
+}
+
+QCheckBox::indicator:disabled {
+	border: 1px solid {{ neutral.neutral_50 }};
+}
+
+QCheckBox::indicator:checked {
+	width: 20px;
+	height: 20px;
+	border: 0px;
+	background-color: {{ accent.accent_500 }};
+	image: url(:/icons/light/light/check_default.svg);
+}
+
+QCheckBox::indicator:checked:hover {
+	background-color: {{ accent.accent_600 }};
+}
+
+QCheckBox::indicator:checked:disabled {
+	background-color: {{ accent.accent_100 }};
+}
+
+
+/* LineEdits */
+QLineEdit {
+	border-radius: 8px;
+	border: 1px solid {{ neutral.neutral_100 }};
+	background-color: {{ neutral.neutral_0 }};
+	color: {{ neutral.neutral_500 }};
+	padding: 0px 16px;
+	font-size: 12pt;
+}
+
+QLineEdit:hover {
+	border: 1px solid {{ neutral.neutral_150 }};
+	color: {{ neutral.neutral_700 }};
+}
+
+QLineEdit:focus {
+	border: 1px solid {{ accent.accent_500 }};
+	color: {{ neutral.neutral_900 }};
+}
+
+QLineEdit:disabled {
+	border: 1px solid {{ neutral.neutral_50 }};
+	color: {{ neutral.neutral_900 }};
+}
+
+
+/* Notifications */
+#Notification {
+	background-color: transparent;
+    border: none;
+}
+
+#notification_container {
+	background-color: {{ neutral.neutral_0 }};
+	border-radius: 8px;
+    border: 1px solid {{ neutral.neutral_100 }};
+	padding: 1px;
+}
+
+#Notification #label {
+	color: {{ neutral.neutral_900 }};
+}
+
+#Notification #description {
+	color: {{ neutral.neutral_700 }};
+}
+
+#Notification #notify_type_line_frame {
+    border-radius: 4px;
+	margin: 4px 0px 4px 4px;
+}
+
+#Notification #close_pushButton {
+	background-color: transparent;
+	border-radius: 0px;
+}
+
+/* Success */
+#Notification[notificationType="success"] #notify_type_line_frame {
+	background-color: {{ semantic.success.success_500 }};
+}
+
+/* Info */
+#Notification[notificationType="info"] #notify_type_line_frame {
+	background-color: {{ semantic.info.info_500 }};
+}
+
+/* Warning */
+#Notification[notificationType="warning"] #notify_type_line_frame {
+	background-color: {{ semantic.warning.warning_500 }};
+}
+
+/* Error */
+#Notification[notificationType="error"] #notify_type_line_frame {
+	background-color: {{ semantic.error.error_500 }};
+}
+
+
+/* Email Confirm Window */
+QFrame#emailConfirmContainer {
+    border-radius: 8px;
+    background-color: {{ neutral.neutral_0 }};
+}
+
+/* Create Department Window */
+QFrame#createDepartmentContainer {
+    border-radius: 8px;
+    background-color: {{ neutral.neutral_0 }};
+}
+
+/* Edit Department Window */
+QFrame#editDepartmentContainer {
+    border-radius: 8px;
+    background-color: {{ neutral.neutral_0 }};
+}
+
+/* Create Category Window */
+QFrame#createCategoryContainer {
+    border-radius: 8px;
+    background-color: {{ neutral.neutral_0 }};
+}
+
+/* Edit Category Window */
+QFrame#editCategoryContainer {
+    border-radius: 8px;
+    background-color: {{ neutral.neutral_0 }};
+}
+
+/* Editor Window */
+QFrame#editorContainer {
+	border: 1px solid {{ neutral.neutral_100 }};
+    border-radius: 8px;
+    background-color: {{ neutral.neutral_0 }};
+}
+
+QFrame#line, QFrame#line_2, QFrame#line_5 {
+    background-color: {{ neutral.neutral_50 }};
+	border: none;
+	min-width: 1px;
+	max-width: 1px;
+}
+
+#title_label {
+    color: {{ neutral.neutral_900 }};
+    font-size: 14pt;
+}
+
+#document_code_lineEdit, #document_name_lineEdit {
+	color: {{ neutral.neutral_900 }};
+    font-size: 12pt;
+}
+
+
+/* Delete Info Window */
+QFrame#deleteInfoContainer {
+    border-radius: 8px;
+	border: 1px solid {{ neutral.neutral_100 }};
+    background-color: {{ neutral.neutral_0 }};
+}
+
+#deleteInfoContainer QFrame#info_frame {
+	border-radius: 8px;
+	background-color: {{ accent.accent_100 }};
+}
+
+#deleteInfoContainer QFrame#text_frame,
+#deleteInfoContainer QFrame#icon_frame, 
+#deleteInfoContainer #icon_label,
+#deleteInfoContainer #title_label,
+#deleteInfoContainer #text_label {
+    background-color: transparent;
+}
+
+#deleteInfoContainer #title_label {
+    color: {{ accent.accent_500 }};
+}
+
+#deleteInfoContainer #text_label {
+    color: {{ neutral.neutral_700 }};
+}
+
+
+
+/* MAIN APPLICATION */
+
+/* Sidebar */
+SidebarBlock {
+	background-color: {{ neutral.neutral_0 }};
+	selection-background-color: {{ accent.accent_500 }};
+
+	qproperty-badgeBackgroundColor: transparent;
+	qproperty-badgeTextColor: {{ neutral.neutral_300 }};
+	qproperty-badgeBackgroundSelectedColor: {{ neutral.neutral_0 }};
+	qproperty-badgeTextSelectedColor: {{ neutral.neutral_900 }};
+	qproperty-badgeBackgroundHoverColor: {{ neutral.neutral_150 }};
+	qproperty-badgeTextHoverColor: {{ neutral.neutral_800 }};
+	
+	qproperty-disabledTextColor: {{ neutral.neutral_100 }};
+	qproperty-hoverBackgroundColor: {{ neutral.neutral_50 }};
+
+	qproperty-groupTextColor: {{ neutral.neutral_900 }};
+	qproperty-groupTextHoverColor: {{ neutral.neutral_600 }};
+
+	qproperty-itemTextColor: {{ neutral.neutral_600 }};
+	qproperty-itemTextHoverColor: {{ neutral.neutral_800 }};
+	qproperty-itemTextSelectedColor: {{ neutral.neutral_0 }};
+
+	qproperty-groupIcon: url(:/icons/light/light/arrow_default.svg);
+	qproperty-groupIconHover: url(:/icons/light/light/arrow_hover.svg);
+}
+
+QFrame#sidebar_frame {
+	border-right: 1px solid {{ neutral.neutral_100 }};
+}
+
+/* Logo */
+QFrame#logo_frame {
+	border-bottom: 1px solid {{ neutral.neutral_100 }};
+}
+
+/* Profile */
+QFrame#profile_frame {
+	border-top: 1px solid {{ neutral.neutral_100 }};
+}
+
+QLabel#profile_name_label {
+	color: {{ neutral.neutral_800 }};
+	font-size: 12pt;
+}
+
+QLabel#profile_info_label {
+	color: {{ neutral.neutral_600 }};
+	font-size: 10pt;
+}
+
+IconLabel#profile_arrow_label {
+	qproperty-icon: url(:/icons/light/light/arrow_default.svg);
+	qproperty-iconRotation: 90;
+}
+
+
+/* Navbar */
+QFrame#navbar_frame {
+	border-bottom: 1px solid {{ neutral.neutral_100 }};
+}
+
+
+/* Content */
+QFrame#main_content_frame {
+	background-color: {{ neutral.neutral_50 }};
+}
+
+
+/* Theme Switch */
+#themeSwitch {
+	background-color: transparent;
+	border: none;
+	/* Shadow: blur=10, color=black 10% (approx 26 alpha) */
+	qproperty-knobShadowBlur: 10;
+	qproperty-knobShadowColor: rgba(0, 0, 0, 26);
+}
+
+#themeSwitchTrack {
+	background-color: {{ neutral.neutral_0 }};
+	border: 1px solid {{ neutral.neutral_100 }};
+	border-radius: 8px;
+}
+
+#themeSwitchKnob {
+	background-color: {{ neutral.neutral_0 }};
+	border-radius: 12px;
+}
+
+#themeSwitchLabel {
+	color: {{ neutral.neutral_600 }};
+	font-size: 12pt;
+	background-color: transparent;
+}
+
+#themeSwitch[hovered="true"] #themeSwitchTrack {
+    background-color: {{ neutral.neutral_50 }};
+    border-color: {{ neutral.neutral_200 }};
+}
+#themeSwitch[hovered="true"] {
+    qproperty-knobShadowColor: rgba(0, 0, 0, 51);
+}
+
+#themeSwitch:pressed #themeSwitchKnob {
+	background-color: {{ neutral.neutral_0 }};
+}
+
+
+/* Profile Menu (Popover) */
+ThemeAwareMenu {
+	background-color: {{ neutral.neutral_0 }};
+	border: 1px solid {{ neutral.neutral_100 }};
+	border-radius: 8px;
+	padding: 8px;
+}
+
+/* Danger Label */
+QLabel[danger="true"] {
+	color: {{ accent.accent_500 }};
+}
+
+/* Menu Item Widget */
+MenuItemWidget {
+    background-color: transparent;
+    border-radius: 4px;
+}
+MenuItemWidget[hovered="true"][is_disabled="false"] {
+    background-color: {{ neutral.neutral_50 }};
+}
+MenuItemWidget[pressed="true"][is_disabled="false"] {
+    background-color: {{ neutral.neutral_200 }};
+}
+
+/* Menu Item Text Colors */
+MenuItemWidget QLabel { color: {{ neutral.neutral_800 }}; }
+MenuItemWidget[hovered="true"] QLabel { color: {{ neutral.neutral_900 }}; }
+MenuItemWidget[pressed="true"] QLabel { color: {{ neutral.neutral_900 }}; }
+MenuItemWidget[is_disabled="true"] QLabel { color: {{ neutral.neutral_300 }}; }
+
+/* Danger Text Overrides */
+MenuItemWidget QLabel[danger="true"] { color: {{ accent.accent_500 }}; }
+MenuItemWidget[hovered="true"] QLabel[danger="true"] { color: {{ accent.accent_600 }}; }
+MenuItemWidget[pressed="true"] QLabel[danger="true"] { color: {{ accent.accent_400 }}; }
+
+
+/* Toolbar */
+QFrame#toolbar_frame {
+	border-radius: 8px;
+	background-color: {{ neutral.neutral_0 }};
+}
+
+
+/* Document Table */
+DocumentsTableView {
+	background-color: {{ neutral.neutral_0 }};
+	alternate-background-color: {{ neutral.neutral_50 }};
+
+	border: 1px solid {{ neutral.neutral_150 }};
+	border-radius: 8px;
+
+	font-size: 12pt;
+	color: {{ neutral.neutral_800 }};
+}
+
+/* Header */
+DocumentsTableView QHeaderView::section {
+	background-color: {{ neutral.neutral_100 }};
+
+	border: none;
+	border-bottom: 1px solid {{ neutral.neutral_150 }};
+	border-right: 1px solid {{ neutral.neutral_150 }};
+
+	min-height: 48px;
+
+	font-size: 12pt;
+	color: {{ neutral.neutral_900 }};
+}
+
+DocumentsTableView QHeaderView::section:last {
+	border-right: none;
+}
+
+/* Cells */
+DocumentsTableView::item {
+	padding: 2px 16px;
+	border-right: 1px solid {{ neutral.neutral_100 }};
+}
+
+DocumentsTableView::item:last {
+	border-right: none;
+}
+
+DocumentsTableView::item:hover {
+	background-color: {{ accent.accent_100 }};
+	color: {{ neutral.neutral_900 }};
+}
+
+DocumentsTableView::item:selected {
+	background-color: {{ accent.accent_300 }};
+	color: {{ neutral.neutral_0 }};
+}
+
+/* ScrollBar */
+/* Vertically */
+QScrollBar:vertical {
+	border: none;
+	background: transparent;
+	width: 14px;
+	margin: 2px;
+}
+
+QScrollBar::handle:vertical {
+	background-color: {{ accent.accent_500 }};
+	min-height: 20px;
+	border-radius: 5px;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    border: none;
+    background: none;
+    height: 0px;
+}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+	background: transparent;
+}
+
+/* Horizontally */
+QScrollBar:horizontal {
+	border: none;
+	background: transparent;
+	height: 14px;
+	margin: 2px;
+}
+
+QScrollBar::handle:horizontal {
+	background-color: {{ accent.accent_500 }};
+	min-width: 20px;
+	border-radius: 5px;
+}
+
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+	border: none;
+	background: none;
+	width: 0px;
+}
+
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+	background: transparent;
+}

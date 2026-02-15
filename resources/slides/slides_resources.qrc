@@ -1,0 +1,16 @@
+<RCC>
+  <qresource prefix="light">
+    <file>light/slide_1.svg</file>
+    <file>light/slide_2.svg</file>
+    <file>light/slide_3.svg</file>
+    <file>light/slide_4.svg</file>
+    <file>light/slide_5.svg</file>
+  </qresource>
+  <qresource prefix="dark">
+    <file>dark/slide_1.svg</file>
+    <file>dark/slide_2.svg</file>
+    <file>dark/slide_3.svg</file>
+    <file>dark/slide_4.svg</file>
+    <file>dark/slide_5.svg</file>
+  </qresource>
+</RCC>

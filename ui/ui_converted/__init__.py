@@ -1,0 +1,12 @@
+from .auth import Ui_MainWindow as AuthWindow_UI
+from .main import Ui_MainWindow as MainWindow_UI
+from .edit_document import Ui_Dialog as DocumentEditor_UI
+from .edit_category import Ui_Dialog as EditCategory_UI
+from .create_category import Ui_Dialog as CreateCategory_UI
+from .edit_department import Ui_Dialog as EditDepartment_UI
+from .create_department import Ui_Dialog as CreateDepartment_UI
+from .toast_notification import Ui_ToastNotification as ToastNotification_UI
+
+from .delete_info import Ui_Dialog as DeleteInfo_UI
+from .delete_confirm import Ui_Dialog as DeleteConfirm_UI
+from .email_confirm import Ui_Dialog as EmailConfirm_UI

@@ -1,0 +1,467 @@
+{
+    "paths": {
+        "themes_path": "ui/styles/themes/",
+        "templates_path": "ui/styles/templates/"
+    },
+
+    "themes": {
+        "0": "light",
+        "1": "dark"
+    },
+
+    "notifications": {
+        "spacing": 10,
+        "toast_duration": 5000
+    },
+
+    "tokens": {
+        "light_theme": {
+            "accent": {
+                "accent_700": "#7A1F1F",
+                "accent_600": "#A32929",
+                "accent_500": "#CC3333",
+                "accent_400": "#D65C5C",
+                "accent_300": "#E08585",
+                "accent_100": "#F5D6D6"
+            },
+
+            "neutral": {
+                "neutral_900": "#1A1A1A",
+                "neutral_800": "#333333",
+                "neutral_700": "#4D4D4D",
+                "neutral_600": "#666666",
+                "neutral_500": "#808080",
+                "neutral_400": "#999999",
+                "neutral_300": "#B3B3B3",
+                "neutral_200": "#CCCCCC",
+                "neutral_150": "#D9D9D9",
+                "neutral_100": "#E6E6E6",
+                "neutral_50": "#F2F2F2",
+                "neutral_0": "#FFFFFF"
+            },
+
+            "semantic": {
+                "info": {
+                    "info_700": "#1F367A",
+                    "info_500": "#3359CC",
+                    "info_300": "#859CE0",
+                    "info_100": "#D6D9F5"
+                },
+
+                "success": {
+                    "success_700": "#267339",
+                    "success_500": "#40BF60",
+                    "success_300": "#8CD99F",
+                    "success_100": "#D9F2DF"
+                },
+
+                "warning": {
+                    "warning_700": "#7A541F",
+                    "warning_500": "#CC8C33",
+                    "warning_300": "#E1BA84",
+                    "warning_100": "#F5E8D6"
+                },
+
+                "error": {
+                    "error_700": "#521A15",
+                    "error_500": "#A33329",
+                    "error_300": "#D6665C",
+                    "error_100": "#EBB2AD"
+                }
+            }
+        },
+        "dark_theme": {
+            "accent": {
+                "accent_700": "#5D1717",
+                "accent_600": "#852222",
+                "accent_500": "#C43A3A",
+                "accent_400": "#D65A5A",
+                "accent_300": "#E38282",
+                "accent_100": "#F3C7C7"
+            },
+
+            "neutral": {
+                "neutral_900": "#E6E6E6",
+                "neutral_800": "#CCCCCC",
+                "neutral_700": "#B3B3B3",
+                "neutral_600": "#999999",
+                "neutral_500": "#808080",
+                "neutral_400": "#666666",
+                "neutral_350": "#595959",
+                "neutral_300": "#4D4D4D",
+                "neutral_250": "#404040",
+                "neutral_200": "#333333",
+                "neutral_100": "#262626",
+                "neutral_0": "#1A1A1A"
+            },
+
+            "semantic": {
+                "info": {
+                    "info_700": "#172A63",
+                    "info_500": "#2C4DA8",
+                    "info_300": "#6E81D1",
+                    "info_100": "#AFB9EE"
+                },
+
+                "success": {
+                    "success_700": "#1E5A2D",
+                    "success_500": "#33A84F",
+                    "success_300": "#70C789",
+                    "success_100": "#B6E7C6"
+                },
+
+                "warning": {
+                    "warning_700": "#5F4019",
+                    "warning_500": "#B27A2B",
+                    "warning_300": "#D2A568",
+                    "warning_100": "#E3CFA5"
+                },
+
+                "error": {
+                    "error_700": "#441511",
+                    "error_500": "#8F2C23",
+                    "error_300": "#C1534A",
+                    "error_100": "#E39D98"
+                }
+            }
+        }
+    },
+
+    "icons": {
+        "logo": {
+            "light": ":/light/logo_light.svg",
+            "dark": ":/dark/logo_dark.svg"
+        },
+        "profile": {
+            "guest": {
+                "light": ":/icons/light/light/profile_guest.svg",
+                "dark": ":/icons/dark/dark/profile_guest.svg"
+            },
+            "auth": {
+                "light": ":/icons/light/light/profile_auth.svg",
+                "dark": ":/icons/dark/dark/profile_auth.svg"
+            }
+        },
+        "close": {
+            "light": {
+                "default": ":/icons/light/light/close_default.svg",
+                "hover": ":/icons/light/light/close_hover.svg",
+                "pressed": ":/icons/light/light/close_clicked.svg",
+                "disabled": ":/icons/light/light/close_disabled.svg"
+            },
+            "dark": {
+                "default": ":/icons/dark/dark/close_default.svg",
+                "hover": ":/icons/dark/dark/close_hover.svg",
+                "pressed": ":/icons/dark/dark/close_clicked.svg",
+                "disabled": ":/icons/dark/dark/close_disabled.svg"
+            }
+        },
+        "sidebar": {
+            "edit": {
+                "light": {
+                    "default": ":/icons/light/light/edit_sidebar_default.svg",
+                    "hover": ":/icons/light/light/edit_sidebar_hover.svg",
+                    "pressed": ":/icons/light/light/edit_sidebar_clicked.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/edit_sidebar_default.svg",
+                    "hover": ":/icons/dark/dark/edit_sidebar_hover.svg",
+                    "pressed": ":/icons/dark/dark/edit_sidebar_clicked.svg"
+                }
+            }
+        },
+        "navbar": {
+            "search_input": {
+                "light": {
+                    "default": ":/icons/light/light/search_default.svg",
+                    "hover": ":/icons/light/light/search_hover.svg",
+                    "focus": ":/icons/light/light/search_active.svg",
+                    "disabled": ":/icons/light/light/search_disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/search_default.svg",
+                    "hover": ":/icons/dark/dark/search_hover.svg",
+                    "focus": ":/icons/dark/dark/search_active.svg",
+                    "disabled": ":/icons/dark/dark/search_disabled.svg"
+                }
+            },
+            "search_filter": {
+                "light": {
+                    "default": ":/icons/light/light/search_filter_default.svg",
+                    "hover": ":/icons/light/light/search_filter_hover.svg",
+                    "pressed": ":/icons/light/light/search_filter_clicked.svg",
+                    "disabled": ":/icons/light/light/search_filter_disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/search_filter_default.svg",
+                    "hover": ":/icons/dark/dark/search_filter_hover.svg",
+                    "pressed": ":/icons/dark/dark/search_filter_clicked.svg",
+                    "disabled": ":/icons/dark/dark/search_filter_disabled.svg"
+                }
+            },
+            "create": {
+                "light": ":/icons/light/light/create_default.svg",
+                "dark": {
+                    "default": ":/icons/dark/dark/create_default.svg",
+                    "disabled": ":/icons/dark/dark/create_disabled.svg"
+                }
+            },
+            "arrow_create": {
+                "light": ":/icons/light/light/arrow_create.svg",
+                "dark": ":/icons/dark/dark/arrow_create.svg"
+            }
+        },
+        "menu": {
+            "profile": {
+                "light": {
+                    "default": ":/icons/light/light/profile_default.svg",
+                    "hover": ":/icons/light/light/profile_hover.svg",
+                    "pressed": ":/icons/light/light/profile_pressed.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/profile_default.svg",
+                    "hover": ":/icons/dark/dark/profile_hover.svg",
+                    "pressed": ":/icons/dark/dark/profile_pressed.svg"
+                }
+            },
+            "settings": {
+                "light": {
+                    "default": ":/icons/light/light/settings_default.svg",
+                    "hover": ":/icons/light/light/settings_hover.svg",
+                    "pressed": ":/icons/light/light/settings_pressed.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/settings_default.svg",
+                    "hover": ":/icons/dark/dark/settings_hover.svg",
+                    "pressed": ":/icons/dark/dark/settings_pressed.svg"
+                }
+            },
+            "logout": {
+                "light": {
+                    "default": ":/icons/light/light/exit_default.svg",
+                    "hover": ":/icons/light/light/exit_hover.svg",
+                    "pressed": ":/icons/light/light/exit_pressed.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/exit_default.svg",
+                    "hover": ":/icons/dark/dark/exit_hover.svg",
+                    "pressed": ":/icons/dark/dark/exit_pressed.svg"
+                }
+            }
+        },
+        "toolbar": {
+            "add_page": {
+                "light": {
+                    "default": ":/icons/light/light/add_page_default.svg",
+                    "hover": ":/icons/light/light/add_page_hover.svg",
+                    "pressed": ":/icons/light/light/add_page_clicked.svg",
+                    "disabled": ":/icons/light/light/add_page_disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/add_page_default.svg",
+                    "hover": ":/icons/dark/dark/add_page_hover.svg",
+                    "pressed": ":/icons/dark/dark/add_page_clicked.svg",
+                    "disabled": ":/icons/dark/dark/add_page_disabled.svg"
+                }
+            },
+            "update": {
+                "light": {
+                    "default": ":/icons/light/light/update_default.svg",
+                    "hover": ":/icons/light/light/update_hover.svg",
+                    "pressed": ":/icons/light/light/update_clicked.svg",
+                    "disabled": ":/icons/light/light/update_disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/update_default.svg",
+                    "hover": ":/icons/dark/dark/update_hover.svg",
+                    "pressed": ":/icons/dark/dark/update_clicked.svg",
+                    "disabled": ":/icons/dark/dark/update_disabled.svg"
+                }
+            },
+            "edit": {
+                "light": {
+                    "default": ":/icons/light/light/edit_default.svg",
+                    "hover": ":/icons/light/light/edit_hover.svg",
+                    "pressed": ":/icons/light/light/edit_clicked.svg",
+                    "disabled": ":/icons/light/light/edit_disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/edit_default.svg",
+                    "hover": ":/icons/dark/dark/edit_hover.svg",
+                    "pressed": ":/icons/dark/dark/edit_clicked.svg",
+                    "disabled": ":/icons/dark/dark/edit_disabled.svg"
+                }
+            },
+            "show_pages": {
+                "light": {
+                    "default": ":/icons/light/light/pages_default.svg",
+                    "hover": ":/icons/light/light/pages_hover.svg",
+                    "pressed": ":/icons/light/light/pages_clicked.svg",
+                    "disabled": ":/icons/light/light/pages_disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/pages_default.svg",
+                    "hover": ":/icons/dark/dark/pages_hover.svg",
+                    "pressed": ":/icons/dark/dark/pages_clicked.svg",
+                    "disabled": ":/icons/dark/dark/pages_disabled.svg"
+                }
+            },
+            "duplicate": {
+                "light": {
+                    "default": ":/icons/light/light/duplicate_default.svg",
+                    "hover": ":/icons/light/light/duplicate_hover.svg",
+                    "pressed": ":/icons/light/light/duplicate_clicked.svg",
+                    "disabled": ":/icons/light/light/duplicate_disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/duplicate_default.svg",
+                    "hover": ":/icons/dark/dark/duplicate_hover.svg",
+                    "pressed": ":/icons/dark/dark/duplicate_clicked.svg",
+                    "disabled": ":/icons/dark/dark/duplicate_disabled.svg"
+                }
+            },
+            "import": {
+                "light": {
+                    "default": ":/icons/light/light/import_default.svg",
+                    "hover": ":/icons/light/light/import_hover.svg",
+                    "pressed": ":/icons/light/light/import_clicked.svg",
+                    "disabled": ":/icons/light/light/import_disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/import_default.svg",
+                    "hover": ":/icons/dark/dark/import_hover.svg",
+                    "pressed": ":/icons/dark/dark/import_clicked.svg",
+                    "disabled": ":/icons/dark/dark/import_disabled.svg"
+                }
+            },
+            "export": {
+                "light": {
+                    "default": ":/icons/light/light/export_default.svg",
+                    "hover": ":/icons/light/light/export_hover.svg",
+                    "pressed": ":/icons/light/light/export_clicked.svg",
+                    "disabled": ":/icons/light/light/export_disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/export_default.svg",
+                    "hover": ":/icons/dark/dark/export_hover.svg",
+                    "pressed": ":/icons/dark/dark/export_clicked.svg",
+                    "disabled": ":/icons/dark/dark/export_disabled.svg"
+                }
+            },
+            "print": {
+                "light": {
+                    "default": ":/icons/light/light/print_default.svg",
+                    "hover": ":/icons/light/light/print_hover.svg",
+                    "pressed": ":/icons/light/light/print_clicked.svg",
+                    "disabled": ":/icons/light/light/print_disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/print_default.svg",
+                    "hover": ":/icons/dark/dark/print_hover.svg",
+                    "pressed": ":/icons/dark/dark/print_clicked.svg",
+                    "disabled": ":/icons/dark/dark/print_disabled.svg"
+                }
+            },
+            "table_view": {
+                "light": {
+                    "default": ":/icons/light/light/table_default.svg",
+                    "hover": ":/icons/light/light/table_hover.svg",
+                    "pressed": ":/icons/light/light/table_clicked.svg",
+                    "disabled": ":/icons/light/light/table_disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/table_default.svg",
+                    "hover": ":/icons/dark/dark/table_hover.svg",
+                    "pressed": ":/icons/dark/dark/table_clicked.svg",
+                    "disabled": ":/icons/dark/dark/table_disabled.svg"
+                }
+            },
+            "blocks_view": {
+                "light": {
+                    "default": ":/icons/light/light/blocks_default.svg",
+                    "hover": ":/icons/light/light/blocks_hover.svg",
+                    "pressed": ":/icons/light/light/blocks_clicked.svg",
+                    "disabled": ":/icons/light/light/blocks_disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/blocks_default.svg",
+                    "hover": ":/icons/dark/dark/blocks_hover.svg",
+                    "pressed": ":/icons/dark/dark/blocks_clicked.svg",
+                    "disabled": ":/icons/dark/dark/blocks_disabled.svg"
+                }
+            },
+            "back": {
+                "light": {
+                    "default": ":/icons/light/light/back_default.svg",
+                    "hover": ":/icons/light/light/back_hover.svg",
+                    "pressed": ":/icons/light/light/back_clicked.svg",
+                    "disabled": ":/icons/light/light/back_disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/back_default.svg",
+                    "hover": ":/icons/dark/dark/back_hover.svg",
+                    "pressed": ":/icons/dark/dark/back_clicked.svg",
+                    "disabled": ":/icons/dark/dark/back_disabled.svg"
+                }
+            },
+            "trash": {
+                "light": {
+                    "default": ":/icons/light/light/trash_default.svg",
+                    "hover": ":/icons/light/light/trash_hover.svg",
+                    "pressed": ":/icons/light/light/trash_clicked.svg",
+                    "disabled": ":/icons/light/light/trash_disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/trash_default.svg",
+                    "hover": ":/icons/dark/dark/trash_hover.svg",
+                    "pressed": ":/icons/dark/dark/trash_clicked.svg",
+                    "disabled": ":/icons/dark/dark/trash_disabled.svg"
+                }
+            }
+        },
+        "documents": {
+            "department": {
+                "light": {
+                    "default": ":/icons/light/light/department_default.svg",
+                    "hover": ":/icons/light/light/department_hover.svg",
+                    "pressed": ":/icons/light/light/department_clicked.svg",
+                    "disabled": ":/icons/light/light/department_disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/department_default.svg",
+                    "hover": ":/icons/dark/dark/department_hover.svg",
+                    "pressed": ":/icons/dark/dark/department_clicked.svg",
+                    "disabled": ":/icons/dark/dark/department_disabled.svg"
+                }
+            },
+            "category": {
+                "light": {
+                    "default": ":/icons/light/light/category_default.svg",
+                    "hover": ":/icons/light/light/category_hover.svg",
+                    "pressed": ":/icons/light/light/category_clicked.svg",
+                    "disabled": ":/icons/light/light/category_disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/category_default.svg",
+                    "hover": ":/icons/dark/dark/category_hover.svg",
+                    "pressed": ":/icons/dark/dark/category_clicked.svg",
+                    "disabled": ":/icons/dark/dark/category_disabled.svg"
+                }
+            },
+            "document": {
+                "light": {
+                    "default": ":/icons/light/light/document_default.svg",
+                    "hover": ":/icons/light/light/document_hover.svg",
+                    "pressed": ":/icons/light/light/document_clicked.svg",
+                    "disabled": ":/icons/light/light/document_disabled.svg"
+                },
+                "dark": {
+                    "default": ":/icons/dark/dark/document_default.svg",
+                    "hover": ":/icons/dark/dark/document_hover.svg",
+                    "pressed": ":/icons/dark/dark/document_clicked.svg",
+                    "disabled": ":/icons/dark/dark/document_disabled.svg"
+                }
+            }
+        }
+    }
+}
