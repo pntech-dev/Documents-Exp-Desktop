@@ -512,6 +512,7 @@ class DocumentEditorView:
         data = {
             "code": self.ui.document_code_lineEdit.text(),
             "name": self.ui.document_name_lineEdit.text(),
+            "tags": self.ui.tags_lineedit_frame.get_tags(),
             "pages": self.pages_table.get_pages()
         }
         
@@ -550,6 +551,16 @@ class DocumentEditorView:
         self.ui.buttons_frame.setVisible(can_edit)
         self.ui.delete_document_pushButton.setVisible(not is_creation)
 
+    
+    def set_document_tags(self, tags: list[str]) -> None:
+        """Sets the document tags.
+
+        Args:
+            tags: A list of tags as strings.
+        """
+        for tag in tags:
+            self.ui.tags_lineedit_frame.add_tag(tag["name"])
+
 
     def set_document_code(self, code: str) -> None:
         """Sets the document code.
@@ -585,6 +596,15 @@ class DocumentEditorView:
             handler: The callback function to execute when the text changes.
         """
         self.ui.document_name_lineEdit.textChanged.connect(handler)
+
+
+    def tags_lineedit_text_changed(self, handler) -> None:
+        """Connects the tags line edit text changed signal to a handler.
+
+        Args:
+            handler: The callback function to execute when the text changes.
+        """
+        self.ui.tags_lineedit_frame.tagsChanged.connect(handler)
 
     
     def toolbar_add_page_button_clicked(self, handler) -> None:

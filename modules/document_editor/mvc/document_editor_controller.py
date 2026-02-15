@@ -277,6 +277,7 @@ class DocumentEditorController:
         is_creation = self.model.document_data.get("id") is None
         self.view.set_mode_visibility(can_edit=can_edit, is_creation=is_creation)
 
+        self._fill_document_tags()
         self._fill_document_data()
         self._fill_pages_table()
 
@@ -285,6 +286,7 @@ class DocumentEditorController:
         """Sets up signal-slot connections."""
         self.view.code_lineedit_text_changed(handler=self._on_document_data_changed)
         self.view.name_lineedit_text_changed(handler=self._on_document_data_changed)
+        self.view.tags_lineedit_text_changed(handler=self._on_document_data_changed)
 
         self.view.toolbar_add_page_button_clicked(handler=self._on_add_page_button_clicked)
         self.view.toolbar_duplicate_page_button_clicked(handler=self._on_duplicate_page_button_clicked)
@@ -301,6 +303,11 @@ class DocumentEditorController:
         self.view.delete_document_button_clicked(handler=self._on_delete_document_button_clicked)
         self.view.cancel_button_clicked(handler=self._on_cancel_button_clicked)
         self.view.save_button_clicked(handler=self._on_save_button_clicked)
+
+
+    def _fill_document_tags(self) -> None:
+        """Fills the document tags with data."""
+        self.view.set_document_tags(tags=self.model.document_data.get("tags", []))
 
     
     def _fill_document_data(self) -> None:

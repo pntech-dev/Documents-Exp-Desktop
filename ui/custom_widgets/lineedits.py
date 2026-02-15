@@ -166,6 +166,7 @@ class IconLineEdit(QLineEdit):
         self._update_icon()
 
 
+
 class TagsLineEdit(QFrame):
     """
     Custom widget for entering tags.
