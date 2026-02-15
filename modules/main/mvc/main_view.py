@@ -594,7 +594,7 @@ class DocumentsList:
         self.table_view = table_view
         
         # Default headers configuration
-        self.headers = ["Код", "Наименование"]
+        self.headers = ["Код", "Наименование", "Теги"]
         self.table_view.set_headers(self.headers)
 
 
@@ -605,7 +605,8 @@ class DocumentsList:
         for row in range(model.rowCount()):
             data.append({
                 "code": model.index(row, 0).data(),
-                "name": model.index(row, 1).data()
+                "name": model.index(row, 1).data(),
+                "tags": model.index(row, 2).data()
             })
         return data
     

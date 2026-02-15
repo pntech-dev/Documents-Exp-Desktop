@@ -2,13 +2,14 @@ from PyQt5.QtGui import (
     QResizeEvent, QFocusEvent, QIcon
 )
 from PyQt5.QtCore import (
-    Qt, QEvent
+    Qt, QEvent, pyqtSignal
 )
 from PyQt5.QtWidgets import (
-    QLineEdit, QWidget, QLabel
+    QLineEdit, QWidget, QLabel, QFrame, QHBoxLayout, QSizePolicy
 )
 
 from utils import ThemeManagerInstance
+from .tags import DeletableTag
 
 
 
@@ -163,3 +164,137 @@ class IconLineEdit(QLineEdit):
     def _on_theme_changed(self, theme_id: str) -> None:
         """Handles theme change events."""
         self._update_icon()
+
+
+class TagsLineEdit(QFrame):
+    """
+    Custom widget for entering tags.
+    It contains a list of tags, an input field, and a counter.
+    """
+    tagsChanged = pyqtSignal(list)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setAttribute(Qt.WA_StyledBackground, True)
+        
+        self._tags = []
+        self._max_tags = 5
+        
+        # Layout
+        self._layout = QHBoxLayout(self)
+        self._layout.setContentsMargins(16, 2, 16, 2)
+        self._layout.setSpacing(8)
+        
+        # Line Edit
+        self.line_edit = QLineEdit()
+        self.line_edit.setObjectName("tagsInputLineEdit")
+        self.line_edit.setFrame(False)
+        self.line_edit.setAttribute(Qt.WA_MacShowFocusRect, False)
+        self.line_edit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        self.line_edit.installEventFilter(self)
+        self.line_edit.textChanged.connect(self._on_text_changed)
+        self.line_edit.returnPressed.connect(self._on_return_pressed)
+        
+        self._layout.addWidget(self.line_edit)
+        
+        # Counter
+        self.counter_label = QLabel(f"0/{self._max_tags}")
+        self.counter_label.setObjectName("tagsCounterLabel")
+        self.counter_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
+        self._layout.addWidget(self.counter_label)
+
+
+    def get_tags(self):
+        return self._tags
+
+    def add_tag(self, text):
+        if len(self._tags) >= self._max_tags:
+            return
+
+        if text in self._tags:
+             self.line_edit.clear()
+             return
+
+        tag = DeletableTag(text)
+        tag.deleteRequested.connect(lambda: self.remove_tag(tag))
+        
+        # Inserting the tag in front of the input field
+        idx = self._layout.indexOf(self.line_edit)
+        self._layout.insertWidget(idx, tag)
+        
+        self._tags.append(text)
+        self._update_counter()
+        self.tagsChanged.emit(self._tags)
+        
+        if len(self._tags) >= self._max_tags:
+            self.line_edit.clear()
+            self.line_edit.setPlaceholderText("Достигнут максимум тегов")
+            self.line_edit.setEnabled(False)
+
+    def remove_tag(self, tag_widget):
+        text = tag_widget.text()
+        if text in self._tags:
+            self._tags.remove(text)
+            self._layout.removeWidget(tag_widget)
+            tag_widget.deleteLater()
+            self._update_counter()
+            self.tagsChanged.emit(self._tags)
+            
+            if not self.line_edit.isEnabled():
+                self.line_edit.setEnabled(True)
+                self.line_edit.setPlaceholderText("")
+                self.line_edit.setFocus()
+
+    def _on_text_changed(self, text):
+        if not text:
+            return
+            
+        if text.endswith(" "):
+            tag_text = text.strip()
+            if tag_text:
+                self.add_tag(tag_text)
+            self.line_edit.clear()
+
+    def _on_return_pressed(self):
+        text = self.line_edit.text().strip()
+        if text:
+            self.add_tag(text)
+            self.line_edit.clear()
+
+    def _update_counter(self):
+        self.counter_label.setText(f"{len(self._tags)}/{self._max_tags}")
+
+    def eventFilter(self, obj, event):
+        if obj == self.line_edit:
+            if event.type() == QEvent.FocusIn:
+                self.setProperty("focused", True)
+                self.style().unpolish(self)
+                self.style().polish(self)
+            elif event.type() == QEvent.FocusOut:
+                self.setProperty("focused", False)
+                self.style().unpolish(self)
+                self.style().polish(self)
+            elif event.type() == QEvent.KeyPress:
+                # Deleting the last tag by Backspace if the field is empty
+                if event.key() == Qt.Key_Backspace and not self.line_edit.text():
+                    if self._tags:
+                        idx = self._layout.indexOf(self.line_edit)
+                        if idx > 0:
+                            item = self._layout.itemAt(idx - 1)
+                            widget = item.widget()
+                            if isinstance(widget, DeletableTag):
+                                self.remove_tag(widget)
+        
+        return super().eventFilter(obj, event)
+    
+    def enterEvent(self, event):
+        self.setProperty("hovered", True)
+        self.style().unpolish(self)
+        self.style().polish(self)
+        super().enterEvent(event)
+
+    def leaveEvent(self, event):
+        self.setProperty("hovered", False)
+        self.style().unpolish(self)
+        self.style().polish(self)
+        super().leaveEvent(event)

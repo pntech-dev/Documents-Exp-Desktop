@@ -321,6 +321,80 @@ QLineEdit:disabled {
 	color: {{ neutral.neutral_900 }};
 }
 
+/* Tags lineedit */
+TagsLineEdit {
+	border-radius: 8px;
+	border: 1px solid {{ neutral.neutral_100 }};
+	background-color: {{ neutral.neutral_0 }};
+}
+
+TagsLineEdit[hovered="true"] {
+	border: 1px solid {{ neutral.neutral_150 }};
+}
+
+TagsLineEdit[focused="true"] {
+	border: 1px solid {{ accent.accent_500 }};
+}
+
+TagsLineEdit[disabled="true"] {
+	border: 1px solid {{ neutral.neutral_50 }};
+}
+
+QLineEdit#tagsInputLineEdit {
+	border: none;
+	background-color: {{ neutral.neutral_0 }};
+	color: {{ neutral.neutral_500 }};
+	padding: 0px;
+	font-size: 12pt;
+}
+
+QLineEdit#tagsInputLineEdit:hover {
+	color: {{ neutral.neutral_700 }};
+}
+
+QLineEdit#tagsInputLineEdit:focus {
+	color: {{ neutral.neutral_900 }};
+}
+
+QLineEdit#tagsInputLineEdit:disabled {
+	color: {{ neutral.neutral_50 }};
+}
+
+QLabel#tagsCounterLabel {
+	color: {{ neutral.neutral_300 }};
+	font-size: 12pt;
+}
+
+
+/* Tags */
+DeletableTag {
+	border-radius: 4px;
+	border: 1px solid {{ neutral.neutral_100 }};
+	background-color: {{ neutral.neutral_50 }};
+
+	qproperty-closeIconDefault: url(:/icons/light/light/close_default.svg);
+	qproperty-closeIconHover: url(:/icons/light/light/close_hover.svg);
+	qproperty-closeIconPressed: url(:/icons/light/light/close_clicked.svg);
+	qproperty-closeIconDisabled: url(:/icons/light/light/close_disabled.svg);
+}
+
+DeletableTag QLabel#tagLabel {
+	color: {{ neutral.neutral_800 }};
+	font-size: 12pt;
+	background-color: {{ neutral.neutral_50 }};
+	padding-bottom: 2px;
+}
+
+DeletableTag QPushButton#tagCloseButton {
+	border: none;
+	background-color: transparent;
+    border-radius:4px;
+}
+
+DeletableTag QPushButton#tagCloseButton:hover {
+    background-color: {{ neutral.neutral_100 }};
+}
+
 
 /* Notifications */
 #Notification {

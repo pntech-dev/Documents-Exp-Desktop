@@ -417,7 +417,8 @@ class DocumentEditorView:
 
         icons_config = self.ui_config.get("icons", {})
 
-        # Set the is_danger property to the delete button
+        # Set the is_danger property to the generate tags and delete button
+        self.ui.generate_tags_pushButton.set_danger(is_danger=True)
         self.ui.delete_document_pushButton.set_danger(is_danger=True)
         
         # Setting icon for close window button
@@ -434,6 +435,22 @@ class DocumentEditorView:
             dark_hover=close_cfg.get("dark", {}).get("hover"),
             dark_pressed=close_cfg.get("dark", {}).get("pressed"),
             dark_disabled=close_cfg.get("dark", {}).get("disabled")
+        )
+
+        # Setting icon for generate tags button
+        generate_tags_cfg = icons_config.get("stick", {})
+        self.ui.generate_tags_pushButton.set_icon_paths(
+            # Light theme
+            light_default=generate_tags_cfg.get("light", {}).get("default"),
+            light_hover=generate_tags_cfg.get("light", {}).get("hover"),
+            light_pressed=generate_tags_cfg.get("light", {}).get("pressed"),
+            light_disabled=generate_tags_cfg.get("light", {}).get("disabled"),
+
+            # Dark theme
+            dark_default=generate_tags_cfg.get("dark", {}).get("default"),
+            dark_hover=generate_tags_cfg.get("dark", {}).get("hover"),
+            dark_pressed=generate_tags_cfg.get("dark", {}).get("pressed"),
+            dark_disabled=generate_tags_cfg.get("dark", {}).get("disabled")
         )
 
         self.toolbar = EditorToolBar(
