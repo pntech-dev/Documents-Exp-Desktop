@@ -197,6 +197,7 @@ class MainModel:
     # Model Methods
     # ====================
 
+
     def _make_authorized_request(self, api_method, **kwargs):
         """Executes an API request with automatic token refresh on 401."""
         try:

@@ -298,6 +298,7 @@ class _DeptDelegate(QStyledItemDelegate):
         # Text (with elide so it doesn't overlap the badge)
         title = str(index.data(Qt.DisplayRole) or "")
         font = QFont(option.font)
+        font.setPointSize(10)
         if is_selected and not is_group and not disabled:
             font.setWeight(QFont.Bold)
         painter.setFont(font)
@@ -307,7 +308,7 @@ class _DeptDelegate(QStyledItemDelegate):
         text_rect = QRect(x, y, max(0, text_right - x), h)
 
         fm = QFontMetrics(font)
-        elided = fm.elidedText(title, Qt.ElideRight, text_rect.width())
+        elided = fm.elidedText(title, Qt.ElideMiddle, text_rect.width())
         painter.drawText(text_rect, Qt.AlignVCenter | Qt.AlignLeft, elided)
 
         painter.restore()

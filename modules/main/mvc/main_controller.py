@@ -631,6 +631,7 @@ class MainController(QObject):
         data.sort(key=self._get_natural_sort_key)
         return data
 
+
     def _on_search_finished(self, data: list) -> None:
         """Handles successful search completion."""
         # Ignore results from stale workers (if a new search started)
@@ -647,11 +648,13 @@ class MainController(QObject):
         self._add_popular_tags()
         self.view.set_export_print_enabled(len(self.current_documents) > 0)
 
+
     def _on_search_error(self, error: Exception) -> None:
         """Handles search errors."""
         if self.sender() != self.search_worker:
             return
         self._handle_error(error, "Ошибка поиска")
+
 
     # ====================
     # Controller Methods

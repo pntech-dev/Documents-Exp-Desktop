@@ -1131,6 +1131,7 @@ class MainView(QObject):
         """Sets the active search tags for highlighting in the table."""
         self.documents_list.set_active_tags(tags)
 
+
     def set_export_print_enabled(self, enabled: bool) -> None:
         """Sets the enabled state of export and print buttons."""
         self.toolbar.set_export_print_enabled(enabled)
