@@ -246,6 +246,7 @@ class Navbar:
             theme_switch: ThemeSwitch,
             create_pushButton: PrimaryButton,
             create_popover_pushButton: PrimaryButton,
+            finded_label: QLabel,
             icons_config: dict
     ) -> None:
         """Initializes the Navbar manager.
@@ -262,6 +263,7 @@ class Navbar:
         self.theme_switch = theme_switch
         self.create_pushButton = create_pushButton
         self.create_popover_pushButton = create_popover_pushButton
+        self.finded_label = finded_label
         self.config = icons_config.get("navbar", {})
 
         # Setting icon fot search line
@@ -347,6 +349,11 @@ class Navbar:
     def set_create_document_enabled(self, enabled: bool) -> None:
         """Sets the enabled state of the create document button."""
         self.create_pushButton.setEnabled(enabled)
+
+
+    def set_finded_counter(self, counter: int) -> None:
+        """"""
+        self.finded_label.setText(f"Найдено: {counter}")
 
     
     def search_lineedit_text_changed(self, handler) -> None:
@@ -688,7 +695,6 @@ class MainView(QObject):
         # Disabled until the next update
         for ui_element in[
             self.ui.search_filters_pushButton,
-            self.ui.navbar_info_frame,
             self.ui.change_view_pushButton,
             self.ui.profile_info_label
         ]:
@@ -726,6 +732,7 @@ class MainView(QObject):
             theme_switch=self.ui.theme_pushButton,
             create_pushButton=self.ui.create_pushButton,
             create_popover_pushButton=self.ui.create_popover_pushButton,
+            finded_label=self.ui.finded_label,
             icons_config=icons_config
         )
 
@@ -960,14 +967,6 @@ class MainView(QObject):
         return self.navbar.search_lineedit.text()  
 
 
-    def set_theme(self) -> None:
-        """Switches the application's theme.
-
-        Delegates the theme switching logic to the theme manager instance.
-        """
-        self.theme_manager.switch_theme()
-
-
     def update_departments(self, items: list[SidebarItem]) -> None:
         """Updates the departments tree in the sidebar.
 
@@ -1015,6 +1014,14 @@ class MainView(QObject):
         self.toolbar.update_edit_button_state(is_enabled=state)
 
 
+    def set_theme(self) -> None:
+        """Switches the application's theme.
+
+        Delegates the theme switching logic to the theme manager instance.
+        """
+        self.theme_manager.switch_theme()
+
+
     def set_profile_mode(self, mode: str) -> None:
         """Sets the profile mode ('guest' or 'auth')."""
         self.current_mode = mode
@@ -1056,6 +1063,11 @@ class MainView(QObject):
             dept: The user's department as a string.
         """
         self.sidebar.set_user_department(dept=dept)
+
+
+    def set_finded_counter(self, counter: int) -> None:
+        """"""
+        self.navbar.set_finded_counter(counter)
 
 
     def select_department(self, dept_id: int) -> None:

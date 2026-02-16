@@ -634,6 +634,7 @@ class MainController(QObject):
             
         self.current_documents = data
         self.view.update_documents_table(documents=data)
+        self.view.set_finded_counter(len(self.current_documents))
 
     def _on_search_error(self, error: Exception) -> None:
         """Handles search errors."""
@@ -744,6 +745,7 @@ class MainController(QObject):
         self.has_more = True
         self.current_documents = []
         self.view.clear_documents_table()
+        self.view.set_finded_counter(0)
         
         self._load_more_documents()
 
@@ -780,6 +782,7 @@ class MainController(QObject):
             self.offset += self.limit
             self.current_documents.extend(new_docs)
             self.view.append_documents_table(new_docs)
+            self.view.set_finded_counter(len(self.current_documents))
 
             # If content still fits in view (no scrollbar), try loading more to fill the screen
             if self.has_more and self.view.ui.tableView.verticalScrollBar().maximum() <= 0:

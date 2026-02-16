@@ -28,7 +28,7 @@ IconLabel {
 	font-size: 10pt;
 }
 
-IconLabel#fided_label {
+IconLabel#finded_label {
 	qproperty-icon: url(:/icons/dark/dark/finded_default.svg);
 }
 
