@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import (
     QDialog, 
     QVBoxLayout,
-    QGraphicsDropShadowEffect
+    QGraphicsDropShadowEffect,
+    QCheckBox
 )
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIntValidator, QColor
@@ -44,6 +45,7 @@ class CreateDepartment(BaseModalDialog):
         # Reparent UI frames into container
         self.ui.texts_frame.setParent(container)
         self.ui.name_frame.setParent(container)
+        self.ui.name_frame.layout().addWidget(self.ui.all_docs_checkBox)
         self.ui.buttons_frame.setParent(container)
 
         # === Shadow ===
@@ -66,7 +68,7 @@ class CreateDepartment(BaseModalDialog):
 
     
     @staticmethod
-    def get_name(parent=None):
+    def get_data(parent=None):
         """Creates, shows the dialog, and returns the entered name.
 
         This static method provides a convenient way to use the dialog. It
@@ -76,12 +78,12 @@ class CreateDepartment(BaseModalDialog):
             parent (QWidget, optional): The parent widget. Defaults to None.
 
         Returns:
-            str: The new department name if the user clicks 'Accept'.
+            tuple: (name, has_all_docs_search) if the user clicks 'Accept'.
             None: If the user cancels or closes the dialog.
         """
         dialog = CreateDepartment(parent)
         if dialog.exec_() == QDialog.Accepted:
-            return dialog.get_department_name()
+            return dialog.get_department_name(), dialog.ui.all_docs_checkBox.isChecked()
         
         return None
     

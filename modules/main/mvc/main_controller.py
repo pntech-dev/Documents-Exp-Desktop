@@ -77,8 +77,8 @@ class MainController(QObject):
         # Setup Notification Service
         NotificationService().set_main_window(self.window)
 
-        self._init_ui()
         self._setup_connections()
+        self._init_ui()
 
 
     # ====================
@@ -130,13 +130,14 @@ class MainController(QObject):
     def _on_craete_department_clicked(self) -> None:
         """"Handles the create department action button click."""
         try:
-            # Show create department window
-            department_name = CreateDepartment.get_name(parent=self.window)
+            # Show create department window (returns tuple)
+            result = CreateDepartment.get_data(parent=self.window)
 
-            if not department_name:
+            if not result:
                 return
-
-            data = self.model.create_department(name=department_name)
+            
+            department_name, has_all_docs = result
+            data = self.model.create_department(name=department_name, has_all_docs_search=has_all_docs)
             new_id = data.get("id")
 
             if new_id:
@@ -207,11 +208,13 @@ class MainController(QObject):
         if department:
             try:
                 current_name = department.get("name", "")
-                action, new_name = EditDepartment.show_dialog(parent=self.window, current_name=current_name)
+                current_has_all_docs = department.get("has_all_docs_search", False)
+                action, result = EditDepartment.show_dialog(parent=self.window, current_name=current_name, current_has_all_docs=current_has_all_docs)
                 
                 if action == "edit":
-                    if new_name and new_name != current_name:
-                        self.model.edit_department(name=new_name, department_id=int(dept_id))
+                    if result:
+                        new_name, new_has_all_docs = result
+                        self.model.edit_department(name=new_name, department_id=int(dept_id), has_all_docs_search=new_has_all_docs)
                         self.model.refresh_data()
 
                         logger.info(f"Department updated: {new_name}")
@@ -577,7 +580,13 @@ class MainController(QObject):
         # Remove tags from query to get clean text
         clean_query = re.sub(r'@[^\s]+', '', query).strip()
 
-        search_result = self.model.search_data(query=clean_query, tags=tags)
+        cat_id = self.model.current_category_id
+        group_id = None
+        if isinstance(cat_id, str) and cat_id.startswith("virtual_"):
+            group_id = int(cat_id.split("_")[1])
+            cat_id = None
+
+        search_result = self.model.search_data(query=clean_query, tags=tags, category_id=cat_id, group_id=group_id)
 
         # Optimization: Create a lookup map for documents
         docs_map = {
@@ -681,7 +690,6 @@ class MainController(QObject):
             self.view.set_user_department("Войдите в аккаунт")
 
         # Set documents data
-        self._update_documents_list()
         self._update_create_category_state()
         self._update_create_document_state()
 
@@ -750,6 +758,18 @@ class MainController(QObject):
     def _update_categories_list(self) -> None:
         """Updates the categories list based on the current department."""
         cat_items = []
+        
+        # Check for virtual category "All Documents"
+        current_dept = next((d for d in self.model.departments if str(d["id"]) == str(self.model.current_department_id)), None)
+        if current_dept and current_dept.get("has_all_docs_search"):
+            cat_items.append(SidebarItem(
+                id=f"virtual_{current_dept['id']}",
+                title="Все документы",
+                count=current_dept.get("documents_count", 0),
+                icon=None,
+                editable=False
+            ))
+
         for cat in self.model.categories:
             if self.model.current_department_id is not None and cat.get(
                 "group_id"
@@ -790,7 +810,14 @@ class MainController(QObject):
 
         self.is_loading = True
         try:
-            docs = self.model.fetch_documents(self.model.current_category_id, self.limit, self.offset)
+            cat_id = self.model.current_category_id
+            group_id = None
+            
+            if isinstance(cat_id, str) and cat_id.startswith("virtual_"):
+                group_id = int(cat_id.split("_")[1])
+                cat_id = None
+
+            docs = self.model.fetch_documents(category_id=cat_id, group_id=group_id, limit=self.limit, offset=self.offset)
             
             if not docs:
                 self.has_more = False
@@ -847,6 +874,10 @@ class MainController(QObject):
                 
                 # Restore category
                 cat_exists = any(c["id"] == saved_cat_id for c in self.model.categories)
+                
+                if not cat_exists and isinstance(saved_cat_id, str) and saved_cat_id.startswith("virtual_"):
+                    cat_exists = True
+
                 if cat_exists:
                     self.view.select_category(saved_cat_id)
                 else:
@@ -922,7 +953,9 @@ class MainController(QObject):
 
     def _update_create_document_state(self) -> None:
         """Updates the state of the create document button."""
-        state = self.model.current_category_id is not None
+        # Disable creation if virtual category is selected
+        cat_id = self.model.current_category_id
+        state = cat_id is not None and not (isinstance(cat_id, str) and cat_id.startswith("virtual_"))
         self.view.set_document_creation_enabled(state)
 
 

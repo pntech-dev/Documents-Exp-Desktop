@@ -168,6 +168,18 @@
     </widget>
    </item>
    <item>
+    <widget class="QCheckBox" name="all_docs_checkBox">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Отображать категорию &quot;Все документы&quot;</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QFrame" name="buttons_frame">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
@@ -246,17 +258,17 @@
   <customwidget>
    <class>PrimaryButton</class>
    <extends>QPushButton</extends>
-   <header>.custom_widgets</header>
+   <header>..custom_widgets</header>
   </customwidget>
   <customwidget>
    <class>TertiaryButton</class>
    <extends>QPushButton</extends>
-   <header>.custom_widgets</header>
+   <header>..custom_widgets</header>
   </customwidget>
   <customwidget>
    <class>IconLineEdit</class>
    <extends>QLineEdit</extends>
-   <header>.custom_widgets</header>
+   <header>..custom_widgets</header>
   </customwidget>
  </customwidgets>
  <resources>

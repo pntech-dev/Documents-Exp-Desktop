@@ -290,7 +290,7 @@ class APIClient:
         )
     
 
-    def get_documents(self, category_id: int = None, limit: int = 50, offset: int = 0) -> dict:   
+    def get_documents(self, category_id: int = None, group_id: int = None, limit: int = 50, offset: int = 0) -> dict:   
         """Retrieves the list of documents.
 
         Returns:
@@ -299,6 +299,8 @@ class APIClient:
         params = {"limit": limit, "offset": offset}
         if category_id is not None:
             params["category_id"] = category_id
+        if group_id is not None:
+            params["group_id"] = group_id
 
         return self._request("GET", url=self.base_url + "/app/documents", params=params)
     
@@ -346,23 +348,26 @@ class APIClient:
         )
     
 
-    def search_data(self, category_id: int, query: str, tags: list[str] = None) -> dict:
+    def search_data(self, query: str, category_id: int = None, group_id: int = None, tags: list[str] = None) -> dict:
         """Searches the data based on the provided query.
 
         Args:
             category_id (int): The ID of the category.
+            group_id (int): The ID of the department (group).
             query (str): The search query.
 
         Returns:
             dict: The JSON response containing the search results.
         """
+        params = {"query": query, "tags": tags}
+        if category_id is not None:
+            params["category_id"] = category_id
+        if group_id is not None:
+            params["group_id"] = group_id
+
         return self._request("GET",
-            url=self.base_url + f"/app/category_search",
-            params={
-                "category_id": category_id, 
-                "query": query,
-                "tags": tags
-            }
+            url=self.base_url + f"/app/search",
+            params=params
         )
     
 

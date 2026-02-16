@@ -23,6 +23,7 @@ ROLE_ID = Qt.UserRole + 1
 ROLE_COUNT = Qt.UserRole + 2
 ROLE_DISABLED = Qt.UserRole + 3
 ROLE_IS_GROUP = Qt.UserRole + 4
+ROLE_EDITABLE = Qt.UserRole + 5
 
 
 @dataclass
@@ -33,6 +34,7 @@ class SidebarItem:
     count: int = 0
     icon: QIcon | None = None
     disabled: bool = False
+    editable: bool = True
 
 
 def _create_color_property(private_name: str) -> pyqtProperty:
@@ -96,6 +98,8 @@ class _DeptDelegate(QStyledItemDelegate):
         disabled = bool(index.data(ROLE_DISABLED) or False) or not (
             option.state & QStyle.State_Enabled
         )
+        editable_val = index.data(ROLE_EDITABLE)
+        is_editable = True if editable_val is None else bool(editable_val)
         is_selected = bool(option.state & QStyle.State_Selected)
         is_hover = bool(option.state & QStyle.State_MouseOver)
         palette = option.palette
@@ -198,7 +202,7 @@ class _DeptDelegate(QStyledItemDelegate):
 
         # Edit Button (only for selected items)
         edit_btn_w = 0
-        if is_selected and not is_group and not disabled:
+        if is_selected and not is_group and not disabled and is_editable:
             edit_icon = QIcon()
             if view and hasattr(view, "get_edit_icon"):
                 edit_icon = view.get_edit_icon(index)
@@ -449,6 +453,7 @@ class SidebarBlock(QTreeView):
             std.setData(it.id, ROLE_ID)
             std.setData(int(it.count), ROLE_COUNT)
             std.setData(bool(it.disabled), ROLE_DISABLED)
+            std.setData(bool(it.editable), ROLE_EDITABLE)
 
             if it.disabled:
                 std.setFlags(Qt.NoItemFlags)
@@ -600,7 +605,10 @@ class SidebarBlock(QTreeView):
                 # Check edit button press
                 is_selected = self.selectionModel().isSelected(index)
                 if is_selected and not is_group:
-                    if self._is_over_edit_button(event.pos(), index):
+                    editable_val = index.data(ROLE_EDITABLE)
+                    is_editable = True if editable_val is None else bool(editable_val)
+
+                    if is_editable and self._is_over_edit_button(event.pos(), index):
                         self._edit_pressed_idx = QPersistentModelIndex(index)
                         self.viewport().update(self.visualRect(index))
 
@@ -631,7 +639,10 @@ class SidebarBlock(QTreeView):
             is_selected = self.selectionModel().isSelected(index)
             is_group = index.data(ROLE_IS_GROUP)
             if is_selected and not is_group:
-                if self._is_over_edit_button(event.pos(), index):
+                editable_val = index.data(ROLE_EDITABLE)
+                is_editable = True if editable_val is None else bool(editable_val)
+
+                if is_editable and self._is_over_edit_button(event.pos(), index):
                     if old_hover != index:
                         self._edit_hovered_idx = QPersistentModelIndex(index)
                         self.viewport().update(self.visualRect(index))

@@ -28,11 +28,6 @@ class MainModel:
         self.categories = self._get_categories()
         
         self.current_category_id = None
-        if self.current_department_id and self.categories:
-            for cat in self.categories:
-                if cat.get("group_id") == self.current_department_id:
-                    self.current_category_id = cat["id"]
-                    break
 
         # Table data
         self.documents = [] # Will be loaded via pagination
@@ -65,18 +60,18 @@ class MainModel:
         return pages["pages"]
     
 
-    def create_department(self, name: str) -> dict:
+    def create_department(self, name: str, has_all_docs_search: bool = False) -> dict:
         """Create new department"""
-        data = {"name": name}
+        data = {"name": name, "has_all_docs_search": has_all_docs_search}
         return self._make_authorized_request(
             self.api.create_department, 
             data=data
         )
 
 
-    def edit_department(self, name: str, department_id: int):
+    def edit_department(self, name: str, department_id: int, has_all_docs_search: bool = False):
         """Edit department data"""
-        data = {"name": name}
+        data = {"name": name, "has_all_docs_search": has_all_docs_search}
         return self._make_authorized_request(
             self.api.edit_department, 
             data=data, 
@@ -131,28 +126,35 @@ class MainModel:
 
     def fetch_documents(
             self, 
-            category_id: int, 
-            limit: int, 
-            offset: int
+            category_id: int = None, 
+            group_id: int = None,
+            limit: int = 50, 
+            offset: int = 0
     ) -> list[dict]:
         """Fetches a page of documents for a specific category."""
         response = self.api.get_documents(
             category_id=category_id, 
+            group_id=group_id,
             limit=limit, 
             offset=offset
         )
         return response.get("documents", [])
 
 
-    def search_data(self, query: str, tags: list[str] = None) -> list[dict]:
+    def search_data(self, query: str, tags: list[str] = None, category_id: int = None, group_id: int = None) -> list[dict]:
         """Searches the data based on the provided query and tags."""
         results = []
 
         if not query and not tags:
             return results
 
+        target_category_id = category_id
+        if target_category_id is None and group_id is None:
+            target_category_id = self.current_category_id
+
         results = self.api.search_data(
-            category_id=self.current_category_id, 
+            category_id=target_category_id,
+            group_id=group_id,
             query=query,
             tags=tags
         )
