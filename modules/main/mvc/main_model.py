@@ -144,16 +144,17 @@ class MainModel:
         return response.get("documents", [])
 
 
-    def search_data(self, query: str) -> list[dict]:
-        """Searches the data based on the provided query."""
+    def search_data(self, query: str, tags: list[str] = None) -> list[dict]:
+        """Searches the data based on the provided query and tags."""
         results = []
 
-        if not query:
+        if not query and not tags:
             return results
 
         results = self.api.search_data(
             category_id=self.current_category_id, 
-            query=query
+            query=query,
+            tags=tags
         )
 
         return results

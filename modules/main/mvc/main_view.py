@@ -333,6 +333,7 @@ class Navbar:
             dark_pressed=dark_arrow_create,
             dark_disabled=dark_arrow_create
         )
+        self._tag_handler = None
 
     def set_ui_visible(self, is_visible: bool) -> None:
         """Enables or disables UI elements visibility.
@@ -363,6 +364,14 @@ class Navbar:
         """"""
         layout = self.tags_frame.layout()
         
+        # Parse current search text to find active tags
+        current_text = self.search_lineedit.text()
+        active_tags = set()
+        if current_text:
+            for word in current_text.split():
+                if word.startswith("@"):
+                    active_tags.add(word[1:])
+
         # Clear existing FilterTags
         for i in reversed(range(layout.count())):
             widget = layout.itemAt(i).widget()
@@ -372,7 +381,16 @@ class Navbar:
         # Add new
         for tag_text in tags:
             tag = FilterTag(tag_text, parent=self.tags_frame)
+            
+            if tag_text in active_tags:
+                tag.set_selected(True)
+
+            tag.toggled.connect(self._on_tag_toggled)
             layout.addWidget(tag)
+
+    def _on_tag_toggled(self, checked: bool, text: str) -> None:
+        if self._tag_handler:
+            self._tag_handler(checked, text)
 
     
     def search_lineedit_text_changed(self, handler) -> None:
@@ -986,6 +1004,10 @@ class MainView(QObject):
         """Returns the search line edit text."""
         return self.navbar.search_lineedit.text()  
 
+    def set_search_text(self, text: str) -> None:
+        """Sets the search line edit text."""
+        self.navbar.search_lineedit.setText(text)
+
 
     def update_departments(self, items: list[SidebarItem]) -> None:
         """Updates the departments tree in the sidebar.
@@ -1147,6 +1169,11 @@ class MainView(QObject):
         self.navbar.create_document_button_clicked(handler)
         if self.create_document_action:
             self.create_document_action.triggered.connect(handler)
+
+
+    def connect_filter_tag_toggled(self, handler):
+        """"""
+        self.navbar._tag_handler = handler
 
 
     def connect_logout(self, handler) -> None:

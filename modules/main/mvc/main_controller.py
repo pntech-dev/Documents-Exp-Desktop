@@ -572,7 +572,12 @@ class MainController(QObject):
     
     def _search_data_task(self, query: str, current_docs: list) -> list:
         """Background task logic for searching."""
-        search_result = self.model.search_data(query=query)
+        # Extract tags from query (e.g. "@tag")
+        tags = re.findall(r'@([^\s]+)', query)
+        # Remove tags from query to get clean text
+        clean_query = re.sub(r'@[^\s]+', '', query).strip()
+
+        search_result = self.model.search_data(query=clean_query, tags=tags)
 
         # Optimization: Create a lookup map for documents
         docs_map = {
@@ -688,6 +693,7 @@ class MainController(QObject):
         self.view.connect_create_button(self._on_create_button_clicked)
         self.view.connect_create_department(self._on_craete_department_clicked)
         self.view.connect_create_category(self._on_craete_category_clicked)
+        self.view.connect_filter_tag_toggled(self._on_filter_tag_toggled)
 
         # Toolbar Buttons
         self.view.connect_update_button(self._on_update_button_clicked)
@@ -698,6 +704,21 @@ class MainController(QObject):
         self.view.connect_document_selection(self._on_document_selected)
         self.view.connect_document_double_click(self._on_document_double_clicked)
         self.view.connect_documents_scroll(self._on_table_scroll)
+
+    def _on_filter_tag_toggled(self, checked: bool, text: str) -> None:
+        """Handles filter tag toggle event."""
+        tag_query = f"@{text}"
+        current_text = self.view.get_search_text()
+        parts = current_text.split()
+
+        if checked:
+            if tag_query not in parts:
+                parts.append(tag_query)
+        else:
+            if tag_query in parts:
+                parts.remove(tag_query)
+        
+        self.view.set_search_text(" ".join(parts))
 
 
     def _load_sidebar_data(self) -> None:

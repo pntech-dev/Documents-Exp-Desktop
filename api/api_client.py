@@ -346,7 +346,7 @@ class APIClient:
         )
     
 
-    def search_data(self, category_id: int, query: str) -> dict:
+    def search_data(self, category_id: int, query: str, tags: list[str] = None) -> dict:
         """Searches the data based on the provided query.
 
         Args:
@@ -358,7 +358,11 @@ class APIClient:
         """
         return self._request("GET",
             url=self.base_url + f"/app/category_search",
-            params={"category_id": category_id, "query": query}
+            params={
+                "category_id": category_id, 
+                "query": query,
+                "tags": tags
+            }
         )
     
 
