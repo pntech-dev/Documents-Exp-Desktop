@@ -390,6 +390,37 @@ Tag[active="true"] QLabel#tagLabel {
 	background-color: #F5D6D6;
 }
 
+/* Filter Tag */
+FilterTag {
+	border-radius: 11px;
+	border: 1px solid #E6E6E6;
+	background-color: #F2F2F2;
+}
+
+FilterTag QLabel#filterTagLabel {
+	color: #666666;
+	font-size: 10pt;
+	background-color: transparent;
+}
+
+FilterTag[hovered="true"] {
+	border: 1px solid #B3B3B3;
+	background-color: #D9D9D9;
+}
+
+FilterTag[hovered="true"] QLabel#filterTagLabel {
+	color: #4D4D4D;
+}
+
+FilterTag[selected="true"] {
+	border: 1px solid #CC3333;
+	background-color: #F5D6D6;
+}
+
+FilterTag[selected="true"] QLabel#filterTagLabel {
+	color: #A32929;
+}
+
 DeletableTag {
 	border-radius: 4px;
 	border: 1px solid #E6E6E6;

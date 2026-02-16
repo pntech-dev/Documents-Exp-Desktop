@@ -1,7 +1,7 @@
 import json
 
 from pathlib import Path
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QFrame, QHBoxLayout
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QEvent, Qt, QObject, QPoint, QItemSelectionModel
 
@@ -17,7 +17,8 @@ from ui.custom_widgets import (
     ProfileIconLabel,
     ThemeAwareMenu,
     DocumentsTableView,
-    ROLE_ID
+    ROLE_ID,
+    FilterTag
 )
 
 
@@ -247,6 +248,7 @@ class Navbar:
             create_pushButton: PrimaryButton,
             create_popover_pushButton: PrimaryButton,
             finded_label: QLabel,
+            tags_frame: QFrame,
             icons_config: dict
     ) -> None:
         """Initializes the Navbar manager.
@@ -264,6 +266,7 @@ class Navbar:
         self.create_pushButton = create_pushButton
         self.create_popover_pushButton = create_popover_pushButton
         self.finded_label = finded_label
+        self.tags_frame = tags_frame
         self.config = icons_config.get("navbar", {})
 
         # Setting icon fot search line
@@ -354,6 +357,22 @@ class Navbar:
     def set_finded_counter(self, counter: int) -> None:
         """"""
         self.finded_label.setText(f"Найдено: {counter}")
+
+
+    def set_popular_tags(self, tags: list[str]) -> None:
+        """"""
+        layout = self.tags_frame.layout()
+        
+        # Clear existing FilterTags
+        for i in reversed(range(layout.count())):
+            widget = layout.itemAt(i).widget()
+            if isinstance(widget, FilterTag):
+                widget.deleteLater()
+        
+        # Add new
+        for tag_text in tags:
+            tag = FilterTag(tag_text, parent=self.tags_frame)
+            layout.addWidget(tag)
 
     
     def search_lineedit_text_changed(self, handler) -> None:
@@ -733,6 +752,7 @@ class MainView(QObject):
             create_pushButton=self.ui.create_pushButton,
             create_popover_pushButton=self.ui.create_popover_pushButton,
             finded_label=self.ui.finded_label,
+            tags_frame = self.ui.tags_frame,
             icons_config=icons_config
         )
 
@@ -1068,6 +1088,11 @@ class MainView(QObject):
     def set_finded_counter(self, counter: int) -> None:
         """"""
         self.navbar.set_finded_counter(counter)
+
+
+    def set_popular_tags(self, tags: list[str]) -> None:
+        """"""
+        self.navbar.set_popular_tags(tags)
 
 
     def select_department(self, dept_id: int) -> None:

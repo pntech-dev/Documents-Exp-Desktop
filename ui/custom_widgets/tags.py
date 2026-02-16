@@ -20,7 +20,7 @@ class Tag(QFrame):
         
         # Layout
         self._layout = QHBoxLayout(self)
-        self._layout.setContentsMargins(8, 0, 8, 0)
+        self._layout.setContentsMargins(8, 2, 8, 2)
         self._layout.setSpacing(0)
 
         # Label
@@ -169,3 +169,67 @@ class DeletableTag(QFrame):
         
         self.close_btn.setIcon(icon)
         self.close_btn.setIconSize(QSize(12, 12))
+
+
+class FilterTag(QFrame):
+    """
+    Tag filter with support for two states (selected/not selected).
+    When clicked, it changes the state and sends a signal.
+    """
+    toggled = pyqtSignal(bool, str)
+
+    def __init__(self, text: str, parent=None):
+        super().__init__(parent)
+        self.setObjectName("FilterTag")
+        self.setAttribute(Qt.WA_StyledBackground, True)
+        self.setCursor(Qt.PointingHandCursor)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+        self._text = text
+        self._is_selected = False
+        
+        # Layout
+        self._layout = QHBoxLayout(self)
+        self._layout.setContentsMargins(12, 2, 12, 2)
+        self._layout.setSpacing(0)
+
+        # Label
+        self.label = QLabel(text)
+        self.label.setObjectName("filterTagLabel")
+        self.label.setAlignment(Qt.AlignCenter)
+        self.label.setAttribute(Qt.WA_TransparentForMouseEvents, True)
+        self._layout.addWidget(self.label)
+
+    def text(self) -> str:
+        return self._text
+
+    def is_selected(self) -> bool:
+        return self._is_selected
+
+    def set_selected(self, selected: bool) -> None:
+        if self._is_selected == selected:
+            return
+        self._is_selected = selected
+        self.setProperty("selected", selected)
+        self._repolish()
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.set_selected(not self._is_selected)
+            self.toggled.emit(self._is_selected, self._text)
+
+    def enterEvent(self, event):
+        self.setProperty("hovered", True)
+        self._repolish()
+        super().enterEvent(event)
+
+    def leaveEvent(self, event):
+        self.setProperty("hovered", False)
+        self._repolish()
+        super().leaveEvent(event)
+
+    def _repolish(self):
+        self.style().unpolish(self)
+        self.style().polish(self)
+        self.label.style().unpolish(self.label)
+        self.label.style().polish(self.label)

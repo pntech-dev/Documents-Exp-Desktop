@@ -12,4 +12,4 @@ from .table import DocumentsTableView, EditorTableView
 from .checkboxes import ViewPasswordCheckbox
 from .menu import MenuItemWidget, ThemeAwareMenu
 from .treeview import SidebarBlock, SidebarItem, ROLE_ID
-from .tags import DeletableTag, Tag
+from .tags import DeletableTag, Tag, FilterTag

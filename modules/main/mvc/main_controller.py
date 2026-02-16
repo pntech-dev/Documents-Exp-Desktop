@@ -635,6 +635,7 @@ class MainController(QObject):
         self.current_documents = data
         self.view.update_documents_table(documents=data)
         self.view.set_finded_counter(len(self.current_documents))
+        self._add_popular_tags()
 
     def _on_search_error(self, error: Exception) -> None:
         """Handles search errors."""
@@ -783,6 +784,7 @@ class MainController(QObject):
             self.current_documents.extend(new_docs)
             self.view.append_documents_table(new_docs)
             self.view.set_finded_counter(len(self.current_documents))
+            self._add_popular_tags()
 
             # If content still fits in view (no scrollbar), try loading more to fill the screen
             if self.has_more and self.view.ui.tableView.verticalScrollBar().maximum() <= 0:
@@ -864,6 +866,21 @@ class MainController(QObject):
         # Non-empty codes start with 0
         return [0] + parts
     
+    def _add_popular_tags(self) -> None:
+        """Calculates and updates tag statistics for current documents."""
+        tags_count = {}
+        for doc in self.current_documents:
+            for tag in doc.get("tags", []):
+                tag_name = tag.get("name")
+                if tag_name:
+                    tags_count[tag_name] = tags_count.get(tag_name, 0) + 1
+        
+        # Sort by count desc and take top 7
+        sorted_tags = sorted(tags_count.items(), key=lambda item: item[1], reverse=True)
+        top_tags = [tag[0] for tag in sorted_tags[:7]]
+        
+        self.view.set_popular_tags(top_tags)
+
 
     def _update_create_category_state(self) -> None:
         """Updates the state of the create category button."""
