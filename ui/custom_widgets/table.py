@@ -1,20 +1,21 @@
 from PyQt5.QtGui import (
     QPainter, QMouseEvent, QStandardItemModel, 
-    QStandardItem, QPalette
+    QStandardItem, QPalette, QFont, QFontMetrics
 )
 from PyQt5.QtCore import (
     Qt, QModelIndex, QEvent, QRect, pyqtSignal, QAbstractItemModel, QTimer,
-    QPersistentModelIndex, QSize
+    QPersistentModelIndex, QSize, QPoint
 )
 from PyQt5.QtWidgets import (
     QTableView, QWidget, QFrame,
     QAbstractItemView, QStyle, QStyledItemDelegate,
     QStyleOptionViewItem, QHeaderView, QCheckBox,
-    QApplication, QSizePolicy
+    QApplication, QSizePolicy, QHBoxLayout, QLayout
 )
 
 from PyQt5.QtWidgets import QStyleOptionButton
 from utils import ThemeManagerInstance
+from .tags import Tag
 
 
 ROLE_PLACEHOLDER = Qt.UserRole + 99
@@ -137,6 +138,110 @@ class _DragHandleDelegate(_HoverDelegate):
         painter.restore()
 
 
+class FlowLayout(QLayout):
+    """Layout that arranges items in a flow, wrapping to the next line."""
+    def __init__(self, parent=None, margin=0, spacing=-1) -> None:
+        super().__init__(parent)
+        if parent is not None:
+            self.setContentsMargins(margin, margin, margin, margin)
+        self.setSpacing(spacing)
+        self.itemList = []
+
+    def __del__(self):
+        item = self.takeAt(0)
+        while item:
+            item = self.takeAt(0)
+
+    def addItem(self, item):
+        self.itemList.append(item)
+
+    def count(self):
+        return len(self.itemList)
+
+    def itemAt(self, index):
+        if 0 <= index < len(self.itemList):
+            return self.itemList[index]
+        return None
+
+    def takeAt(self, index):
+        if 0 <= index < len(self.itemList):
+            return self.itemList.pop(index)
+        return None
+
+    def expandingDirections(self):
+        return Qt.Orientations(Qt.Orientation(0))
+
+    def hasHeightForWidth(self):
+        return True
+
+    def heightForWidth(self, width):
+        height = self.doLayout(QRect(0, 0, width, 0), True)
+        return height
+
+    def setGeometry(self, rect):
+        super().setGeometry(rect)
+        self.doLayout(rect, False)
+
+    def sizeHint(self):
+        return self.minimumSize()
+
+    def minimumSize(self):
+        size = QSize()
+        for item in self.itemList:
+            size = size.expandedTo(item.minimumSize())
+        left, top, right, bottom = self.getContentsMargins()
+        size += QSize(left + right, top + bottom)
+        return size
+
+    def doLayout(self, rect, testOnly):
+        left, top, right, bottom = self.getContentsMargins()
+        effective_rect = rect.adjusted(left, top, -right, -bottom)
+        x = effective_rect.x()
+        y = effective_rect.y()
+        lineHeight = 0
+        spacing = self.spacing()
+
+        if not testOnly:
+            height = self.doLayout(rect, True)
+            if rect.height() > height:
+                y = effective_rect.y() + (rect.height() - height) // 2
+
+        for item in self.itemList:
+            spaceX = spacing
+            spaceY = spacing
+            nextX = x + item.sizeHint().width() + spaceX
+            if nextX - spaceX > effective_rect.right() and lineHeight > 0:
+                x = effective_rect.x()
+                y = y + lineHeight + spaceY
+                nextX = x + item.sizeHint().width() + spaceX
+                lineHeight = 0
+
+            if not testOnly:
+                item.setGeometry(QRect(QPoint(x, y), item.sizeHint()))
+
+            x = nextX
+            lineHeight = max(lineHeight, item.sizeHint().height())
+
+        return y + lineHeight - rect.y() + bottom
+
+
+class TagsCellWidget(QWidget):
+    """Виджет-контейнер для отображения списка тегов в ячейке таблицы."""
+    tagClicked = pyqtSignal(str)
+
+    def __init__(self, tags: list[str], parent=None):
+        super().__init__(parent)
+        self.setAttribute(Qt.WA_TranslucentBackground)
+        
+        layout = FlowLayout(self, margin=8, spacing=4)
+        layout.setContentsMargins(8, 2, 8, 2)
+
+        for tag_text in tags:
+            tag = Tag(tag_text)
+            tag.clicked.connect(self.tagClicked.emit)
+            layout.addWidget(tag)
+
+
 class CheckBoxHeader(QHeaderView):
     """Header with a checkbox in the first column."""
     toggled = pyqtSignal(bool)
@@ -197,6 +302,8 @@ class DocumentsTableView(QTableView):
     - No grid
     - Alternating row colors
     """
+    tagClicked = pyqtSignal(str)
+
     def __init__(self, parent: QWidget | None = None) -> None:
         """Initializes the custom table view."""
         super().__init__(parent)
@@ -220,7 +327,7 @@ class DocumentsTableView(QTableView):
         self.verticalHeader().setVisible(False)
         self.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
         self.verticalHeader().setMinimumSectionSize(44)
-        self.horizontalHeader().setStretchLastSection(True)
+        self.horizontalHeader().setStretchLastSection(False)
         self.horizontalHeader().setHighlightSections(False)
         self.horizontalHeader().setSortIndicatorShown(False)
         self.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
@@ -261,6 +368,11 @@ class DocumentsTableView(QTableView):
             labels (list[str]): List of header labels.
         """
         self._model.setHorizontalHeaderLabels(labels)
+        # Set the second column (Name) to stretch to fill available space
+        if self.model().columnCount() > 1:
+            # Force disable stretch last section (overrides setupUi settings)
+            self.horizontalHeader().setStretchLastSection(False)
+            self.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
 
     def set_rows(self, rows: list[list]) -> None:
         """
@@ -273,13 +385,38 @@ class DocumentsTableView(QTableView):
         self.setUpdatesEnabled(False)
 
         self._model.removeRows(0, self._model.rowCount())
-        for row_data in rows:
+        
+        tags_col_index = -1
+        max_tags_width = 0
+        tag_font = self.font()
+        tag_font.setPointSize(10)
+
+        for i, row_data in enumerate(rows):
             items = []
-            for value in row_data:
-                item = QStandardItem(str(value))
+            tags_data = None
+            tags_col = -1
+
+            for j, value in enumerate(row_data):
+                if isinstance(value, list):
+                    item = QStandardItem("") # Пустой текст, так как сверху будет виджет
+                    tags_data = value
+                    tags_col = j
+                    tags_col_index = j
+                else:
+                    item = QStandardItem(str(value))
                 item.setEditable(False)
                 items.append(item)
             self._model.appendRow(items)
+
+            if tags_data is not None:
+                self._set_tags_widget(i, tags_col, tags_data)
+                w = self._calculate_tags_width(tags_data, tag_font)
+                if w > max_tags_width:
+                    max_tags_width = w
+        
+        if tags_col_index != -1 and max_tags_width > 0:
+            self.horizontalHeader().setSectionResizeMode(tags_col_index, QHeaderView.Interactive)
+            self.setColumnWidth(tags_col_index, max_tags_width)
 
         self.setUpdatesEnabled(True)
         self.resizeRowsToContents()
@@ -292,14 +429,88 @@ class DocumentsTableView(QTableView):
             rows (list[list]): List of rows to append.
         """
         self.setUpdatesEnabled(False)
-        for row_data in rows:
+        start_row = self._model.rowCount()
+
+        tags_col_index = -1
+        max_tags_width = 0
+        tag_font = self.font()
+        tag_font.setPointSize(10)
+
+        for i, row_data in enumerate(rows):
             items = []
-            for value in row_data:
-                item = QStandardItem(str(value))
+            tags_data = None
+            tags_col = -1
+
+            for j, value in enumerate(row_data):
+                if isinstance(value, list):
+                    item = QStandardItem("")
+                    tags_data = value
+                    tags_col = j
+                    tags_col_index = j
+                else:
+                    item = QStandardItem(str(value))
                 item.setEditable(False)
                 items.append(item)
             self._model.appendRow(items)
+
+            if tags_data is not None:
+                self._set_tags_widget(start_row + i, tags_col, tags_data)
+                w = self._calculate_tags_width(tags_data, tag_font)
+                if w > max_tags_width:
+                    max_tags_width = w
+
+        if tags_col_index != -1 and max_tags_width > 0:
+            # If mode is ResizeToContents (default), force switch to Interactive and set width
+            if self.horizontalHeader().sectionResizeMode(tags_col_index) == QHeaderView.ResizeToContents:
+                self.horizontalHeader().setSectionResizeMode(tags_col_index, QHeaderView.Interactive)
+                self.setColumnWidth(tags_col_index, max_tags_width)
+            else:
+                # If already Interactive, only expand if new content is wider
+                if max_tags_width > self.columnWidth(tags_col_index):
+                    self.setColumnWidth(tags_col_index, max_tags_width)
+
         self.setUpdatesEnabled(True)
+
+    def _set_tags_widget(self, row: int, col: int, tags: list[str]) -> None:
+        """Helper to set the tags widget for a cell."""
+        index = self._model.index(row, col)
+        widget = TagsCellWidget(tags)
+        widget.tagClicked.connect(self.tagClicked.emit)
+        self.setIndexWidget(index, widget)
+        
+        item = self._model.itemFromIndex(index)
+        if item:
+            item.setSizeHint(widget.sizeHint())
+
+    def _calculate_tags_width(self, tags: list[str], font: QFont) -> int:
+        """Calculates the required width for the tags column."""
+        if not tags:
+            return 0
+        
+        fm = QFontMetrics(font)
+        tag_padding = 16 # 8 left + 8 right margins inside Tag widget
+        spacing = 4
+        
+        tag_widths = [fm.horizontalAdvance(t) + tag_padding for t in tags]
+        
+        # Calculate max width of any 2 adjacent tags
+        max_pair_width = 0
+        
+        if len(tag_widths) == 1:
+            max_pair_width = tag_widths[0]
+        else:
+            for i in range(len(tag_widths) - 1):
+                pair_w = tag_widths[i] + tag_widths[i+1] + spacing
+                if pair_w > max_pair_width:
+                    max_pair_width = pair_w
+                    
+        # Also check single largest tag (in case one tag is huge)
+        max_single = max(tag_widths) if tag_widths else 0
+        
+        required_width = max(max_pair_width, max_single)
+        
+        # Widget margins (8+8=16) + Cell Padding (approx 32)
+        return required_width + 16 + 32
 
 
 class EditorTableView(DocumentsTableView):

@@ -620,37 +620,48 @@ class DocumentsList:
         rows = []
         for doc in documents:
             # Extracting data in the order of headers
+            tags = [tag.get("name", "") for tag in doc.get("tags", [])]
+
             row = [
                 doc.get("code", ""),
-                doc.get("name", "")
+                doc.get("name", ""),
+                tags
             ]
             rows.append(row)
         
         self.table_view.set_rows(rows)
 
+
     def append_documents(self, documents: list[dict]) -> None:
         """Appends new documents to the table."""
         rows = []
         for doc in documents:
+            tags = [tag.get("name", "") for tag in doc.get("tags", [])]
+
             row = [
                 doc.get("code", ""),
-                doc.get("name", "")
+                doc.get("name", ""),
+                tags
             ]
             rows.append(row)
         self.table_view.add_rows(rows)
 
+
     def clear(self) -> None:
         """Clears the table."""
         self.table_view.set_rows([])
+
 
     def connect_selection(self, handler) -> None:
         """Connects to the table selection changed signal."""
         if self.table_view.selectionModel():
             self.table_view.selectionModel().selectionChanged.connect(handler)
 
+
     def connect_double_click(self, handler) -> None:
         """Connects to the table double clicked signal."""
         self.table_view.doubleClicked.connect(handler)
+
 
     def connect_scroll_changed(self, handler) -> None:
         """Connects to the vertical scrollbar value changed signal."""

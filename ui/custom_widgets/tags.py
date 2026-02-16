@@ -3,6 +3,46 @@ from PyQt5.QtCore import Qt, pyqtSignal, pyqtProperty, QEvent, QSize
 from PyQt5.QtGui import QIcon
 
 
+class Tag(QFrame):
+    """
+    Обычный тег для отображения и поиска.
+    Поддерживает состояние 'active' для выделения при поиске.
+    """
+    clicked = pyqtSignal(str)
+
+    def __init__(self, text: str, parent=None):
+        super().__init__(parent)
+        self.setObjectName("Tag")
+        self.setAttribute(Qt.WA_StyledBackground, True)
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+
+        self._text = text
+        
+        # Layout
+        self._layout = QHBoxLayout(self)
+        self._layout.setContentsMargins(8, 0, 8, 0)
+        self._layout.setSpacing(0)
+
+        # Label
+        self.label = QLabel(text)
+        self.label.setObjectName("tagLabel")
+        self.label.setAlignment(Qt.AlignCenter)
+        self._layout.addWidget(self.label)
+
+    def text(self) -> str:
+        return self._text
+
+    def set_active(self, active: bool) -> None:
+        """Устанавливает состояние активности тега (например, при поиске)."""
+        self.setProperty("active", "true" if active else "false")
+        self.style().unpolish(self)
+        self.style().polish(self)
+        
+        # Обновляем стиль метки, если он зависит от родителя
+        self.label.style().unpolish(self.label)
+        self.label.style().polish(self.label)
+
+
 class DeletableTag(QFrame):
     """
     Custom tag widget with text and delete button.

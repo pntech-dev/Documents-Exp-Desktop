@@ -299,7 +299,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_6.addWidget(self.toolbar_frame)
         self.tableView = DocumentsTableView(self.main_content_frame)
         self.tableView.setObjectName("tableView")
-        self.tableView.horizontalHeader().setStretchLastSection(True)
+        self.tableView.horizontalHeader().setStretchLastSection(False)
         self.tableView.verticalHeader().setStretchLastSection(False)
         self.verticalLayout_6.addWidget(self.tableView)
         self.verticalLayout_4.addWidget(self.main_content_frame)
