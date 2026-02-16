@@ -624,6 +624,11 @@ class ToolBar:
         self.change_view_button.clicked.connect(self._set_data_view_icon)
         self.change_view_button.clicked.connect(handler)
 
+    def set_export_print_enabled(self, enabled: bool) -> None:
+        """Sets the enabled state of export and print buttons."""
+        self.export_button.setEnabled(enabled)
+        self.print_button.setEnabled(enabled)
+
 
 
 class DocumentsList:
@@ -1125,6 +1130,10 @@ class MainView(QObject):
     def set_active_search_tags(self, tags: list[str]) -> None:
         """Sets the active search tags for highlighting in the table."""
         self.documents_list.set_active_tags(tags)
+
+    def set_export_print_enabled(self, enabled: bool) -> None:
+        """Sets the enabled state of export and print buttons."""
+        self.toolbar.set_export_print_enabled(enabled)
 
 
     def select_department(self, dept_id: int) -> None:

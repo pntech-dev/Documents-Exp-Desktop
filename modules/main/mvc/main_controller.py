@@ -645,6 +645,7 @@ class MainController(QObject):
         self.view.update_documents_table(documents=data)
         self.view.set_finded_counter(len(self.current_documents))
         self._add_popular_tags()
+        self.view.set_export_print_enabled(len(self.current_documents) > 0)
 
     def _on_search_error(self, error: Exception) -> None:
         """Handles search errors."""
@@ -773,6 +774,7 @@ class MainController(QObject):
         self.view.clear_documents_table()
         self.view.set_finded_counter(0)
         self.view.set_active_search_tags([])
+        self.view.set_export_print_enabled(False)
         
         self._load_more_documents()
 
@@ -811,6 +813,7 @@ class MainController(QObject):
             self.view.append_documents_table(new_docs)
             self.view.set_finded_counter(len(self.current_documents))
             self._add_popular_tags()
+            self.view.set_export_print_enabled(len(self.current_documents) > 0)
 
             # If content still fits in view (no scrollbar), try loading more to fill the screen
             if self.has_more and self.view.ui.tableView.verticalScrollBar().maximum() <= 0:
