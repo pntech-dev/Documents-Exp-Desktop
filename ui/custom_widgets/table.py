@@ -229,17 +229,29 @@ class TagsCellWidget(QWidget):
     """Виджет-контейнер для отображения списка тегов в ячейке таблицы."""
     tagClicked = pyqtSignal(str)
 
-    def __init__(self, tags: list[str], parent=None):
+    def __init__(self, tags: list[str], active_tags: set[str] = None, parent=None):
         super().__init__(parent)
         self.setAttribute(Qt.WA_TranslucentBackground)
         
         layout = FlowLayout(self, margin=8, spacing=4)
         layout.setContentsMargins(8, 2, 8, 2)
 
+        active = active_tags or set()
+
         for tag_text in tags:
             tag = Tag(tag_text)
+            if tag_text in active:
+                tag.set_active(True)
             tag.clicked.connect(self.tagClicked.emit)
             layout.addWidget(tag)
+
+    def update_active_tags(self, active_tags: set[str]):
+        layout = self.layout()
+        for i in range(layout.count()):
+            item = layout.itemAt(i)
+            widget = item.widget()
+            if isinstance(widget, Tag):
+                widget.set_active(widget.text() in active_tags)
 
 
 class CheckBoxHeader(QHeaderView):
@@ -308,6 +320,7 @@ class DocumentsTableView(QTableView):
         """Initializes the custom table view."""
         super().__init__(parent)
         
+        self.active_tags = set()
         # Behavior
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.setSelectionMode(QAbstractItemView.ExtendedSelection)
@@ -373,6 +386,17 @@ class DocumentsTableView(QTableView):
             # Force disable stretch last section (overrides setupUi settings)
             self.horizontalHeader().setStretchLastSection(False)
             self.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+
+    def set_active_tags(self, tags: list[str]) -> None:
+        self.active_tags = set(tags)
+        model = self.model()
+        if model:
+            for row in range(model.rowCount()):
+                for col in range(model.columnCount()):
+                    index = model.index(row, col)
+                    widget = self.indexWidget(index)
+                    if isinstance(widget, TagsCellWidget):
+                        widget.update_active_tags(self.active_tags)
 
     def set_rows(self, rows: list[list]) -> None:
         """
@@ -474,7 +498,7 @@ class DocumentsTableView(QTableView):
     def _set_tags_widget(self, row: int, col: int, tags: list[str]) -> None:
         """Helper to set the tags widget for a cell."""
         index = self._model.index(row, col)
-        widget = TagsCellWidget(tags)
+        widget = TagsCellWidget(tags, active_tags=self.active_tags)
         widget.tagClicked.connect(self.tagClicked.emit)
         self.setIndexWidget(index, widget)
         

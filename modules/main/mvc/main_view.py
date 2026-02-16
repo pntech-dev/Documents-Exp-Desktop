@@ -642,6 +642,11 @@ class DocumentsList:
         self.table_view.set_headers(self.headers)
 
 
+    def set_active_tags(self, tags: list[str]) -> None:
+        """Sets the active tags for highlighting."""
+        self.table_view.set_active_tags(tags)
+
+
     def get_table_data(self) -> list[dict]:
         """Returns the table data."""
         data = []
@@ -1115,6 +1120,11 @@ class MainView(QObject):
     def set_popular_tags(self, tags: list[str]) -> None:
         """"""
         self.navbar.set_popular_tags(tags)
+
+
+    def set_active_search_tags(self, tags: list[str]) -> None:
+        """Sets the active search tags for highlighting in the table."""
+        self.documents_list.set_active_tags(tags)
 
 
     def select_department(self, dept_id: int) -> None:

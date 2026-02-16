@@ -637,6 +637,10 @@ class MainController(QObject):
         if self.sender() != self.search_worker:
             return
             
+        search_text = self.view.get_search_text()
+        tags = re.findall(r'@([^\s]+)', search_text)
+        self.view.set_active_search_tags(tags)
+
         self.current_documents = data
         self.view.update_documents_table(documents=data)
         self.view.set_finded_counter(len(self.current_documents))
@@ -768,6 +772,7 @@ class MainController(QObject):
         self.current_documents = []
         self.view.clear_documents_table()
         self.view.set_finded_counter(0)
+        self.view.set_active_search_tags([])
         
         self._load_more_documents()
 
