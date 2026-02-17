@@ -1,7 +1,7 @@
 import json
 
 from pathlib import Path
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QFrame, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QFrame, QHBoxLayout, QAction
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QEvent, Qt, QObject, QPoint, QItemSelectionModel
 
@@ -334,6 +334,64 @@ class Navbar:
             dark_disabled=dark_arrow_create
         )
         self._tag_handler = None
+        
+        self._setup_filter_menu()
+        self.search_filters_pushButton.setEnabled(True)
+
+
+    def get_search_filters(self) -> dict:
+        """Returns the current state of search filters."""
+        return {
+            "include_pages": self.action_search_pages.isChecked(),
+            "search_by_name": self.action_search_name.isChecked(),
+            "search_by_code": self.action_search_code.isChecked(),
+            "exact_match": self.action_exact_match.isChecked()
+        }
+
+
+    def _setup_filter_menu(self) -> None:
+        """Configures the search filter menu."""
+        self.filter_menu = ThemeAwareMenu(self.search_filters_pushButton)
+        
+        # 1. Search Targets
+        self.filter_menu.add_section_header("Область поиска")
+        self.action_search_pages = self.filter_menu.add_theme_action(
+            text="Искать страницы",
+            checkable=True,
+            checked=True
+        )
+
+        # 2. Search Fields
+        self.filter_menu.add_section_header("Поля поиска")
+        self.action_search_code = self.filter_menu.add_theme_action(
+            text="По коду",
+            checkable=True,
+            checked=True
+        )
+
+        self.action_search_name = self.filter_menu.add_theme_action(
+            text="По наименованию",
+            checkable=True,
+            checked=True
+        )
+
+        # 3. Match Mode
+        self.filter_menu.add_section_header("Настройки поиска")
+        self.action_exact_match = self.filter_menu.add_theme_action(
+            text="Точное совпадение",
+            checkable=True,
+            checked=False
+        )
+
+        self.search_filters_pushButton.clicked.connect(self._show_filter_menu)
+
+
+    def _show_filter_menu(self) -> None:
+        """Shows the filter menu."""
+        button = self.search_filters_pushButton
+        # Align to bottom-left of the button
+        pos = button.mapToGlobal(QPoint(0, button.height()))
+        self.filter_menu.exec_(pos)
 
     def set_ui_visible(self, is_visible: bool) -> None:
         """Enables or disables UI elements visibility.
@@ -741,7 +799,6 @@ class MainView(QObject):
 
         # Disabled until the next update
         for ui_element in[
-            self.ui.search_filters_pushButton,
             self.ui.change_view_pushButton,
             self.ui.profile_info_label
         ]:
@@ -1008,6 +1065,11 @@ class MainView(QObject):
     def get_documents_list(self) -> list[dict]:
         """Returns the DocumentsList instance."""
         return self.documents_list.get_table_data()
+    
+
+    def get_search_filters(self) -> dict:
+        """Returns the current search filters."""
+        return self.navbar.get_search_filters()
     
 
     def get_search_text(self) -> str:

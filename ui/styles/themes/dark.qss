@@ -711,6 +711,18 @@ ThemeAwareMenu {
 	padding: 8px;
 }
 
+/* Menu Section Header */
+QLabel#menuSectionLabel {
+    color: #4D4D4D;
+    font-size: 10pt;
+}
+
+/* Menu Seporator */
+QFrame#menuSectionLine {
+	border: none;
+    background-color: #333333;
+}
+
 /* Danger Label */
 QLabel[danger="true"] {
 	color: #C43A3A;
