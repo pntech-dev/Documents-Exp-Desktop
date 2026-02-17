@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>404</width>
-    <height>255</height>
+    <height>300</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -153,6 +153,18 @@
     </widget>
    </item>
    <item>
+    <widget class="QCheckBox" name="guest_show_checkBox">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Доступен в режиме «Гость»</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QCheckBox" name="all_docs_checkBox">
      <property name="font">
       <font>
@@ -160,7 +172,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Отображать категорию &quot;Все документы&quot;</string>
+      <string>Отображать категорию «Все документы»</string>
      </property>
     </widget>
    </item>

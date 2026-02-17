@@ -45,6 +45,7 @@ class CreateDepartment(BaseModalDialog):
         # Reparent UI frames into container
         self.ui.texts_frame.setParent(container)
         self.ui.name_frame.setParent(container)
+        self.ui.guest_show_checkBox.setParent(container)
         self.ui.all_docs_checkBox.setParent(container)
         self.ui.buttons_frame.setParent(container)
 
@@ -78,12 +79,21 @@ class CreateDepartment(BaseModalDialog):
             parent (QWidget, optional): The parent widget. Defaults to None.
 
         Returns:
-            tuple: (name, has_all_docs_search) if the user clicks 'Accept'.
+            tuple: (
+            name - department name,
+            show_for_guest - flag, for showing department for "guests" users,
+            has_all_docs_search - create category with all department documents.
+            ) 
+            if the user clicks 'Accept'.
             None: If the user cancels or closes the dialog.
         """
         dialog = CreateDepartment(parent)
         if dialog.exec_() == QDialog.Accepted:
-            return dialog.get_department_name(), dialog.ui.all_docs_checkBox.isChecked()
+            return (
+                dialog.get_department_name(), 
+                dialog.ui.guest_show_checkBox.isChecked(), 
+                dialog.ui.all_docs_checkBox.isChecked()
+            )
         
         return None
     

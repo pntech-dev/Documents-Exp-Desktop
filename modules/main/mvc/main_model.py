@@ -11,7 +11,8 @@ from utils.file_utils import load_config, read_json
 
 
 class MainModel:
-    def __init__(self) -> None:
+    def __init__(self, mode: str = "guest") -> None:
+        self.mode = mode
         self.config_data = load_config()
 
         # API Client Initialization
@@ -63,10 +64,15 @@ class MainModel:
     def create_department(
             self, 
             name: str, 
+            show_for_guest: bool = False, 
             has_all_docs_search: bool = False
     ) -> dict:
         """Create new department"""
-        data = {"name": name, "has_all_docs_search": has_all_docs_search}
+        data = {
+            "name": name, 
+            "show_for_guest": show_for_guest, 
+            "has_all_docs_search": has_all_docs_search
+        }
         return self._make_authorized_request(
             self.api.create_department, 
             data=data
@@ -77,10 +83,15 @@ class MainModel:
             self, 
             name: str, 
             department_id: int, 
+            show_for_guest: bool = False, 
             has_all_docs_search: bool = False
     ):
         """Edit department data"""
-        data = {"name": name, "has_all_docs_search": has_all_docs_search}
+        data = {
+            "name": name, 
+            "show_for_guest": show_for_guest, 
+            "has_all_docs_search": has_all_docs_search
+        }
         return self._make_authorized_request(
             self.api.edit_department, 
             data=data, 
@@ -130,7 +141,6 @@ class MainModel:
         """Refreshes the data from the API."""
         self.departments = self._get_departments()
         self.categories = self._get_categories()
-        # Documents will be refreshed by the controller resetting pagination
 
 
     def fetch_documents(
@@ -234,6 +244,9 @@ class MainModel:
 
     def _refresh_tokens(self) -> bool:
         """Refreshes the access token using the refresh token."""
+        if self.mode == "guest":
+            return False
+
         try:
             last_logged = read_json(self.LOCAL_DIR_LAST_LOGGED)
             if not last_logged:
@@ -266,6 +279,9 @@ class MainModel:
         
 
     def _get_user_token(self) -> str | None:
+        if self.mode == "guest":
+            return None
+
         last_logged = read_json(self.LOCAL_DIR_LAST_LOGGED)
 
         if not last_logged:
@@ -282,7 +298,7 @@ class MainModel:
     
 
     def _get_departments(self) -> list[dict]:
-        departments = self.api.get_departments()
+        departments = self._make_authorized_request(self.api.get_departments)
         return departments["departments"]
 
 

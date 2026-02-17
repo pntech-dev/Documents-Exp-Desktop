@@ -173,13 +173,16 @@ class APIClient:
 
     # === App Data ===
 
-    def get_departments(self) -> dict:
+    def get_departments(self, token: str = None) -> dict:
         """Retrieves the list of departments (groups).
 
         Returns:
             dict: The JSON response containing the list of departments.
         """
-        return self._request("GET", url=self.base_url + "/app/groups")
+        headers = {}
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+        return self._request("GET", url=self.base_url + "/app/groups", headers=headers)
     
 
     def create_department(self, data: dict, token: str) -> dict:

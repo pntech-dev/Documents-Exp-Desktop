@@ -144,9 +144,10 @@ class MainController(QObject):
             if not result:
                 return
             
-            department_name, has_all_docs = result
+            department_name, show_for_guest, has_all_docs = result
             data = self.model.create_department(
                 name=department_name, 
+                show_for_guest=show_for_guest, 
                 has_all_docs_search=has_all_docs
             )
             new_id = data.get("id")
@@ -224,15 +225,17 @@ class MainController(QObject):
                 action, result = EditDepartment.show_dialog(
                     parent=self.window, 
                     current_name=current_name, 
+                    current_show_for_guest=department.get("show_for_guest", False),
                     current_has_all_docs=current_has_all_docs
                 )
                 
                 if action == "edit":
                     if result:
-                        new_name, new_has_all_docs = result
+                        new_name, show_for_guest, new_has_all_docs = result
                         self.model.edit_department(
                             name=new_name, 
                             department_id=int(dept_id), 
+                            show_for_guest=show_for_guest,
                             has_all_docs_search=new_has_all_docs
                         )
                         self.model.refresh_data()
