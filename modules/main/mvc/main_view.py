@@ -460,6 +460,19 @@ class Navbar:
         self.search_lineedit.textChanged.connect(handler)
 
 
+    def connect_search_filters_changed(self, handler) -> None:
+        """Connects the search filters toggled signal to a handler."""
+        actions = [
+            self.action_search_pages,
+            self.action_search_code,
+            self.action_search_name,
+            self.action_exact_match
+        ]
+        for action in actions:
+            if action:
+                action.toggled.connect(handler)
+
+
     def theme_switcher_clicked(self, handler) -> None:
         """Connects the theme switcher click signal to a handler.
 
@@ -1212,6 +1225,11 @@ class MainView(QObject):
     def connect_search_lineedit(self, handler) -> None:
         """Connects the search line edit text changed signal to a handler."""
         self.navbar.search_lineedit_text_changed(handler)
+
+
+    def connect_search_filters_changed(self, handler) -> None:
+        """Connects the search filters toggled signal to a handler."""
+        self.navbar.connect_search_filters_changed(handler)
 
 
     def connect_theme_switch(self, handler) -> None:

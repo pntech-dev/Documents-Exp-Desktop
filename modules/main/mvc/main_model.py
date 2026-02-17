@@ -60,7 +60,11 @@ class MainModel:
         return pages["pages"]
     
 
-    def create_department(self, name: str, has_all_docs_search: bool = False) -> dict:
+    def create_department(
+            self, 
+            name: str, 
+            has_all_docs_search: bool = False
+    ) -> dict:
         """Create new department"""
         data = {"name": name, "has_all_docs_search": has_all_docs_search}
         return self._make_authorized_request(
@@ -69,7 +73,12 @@ class MainModel:
         )
 
 
-    def edit_department(self, name: str, department_id: int, has_all_docs_search: bool = False):
+    def edit_department(
+            self, 
+            name: str, 
+            department_id: int, 
+            has_all_docs_search: bool = False
+    ):
         """Edit department data"""
         data = {"name": name, "has_all_docs_search": has_all_docs_search}
         return self._make_authorized_request(
@@ -141,7 +150,14 @@ class MainModel:
         return response.get("documents", [])
 
 
-    def search_data(self, query: str, tags: list[str] = None, category_id: int = None, group_id: int = None) -> list[dict]:
+    def search_data(
+            self, 
+            query: str, 
+            tags: list[str] = None, 
+            group_id: int = None, 
+            category_id: int = None, 
+            filters: dict = None
+    ) -> list[dict]:
         """Searches the data based on the provided query and tags."""
         results = []
 
@@ -156,7 +172,8 @@ class MainModel:
             category_id=target_category_id,
             group_id=group_id,
             query=query,
-            tags=tags
+            tags=tags,
+            filters=filters
         )
 
         return results

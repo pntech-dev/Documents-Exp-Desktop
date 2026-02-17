@@ -348,22 +348,53 @@ class APIClient:
         )
     
 
-    def search_data(self, query: str, category_id: int = None, group_id: int = None, tags: list[str] = None) -> dict:
+    def search_data(
+            self, 
+            query: str, 
+            group_id: int = None, 
+            category_id: int = None, 
+            tags: list[str] = None, 
+            filters: dict = None
+    ) -> dict:
         """Searches the data based on the provided query.
 
         Args:
             category_id (int): The ID of the category.
             group_id (int): The ID of the department (group).
             query (str): The search query.
+            filters (dict): Search filters (exact_match, include_pages, etc).
 
         Returns:
             dict: The JSON response containing the search results.
         """
         params = {"query": query, "tags": tags}
-        if category_id is not None:
-            params["category_id"] = category_id
+
+        # Search scope
         if group_id is not None:
             params["group_id"] = group_id
+
+        if category_id is not None:
+            params["category_id"] = category_id
+        
+        # Filters
+        if filters:
+            # Search settings
+            if filters.get("exact_match"):
+                params["exact_match"] = "true"
+            
+            # Saerch pages
+            if not filters.get("include_pages", True):
+                params["include_pages"] = "false"
+
+            # Search in columns
+            search_fields = []
+            if filters.get("search_by_name"):
+                search_fields.append("name")
+            if filters.get("search_by_code"):
+                search_fields.append("code")
+            
+            if search_fields:
+                params["search_fields"] = search_fields
 
         return self._request("GET",
             url=self.base_url + f"/app/search",
