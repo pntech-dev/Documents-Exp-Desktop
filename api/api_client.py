@@ -236,13 +236,16 @@ class APIClient:
         )
 
     
-    def get_categories(self) -> dict:
+    def get_categories(self, token: str = None) -> dict:
         """Retrieves the list of categories.
 
         Returns:
             dict: The JSON response containing the list of categories.
         """
-        return self._request("GET", url=self.base_url + "/app/categories")
+        headers = {}
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+        return self._request("GET", url=self.base_url + "/app/categories", headers=headers)
     
 
     def create_category(self, data: dict, token: str) -> dict:
@@ -293,19 +296,22 @@ class APIClient:
         )
     
 
-    def get_documents(self, category_id: int = None, group_id: int = None, limit: int = 50, offset: int = 0) -> dict:   
+    def get_documents(self, category_id: int = None, group_id: int = None, limit: int = 50, offset: int = 0, token: str = None) -> dict:   
         """Retrieves the list of documents.
 
         Returns:
             dict: The JSON response containing the list of documents.
         """
         params = {"limit": limit, "offset": offset}
+        headers = {}
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
         if category_id is not None:
             params["category_id"] = category_id
         if group_id is not None:
             params["group_id"] = group_id
 
-        return self._request("GET", url=self.base_url + "/app/documents", params=params)
+        return self._request("GET", url=self.base_url + "/app/documents", params=params, headers=headers)
     
 
     def get_document(self, document_id: int) -> dict:
@@ -357,7 +363,8 @@ class APIClient:
             group_id: int = None, 
             category_id: int = None, 
             tags: list[str] = None, 
-            filters: dict = None
+            filters: dict = None,
+            token: str = None
     ) -> dict:
         """Searches the data based on the provided query.
 
@@ -371,6 +378,9 @@ class APIClient:
             dict: The JSON response containing the search results.
         """
         params = {"query": query, "tags": tags}
+        headers = {}
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
 
         # Search scope
         if group_id is not None:
@@ -401,7 +411,8 @@ class APIClient:
 
         return self._request("GET",
             url=self.base_url + f"/app/search",
-            params=params
+            params=params,
+            headers=headers
         )
     
 

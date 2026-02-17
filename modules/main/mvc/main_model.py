@@ -107,11 +107,12 @@ class MainModel:
         )
     
 
-    def create_category(self, name: str) -> dict:
+    def create_category(self, name: str, show_for_guest: bool = False) -> dict:
         """Create new category"""
         data = {
             "group_id": self.current_department_id,
-            "name": name
+            "name": name,
+            "show_for_guest": show_for_guest
         }
         return self._make_authorized_request(
             self.api.create_category, 
@@ -119,9 +120,9 @@ class MainModel:
         )
     
 
-    def edit_category(self, name: str, category_id: int):
+    def edit_category(self, name: str, category_id: int, show_for_guest: bool = False):
         """Edit category data"""
-        data = {"name": name}
+        data = {"name": name, "show_for_guest": show_for_guest}
         return self._make_authorized_request(
             self.api.edit_category, 
             data=data, 
@@ -151,7 +152,8 @@ class MainModel:
             offset: int = 0
     ) -> list[dict]:
         """Fetches a page of documents for a specific category."""
-        response = self.api.get_documents(
+        response = self._make_authorized_request(
+            self.api.get_documents,
             category_id=category_id, 
             group_id=group_id,
             limit=limit, 
@@ -178,7 +180,8 @@ class MainModel:
         if target_category_id is None and group_id is None:
             target_category_id = self.current_category_id
 
-        results = self.api.search_data(
+        results = self._make_authorized_request(
+            self.api.search_data,
             category_id=target_category_id,
             group_id=group_id,
             query=query,
@@ -303,6 +306,6 @@ class MainModel:
 
 
     def _get_categories(self) -> list[dict]:
-        categories = self.api.get_categories()
+        categories = self._make_authorized_request(self.api.get_categories)
         return categories["categories"]
     

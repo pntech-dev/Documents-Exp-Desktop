@@ -12,10 +12,11 @@ from utils.delete_info_modal import DeleteInfoDialog
 
 
 class EditCategory(BaseModalDialog):
-    def __init__(self, parent, current_name: str = None):
+    def __init__(self, parent, current_name: str = None, current_show_for_guest: bool = False):
         super().__init__(parent)
         self.parent_window = parent
         self.current_name = current_name
+        self.current_show_for_guest = current_show_for_guest
         self.action = None
 
         # === Setup UI ===
@@ -23,6 +24,7 @@ class EditCategory(BaseModalDialog):
         self.ui.setupUi(self)
 
         self.ui.name_lineEdit.setText(current_name)
+        self.ui.guest_show_checkBox.setChecked(current_show_for_guest)
 
         # Set the is_danger property to the delete button
         self.ui.delete_department_pushButton.set_danger(is_danger=True)
@@ -52,6 +54,7 @@ class EditCategory(BaseModalDialog):
         # Reparent UI frames into container
         self.ui.texts_frame.setParent(container)
         self.ui.name_frame.setParent(container)
+        self.ui.guest_show_checkBox.setParent(container)
         self.ui.buttons_frame.setParent(container)
 
         # === Shadow ===
@@ -68,27 +71,36 @@ class EditCategory(BaseModalDialog):
         self.setLayout(main_layout)
 
         # === Connect handlers ===
-        self.ui.name_lineEdit.textChanged.connect(self.name_lineedit_changed)
+        self.ui.name_lineEdit.textChanged.connect(self._validate_changes)
+        self.ui.guest_show_checkBox.stateChanged.connect(self._validate_changes)
         self.ui.accept_pushButton.clicked.connect(self.accept_button_clicked)
         self.ui.cancel_pushButton.clicked.connect(self.cancel_button_clicked)
         self.ui.delete_department_pushButton.clicked.connect(self.delete_button_clicked)
 
     
     @staticmethod
-    def show_dialog(parent=None, current_name=""):
+    def show_dialog(parent=None, current_name="", current_show_for_guest=False):
         """Creates, shows the dialog, and returns the action and entered name."""
-        dialog = EditCategory(parent, current_name)
+        dialog = EditCategory(parent, current_name, current_show_for_guest)
         if dialog.exec_() == QDialog.Accepted:
-            return dialog.action, dialog.get_category_name()
+            return dialog.action, (
+                dialog.get_category_name(), 
+                dialog.ui.guest_show_checkBox.isChecked()
+            )
         
         return None, None
     
 
     # Handlers
-    def name_lineedit_changed(self):
-        """Handles text changes in the line edit."""
+    def _validate_changes(self):
+        """Checks if changes were made to enable the save button."""
         text = self.ui.name_lineEdit.text()
-        self.ui.accept_pushButton.setEnabled(text != self.current_name)
+        is_name_changed = text != self.current_name
+        is_checkbox_changed = self.ui.guest_show_checkBox.isChecked() != self.current_show_for_guest
+        
+        self.ui.accept_pushButton.setEnabled((
+            is_name_changed or is_checkbox_changed
+        ) and len(text) > 0)
 
 
     def get_category_name(self):

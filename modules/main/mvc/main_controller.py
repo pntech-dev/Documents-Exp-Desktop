@@ -183,13 +183,14 @@ class MainController(QObject):
     def _on_craete_category_clicked(self) -> None:
         """"Handles the create category action button click."""
         try:
-            # Show create category window
-            category_name = CreateCategory.get_name(parent=self.window)
+            # Show create category window (returns tuple)
+            result = CreateCategory.get_data(parent=self.window)
 
-            if not category_name:
+            if not result:
                 return
 
-            data = self.model.create_category(name=category_name)
+            category_name, show_for_guest = result
+            data = self.model.create_category(name=category_name, show_for_guest=show_for_guest)
             new_id = data.get("id")
 
             if new_id:
@@ -281,16 +282,19 @@ class MainController(QObject):
         if category:
             try:
                 current_name = category.get("name", "")
-                action, new_name = EditCategory.show_dialog(
+                action, result = EditCategory.show_dialog(
                     parent=self.window, 
-                    current_name=current_name
+                    current_name=current_name,
+                    current_show_for_guest=category.get("show_for_guest", False)
                 )
                 
                 if action == "edit":
-                    if new_name and new_name != current_name:
+                    if result:
+                        new_name, show_for_guest = result
                         self.model.edit_category(
                             name=new_name, 
-                            category_id=int(cat_id)
+                            category_id=int(cat_id),
+                            show_for_guest=show_for_guest
                         )
                         self.model.refresh_data()
 

@@ -44,6 +44,7 @@ class CreateCategory(BaseModalDialog):
         # Reparent UI frames into container
         self.ui.texts_frame.setParent(container)
         self.ui.name_frame.setParent(container)
+        self.ui.guest_show_checkBox.setParent(container)
         self.ui.buttons_frame.setParent(container)
 
         # === Shadow ===
@@ -66,7 +67,7 @@ class CreateCategory(BaseModalDialog):
 
     
     @staticmethod
-    def get_name(parent=None):
+    def get_data(parent=None):
         """Creates, shows the dialog, and returns the entered name.
 
         This static method provides a convenient way to use the dialog. It
@@ -76,12 +77,12 @@ class CreateCategory(BaseModalDialog):
             parent (QWidget, optional): The parent widget. Defaults to None.
 
         Returns:
-            str: The new category name if the user clicks 'Accept'.
+            tuple: (name, show_for_guest) if the user clicks 'Accept'.
             None: If the user cancels or closes the dialog.
         """
         dialog = CreateCategory(parent)
         if dialog.exec_() == QDialog.Accepted:
-            return dialog.get_category_name()
+            return dialog.get_category_name(), dialog.ui.guest_show_checkBox.isChecked()
         
         return None
     
