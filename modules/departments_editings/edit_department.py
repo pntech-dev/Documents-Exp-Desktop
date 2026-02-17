@@ -55,7 +55,7 @@ class EditDepartment(BaseModalDialog):
         # Reparent UI frames into container
         self.ui.texts_frame.setParent(container)
         self.ui.name_frame.setParent(container)
-        self.ui.name_frame.layout().addWidget(self.ui.all_docs_checkBox)
+        self.ui.all_docs_checkBox.setParent(container)
         self.ui.buttons_frame.setParent(container)
 
         # === Shadow ===
