@@ -703,12 +703,34 @@ QFrame#main_content_frame {
 }
 
 
-/* Profile Menu (Popover) */
-ThemeAwareMenu {
+/* Menus */
+QMenu {
 	background-color: #262626;
 	border: 1px solid #404040;
 	border-radius: 8px;
 	padding: 8px;
+}
+
+QMenu::item {
+    padding: 8px 24px;
+    border-radius: 4px;
+    color: #CCCCCC;
+    font-size: 12pt;
+}
+
+QMenu::item:selected {
+    background-color: #333333;
+    color: #E6E6E6;
+}
+
+QMenu::item:disabled {
+    color: #4D4D4D;
+}
+
+QMenu::separator {
+    height: 1px;
+    background-color: #333333;
+    margin: 4px 0px;
 }
 
 /* Menu Section Header */

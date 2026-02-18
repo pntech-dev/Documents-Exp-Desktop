@@ -645,9 +645,14 @@ class MainController(QObject):
             if not doc.get("is_page")
         } 
         
+        # Handle API response (list or dict)
+        results_list = search_result if isinstance(
+            search_result, list
+        ) else search_result.get("result", [])
+
         # Identify and fetch missing parent documents
         missing_doc_ids = set()
-        for result in search_result.get("result", []):
+        for result in results_list:
             if not result.get("category_id"): # It's a page
                 doc_id = result.get("document_id")
                 if doc_id and doc_id not in docs_map:
@@ -660,7 +665,7 @@ class MainController(QObject):
             except Exception: pass
 
         data = []
-        for result in search_result.get("result", []):
+        for result in results_list:
             if result.get("category_id") is not None:
                 data.append(result)
             else:

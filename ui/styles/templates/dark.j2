@@ -703,12 +703,34 @@ QFrame#main_content_frame {
 }
 
 
-/* Profile Menu (Popover) */
-ThemeAwareMenu {
+/* Menus */
+QMenu {
 	background-color: {{ neutral.neutral_100 }};
 	border: 1px solid {{ neutral.neutral_250 }};
 	border-radius: 8px;
 	padding: 8px;
+}
+
+QMenu::item {
+    padding: 8px 24px;
+    border-radius: 4px;
+    color: {{ neutral.neutral_800 }};
+    font-size: 12pt;
+}
+
+QMenu::item:selected {
+    background-color: {{ neutral.neutral_200 }};
+    color: {{ neutral.neutral_900 }};
+}
+
+QMenu::item:disabled {
+    color: {{ neutral.neutral_300 }};
+}
+
+QMenu::separator {
+    height: 1px;
+    background-color: {{ neutral.neutral_200 }};
+    margin: 4px 0px;
 }
 
 /* Menu Section Header */

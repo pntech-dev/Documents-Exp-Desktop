@@ -1087,7 +1087,7 @@ class MainView(QObject):
 
     def get_search_text(self) -> str:
         """Returns the search line edit text."""
-        return self.navbar.search_lineedit.text()  
+        return self.navbar.search_lineedit.text().strip()
 
     def set_search_text(self, text: str) -> None:
         """Sets the search line edit text."""
