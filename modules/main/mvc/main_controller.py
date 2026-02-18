@@ -782,13 +782,17 @@ class MainController(QObject):
         tag_query = f"@{text}"
         current_text = self.view.get_search_text()
         parts = current_text.split()
+        
+        # Case-insensitive handling
+        parts_lower = [p.lower() for p in parts]
+        tag_query_lower = tag_query.lower()
 
         if checked:
-            if tag_query not in parts:
+            if tag_query_lower not in parts_lower:
                 parts.append(tag_query)
         else:
-            if tag_query in parts:
-                parts.remove(tag_query)
+            # Remove all occurrences (case-insensitive)
+            parts = [p for p in parts if p.lower() != tag_query_lower]
         
         self.view.set_search_text(" ".join(parts))
 
