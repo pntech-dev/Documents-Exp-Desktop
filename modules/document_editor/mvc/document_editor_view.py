@@ -8,6 +8,7 @@ from ui.custom_widgets import (
     NoFrameButton, PrimaryButton, TertiaryButton
 )
 from utils import ThemeManagerInstance
+from utils.app_paths import get_app_root
 
 
 ROLE_CHECK_STATE = Qt.UserRole + 1
@@ -475,9 +476,7 @@ class DocumentEditorView:
             A dictionary containing the UI configuration, or an empty dict if loading fails.
         """
         try:
-            # Resolve path relative to this file location
-            root_dir = Path(__file__).resolve().parents[3]
-            config_path = root_dir / "ui" / "ui_config.json"
+            config_path = get_app_root() / "ui" / "ui_config.json"
             
             with open(config_path, "r", encoding="utf-8") as f:
                 return json.load(f)

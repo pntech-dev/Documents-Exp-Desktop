@@ -2,6 +2,7 @@ import json
 import yaml
 import logging
 from pathlib import Path
+from utils.app_paths import get_app_root
 
 def load_config() -> dict:
     """
@@ -11,7 +12,7 @@ def load_config() -> dict:
         dict: The configuration dictionary.
     """
     try:
-        config_path = Path(Path.cwd(), "config.yaml")
+        config_path = get_app_root() / "config.yaml"
         with open(config_path, 'r') as file:
             return yaml.safe_load(file)
     except FileNotFoundError:

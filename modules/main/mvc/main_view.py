@@ -7,6 +7,7 @@ from PyQt5.QtCore import QEvent, Qt, QObject, QPoint, QItemSelectionModel
 
 from ui import MainWindow_UI
 from utils import ThemeManagerInstance
+from utils.app_paths import get_app_root
 from ui.custom_widgets import (
     SidebarItem,
     SidebarBlock,
@@ -1063,9 +1064,7 @@ class MainView(QObject):
             A dictionary containing the UI configuration, or an empty dict if loading fails.
         """
         try:
-            # Resolve path relative to this file location
-            root_dir = Path(__file__).resolve().parents[3]
-            config_path = root_dir / "ui" / "ui_config.json"
+            config_path = get_app_root() / "ui" / "ui_config.json"
             
             with open(config_path, "r", encoding="utf-8") as f:
                 return json.load(f)

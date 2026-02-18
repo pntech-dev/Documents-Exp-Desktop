@@ -34,6 +34,33 @@ Allows authorized users to create, edit, and manage document pages. Supports dra
 
 ---
 
+## 💡 What's New (v1.1.0) - Tags & Filters
+
+This update brings powerful new ways to organize and find your documents.
+
+### 🏷️ Tags System
+
+- **Document Tags:** You can now assign tags to documents for better categorization.
+- **Auto-generation:** Automatically generate relevant tags based on document content.
+- **Search by Tags:** Quickly find documents by clicking on tags or typing `@tagname` in the search bar.
+
+### 🔍 Search Filters
+
+A new search filter menu has been added to refine your search results:
+
+- **Search Targets:** Option to include or exclude document pages from search results.
+- **Search Fields:** Filter by Name or Code.
+- **Match Mode:** Toggle exact match for precise queries.
+
+### ⚡ Also in this update
+
+- **"All Documents" Category:** Option to create a virtual category that aggregates all documents within a department.
+- **Guest Visibility:** Granular control over the visibility of departments and categories for guest users.
+- **Password Hints:** New interactive password strength hint widget during registration and password change.
+- **UI Improvements:** Minor visual enhancements and bug fixes.
+
+---
+
 ## 📌 Overview
 
 **Documents Exp** is designed to streamline the management of technical documentation within an organization. It provides a structured view of documents categorized by departments and allows for efficient searching and editing.
@@ -163,6 +190,26 @@ The project follows the **MVC (Model-View-Controller)** pattern to ensure separa
     ```bash
     python app.py
     ```
+
+---
+
+## 📦 Compilation
+
+To build the application into an executable file (EXE):
+
+1. Install PyInstaller:
+
+    ```bash
+    pip install pyinstaller
+    ```
+
+2. Run the build command using the provided spec file:
+
+    ```bash
+    pyinstaller "Documents Exp.spec"
+    ```
+
+3. The compiled application will be available in the `dist/Documents Exp` directory.
 
 ---
 

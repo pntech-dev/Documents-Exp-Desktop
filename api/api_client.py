@@ -8,7 +8,7 @@ class APIClient:
         Args:
             base_url (str): The base URL for the API.
         """
-        self.base_url = base_url.rstrip("/")
+        self.base_url = (base_url or "").rstrip("/")
         self.session = requests.Session()
 
 
