@@ -101,6 +101,10 @@
     <file>light/settings_default.svg</file>
     <file>light/settings_hover.svg</file>
     <file>light/settings_pressed.svg</file>
+    <file>light/stick_clicked.svg</file>
+    <file>light/stick_default.svg</file>
+    <file>light/stick_disabled.svg</file>
+    <file>light/stick_hover.svg</file>
     <file>light/table_clicked.svg</file>
     <file>light/table_default.svg</file>
     <file>light/table_disabled.svg</file>
@@ -228,6 +232,10 @@
     <file>dark/settings_default.svg</file>
     <file>dark/settings_hover.svg</file>
     <file>dark/settings_pressed.svg</file>
+    <file>dark/stick_clicked.svg</file>
+    <file>dark/stick_default.svg</file>
+    <file>dark/stick_disabled.svg</file>
+    <file>dark/stick_hover.svg</file>
     <file>dark/table_clicked.svg</file>
     <file>dark/table_default.svg</file>
     <file>dark/table_disabled.svg</file>

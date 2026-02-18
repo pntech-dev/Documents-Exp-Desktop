@@ -23,7 +23,7 @@ class MainWindow(QMainWindow):
         self.theme_manager = ThemeManagerInstance()
 
         # MVC Initialization
-        self.model = MainModel()
+        self.model = MainModel(mode=self.mode)
         self.view = MainView(ui=self.ui)
         self.controller = MainController(
             model=self.model, 

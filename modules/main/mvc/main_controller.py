@@ -77,8 +77,8 @@ class MainController(QObject):
         # Setup Notification Service
         NotificationService().set_main_window(self.window)
 
-        self._init_ui()
         self._setup_connections()
+        self._init_ui()
 
 
     # ====================
@@ -100,9 +100,16 @@ class MainController(QObject):
         self.search_timer.start()
 
 
+    def _on_search_filters_changed(self, checked: bool) -> None:
+        """Handles search filter changes."""
+        if self.view.get_search_text():
+            self._on_search_lineedit_text_changed()
+
+
     def _perform_search(self) -> None:
         """Executes the search request after delay."""
         search_text = self.view.get_search_text()
+        filters = self.view.get_search_filters()
         if not search_text:
             return
 
@@ -111,6 +118,7 @@ class MainController(QObject):
         self.search_worker = APIWorker(
             self._search_data_task, 
             query=search_text, 
+            filters=filters,
             current_docs=list(self.current_documents)
         )
         self.search_worker.finished.connect(self._on_search_finished)
@@ -130,13 +138,18 @@ class MainController(QObject):
     def _on_craete_department_clicked(self) -> None:
         """"Handles the create department action button click."""
         try:
-            # Show create department window
-            department_name = CreateDepartment.get_name(parent=self.window)
+            # Show create department window (returns tuple)
+            result = CreateDepartment.get_data(parent=self.window)
 
-            if not department_name:
+            if not result:
                 return
-
-            data = self.model.create_department(name=department_name)
+            
+            department_name, show_for_guest, has_all_docs = result
+            data = self.model.create_department(
+                name=department_name, 
+                show_for_guest=show_for_guest, 
+                has_all_docs_search=has_all_docs
+            )
             new_id = data.get("id")
 
             if new_id:
@@ -170,13 +183,14 @@ class MainController(QObject):
     def _on_craete_category_clicked(self) -> None:
         """"Handles the create category action button click."""
         try:
-            # Show create category window
-            category_name = CreateCategory.get_name(parent=self.window)
+            # Show create category window (returns tuple)
+            result = CreateCategory.get_data(parent=self.window)
 
-            if not category_name:
+            if not result:
                 return
 
-            data = self.model.create_category(name=category_name)
+            category_name, show_for_guest = result
+            data = self.model.create_category(name=category_name, show_for_guest=show_for_guest)
             new_id = data.get("id")
 
             if new_id:
@@ -202,16 +216,29 @@ class MainController(QObject):
 
     def _on_edit_department_clicked(self, dept_id: str) -> None:
         """Handles the edit department button click."""
-        department = next((dept for dept in self.model.departments if str(dept.get("id")) == str(dept_id)), None)
+        department = next((dept for dept in self.model.departments 
+                           if str(dept.get("id")) == str(dept_id)), None)
         
         if department:
             try:
                 current_name = department.get("name", "")
-                action, new_name = EditDepartment.show_dialog(parent=self.window, current_name=current_name)
+                current_has_all_docs = department.get("has_all_docs_search", False)
+                action, result = EditDepartment.show_dialog(
+                    parent=self.window, 
+                    current_name=current_name, 
+                    current_show_for_guest=department.get("show_for_guest", False),
+                    current_has_all_docs=current_has_all_docs
+                )
                 
                 if action == "edit":
-                    if new_name and new_name != current_name:
-                        self.model.edit_department(name=new_name, department_id=int(dept_id))
+                    if result:
+                        new_name, show_for_guest, new_has_all_docs = result
+                        self.model.edit_department(
+                            name=new_name, 
+                            department_id=int(dept_id), 
+                            show_for_guest=show_for_guest,
+                            has_all_docs_search=new_has_all_docs
+                        )
                         self.model.refresh_data()
 
                         logger.info(f"Department updated: {new_name}")
@@ -228,7 +255,11 @@ class MainController(QObject):
 
                     # If the deleted department was the current one, reset selection
                     if str(self.model.current_department_id) == str(dept_id):
-                        self.model.current_department_id = self.model.departments[0]["id"] if self.model.departments else None
+                        if self.model.departments:
+                            self.model.current_department_id = self.model.departments[0]["id"]
+                        else:
+                            self.model.current_department_id = None
+
                         self.model.current_category_id = None
                         self._update_documents_list()
 
@@ -245,16 +276,26 @@ class MainController(QObject):
 
     def _on_edit_category_clicked(self, cat_id: str) -> None:
         """Handles the edit category button click."""
-        category = next((cat for cat in self.model.categories if str(cat.get("id")) == str(cat_id)), None)
+        category = next((cat for cat in self.model.categories 
+                         if str(cat.get("id")) == str(cat_id)), None)
         
         if category:
             try:
                 current_name = category.get("name", "")
-                action, new_name = EditCategory.show_dialog(parent=self.window, current_name=current_name)
+                action, result = EditCategory.show_dialog(
+                    parent=self.window, 
+                    current_name=current_name,
+                    current_show_for_guest=category.get("show_for_guest", False)
+                )
                 
                 if action == "edit":
-                    if new_name and new_name != current_name:
-                        self.model.edit_category(name=new_name, category_id=int(cat_id))
+                    if result:
+                        new_name, show_for_guest = result
+                        self.model.edit_category(
+                            name=new_name, 
+                            category_id=int(cat_id),
+                            show_for_guest=show_for_guest
+                        )
                         self.model.refresh_data()
 
                         logger.info(f"Category updated: {new_name}")
@@ -406,7 +447,8 @@ class MainController(QObject):
         
         # Get selected document data
         # Search in current_documents which contains loaded data
-        document = next((doc for doc in self.current_documents if doc.get("id") == document_id), {})
+        document = next((doc for doc in self.current_documents 
+                         if doc.get("id") == document_id), {})
 
         # If document not found in current list (e.g. search result page), fetch it
         if not document and document_id:
@@ -570,9 +612,31 @@ class MainController(QObject):
              self._load_more_documents()
 
     
-    def _search_data_task(self, query: str, current_docs: list) -> list:
+    def _search_data_task(
+            self, 
+            query: str, 
+            filters: dict, 
+            current_docs: list
+    ) -> list:
         """Background task logic for searching."""
-        search_result = self.model.search_data(query=query)
+        # Extract tags from query (e.g. "@tag")
+        tags = re.findall(r'@([^\s]+)', query)
+        # Remove tags from query to get clean text
+        clean_query = re.sub(r'@[^\s]+', '', query).strip()
+
+        cat_id = self.model.current_category_id
+        group_id = None
+        if isinstance(cat_id, str) and cat_id.startswith("virtual_"):
+            group_id = int(cat_id.split("_")[1])
+            cat_id = None
+
+        search_result = self.model.search_data(
+            query=clean_query, 
+            tags=tags, 
+            category_id=cat_id, 
+            group_id=group_id, 
+            filters=filters
+        )
 
         # Optimization: Create a lookup map for documents
         docs_map = {
@@ -581,9 +645,14 @@ class MainController(QObject):
             if not doc.get("is_page")
         } 
         
+        # Handle API response (list or dict)
+        results_list = search_result if isinstance(
+            search_result, list
+        ) else search_result.get("result", [])
+
         # Identify and fetch missing parent documents
         missing_doc_ids = set()
-        for result in search_result.get("result", []):
+        for result in results_list:
             if not result.get("category_id"): # It's a page
                 doc_id = result.get("document_id")
                 if doc_id and doc_id not in docs_map:
@@ -596,7 +665,7 @@ class MainController(QObject):
             except Exception: pass
 
         data = []
-        for result in search_result.get("result", []):
+        for result in results_list:
             if result.get("category_id") is not None:
                 data.append(result)
             else:
@@ -626,20 +695,30 @@ class MainController(QObject):
         data.sort(key=self._get_natural_sort_key)
         return data
 
+
     def _on_search_finished(self, data: list) -> None:
         """Handles successful search completion."""
         # Ignore results from stale workers (if a new search started)
         if self.sender() != self.search_worker:
             return
             
+        search_text = self.view.get_search_text()
+        tags = re.findall(r'@([^\s]+)', search_text)
+        self.view.set_active_search_tags(tags)
+
         self.current_documents = data
         self.view.update_documents_table(documents=data)
+        self.view.set_finded_counter(len(self.current_documents))
+        self._add_popular_tags()
+        self.view.set_export_print_enabled(len(self.current_documents) > 0)
+
 
     def _on_search_error(self, error: Exception) -> None:
         """Handles search errors."""
         if self.sender() != self.search_worker:
             return
         self._handle_error(error, "Ошибка поиска")
+
 
     # ====================
     # Controller Methods
@@ -666,7 +745,6 @@ class MainController(QObject):
             self.view.set_user_department("Войдите в аккаунт")
 
         # Set documents data
-        self._update_documents_list()
         self._update_create_category_state()
         self._update_create_document_state()
 
@@ -682,10 +760,12 @@ class MainController(QObject):
 
         # Navbar
         self.view.connect_search_lineedit(self._on_search_lineedit_text_changed)
+        self.view.connect_search_filters_changed(self._on_search_filters_changed)
         self.view.connect_theme_switch(self._on_theme_switcher_clicked)
         self.view.connect_create_button(self._on_create_button_clicked)
         self.view.connect_create_department(self._on_craete_department_clicked)
         self.view.connect_create_category(self._on_craete_category_clicked)
+        self.view.connect_filter_tag_toggled(self._on_filter_tag_toggled)
 
         # Toolbar Buttons
         self.view.connect_update_button(self._on_update_button_clicked)
@@ -696,6 +776,25 @@ class MainController(QObject):
         self.view.connect_document_selection(self._on_document_selected)
         self.view.connect_document_double_click(self._on_document_double_clicked)
         self.view.connect_documents_scroll(self._on_table_scroll)
+
+    def _on_filter_tag_toggled(self, checked: bool, text: str) -> None:
+        """Handles filter tag toggle event."""
+        tag_query = f"@{text}"
+        current_text = self.view.get_search_text()
+        parts = current_text.split()
+        
+        # Case-insensitive handling
+        parts_lower = [p.lower() for p in parts]
+        tag_query_lower = tag_query.lower()
+
+        if checked:
+            if tag_query_lower not in parts_lower:
+                parts.append(tag_query)
+        else:
+            # Remove all occurrences (case-insensitive)
+            parts = [p for p in parts if p.lower() != tag_query_lower]
+        
+        self.view.set_search_text(" ".join(parts))
 
 
     def _load_sidebar_data(self) -> None:
@@ -719,6 +818,19 @@ class MainController(QObject):
     def _update_categories_list(self) -> None:
         """Updates the categories list based on the current department."""
         cat_items = []
+        
+        # Check for virtual category "All Documents"
+        current_dept = next((d for d in self.model.departments 
+                             if str(d["id"]) == str(self.model.current_department_id)), None)
+        if current_dept and current_dept.get("has_all_docs_search"):
+            cat_items.append(SidebarItem(
+                id=f"virtual_{current_dept['id']}",
+                title="Все документы",
+                count=current_dept.get("documents_count", 0),
+                icon=None,
+                editable=False
+            ))
+
         for cat in self.model.categories:
             if self.model.current_department_id is not None and cat.get(
                 "group_id"
@@ -744,6 +856,9 @@ class MainController(QObject):
         self.has_more = True
         self.current_documents = []
         self.view.clear_documents_table()
+        self.view.set_finded_counter(0)
+        self.view.set_active_search_tags([])
+        self.view.set_export_print_enabled(False)
         
         self._load_more_documents()
 
@@ -756,7 +871,19 @@ class MainController(QObject):
 
         self.is_loading = True
         try:
-            docs = self.model.fetch_documents(self.model.current_category_id, self.limit, self.offset)
+            cat_id = self.model.current_category_id
+            group_id = None
+            
+            if isinstance(cat_id, str) and cat_id.startswith("virtual_"):
+                group_id = int(cat_id.split("_")[1])
+                cat_id = None
+
+            docs = self.model.fetch_documents(
+                category_id=cat_id, 
+                group_id=group_id, 
+                limit=self.limit, 
+                offset=self.offset
+            )
             
             if not docs:
                 self.has_more = False
@@ -780,6 +907,9 @@ class MainController(QObject):
             self.offset += self.limit
             self.current_documents.extend(new_docs)
             self.view.append_documents_table(new_docs)
+            self.view.set_finded_counter(len(self.current_documents))
+            self._add_popular_tags()
+            self.view.set_export_print_enabled(len(self.current_documents) > 0)
 
             # If content still fits in view (no scrollbar), try loading more to fill the screen
             if self.has_more and self.view.ui.tableView.verticalScrollBar().maximum() <= 0:
@@ -810,12 +940,19 @@ class MainController(QObject):
                 
                 # Restore category
                 cat_exists = any(c["id"] == saved_cat_id for c in self.model.categories)
+                
+                if not cat_exists and isinstance(
+                    saved_cat_id, str
+                ) and saved_cat_id.startswith("virtual_"):
+                    cat_exists = True
+
                 if cat_exists:
                     self.view.select_category(saved_cat_id)
                 else:
                     # If category was deleted or not selected, select the first one if available
                     # to match SidebarBlock behavior (which selects first item on reset)
-                    dept_cats = [c for c in self.model.categories if c.get("group_id") == saved_dept_id]
+                    dept_cats = [c for c in self.model.categories 
+                                 if c.get("group_id") == saved_dept_id]
                     if dept_cats:
                         self.model.current_category_id = dept_cats[0]["id"]
                         self.view.select_category(self.model.current_category_id)
@@ -861,6 +998,21 @@ class MainController(QObject):
         # Non-empty codes start with 0
         return [0] + parts
     
+    def _add_popular_tags(self) -> None:
+        """Calculates and updates tag statistics for current documents."""
+        tags_count = {}
+        for doc in self.current_documents:
+            for tag in doc.get("tags", []):
+                tag_name = tag.get("name")
+                if tag_name:
+                    tags_count[tag_name] = tags_count.get(tag_name, 0) + 1
+        
+        # Sort by count desc and take top 7
+        sorted_tags = sorted(tags_count.items(), key=lambda item: item[1], reverse=True)
+        top_tags = [tag[0] for tag in sorted_tags[:7]]
+        
+        self.view.set_popular_tags(top_tags)
+
 
     def _update_create_category_state(self) -> None:
         """Updates the state of the create category button."""
@@ -870,7 +1022,9 @@ class MainController(QObject):
 
     def _update_create_document_state(self) -> None:
         """Updates the state of the create document button."""
-        state = self.model.current_category_id is not None
+        # Disable creation if virtual category is selected
+        cat_id = self.model.current_category_id
+        state = cat_id is not None and not (isinstance(cat_id, str) and cat_id.startswith("virtual_"))
         self.view.set_document_creation_enabled(state)
 
 

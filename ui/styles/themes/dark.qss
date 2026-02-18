@@ -28,7 +28,7 @@ IconLabel {
 	font-size: 10pt;
 }
 
-IconLabel#fided_label {
+IconLabel#finded_label {
 	qproperty-icon: url(:/icons/dark/dark/finded_default.svg);
 }
 
@@ -323,6 +323,134 @@ QLineEdit:disabled {
 	color: #333333;
 }
 
+/* Tags lineedit */
+TagsLineEdit {
+	border-radius: 8px;
+	border: 1px solid #404040;
+	background-color: #262626;
+}
+
+TagsLineEdit[hovered="true"] {
+	border: 1px solid #4D4D4D;
+}
+
+TagsLineEdit[focused="true"] {
+	border: 1px solid #C43A3A;
+}
+
+TagsLineEdit[disabled="true"] {
+	border: 1px solid #333333;
+}
+
+QLineEdit#tagsInputLineEdit {
+	border: none;
+	background-color: #262626;
+	color: #666666;
+	padding: 0px;
+	font-size: 12pt;
+}
+
+QLineEdit#tagsInputLineEdit:hover {
+	color: #B3B3B3;
+}
+
+QLineEdit#tagsInputLineEdit:focus {
+	color: #E6E6E6;
+}
+
+QLineEdit#tagsInputLineEdit:disabled {
+	color: #333333;
+}
+
+QLabel#tagsCounterLabel {
+	color: #4D4D4D;
+	font-size: 12pt;
+}
+
+
+/* Tags */
+Tag {
+	border-radius: 4px;
+	border: 1px solid #404040;
+	background-color: #333333;
+}
+
+Tag QLabel#tagLabel {
+	color: #999999;
+	font-size: 10pt;
+	background-color: #333333;
+	padding-bottom: 2px;
+}
+
+Tag[active="true"] {
+	background-color: #5D1717;
+	border: 1px solid #5D1717;
+}
+
+Tag[active="true"] QLabel#tagLabel {
+	color: #CCCCCC;
+	background-color: #5D1717;
+}
+
+/* Filter Tag */
+FilterTag {
+	border-radius: 11px;
+	border: 1px solid #404040;
+	background-color: #333333;
+}
+
+FilterTag QLabel#filterTagLabel {
+	color: #999999;
+	font-size: 10pt;
+	background-color: transparent;
+}
+
+FilterTag[hovered="true"] {
+	border: 1px solid #4D4D4D;
+	background-color: #404040;
+}
+
+FilterTag[hovered="true"] QLabel#filterTagLabel {
+	color: #B3B3B3;
+}
+
+FilterTag[selected="true"] {
+	border: 1px solid #C43A3A;
+	background-color: #5D1717;
+}
+
+FilterTag[selected="true"] QLabel#filterTagLabel {
+	color: #D65A5A;
+}
+
+DeletableTag {
+	border-radius: 4px;
+	border: 1px solid #404040;
+	background-color: #333333;
+
+	qproperty-closeIconDefault: url(:/icons/dark/dark/close_default.svg);
+	qproperty-closeIconHover: url(:/icons/dark/dark/close_hover.svg);
+	qproperty-closeIconPressed: url(:/icons/dark/dark/close_clicked.svg);
+	qproperty-closeIconDisabled: url(:/icons/dark/dark/close_disabled.svg);
+}
+
+DeletableTag QLabel#tagLabel {
+	color: #CCCCCC;
+	font-size: 12pt;
+	background-color: #333333;
+	padding-bottom: 2px;
+}
+
+DeletableTag QPushButton#tagCloseButton {
+	border: none;
+	background-color: transparent;
+    border-radius:4px;
+}
+
+DeletableTag QPushButton#tagCloseButton:hover {
+    background-color: #4D4D4D;
+}
+
 
 /* Notifications */
 #Notification {
@@ -510,7 +638,7 @@ QFrame#profile_frame {
 
 QLabel#profile_name_label {
 	color: #CCCCCC;
-	font-size: 12pt;
+	font-size: 10pt;
 }
 
 QLabel#profile_info_label {
@@ -552,7 +680,7 @@ QFrame#main_content_frame {
 }
 
 #themeSwitchKnob {
-	background-color: #666666;
+	background-color: #595959;
 	border-radius: 12px;
 }
 
@@ -575,12 +703,46 @@ QFrame#main_content_frame {
 }
 
 
-/* Profile Menu (Popover) */
-ThemeAwareMenu {
+/* Menus */
+QMenu {
 	background-color: #262626;
 	border: 1px solid #404040;
 	border-radius: 8px;
 	padding: 8px;
+}
+
+QMenu::item {
+    padding: 8px 24px;
+    border-radius: 4px;
+    color: #CCCCCC;
+    font-size: 12pt;
+}
+
+QMenu::item:selected {
+    background-color: #333333;
+    color: #E6E6E6;
+}
+
+QMenu::item:disabled {
+    color: #4D4D4D;
+}
+
+QMenu::separator {
+    height: 1px;
+    background-color: #333333;
+    margin: 4px 0px;
+}
+
+/* Menu Section Header */
+QLabel#menuSectionLabel {
+    color: #4D4D4D;
+    font-size: 10pt;
+}
+
+/* Menu Seporator */
+QFrame#menuSectionLine {
+	border: none;
+    background-color: #333333;
 }
 
 /* Danger Label */
@@ -717,4 +879,20 @@ QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
 
 QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
 	background: transparent;
+}
+
+/* Password Hint */
+QWidget#passwordHintContainer {
+    border-radius: 8px;
+    border: 1px solid #404040;
+	background-color: #262626;
+}
+
+QLabel#passwordHintLabel {
+    font-size: 10pt;
+    color: #999999;
+}
+
+QLabel#passwordHintLabel[valid="true"] {
+    color: #33A84F;
 }

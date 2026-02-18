@@ -8,6 +8,7 @@ from ui.custom_widgets import (
     NoFrameButton, PrimaryButton, TertiaryButton
 )
 from utils import ThemeManagerInstance
+from utils.app_paths import get_app_root
 
 
 ROLE_CHECK_STATE = Qt.UserRole + 1
@@ -417,7 +418,8 @@ class DocumentEditorView:
 
         icons_config = self.ui_config.get("icons", {})
 
-        # Set the is_danger property to the delete button
+        # Set the is_danger property to the generate tags and delete button
+        self.ui.generate_tags_pushButton.set_danger(is_danger=True)
         self.ui.delete_document_pushButton.set_danger(is_danger=True)
         
         # Setting icon for close window button
@@ -434,6 +436,22 @@ class DocumentEditorView:
             dark_hover=close_cfg.get("dark", {}).get("hover"),
             dark_pressed=close_cfg.get("dark", {}).get("pressed"),
             dark_disabled=close_cfg.get("dark", {}).get("disabled")
+        )
+
+        # Setting icon for generate tags button
+        generate_tags_cfg = icons_config.get("stick", {})
+        self.ui.generate_tags_pushButton.set_icon_paths(
+            # Light theme
+            light_default=generate_tags_cfg.get("light", {}).get("default"),
+            light_hover=generate_tags_cfg.get("light", {}).get("hover"),
+            light_pressed=generate_tags_cfg.get("light", {}).get("pressed"),
+            light_disabled=generate_tags_cfg.get("light", {}).get("disabled"),
+
+            # Dark theme
+            dark_default=generate_tags_cfg.get("dark", {}).get("default"),
+            dark_hover=generate_tags_cfg.get("dark", {}).get("hover"),
+            dark_pressed=generate_tags_cfg.get("dark", {}).get("pressed"),
+            dark_disabled=generate_tags_cfg.get("dark", {}).get("disabled")
         )
 
         self.toolbar = EditorToolBar(
@@ -458,9 +476,7 @@ class DocumentEditorView:
             A dictionary containing the UI configuration, or an empty dict if loading fails.
         """
         try:
-            # Resolve path relative to this file location
-            root_dir = Path(__file__).resolve().parents[3]
-            config_path = root_dir / "ui" / "ui_config.json"
+            config_path = get_app_root() / "ui" / "ui_config.json"
             
             with open(config_path, "r", encoding="utf-8") as f:
                 return json.load(f)
@@ -495,10 +511,16 @@ class DocumentEditorView:
         data = {
             "code": self.ui.document_code_lineEdit.text(),
             "name": self.ui.document_name_lineEdit.text(),
+            "tags": self.ui.tags_lineedit_frame.get_tags(),
             "pages": self.pages_table.get_pages()
         }
         
         return data
+    
+
+    def update_generate_button_state(self, state: bool) -> None:
+        """Updates the generate tags button state."""
+        self.ui.generate_tags_pushButton.setEnabled(state)
     
 
     def update_duplicate_button_state(self, state: bool) -> None:
@@ -532,6 +554,16 @@ class DocumentEditorView:
         self.ui.toolbar_frame.setVisible(can_edit)
         self.ui.buttons_frame.setVisible(can_edit)
         self.ui.delete_document_pushButton.setVisible(not is_creation)
+
+    
+    def set_document_tags(self, tags: list[str]) -> None:
+        """Sets the document tags.
+
+        Args:
+            tags: A list of tags as strings.
+        """
+        for tag in tags:
+            self.ui.tags_lineedit_frame.add_tag(tag)
 
 
     def set_document_code(self, code: str) -> None:
@@ -568,6 +600,24 @@ class DocumentEditorView:
             handler: The callback function to execute when the text changes.
         """
         self.ui.document_name_lineEdit.textChanged.connect(handler)
+
+
+    def tags_lineedit_text_changed(self, handler) -> None:
+        """Connects the tags line edit text changed signal to a handler.
+
+        Args:
+            handler: The callback function to execute when the text changes.
+        """
+        self.ui.tags_lineedit_frame.tagsChanged.connect(handler)
+
+
+    def generate_tags_button_clicked(self, handler) -> None:
+        """Connects the generate tags button click signal to a handler.
+
+        Args:
+            handler: The callback function to execute when the button is clicked.
+        """
+        self.ui.generate_tags_pushButton.clicked.connect(handler)
 
     
     def toolbar_add_page_button_clicked(self, handler) -> None:

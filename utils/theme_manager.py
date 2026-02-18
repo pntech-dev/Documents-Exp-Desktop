@@ -6,6 +6,7 @@ from pathlib import Path
 from jinja2 import Template
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import pyqtSignal, QObject
+from utils.app_paths import get_app_root
 
 
 logger = logging.getLogger(__name__)
@@ -105,7 +106,7 @@ class ThemeManager(QObject):
         """
 
         try:
-            with open("config.yaml", "r", encoding="utf-8") as f:
+            with open(get_app_root() / "config.yaml", "r", encoding="utf-8") as f:
                 base_config = yaml.safe_load(f)
 
             path = base_config.get("ui_config_path")
@@ -113,7 +114,7 @@ class ThemeManager(QObject):
                 logger.error("ui_config_path not found in config.yaml.")
                 return {}
 
-            with open(path, "r", encoding="utf-8") as f:
+            with open(get_app_root() / path, "r", encoding="utf-8") as f:
                 ui_config = json.load(f)
 
             return ui_config or {}
@@ -144,7 +145,7 @@ class ThemeManager(QObject):
             return
 
         theme_name = self.themes[self.current_theme_id]
-        themes_path = Path(self.ui_config["paths"]["themes_path"])
+        themes_path = get_app_root() / self.ui_config["paths"]["themes_path"]
         theme_file = themes_path / f"{theme_name}.qss"
 
         try:
@@ -185,7 +186,7 @@ class ThemeManager(QObject):
             logger.error(f"Theme ID '{theme_id}' not found.")
             return False
 
-        themes_path = Path(self.ui_config["paths"]["themes_path"])
+        themes_path = get_app_root() / self.ui_config["paths"]["themes_path"]
         if not themes_path.exists():
             logger.error(f"Themes directory missing: {themes_path}")
             return False
@@ -221,12 +222,12 @@ class ThemeManager(QObject):
         """
 
         try:
-            t_path = Path(self.ui_config["paths"]["templates_path"])
+            t_path = get_app_root() / self.ui_config["paths"]["templates_path"]
             if not t_path.exists():
                 logger.error(f"Templates folder does not exist: {t_path}")
                 return False
 
-            themes_path = Path(self.ui_config["paths"]["themes_path"])
+            themes_path = get_app_root() / self.ui_config["paths"]["themes_path"]
             themes_path.mkdir(parents=True, exist_ok=True)
 
             templates = list(t_path.glob("*.j2"))

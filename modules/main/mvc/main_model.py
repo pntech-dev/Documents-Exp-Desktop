@@ -11,7 +11,8 @@ from utils.file_utils import load_config, read_json
 
 
 class MainModel:
-    def __init__(self) -> None:
+    def __init__(self, mode: str = "guest") -> None:
+        self.mode = mode
         self.config_data = load_config()
 
         # API Client Initialization
@@ -28,11 +29,6 @@ class MainModel:
         self.categories = self._get_categories()
         
         self.current_category_id = None
-        if self.current_department_id and self.categories:
-            for cat in self.categories:
-                if cat.get("group_id") == self.current_department_id:
-                    self.current_category_id = cat["id"]
-                    break
 
         # Table data
         self.documents = [] # Will be loaded via pagination
@@ -65,18 +61,37 @@ class MainModel:
         return pages["pages"]
     
 
-    def create_department(self, name: str) -> dict:
+    def create_department(
+            self, 
+            name: str, 
+            show_for_guest: bool = False, 
+            has_all_docs_search: bool = False
+    ) -> dict:
         """Create new department"""
-        data = {"name": name}
+        data = {
+            "name": name, 
+            "show_for_guest": show_for_guest, 
+            "has_all_docs_search": has_all_docs_search
+        }
         return self._make_authorized_request(
             self.api.create_department, 
             data=data
         )
 
 
-    def edit_department(self, name: str, department_id: int):
+    def edit_department(
+            self, 
+            name: str, 
+            department_id: int, 
+            show_for_guest: bool = False, 
+            has_all_docs_search: bool = False
+    ):
         """Edit department data"""
-        data = {"name": name}
+        data = {
+            "name": name, 
+            "show_for_guest": show_for_guest, 
+            "has_all_docs_search": has_all_docs_search
+        }
         return self._make_authorized_request(
             self.api.edit_department, 
             data=data, 
@@ -92,11 +107,12 @@ class MainModel:
         )
     
 
-    def create_category(self, name: str) -> dict:
+    def create_category(self, name: str, show_for_guest: bool = False) -> dict:
         """Create new category"""
         data = {
             "group_id": self.current_department_id,
-            "name": name
+            "name": name,
+            "show_for_guest": show_for_guest
         }
         return self._make_authorized_request(
             self.api.create_category, 
@@ -104,9 +120,9 @@ class MainModel:
         )
     
 
-    def edit_category(self, name: str, category_id: int):
+    def edit_category(self, name: str, category_id: int, show_for_guest: bool = False):
         """Edit category data"""
-        data = {"name": name}
+        data = {"name": name, "show_for_guest": show_for_guest}
         return self._make_authorized_request(
             self.api.edit_category, 
             data=data, 
@@ -126,34 +142,51 @@ class MainModel:
         """Refreshes the data from the API."""
         self.departments = self._get_departments()
         self.categories = self._get_categories()
-        # Documents will be refreshed by the controller resetting pagination
 
 
     def fetch_documents(
             self, 
-            category_id: int, 
-            limit: int, 
-            offset: int
+            category_id: int = None, 
+            group_id: int = None,
+            limit: int = 50, 
+            offset: int = 0
     ) -> list[dict]:
         """Fetches a page of documents for a specific category."""
-        response = self.api.get_documents(
+        response = self._make_authorized_request(
+            self.api.get_documents,
             category_id=category_id, 
+            group_id=group_id,
             limit=limit, 
             offset=offset
         )
         return response.get("documents", [])
 
 
-    def search_data(self, query: str) -> list[dict]:
-        """Searches the data based on the provided query."""
+    def search_data(
+            self, 
+            query: str, 
+            tags: list[str] = None, 
+            group_id: int = None, 
+            category_id: int = None, 
+            filters: dict = None
+    ) -> list[dict]:
+        """Searches the data based on the provided query and tags."""
         results = []
 
-        if not query:
+        if not query and not tags:
             return results
 
-        results = self.api.search_data(
-            category_id=self.current_category_id, 
-            query=query
+        target_category_id = category_id
+        if target_category_id is None and group_id is None:
+            target_category_id = self.current_category_id
+
+        results = self._make_authorized_request(
+            self.api.search_data,
+            category_id=target_category_id,
+            group_id=group_id,
+            query=query,
+            tags=tags,
+            filters=filters
         )
 
         return results
@@ -196,6 +229,7 @@ class MainModel:
     # Model Methods
     # ====================
 
+
     def _make_authorized_request(self, api_method, **kwargs):
         """Executes an API request with automatic token refresh on 401."""
         try:
@@ -213,6 +247,9 @@ class MainModel:
 
     def _refresh_tokens(self) -> bool:
         """Refreshes the access token using the refresh token."""
+        if self.mode == "guest":
+            return False
+
         try:
             last_logged = read_json(self.LOCAL_DIR_LAST_LOGGED)
             if not last_logged:
@@ -245,6 +282,9 @@ class MainModel:
         
 
     def _get_user_token(self) -> str | None:
+        if self.mode == "guest":
+            return None
+
         last_logged = read_json(self.LOCAL_DIR_LAST_LOGGED)
 
         if not last_logged:
@@ -261,11 +301,11 @@ class MainModel:
     
 
     def _get_departments(self) -> list[dict]:
-        departments = self.api.get_departments()
+        departments = self._make_authorized_request(self.api.get_departments)
         return departments["departments"]
 
 
     def _get_categories(self) -> list[dict]:
-        categories = self.api.get_categories()
+        categories = self._make_authorized_request(self.api.get_categories)
         return categories["categories"]
     

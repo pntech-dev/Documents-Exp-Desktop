@@ -1,12 +1,13 @@
 import json
 
 from pathlib import Path
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QFrame, QHBoxLayout, QAction
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QEvent, Qt, QObject, QPoint, QItemSelectionModel
 
 from ui import MainWindow_UI
 from utils import ThemeManagerInstance
+from utils.app_paths import get_app_root
 from ui.custom_widgets import (
     SidebarItem,
     SidebarBlock,
@@ -17,7 +18,8 @@ from ui.custom_widgets import (
     ProfileIconLabel,
     ThemeAwareMenu,
     DocumentsTableView,
-    ROLE_ID
+    ROLE_ID,
+    FilterTag
 )
 
 
@@ -246,6 +248,8 @@ class Navbar:
             theme_switch: ThemeSwitch,
             create_pushButton: PrimaryButton,
             create_popover_pushButton: PrimaryButton,
+            finded_label: QLabel,
+            tags_frame: QFrame,
             icons_config: dict
     ) -> None:
         """Initializes the Navbar manager.
@@ -262,6 +266,8 @@ class Navbar:
         self.theme_switch = theme_switch
         self.create_pushButton = create_pushButton
         self.create_popover_pushButton = create_popover_pushButton
+        self.finded_label = finded_label
+        self.tags_frame = tags_frame
         self.config = icons_config.get("navbar", {})
 
         # Setting icon fot search line
@@ -328,6 +334,65 @@ class Navbar:
             dark_pressed=dark_arrow_create,
             dark_disabled=dark_arrow_create
         )
+        self._tag_handler = None
+        
+        self._setup_filter_menu()
+        self.search_filters_pushButton.setEnabled(True)
+
+
+    def get_search_filters(self) -> dict:
+        """Returns the current state of search filters."""
+        return {
+            "include_pages": self.action_search_pages.isChecked(),
+            "search_by_name": self.action_search_name.isChecked(),
+            "search_by_code": self.action_search_code.isChecked(),
+            "exact_match": self.action_exact_match.isChecked()
+        }
+
+
+    def _setup_filter_menu(self) -> None:
+        """Configures the search filter menu."""
+        self.filter_menu = ThemeAwareMenu(self.search_filters_pushButton)
+        
+        # 1. Search Targets
+        self.filter_menu.add_section_header("Область поиска")
+        self.action_search_pages = self.filter_menu.add_theme_action(
+            text="Искать страницы",
+            checkable=True,
+            checked=True
+        )
+
+        # 2. Search Fields
+        self.filter_menu.add_section_header("Поля поиска")
+        self.action_search_code = self.filter_menu.add_theme_action(
+            text="По коду",
+            checkable=True,
+            checked=True
+        )
+
+        self.action_search_name = self.filter_menu.add_theme_action(
+            text="По наименованию",
+            checkable=True,
+            checked=True
+        )
+
+        # 3. Match Mode
+        self.filter_menu.add_section_header("Настройки поиска")
+        self.action_exact_match = self.filter_menu.add_theme_action(
+            text="Точное совпадение",
+            checkable=True,
+            checked=False
+        )
+
+        self.search_filters_pushButton.clicked.connect(self._show_filter_menu)
+
+
+    def _show_filter_menu(self) -> None:
+        """Shows the filter menu."""
+        button = self.search_filters_pushButton
+        # Align to bottom-left of the button
+        pos = button.mapToGlobal(QPoint(0, button.height()))
+        self.filter_menu.exec_(pos)
 
     def set_ui_visible(self, is_visible: bool) -> None:
         """Enables or disables UI elements visibility.
@@ -348,6 +413,44 @@ class Navbar:
         """Sets the enabled state of the create document button."""
         self.create_pushButton.setEnabled(enabled)
 
+
+    def set_finded_counter(self, counter: int) -> None:
+        """"""
+        self.finded_label.setText(f"Найдено: {counter}")
+
+
+    def set_popular_tags(self, tags: list[str]) -> None:
+        """"""
+        layout = self.tags_frame.layout()
+        
+        # Parse current search text to find active tags
+        current_text = self.search_lineedit.text()
+        active_tags = set()
+        if current_text:
+            for word in current_text.split():
+                if word.startswith("@"):
+                    active_tags.add(word[1:])
+
+        # Clear existing FilterTags
+        for i in reversed(range(layout.count())):
+            widget = layout.itemAt(i).widget()
+            if isinstance(widget, FilterTag):
+                widget.deleteLater()
+        
+        # Add new
+        for tag_text in tags:
+            tag = FilterTag(tag_text, parent=self.tags_frame)
+            
+            if tag_text in active_tags:
+                tag.set_selected(True)
+
+            tag.toggled.connect(self._on_tag_toggled)
+            layout.addWidget(tag)
+
+    def _on_tag_toggled(self, checked: bool, text: str) -> None:
+        if self._tag_handler:
+            self._tag_handler(checked, text)
+
     
     def search_lineedit_text_changed(self, handler) -> None:
         """Connect the search line edit signal to a handler.
@@ -356,6 +459,19 @@ class Navbar:
             handler: The callback function to execute when the text changes.
         """
         self.search_lineedit.textChanged.connect(handler)
+
+
+    def connect_search_filters_changed(self, handler) -> None:
+        """Connects the search filters toggled signal to a handler."""
+        actions = [
+            self.action_search_pages,
+            self.action_search_code,
+            self.action_search_name,
+            self.action_exact_match
+        ]
+        for action in actions:
+            if action:
+                action.toggled.connect(handler)
 
 
     def theme_switcher_clicked(self, handler) -> None:
@@ -580,6 +696,11 @@ class ToolBar:
         self.change_view_button.clicked.connect(self._set_data_view_icon)
         self.change_view_button.clicked.connect(handler)
 
+    def set_export_print_enabled(self, enabled: bool) -> None:
+        """Sets the enabled state of export and print buttons."""
+        self.export_button.setEnabled(enabled)
+        self.print_button.setEnabled(enabled)
+
 
 
 class DocumentsList:
@@ -594,8 +715,13 @@ class DocumentsList:
         self.table_view = table_view
         
         # Default headers configuration
-        self.headers = ["Код", "Наименование"]
+        self.headers = ["Код", "Наименование", "Теги"]
         self.table_view.set_headers(self.headers)
+
+
+    def set_active_tags(self, tags: list[str]) -> None:
+        """Sets the active tags for highlighting."""
+        self.table_view.set_active_tags(tags)
 
 
     def get_table_data(self) -> list[dict]:
@@ -605,7 +731,8 @@ class DocumentsList:
         for row in range(model.rowCount()):
             data.append({
                 "code": model.index(row, 0).data(),
-                "name": model.index(row, 1).data()
+                "name": model.index(row, 1).data(),
+                "tags": model.index(row, 2).data()
             })
         return data
     
@@ -619,37 +746,48 @@ class DocumentsList:
         rows = []
         for doc in documents:
             # Extracting data in the order of headers
+            tags = [tag.get("name", "") for tag in doc.get("tags", [])]
+
             row = [
                 doc.get("code", ""),
-                doc.get("name", "")
+                doc.get("name", ""),
+                tags
             ]
             rows.append(row)
         
         self.table_view.set_rows(rows)
 
+
     def append_documents(self, documents: list[dict]) -> None:
         """Appends new documents to the table."""
         rows = []
         for doc in documents:
+            tags = [tag.get("name", "") for tag in doc.get("tags", [])]
+
             row = [
                 doc.get("code", ""),
-                doc.get("name", "")
+                doc.get("name", ""),
+                tags
             ]
             rows.append(row)
         self.table_view.add_rows(rows)
 
+
     def clear(self) -> None:
         """Clears the table."""
         self.table_view.set_rows([])
+
 
     def connect_selection(self, handler) -> None:
         """Connects to the table selection changed signal."""
         if self.table_view.selectionModel():
             self.table_view.selectionModel().selectionChanged.connect(handler)
 
+
     def connect_double_click(self, handler) -> None:
         """Connects to the table double clicked signal."""
         self.table_view.doubleClicked.connect(handler)
+
 
     def connect_scroll_changed(self, handler) -> None:
         """Connects to the vertical scrollbar value changed signal."""
@@ -675,8 +813,6 @@ class MainView(QObject):
 
         # Disabled until the next update
         for ui_element in[
-            self.ui.search_filters_pushButton,
-            self.ui.navbar_info_frame,
             self.ui.change_view_pushButton,
             self.ui.profile_info_label
         ]:
@@ -714,6 +850,8 @@ class MainView(QObject):
             theme_switch=self.ui.theme_pushButton,
             create_pushButton=self.ui.create_pushButton,
             create_popover_pushButton=self.ui.create_popover_pushButton,
+            finded_label=self.ui.finded_label,
+            tags_frame = self.ui.tags_frame,
             icons_config=icons_config
         )
 
@@ -926,9 +1064,7 @@ class MainView(QObject):
             A dictionary containing the UI configuration, or an empty dict if loading fails.
         """
         try:
-            # Resolve path relative to this file location
-            root_dir = Path(__file__).resolve().parents[3]
-            config_path = root_dir / "ui" / "ui_config.json"
+            config_path = get_app_root() / "ui" / "ui_config.json"
             
             with open(config_path, "r", encoding="utf-8") as f:
                 return json.load(f)
@@ -943,17 +1079,18 @@ class MainView(QObject):
         return self.documents_list.get_table_data()
     
 
+    def get_search_filters(self) -> dict:
+        """Returns the current search filters."""
+        return self.navbar.get_search_filters()
+    
+
     def get_search_text(self) -> str:
         """Returns the search line edit text."""
-        return self.navbar.search_lineedit.text()  
+        return self.navbar.search_lineedit.text().strip()
 
-
-    def set_theme(self) -> None:
-        """Switches the application's theme.
-
-        Delegates the theme switching logic to the theme manager instance.
-        """
-        self.theme_manager.switch_theme()
+    def set_search_text(self, text: str) -> None:
+        """Sets the search line edit text."""
+        self.navbar.search_lineedit.setText(text)
 
 
     def update_departments(self, items: list[SidebarItem]) -> None:
@@ -1003,6 +1140,14 @@ class MainView(QObject):
         self.toolbar.update_edit_button_state(is_enabled=state)
 
 
+    def set_theme(self) -> None:
+        """Switches the application's theme.
+
+        Delegates the theme switching logic to the theme manager instance.
+        """
+        self.theme_manager.switch_theme()
+
+
     def set_profile_mode(self, mode: str) -> None:
         """Sets the profile mode ('guest' or 'auth')."""
         self.current_mode = mode
@@ -1046,6 +1191,26 @@ class MainView(QObject):
         self.sidebar.set_user_department(dept=dept)
 
 
+    def set_finded_counter(self, counter: int) -> None:
+        """"""
+        self.navbar.set_finded_counter(counter)
+
+
+    def set_popular_tags(self, tags: list[str]) -> None:
+        """"""
+        self.navbar.set_popular_tags(tags)
+
+
+    def set_active_search_tags(self, tags: list[str]) -> None:
+        """Sets the active search tags for highlighting in the table."""
+        self.documents_list.set_active_tags(tags)
+
+
+    def set_export_print_enabled(self, enabled: bool) -> None:
+        """Sets the enabled state of export and print buttons."""
+        self.toolbar.set_export_print_enabled(enabled)
+
+
     def select_department(self, dept_id: int) -> None:
         """Selects a department by ID."""
         self.sidebar.select_department(dept_id)
@@ -1059,6 +1224,11 @@ class MainView(QObject):
     def connect_search_lineedit(self, handler) -> None:
         """Connects the search line edit text changed signal to a handler."""
         self.navbar.search_lineedit_text_changed(handler)
+
+
+    def connect_search_filters_changed(self, handler) -> None:
+        """Connects the search filters toggled signal to a handler."""
+        self.navbar.connect_search_filters_changed(handler)
 
 
     def connect_theme_switch(self, handler) -> None:
@@ -1098,6 +1268,11 @@ class MainView(QObject):
         self.navbar.create_document_button_clicked(handler)
         if self.create_document_action:
             self.create_document_action.triggered.connect(handler)
+
+
+    def connect_filter_tag_toggled(self, handler):
+        """"""
+        self.navbar._tag_handler = handler
 
 
     def connect_logout(self, handler) -> None:

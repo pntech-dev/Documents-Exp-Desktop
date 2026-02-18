@@ -8,7 +8,7 @@ class APIClient:
         Args:
             base_url (str): The base URL for the API.
         """
-        self.base_url = base_url.rstrip("/")
+        self.base_url = (base_url or "").rstrip("/")
         self.session = requests.Session()
 
 
@@ -173,13 +173,16 @@ class APIClient:
 
     # === App Data ===
 
-    def get_departments(self) -> dict:
+    def get_departments(self, token: str = None) -> dict:
         """Retrieves the list of departments (groups).
 
         Returns:
             dict: The JSON response containing the list of departments.
         """
-        return self._request("GET", url=self.base_url + "/app/groups")
+        headers = {}
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+        return self._request("GET", url=self.base_url + "/app/groups", headers=headers)
     
 
     def create_department(self, data: dict, token: str) -> dict:
@@ -233,13 +236,16 @@ class APIClient:
         )
 
     
-    def get_categories(self) -> dict:
+    def get_categories(self, token: str = None) -> dict:
         """Retrieves the list of categories.
 
         Returns:
             dict: The JSON response containing the list of categories.
         """
-        return self._request("GET", url=self.base_url + "/app/categories")
+        headers = {}
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+        return self._request("GET", url=self.base_url + "/app/categories", headers=headers)
     
 
     def create_category(self, data: dict, token: str) -> dict:
@@ -290,17 +296,22 @@ class APIClient:
         )
     
 
-    def get_documents(self, category_id: int = None, limit: int = 50, offset: int = 0) -> dict:   
+    def get_documents(self, category_id: int = None, group_id: int = None, limit: int = 50, offset: int = 0, token: str = None) -> dict:   
         """Retrieves the list of documents.
 
         Returns:
             dict: The JSON response containing the list of documents.
         """
         params = {"limit": limit, "offset": offset}
+        headers = {}
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
         if category_id is not None:
             params["category_id"] = category_id
+        if group_id is not None:
+            params["group_id"] = group_id
 
-        return self._request("GET", url=self.base_url + "/app/documents", params=params)
+        return self._request("GET", url=self.base_url + "/app/documents", params=params, headers=headers)
     
 
     def get_document(self, document_id: int) -> dict:
@@ -346,19 +357,62 @@ class APIClient:
         )
     
 
-    def search_data(self, category_id: int, query: str) -> dict:
+    def search_data(
+            self, 
+            query: str, 
+            group_id: int = None, 
+            category_id: int = None, 
+            tags: list[str] = None, 
+            filters: dict = None,
+            token: str = None
+    ) -> dict:
         """Searches the data based on the provided query.
 
         Args:
             category_id (int): The ID of the category.
+            group_id (int): The ID of the department (group).
             query (str): The search query.
+            filters (dict): Search filters (exact_match, include_pages, etc).
 
         Returns:
             dict: The JSON response containing the search results.
         """
+        params = {"query": query, "tags": tags}
+        headers = {}
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+
+        # Search scope
+        if group_id is not None:
+            params["group_id"] = group_id
+
+        if category_id is not None:
+            params["category_id"] = category_id
+        
+        # Filters
+        if filters:
+            # Search settings
+            if filters.get("exact_match"):
+                params["exact_match"] = "true"
+            
+            # Saerch pages
+            if not filters.get("include_pages", True):
+                params["include_pages"] = "false"
+
+            # Search in columns
+            search_fields = []
+            if filters.get("search_by_name"):
+                search_fields.append("name")
+            if filters.get("search_by_code"):
+                search_fields.append("code")
+            
+            if search_fields:
+                params["search_fields"] = search_fields
+
         return self._request("GET",
-            url=self.base_url + f"/app/category_search",
-            params={"category_id": category_id, "query": query}
+            url=self.base_url + f"/app/search",
+            params=params,
+            headers=headers
         )
     
 

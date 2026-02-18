@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import (
     QDialog, 
     QVBoxLayout,
-    QGraphicsDropShadowEffect
+    QGraphicsDropShadowEffect,
+    QCheckBox
 )
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIntValidator, QColor
@@ -13,10 +14,18 @@ from utils.delete_info_modal import DeleteInfoDialog
 
 
 class EditDepartment(BaseModalDialog):
-    def __init__(self, parent, current_name: str = None):
+    def __init__(
+            self, 
+            parent, 
+            current_name: str = None, 
+            current_show_for_guest: bool = False, 
+            current_has_all_docs: bool = False
+    ):
         super().__init__(parent)
         self.parent_window = parent
         self.current_name = current_name
+        self.current_show_for_guest = current_show_for_guest
+        self.current_has_all_docs = current_has_all_docs
         self.action = None
 
         # === Setup UI ===
@@ -24,6 +33,8 @@ class EditDepartment(BaseModalDialog):
         self.ui.setupUi(self)
 
         self.ui.name_lineEdit.setText(current_name)
+        self.ui.guest_show_checkBox.setChecked(current_show_for_guest)
+        self.ui.all_docs_checkBox.setChecked(current_has_all_docs)
 
         # Set the is_danger property to the delete button
         self.ui.delete_department_pushButton.set_danger(is_danger=True)
@@ -53,6 +64,8 @@ class EditDepartment(BaseModalDialog):
         # Reparent UI frames into container
         self.ui.texts_frame.setParent(container)
         self.ui.name_frame.setParent(container)
+        self.ui.guest_show_checkBox.setParent(container)
+        self.ui.all_docs_checkBox.setParent(container)
         self.ui.buttons_frame.setParent(container)
 
         # === Shadow ===
@@ -69,14 +82,24 @@ class EditDepartment(BaseModalDialog):
         self.setLayout(main_layout)
 
         # === Connect handlers ===
-        self.ui.name_lineEdit.textChanged.connect(self.name_lineedit_changed)
+        self.ui.name_lineEdit.textChanged.connect(self._validate_changes)
+        self.ui.guest_show_checkBox.stateChanged.connect(self._validate_changes)
+        self.ui.all_docs_checkBox.stateChanged.connect(self._validate_changes)
         self.ui.accept_pushButton.clicked.connect(self.accept_button_clicked)
         self.ui.cancel_pushButton.clicked.connect(self.cancel_button_clicked)
         self.ui.delete_department_pushButton.clicked.connect(self.delete_button_clicked)
 
+        # Initial validation
+        self.ui.accept_pushButton.setEnabled(False)
+
     
     @staticmethod
-    def show_dialog(parent=None, current_name=""):
+    def show_dialog(
+        parent=None, 
+        current_name="", 
+        current_show_for_guest=False, 
+        current_has_all_docs=False
+    ):
         """Creates, shows the dialog, and returns the action and entered name.
 
         This static method provides a convenient way to use the dialog. It
@@ -85,22 +108,33 @@ class EditDepartment(BaseModalDialog):
         Args:
             parent (QWidget, optional): The parent widget. Defaults to None.
             current_name (str): The current name of the department.
+            current_has_all_docs (bool): The current state of the flag.
 
         Returns:
-            tuple: (action, name) where action is 'edit', 'delete' or None.
+            tuple: (action, (name, has_all_docs)) where action is 'edit', 'delete' or None.
         """
-        dialog = EditDepartment(parent, current_name)
+        dialog = EditDepartment(parent, current_name, current_show_for_guest, current_has_all_docs)
         if dialog.exec_() == QDialog.Accepted:
-            return dialog.action, dialog.get_department_name()
+            return dialog.action, (
+                dialog.get_department_name(), 
+                dialog.ui.guest_show_checkBox.isChecked(), 
+                dialog.ui.all_docs_checkBox.isChecked()
+            )
         
         return None, None
     
 
     # Handlers
-    def name_lineedit_changed(self):
-        """Handles text changes in the verification code line edit."""
+    def _validate_changes(self, *args):
+        """Checks if changes were made to enable the save button."""
         text = self.ui.name_lineEdit.text()
-        self.ui.accept_pushButton.setEnabled(text != self.current_name)
+        is_name_changed = text != self.current_name
+        is_show_for_guest_changed = self.ui.guest_show_checkBox.isChecked() != self.current_show_for_guest
+        is_all_docs_checkbox_changed = self.ui.all_docs_checkBox.isChecked() != self.current_has_all_docs
+        
+        self.ui.accept_pushButton.setEnabled((
+            is_name_changed or is_show_for_guest_changed or is_all_docs_checkbox_changed
+        ) and len(text) > 0)
 
 
     def get_department_name(self):

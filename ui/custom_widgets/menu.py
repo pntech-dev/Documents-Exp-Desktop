@@ -7,7 +7,7 @@ from PyQt5.QtCore import (
 from PyQt5.QtWidgets import (
     QMenu, QWidget, QAction,
     QHBoxLayout, QLabel,
-    QWidgetAction
+    QWidgetAction, QCheckBox, QFrame, QSizePolicy, QVBoxLayout
 )
 
 from utils import ThemeManagerInstance
@@ -20,11 +20,14 @@ class MenuItemWidget(QWidget):
             text: str, 
             action: QAction, 
             danger: bool = False, 
+            checkable: bool = False,
+            checked: bool = False,
             parent: QWidget | None = None
     ) -> None:
         super().__init__(parent)
         ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
         self.action = action
+        self.checkable = checkable
         self.setMouseTracking(True)
         self.setAttribute(Qt.WA_Hover)
         self.setAttribute(Qt.WA_StyledBackground)
@@ -43,11 +46,25 @@ class MenuItemWidget(QWidget):
         layout.setContentsMargins(16, 8, 16, 8)
         layout.setSpacing(8)
         
-        self.icon_label = QLabel()
-        self.icon_label.setFixedSize(20, 20)
-        self.icon_label.setScaledContents(True)
-        self.icon_label.setStyleSheet("background: transparent; border: none;")
-        layout.addWidget(self.icon_label)
+        if self.checkable:
+            self.checkbox = QCheckBox()
+            self.checkbox.setChecked(checked)
+            self.checkbox.setAttribute(Qt.WA_TransparentForMouseEvents)
+            self.checkbox.setAttribute(Qt.WA_StyledBackground, True)
+            self.checkbox.setFocusPolicy(Qt.NoFocus)
+            self.checkbox.setStyleSheet("background: transparent; border: none;")
+            layout.addWidget(self.checkbox)
+            
+            # Sync action state
+            action.setCheckable(True)
+            action.setChecked(checked)
+            action.toggled.connect(self.checkbox.setChecked)
+        else:
+            self.icon_label = QLabel()
+            self.icon_label.setFixedSize(20, 20)
+            self.icon_label.setScaledContents(True)
+            self.icon_label.setStyleSheet("background: transparent; border: none;")
+            layout.addWidget(self.icon_label)
         
         self.text_label = QLabel(text)
         self.text_label.setProperty("danger", danger)
@@ -62,6 +79,9 @@ class MenuItemWidget(QWidget):
                        dark_default: str | None = None, dark_hover: str | None = None, 
                        dark_pressed: str | None = None, dark_disabled: str | None = None) -> None:
         """Sets the icon paths for different states and themes."""
+        if self.checkable:
+            return
+
         mapping = {
             ("light", "default"): light_default,
             ("light", "hover"): light_hover,
@@ -79,6 +99,9 @@ class MenuItemWidget(QWidget):
 
     def _update_icon(self) -> None:
         """Updates the icon based on the current state and theme."""
+        if self.checkable:
+            return
+
         theme_id = ThemeManagerInstance().current_theme_id
         theme = "light" if theme_id == "0" else "dark"
 
@@ -108,7 +131,7 @@ class MenuItemWidget(QWidget):
         self.setProperty("hovered", True)
         self.style().unpolish(self)
         self.style().polish(self)
-        # Обновляем стили дочерних элементов (текста)
+        # Update the styles of child elements (text)
         self.text_label.style().unpolish(self.text_label)
         self.text_label.style().polish(self.text_label)
         super().enterEvent(event)
@@ -147,6 +170,11 @@ class MenuItemWidget(QWidget):
             self.text_label.style().polish(self.text_label)
 
         if event.button() == Qt.LeftButton and self.rect().contains(event.pos()):
+            if self.checkable:
+                # Toggle state without triggering (which closes menu)
+                self.action.setChecked(not self.action.isChecked())
+                return
+
             self.action.trigger()
             menu = self.parent()
             while menu and not isinstance(menu, QMenu):
@@ -184,14 +212,14 @@ class ThemeAwareMenu(QMenu):
             light_icon: str | None = None,
             dark_icon: str | None = None,
             danger_action: bool = False,
+            checkable: bool = False,
+            checked: bool = False,
             callback=None,
             **icon_kwargs
     ) -> QAction:
         """Adds an action with theme-aware icons."""
-        
-        # Теперь все элементы - это QWidgetAction с MenuItemWidget
         action = QWidgetAction(self)
-        widget = MenuItemWidget(text, action, danger=danger_action)
+        widget = MenuItemWidget(text, action, danger=danger_action, checkable=checkable, checked=checked)
         action.setDefaultWidget(widget)
 
         # Sync enabled state
@@ -211,5 +239,43 @@ class ThemeAwareMenu(QMenu):
         if callback:
             action.triggered.connect(callback)
             
+        self.addAction(action)
+        return action
+
+    def add_section_header(self, text: str) -> QAction:
+        """Adds a section header with text and a separator line."""
+        action = QWidgetAction(self)
+        widget = QWidget()
+        widget.setAttribute(Qt.WA_StyledBackground)
+        
+        layout = QHBoxLayout(widget)
+        layout.setContentsMargins(16, 4, 16, 4)
+        layout.setSpacing(8)
+        
+        label = QLabel(text)
+        label.setObjectName("menuSectionLabel")
+        
+        # A wrapper for the line to ensure vertical centering
+        line_container = QWidget()
+        line_layout = QVBoxLayout(line_container)
+        line_layout.setContentsMargins(0, 0, 0, 0)
+        line_layout.setSpacing(0)
+        
+        line = QFrame()
+        line.setObjectName("menuSectionLine")
+        line.setFrameShape(QFrame.HLine)
+        line.setFrameShadow(QFrame.Sunken)
+        line.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        line.setFixedHeight(2)
+        
+        line_layout.addStretch()
+        line_layout.addWidget(line)
+        line_layout.addStretch()
+        
+        layout.addWidget(label)
+        layout.addWidget(line_container, 1)
+        
+        action.setDefaultWidget(widget)
+        action.setEnabled(False)
         self.addAction(action)
         return action

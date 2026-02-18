@@ -156,6 +156,20 @@
                 "disabled": ":/icons/dark/dark/close_disabled.svg"
             }
         },
+        "stick": {
+            "light": {
+                "default": ":/icons/light/light/stick_default.svg",
+                "hover": ":/icons/light/light/stick_hover.svg",
+                "pressed": ":/icons/light/light/stick_clicked.svg",
+                "disabled": ":/icons/light/light/stick_disabled.svg"
+            },
+            "dark": {
+                "default": ":/icons/dark/dark/stick_default.svg",
+                "hover": ":/icons/dark/dark/stick_hover.svg",
+                "pressed": ":/icons/dark/dark/stick_clicked.svg",
+                "disabled": ":/icons/dark/dark/stick_disabled.svg"
+            }
+        },
         "sidebar": {
             "edit": {
                 "light": {

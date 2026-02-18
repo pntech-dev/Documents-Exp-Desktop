@@ -62,3 +62,14 @@ class FieldValidator:
             return False
 
         return True
+
+    @staticmethod
+    def get_password_validation_status(password: str) -> list[dict]:
+        """Returns a list of validation rules and their status."""
+        return [
+            {"text": "Минимум 8 символов", "valid": len(password) >= 8},
+            {"text": "Один спецсимвол", "valid": any(char in string.punctuation for char in password)},
+            {"text": "Одна цифра", "valid": any(char.isdigit() for char in password)},
+            {"text": "Одна заглавная буква", "valid": any(char.isupper() for char in password)},
+            {"text": "Одна строчная буква", "valid": any(char.islower() for char in password)},
+        ]
