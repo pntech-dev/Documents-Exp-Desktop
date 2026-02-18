@@ -14,6 +14,8 @@ from .tags import DeletableTag
 
 
 class IconLineEdit(QLineEdit):
+    focusChanged = pyqtSignal(bool)
+
     def __init__(self, parent: QWidget | None = None) -> None:
         """Initializes the icon line edit."""
         super().__init__(parent)
@@ -124,12 +126,14 @@ class IconLineEdit(QLineEdit):
         super().focusInEvent(event)
         self._focus = True
         self._update_icon()
+        self.focusChanged.emit(True)
 
     def focusOutEvent(self, event: QFocusEvent) -> None:
         """Handles focus out events."""
         super().focusOutEvent(event)
         self._focus = False
         self._update_icon()
+        self.focusChanged.emit(False)
 
     # disabled
     def setDisabled(self, disabled: bool) -> None:

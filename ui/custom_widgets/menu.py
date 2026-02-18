@@ -131,7 +131,7 @@ class MenuItemWidget(QWidget):
         self.setProperty("hovered", True)
         self.style().unpolish(self)
         self.style().polish(self)
-        # Обновляем стили дочерних элементов (текста)
+        # Update the styles of child elements (text)
         self.text_label.style().unpolish(self.text_label)
         self.text_label.style().polish(self.text_label)
         super().enterEvent(event)
@@ -218,8 +218,6 @@ class ThemeAwareMenu(QMenu):
             **icon_kwargs
     ) -> QAction:
         """Adds an action with theme-aware icons."""
-        
-        # Теперь все элементы - это QWidgetAction с MenuItemWidget
         action = QWidgetAction(self)
         widget = MenuItemWidget(text, action, danger=danger_action, checkable=checkable, checked=checked)
         action.setDefaultWidget(widget)
@@ -257,7 +255,7 @@ class ThemeAwareMenu(QMenu):
         label = QLabel(text)
         label.setObjectName("menuSectionLabel")
         
-        # Обертка для линии, чтобы гарантировать вертикальное центрирование
+        # A wrapper for the line to ensure vertical centering
         line_container = QWidget()
         line_layout = QVBoxLayout(line_container)
         line_layout.setContentsMargins(0, 0, 0, 0)

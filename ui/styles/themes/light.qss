@@ -871,3 +871,19 @@ QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
 QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
 	background: transparent;
 }
+
+/* Password Hint */
+QWidget#passwordHintContainer {
+	border-radius: 8px;
+    border: 1px solid #E6E6E6;
+    background-color: #FFFFFF;
+}
+
+QLabel#passwordHintLabel {
+    font-size: 10pt;
+    color: #666666;
+}
+
+QLabel#passwordHintLabel[valid="true"] {
+    color: #40BF60;
+}

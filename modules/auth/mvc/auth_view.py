@@ -1,9 +1,10 @@
 from PyQt5.QtWidgets import QLineEdit, QCheckBox, QPushButton, QGraphicsOpacityEffect
-from PyQt5.QtCore import QTimer, QPropertyAnimation, QEasingCurve
+from PyQt5.QtCore import QTimer, QPropertyAnimation, QEasingCurve, QPoint
 
 from ui import AuthWindow_UI
-from ui.custom_widgets import SlideLabel
+from ui.custom_widgets import SlideLabel, PasswordHint
 from utils import ThemeManagerInstance
+from utils.fields_validators import FieldValidator
 import resources.slides.slides_resources_rc
 
 
@@ -489,6 +490,10 @@ class AuthView:
         # Initialize slides
         self.slides = AuthSlider(slides=self.ui.slider)
 
+        # Password Hint Widget
+        self.password_hint = PasswordHint(self.ui.centralwidget)
+        self._setup_password_hints()
+
 
     def set_theme(self) -> None:
         """Switches the application's theme.
@@ -518,3 +523,40 @@ class AuthView:
                 button is clicked.
         """
         self.ui.theme_button.clicked.connect(handler)
+
+    def _setup_password_hints(self):
+        """Sets up password hints for registration and reset password fields."""
+        # Fields that require a hint
+        target_fields = [
+            self.ui.password_lineEdit, # Login password
+            self.ui.password_lineEdit_2, # Signup password (create)
+            self.ui.password_lineEdit_3, # Signup password (confirm)
+            self.ui.password_lineEdit_4, # Reset password (new)
+            self.ui.password_lineEdit_5  # Reset password (confirm)
+        ]
+
+        for line_edit in target_fields:
+            line_edit.focusChanged.connect(lambda has_focus, le=line_edit: self._on_password_focus(has_focus, le))
+            line_edit.textChanged.connect(lambda text, le=line_edit: self._update_password_hint(text, le))
+
+    def _on_password_focus(self, has_focus: bool, line_edit: QLineEdit):
+        if has_focus:
+            self._update_password_hint(line_edit.text(), line_edit)
+        else:
+            self.password_hint.hide()
+
+    def _update_password_hint(self, text: str, line_edit: QLineEdit):
+        if not line_edit.hasFocus():
+            return
+            
+        status = FieldValidator.get_password_validation_status(text)
+        self.password_hint.update_status(status)
+        
+        # Position hint BELOW the line edit, Right Aligned
+        global_pos = line_edit.mapToGlobal(QPoint(line_edit.width(), line_edit.height()))
+        
+        # Account for internal margins of PasswordHint (20px) to align visually
+        x = global_pos.x() - self.password_hint.width() + 20
+        y = global_pos.y() - 20
+        
+        self.password_hint.show_at(QPoint(x, y))
