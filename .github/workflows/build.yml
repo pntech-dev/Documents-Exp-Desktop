@@ -16,6 +16,7 @@ jobs:
     runs-on: windows-latest
     permissions:
       contents: write
+      actions: read
 
     steps:
     - name: Checkout code
@@ -57,9 +58,9 @@ jobs:
       run: pyinstaller --noconfirm "Documents Exp.spec"
 
     - name: Compile Installer (Inno Setup)
-      uses: MinnowArts/inno-setup-action@v1.2.2
+      uses: jack-pope/iscc-action@v2.2.1
       with:
-        path: setup_script.iss
+        file: setup_script.iss
         options: /DMyAppVersion=${{ steps.versioning.outputs.VERSION }}
 
     - name: Upload Artifact
