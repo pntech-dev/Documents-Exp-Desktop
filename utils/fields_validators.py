@@ -33,6 +33,12 @@ class FieldValidator:
 
         if "." not in domain_part:
             return False
+        
+        if domain_part.startswith(".") or domain_part.endswith("."):
+            return False
+
+        if ".." in domain_part:
+            return False
 
         return True
     
