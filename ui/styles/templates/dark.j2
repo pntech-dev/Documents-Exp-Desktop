@@ -592,6 +592,27 @@ QFrame#deleteInfoContainer {
     color: {{ accent.accent_300 }};
 }
 
+/* Update Progress Window */
+#updateProgressContainer {
+    background-color: {{ neutral.neutral_100 }};
+    border-radius: 8px;
+    border: 1px solid {{ neutral.neutral_250 }};
+}
+
+/* Update Confirm Window */
+#updateConfirmContainer {
+    background-color: {{ neutral.neutral_100 }};
+    border-radius: 8px;
+    border: 1px solid {{ neutral.neutral_250 }};
+}
+
+/* Install Confirm Window */
+#installConfirmContainer {
+    background-color: {{ neutral.neutral_100 }};
+    border-radius: 8px;
+    border: 1px solid {{ neutral.neutral_250 }};
+}
+
 
 
 /* MAIN APPLICATION */
@@ -895,4 +916,18 @@ QLabel#passwordHintLabel {
 
 QLabel#passwordHintLabel[valid="true"] {
     color: {{ semantic.success.success_500 }};
+}
+
+
+/* Progress Bar */
+ProgressBar {
+    border: 1px solid {{ neutral.neutral_250 }};
+    border-radius: 6px;
+    text-align: center;
+    background-color: {{ neutral.neutral_200 }};
+}
+
+ProgressBar::chunk {
+    background-color: {{ accent.accent_500 }};
+    border-radius: 5px;
 }

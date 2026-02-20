@@ -166,30 +166,19 @@ The project follows the **MVC (Model-View-Controller)** pattern to ensure separa
 
 ## 🔧 Installation
 
-1. Clone the repository:
+1. Download the latest installer (`.exe`) from the Releases page.
 
-    ```bash
-    git clone https://github.com/your-repo/documents-exp-desktop.git
-    cd documents-exp-desktop
-    ```
-
-2. Install dependencies:
-
-    ```bash
-    pip install -r requirements.txt
-    ```
+2. Run the installer and follow the instructions.
 
 3. Configure the application:
+   Navigate to the installation directory (usually `%LOCALAPPDATA%\Programs\Documents Exp`).
    Edit `config.yaml` to set your API URL:
 
     ```yaml
     base_url: "http://127.0.0.1:8000"
     ```
 
-4. Run the application:
-    ```bash
-    python app.py
-    ```
+4. Run the application using the desktop shortcut or Start Menu entry.
 
 ---
 

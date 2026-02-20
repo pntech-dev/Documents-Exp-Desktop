@@ -22,6 +22,7 @@ exe = EXE(
     [],
     exclude_binaries=True,
     name='Documents Exp',
+    icon='resources\\logo\\icon.ico',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
