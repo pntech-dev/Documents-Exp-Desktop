@@ -887,3 +887,16 @@ QLabel#passwordHintLabel {
 QLabel#passwordHintLabel[valid="true"] {
     color: #40BF60;
 }
+
+/* Progress Bar */
+QProgressBar {
+    border: 1px solid #E6E6E6;
+    border-radius: 4px;
+    text-align: center;
+    background-color: #F2F2F2;
+}
+
+QProgressBar::chunk {
+    background-color: #CC3333;
+    border-radius: 3px;
+}

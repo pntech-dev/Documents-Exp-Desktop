@@ -10,6 +10,7 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build:
@@ -47,12 +48,19 @@ jobs:
       id: versioning
       shell: bash
       run: |
+        APP_VER=$(python -c "import re; content = open('app.py').read(); match = re.search(r'APP_VERSION\s*=\s*[\"\']([^\"\']+)[\"\']', content); print(match.group(1)) if match else print('0.0.0')")
+        
         if [[ $GITHUB_REF == refs/tags/v* ]]; then
           VERSION=${GITHUB_REF#refs/tags/v}
         else
-          VERSION="1.1.${{ github.run_number }}"
+          VERSION="${APP_VER}_dev.${{ github.run_number }}"
         fi
         echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+    - name: Clean build folders
+      run: |
+        if (Test-Path dist) { Remove-Item -Recurse -Force dist }
+        if (Test-Path build) { Remove-Item -Recurse -Force build }
 
     - name: Build Executable
       run: pyinstaller --noconfirm "Documents Exp.spec"
@@ -72,6 +80,8 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/v')
       uses: softprops/action-gh-release@v2
       with:
+        tag_name: v${{ steps.versioning.outputs.VERSION }}
+        name: Release v${{ steps.versioning.outputs.VERSION }}
         files: Output/DocumentsExp_Setup_${{ steps.versioning.outputs.VERSION }}.exe
         generate_release_notes: true
       env:
