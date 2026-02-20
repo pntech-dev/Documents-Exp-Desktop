@@ -59,7 +59,9 @@ class MainController(QObject):
         self.mode = mode
         self.editor_window = None
         self.current_documents = []
-        self.search_worker = None
+        self.current_search_worker = None
+        self.current_load_worker = None
+        self.active_workers = set()
         self.is_updating_data = False
 
         # Pagination state
@@ -93,6 +95,7 @@ class MainController(QObject):
         # If empty, update immediately without delay
         if not search_text:
             self.search_timer.stop()
+            self.current_search_worker = None
             self._update_documents_list()
             return
         
@@ -115,15 +118,21 @@ class MainController(QObject):
 
         # Use APIWorker to prevent UI freezing during search
         # Pass a copy of current_documents to be thread-safe
-        self.search_worker = APIWorker(
+        worker = APIWorker(
             self._search_data_task, 
             query=search_text, 
             filters=filters,
             current_docs=list(self.current_documents)
         )
-        self.search_worker.finished.connect(self._on_search_finished)
-        self.search_worker.error.connect(self._on_search_error)
-        self.search_worker.start()
+        
+        self.current_search_worker = worker
+        self.active_workers.add(worker)
+        
+        worker.finished.connect(self._on_search_finished)
+        worker.error.connect(self._on_search_error)
+        worker.finished.connect(self._cleanup_worker)
+        worker.error.connect(self._cleanup_worker)
+        worker.start()
 
 
     def _on_theme_switcher_clicked(self, checked: bool) -> None:
@@ -699,25 +708,36 @@ class MainController(QObject):
     def _on_search_finished(self, data: list) -> None:
         """Handles successful search completion."""
         # Ignore results from stale workers (if a new search started)
-        if self.sender() != self.search_worker:
+        if self.sender() != self.current_search_worker:
             return
             
         search_text = self.view.get_search_text()
         tags = re.findall(r'@([^\s]+)', search_text)
         self.view.set_active_search_tags(tags)
 
+        # Limit results to prevent UI freeze on large datasets
+        total_count = len(data)
+        if total_count > 100:
+            data = data[:100]
+
         self.current_documents = data
         self.view.update_documents_table(documents=data)
-        self.view.set_finded_counter(len(self.current_documents))
+        self.view.set_finded_counter(total_count)
         self._add_popular_tags()
         self.view.set_export_print_enabled(len(self.current_documents) > 0)
 
 
     def _on_search_error(self, error: Exception) -> None:
         """Handles search errors."""
-        if self.sender() != self.search_worker:
+        if self.sender() != self.current_search_worker:
             return
         self._handle_error(error, "Ошибка поиска")
+
+    def _cleanup_worker(self) -> None:
+        """Removes the worker from the active set."""
+        worker = self.sender()
+        if worker in self.active_workers:
+            self.active_workers.discard(worker)
 
 
     # ====================
@@ -860,6 +880,10 @@ class MainController(QObject):
         self.view.set_active_search_tags([])
         self.view.set_export_print_enabled(False)
         
+        # Reset loading state to ensure we can load new data
+        self.is_loading = False
+        self.current_load_worker = None
+        
         self._load_more_documents()
 
 
@@ -870,6 +894,7 @@ class MainController(QObject):
             return
 
         self.is_loading = True
+        
         try:
             cat_id = self.model.current_category_id
             group_id = None
@@ -878,47 +903,71 @@ class MainController(QObject):
                 group_id = int(cat_id.split("_")[1])
                 cat_id = None
 
-            docs = self.model.fetch_documents(
+            worker = APIWorker(
+                self.model.fetch_documents,
                 category_id=cat_id, 
                 group_id=group_id, 
                 limit=self.limit, 
                 offset=self.offset
             )
             
-            if not docs:
-                self.has_more = False
-                return
+            self.current_load_worker = worker
+            self.active_workers.add(worker)
+            worker.finished.connect(self._on_load_more_finished)
+            worker.error.connect(self._on_load_more_error)
+            worker.finished.connect(self._cleanup_worker)
+            worker.error.connect(self._cleanup_worker)
+            worker.start()
+        except Exception as e:
+            self.is_loading = False
+            logger.error(f"Failed to start load worker: {e}", exc_info=True)
+            self._handle_error(e, "Ошибка загрузки")
 
-            # Duplicate protection: Check if new docs are already in current_documents
-            # This prevents infinite loops if API ignores offset
-            existing_ids = {doc["id"] for doc in self.current_documents}
-            new_docs = [doc for doc in docs if doc["id"] not in existing_ids]
-            
-            # Natural sort: splits string into text and number parts for correct ordering (e.g. 2 before 10)
-            new_docs.sort(key=self._get_natural_sort_key)
+    def _on_load_more_finished(self, docs: list) -> None:
+        if self.sender() != self.current_load_worker:
+            return
 
-            if not new_docs:
-                self.has_more = False
-                return
+        self.is_loading = False
+        
+        # Prevent updating UI if search is active (stale request)
+        if self.view.get_search_text():
+            return
 
-            if len(docs) < self.limit:
-                self.has_more = False
-            
-            self.offset += self.limit
-            self.current_documents.extend(new_docs)
-            self.view.append_documents_table(new_docs)
-            self.view.set_finded_counter(len(self.current_documents))
-            self._add_popular_tags()
-            self.view.set_export_print_enabled(len(self.current_documents) > 0)
+        if not docs:
+            self.has_more = False
+            return
 
-            # If content still fits in view (no scrollbar), try loading more to fill the screen
+        # Advance offset regardless of duplicates to avoid getting stuck on the same page
+        self.offset += self.limit
+
+        if len(docs) < self.limit:
+            self.has_more = False
+
+        existing_ids = {doc["id"] for doc in self.current_documents}
+        new_docs = [doc for doc in docs if doc["id"] not in existing_ids]
+        new_docs.sort(key=self._get_natural_sort_key)
+
+        if not new_docs:
+            # If we received data but it was all duplicates, try loading more if needed
             if self.has_more and self.view.ui.tableView.verticalScrollBar().maximum() <= 0:
                 QTimer.singleShot(0, self._load_more_documents)
+            return
+        
+        self.current_documents.extend(new_docs)
+        self.view.append_documents_table(new_docs)
+        self.view.set_finded_counter(len(self.current_documents))
+        self._add_popular_tags()
+        self.view.set_export_print_enabled(len(self.current_documents) > 0)
 
-        except Exception as e:
-            self._handle_error(e, "Ошибка загрузки документов")
-        finally:
-            self.is_loading = False
+        if self.has_more and self.view.ui.tableView.verticalScrollBar().maximum() <= 0:
+            QTimer.singleShot(0, self._load_more_documents)
+
+    def _on_load_more_error(self, error: Exception) -> None:
+        if self.sender() != self.current_load_worker:
+            return
+
+        self.is_loading = False
+        self._handle_error(error, "Ошибка загрузки документов")
 
     
     def _update_app_data(self):

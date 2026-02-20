@@ -275,6 +275,13 @@ class AuthSlider:
         self.timer.timeout.connect(self._switch_slide)
         self.timer.start(7000)
 
+    def stop(self) -> None:
+        self.timer.stop()
+        if hasattr(self, 'anim_out') and self.anim_out.state() == QPropertyAnimation.Running:
+            self.anim_out.stop()
+        if hasattr(self, 'anim_in') and self.anim_in.state() == QPropertyAnimation.Running:
+            self.anim_in.stop()
+
     def _switch_slide(self) -> None:
         """Switches to the next slide with fade animation."""
         count = self.slides_widget.count()
@@ -560,3 +567,6 @@ class AuthView:
         y = global_pos.y() - 20
         
         self.password_hint.show_at(QPoint(x, y))
+
+    def stop_slider(self) -> None:
+        self.slides.stop()
