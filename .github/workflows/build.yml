@@ -1,88 +1,95 @@
 name: Build and Release
 
 on:
-  push:
-    branches:
-      - main
-      - development
-    tags:
-      - 'v*'
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
+    push:
+        branches:
+            - main
+            - development
+        tags:
+            - "v*"
+    pull_request:
+        branches:
+            - main
+    workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: windows-latest
-    permissions:
-      contents: write
-      actions: read
+    build:
+        runs-on: windows-latest
+        permissions:
+            contents: write
+            actions: read
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.12'
-        cache: 'pip'
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.12"
+                  cache: "pip"
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install pyinstaller
+            - name: Install dependencies
+              run: |
+                  python -m pip install --upgrade pip
+                  pip install -r requirements.txt
+                  pip install pyinstaller pytest
 
-    - name: Create Config
-      run: Copy-Item config.example.yaml config.yaml -ErrorAction Ignore
+            - name: Run Tests
+              run: pytest tests/
 
-    - name: Configure API URL
-      run: |
-        (Get-Content config.yaml) -replace "base_url: '.*'", "base_url: '${{ secrets.API_BASE_URL }}'" | Set-Content config.yaml
+            - name: Clean build folders
+              run: |
+                  if (Test-Path dist) { Remove-Item -Recurse -Force dist }
 
-    - name: Determine Version
-      id: versioning
-      shell: bash
-      run: |
-        APP_VER=$(python -c "import re; content = open('app.py').read(); match = re.search(r'APP_VERSION\s*=\s*[\"\']([^\"\']+)[\"\']', content); print(match.group(1)) if match else print('0.0.0')")
-        
-        if [[ $GITHUB_REF == refs/tags/v* ]]; then
-          VERSION=${GITHUB_REF#refs/tags/v}
-        else
-          VERSION="${APP_VER}_dev.${{ github.run_number }}"
-        fi
-        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+            - name: Create Config
+              run: Copy-Item config.example.yaml config.yaml -ErrorAction Ignore
 
-    - name: Clean build folders
-      run: |
-        if (Test-Path dist) { Remove-Item -Recurse -Force dist }
-        if (Test-Path build) { Remove-Item -Recurse -Force build }
+            - name: Configure API URL
+              run: |
+                  (Get-Content config.yaml) -replace "base_url: '.*'", "base_url: '${{ secrets.API_BASE_URL }}'" | Set-Content config.yaml
 
-    - name: Build Executable
-      run: pyinstaller --noconfirm "Documents Exp.spec"
+            - name: Determine Version
+              id: versioning
+              shell: bash
+              run: |
+                  APP_VER=$(python -c "import re; content = open('app.py').read(); match = re.search(r'APP_VERSION\s*=\s*[\"\']([^\"\']+)[\"\']', content); print(match.group(1)) if match else print('0.0.0')")
 
-    - name: Compile Installer (Inno Setup)
-      shell: pwsh
-      run: |
-        & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /DMyAppVersion="${{ steps.versioning.outputs.VERSION }}" setup_script.iss
+                  if [[ $GITHUB_REF == refs/tags/v* ]]; then
+                    VERSION=${GITHUB_REF#refs/tags/v}
+                  else
+                    VERSION="${APP_VER}_dev.${{ github.run_number }}"
+                  fi
+                  echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: DocumentsExp-Setup-${{ steps.versioning.outputs.VERSION }}
-        path: Output/*.exe
+            - name: Clean build folders
+              run: |
+                  if (Test-Path dist) { Remove-Item -Recurse -Force dist }
+                  if (Test-Path build) { Remove-Item -Recurse -Force build }
 
-    - name: Create Release
-      if: startsWith(github.ref, 'refs/tags/v')
-      uses: softprops/action-gh-release@v2
-      with:
-        tag_name: v${{ steps.versioning.outputs.VERSION }}
-        name: Release v${{ steps.versioning.outputs.VERSION }}
-        files: Output/DocumentsExp_Setup_${{ steps.versioning.outputs.VERSION }}.exe
-        generate_release_notes: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Build Executable
+              run: pyinstaller --noconfirm "Documents Exp.spec"
+
+            - name: Compile Installer (Inno Setup)
+              shell: pwsh
+              run: |
+                  & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /DMyAppVersion="${{ steps.versioning.outputs.VERSION }}" setup_script.iss
+
+            - name: Upload Artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: DocumentsExp-Setup-${{ steps.versioning.outputs.VERSION }}
+                  path: Output/*.exe
+
+            - name: Create Release
+              if: startsWith(github.ref, 'refs/tags/v')
+              uses: softprops/action-gh-release@v2
+              with:
+                  tag_name: v${{ steps.versioning.outputs.VERSION }}
+                  name: Release v${{ steps.versioning.outputs.VERSION }}
+                  files: Output/DocumentsExp_Setup_${{ steps.versioning.outputs.VERSION }}.exe
+                  generate_release_notes: true
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
