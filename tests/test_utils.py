@@ -1,10 +1,11 @@
-import sys
+import json
 import pytest
 import requests
 from pathlib import Path
 from unittest.mock import Mock, patch
 
 from utils.fields_validators import FieldValidator
+from utils.file_utils import read_json, load_config
 from utils.error_messages import get_friendly_error_message
 from utils.app_paths import get_app_root, get_app_data_dir, get_local_data_dir
 
@@ -165,3 +166,55 @@ class TestValidators:
         status = FieldValidator.get_password_validation_status(password_input)
         validity = [item["valid"] for item in status]
         assert validity == expected_validity
+
+
+
+class TestFileUtils:
+    def test_load_config_success(self, tmp_path):
+        """Test successful loading of config.yaml."""
+        config_content = "base_url: http://test.com"
+        config_file = tmp_path / "config.yaml"
+        config_file.write_text(config_content, encoding="utf-8")
+        
+        with patch("utils.file_utils.get_app_root", return_value=tmp_path):
+            config = load_config()
+            assert config == {"base_url": "http://test.com"}
+
+
+    def test_load_config_not_found(self, tmp_path):
+        """Test load_config when file does not exist."""
+        with patch("utils.file_utils.get_app_root", return_value=tmp_path):
+            config = load_config()
+            assert config == {}
+
+
+    def test_load_config_yaml_error(self, tmp_path):
+        """Test load_config with invalid YAML content."""
+        config_file = tmp_path / "config.yaml"
+        config_file.write_text("invalid: [", encoding="utf-8")
+        
+        with patch("utils.file_utils.get_app_root", return_value=tmp_path):
+            config = load_config()
+            assert config == {}
+
+
+    def test_read_json_success(self, tmp_path):
+        """Test successful reading of a JSON file."""
+        data = {"key": "value", "number": 123}
+        json_file = tmp_path / "test.json"
+        json_file.write_text(json.dumps(data), encoding="utf-8")
+        
+        assert read_json(json_file) == data
+
+
+    def test_read_json_not_found(self, tmp_path):
+        """Test read_json when file does not exist."""
+        assert read_json(tmp_path / "non_existent.json") is None
+
+
+    def test_read_json_decode_error(self, tmp_path):
+        """Test read_json with invalid JSON content."""
+        json_file = tmp_path / "invalid.json"
+        json_file.write_text("{invalid json", encoding="utf-8")
+        
+        assert read_json(json_file) is None
