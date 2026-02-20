@@ -39,7 +39,8 @@ jobs:
       run: Copy-Item config.example.yaml config.yaml -ErrorAction Ignore
 
     - name: Configure API URL
-      run: (Get-Content config.yaml) -replace "base_url: '.*'", "base_url: '${{ secrets.API_BASE_URL }}'" | Set-Content config.yaml
+      run: |
+        (Get-Content config.yaml) -replace "base_url: '.*'", "base_url: '${{ secrets.API_BASE_URL }}'" | Set-Content config.yaml
 
     - name: Determine Version
       id: versioning
