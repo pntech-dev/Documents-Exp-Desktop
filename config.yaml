@@ -1,5 +1,5 @@
-base_url: 'http://192.168.0.92' # Base URL for the API
+base_url: "http://127.0.0.1:8000" # Base URL for the API
 
-ui_config_path: 'ui/ui_config.json' # Path to the UI configuration file
+ui_config_path: "ui/ui_config.json" # Path to the UI configuration file
 
-github_repo: 'pntech-dev/Documents-Exp-Desktop' # GitHub repository (owner/repo)
+github_repo: "pntech-dev/Documents-Exp-Desktop" # GitHub repository (owner/repo)

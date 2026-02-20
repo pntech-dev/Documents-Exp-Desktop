@@ -16,7 +16,7 @@ from utils import NotificationService
 logger = logging.getLogger(__name__)
 
 class GitHubUpdateChecker(QThread):
-    """Поток для проверки обновлений через GitHub API."""
+    """Thread for checking updates via GitHub API."""
     update_available = pyqtSignal(str, str, str, int)  # version, url, changelog, size
     no_update = pyqtSignal()
     error = pyqtSignal(str)
@@ -28,7 +28,7 @@ class GitHubUpdateChecker(QThread):
 
     def run(self):
         try:
-            # API GitHub для получения последнего релиза
+            # GitHub API to get the latest release
             url = f"https://api.github.com/repos/{self.repo_name}/releases/latest"
             response = requests.get(url, timeout=10)
             
@@ -39,7 +39,7 @@ class GitHubUpdateChecker(QThread):
             response.raise_for_status()
             data = response.json()
 
-            # Теги на GitHub часто имеют префикс 'v' (например, v1.0.0)
+            # GitHub tags often have a 'v' prefix (e.g., v1.0.0)
             remote_version_str = data.get("tag_name", "").lstrip("v")
             changelog = data.get("body", "Нет описания изменений.")
             assets = data.get("assets", [])
@@ -48,7 +48,7 @@ class GitHubUpdateChecker(QThread):
                 self.no_update.emit()
                 return
 
-            # Ищем .exe файл в ассетах релиза
+            # Looking for .exe file in release assets
             download_url = None
             file_size = 0
             for asset in assets:
@@ -62,7 +62,7 @@ class GitHubUpdateChecker(QThread):
                 self.error.emit("Новая версия найдена, но установщик (.exe) отсутствует в релизе.")
                 return
 
-            # Сравнение версий
+            # Version comparison
             if version.parse(remote_version_str) > version.parse(self.current_version):
                 self.update_available.emit(remote_version_str, download_url, changelog, file_size)
             else:
@@ -74,7 +74,7 @@ class GitHubUpdateChecker(QThread):
 
 
 class UpdateDownloader(QThread):
-    """Поток для скачивания файла обновления."""
+    """Thread for downloading the update file."""
     progress = pyqtSignal(int, int) # downloaded_bytes, total_bytes
     finished = pyqtSignal(str)  # путь к скачанному файлу
     error = pyqtSignal(str)
@@ -86,17 +86,17 @@ class UpdateDownloader(QThread):
         self._is_running = True
 
     def stop(self):
-        """Останавливает скачивание."""
+        """Stops the download."""
         self._is_running = False
 
     def run(self):
         try:
-            # Используем контекстный менеджер для requests, чтобы гарантировать закрытие соединения
+            # Use requests context manager to ensure connection closure
             with requests.get(self.url, stream=True, timeout=30, allow_redirects=True) as response:
                 response.raise_for_status()
 
                 total_size = int(response.headers.get('content-length', 0))
-                # Если сервер не отдал размер, используем размер из API GitHub
+                # If server didn't return size, use size from GitHub API
                 if total_size == 0:
                     total_size = self.expected_size
                 
@@ -104,15 +104,15 @@ class UpdateDownloader(QThread):
                 last_percent = -1
                 last_emitted_size = 0
                 
-                # Сообщаем о начале загрузки
+                # Notify about download start
                 self.progress.emit(0, total_size)
 
-                # Создаем временный файл
+                # Create temporary file
                 fd, path = tempfile.mkstemp(suffix=".exe")
                 os.close(fd)
 
                 with open(path, 'wb') as f:
-                    # Увеличиваем размер чанка до 64KB для снижения нагрузки на CPU/GUI
+                    # Increase chunk size to 64KB to reduce CPU/GUI load
                     for chunk in response.iter_content(chunk_size=65536):
                         if not self._is_running:
                             f.close()
@@ -132,7 +132,7 @@ class UpdateDownloader(QThread):
                                     self.progress.emit(downloaded_size, total_size)
                                     last_percent = percent
                             else:
-                                # Ограничиваем частоту обновлений для неизвестного размера (каждые 200 КБ)
+                                # Limit update frequency for unknown size (every 200 KB)
                                 if downloaded_size - last_emitted_size >= 204800:
                                     self.progress.emit(downloaded_size, total_size)
                                     last_emitted_size = downloaded_size
@@ -146,7 +146,7 @@ class UpdateDownloader(QThread):
 
 
 class UpdateManager(QObject):
-    """Контроллер процесса обновления."""
+    """Update process controller."""
     
     def __init__(self, current_version: str, repo_name: str, parent=None):
         super().__init__(parent)
@@ -171,7 +171,7 @@ class UpdateManager(QObject):
         self._checker.start()
 
     def _on_update_available(self, new_version, url, changelog, size):
-        """Вызывается, когда найдена новая версия."""
+        """Called when a new version is found."""
         dialog = UpdateConfirmDialog(self.parent_widget, version=new_version)
         
         if dialog.exec_() == QDialog.Accepted:
@@ -200,17 +200,17 @@ class UpdateManager(QObject):
 
     def _on_download_error(self, error_msg):
         self.progress_dialog.close()
-        # Если главное окно еще не создано (проверка при запуске), NotificationService не сработает
+        # If main window is not created yet (check on startup), NotificationService won't work
         if NotificationService().main_window:
             NotificationService().show_toast("error", "Ошибка", f"Ошибка скачивания: {error_msg}")
         else:
-            # Используем стандартный QMessageBox как запасной вариант
+            # Use standard QMessageBox as a fallback
             QMessageBox.critical(self.parent_widget, "Ошибка", f"Ошибка скачивания:\n{error_msg}")
 
     def _on_download_finished(self, file_path):
-        # Принудительно ставим 100%, чтобы пользователь увидел завершение
+        # Force set 100% so user sees completion
         self.progress_dialog.set_progress(100, 100)
-        # Делаем паузу 500мс перед закрытием окна для плавности
+        # Pause for 500ms before closing window for smoothness
         QTimer.singleShot(500, lambda: self._show_install_confirmation(file_path))
 
     def _show_install_confirmation(self, file_path):

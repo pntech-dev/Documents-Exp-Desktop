@@ -10,7 +10,6 @@ from PyQt5.QtCore import Qt
 
 from ui.custom_widgets.modal_window import ShadowContainer, BaseModalDialog
 from ui.custom_widgets import PrimaryButton, TertiaryButton
-from utils import ThemeManagerInstance
 
 class UpdateConfirmDialog(BaseModalDialog):
     def __init__(self, parent=None, version: str = ""):
@@ -20,10 +19,6 @@ class UpdateConfirmDialog(BaseModalDialog):
         self.container = ShadowContainer(self)
         self.container.setObjectName("updateConfirmContainer")
         
-        # Apply style based on current theme
-        self._update_style()
-        ThemeManagerInstance().themeChanged.connect(self._update_style)
-
         # Layouts
         container_layout = QVBoxLayout(self.container)
         container_layout.setContentsMargins(24, 24, 24, 24)
@@ -87,20 +82,3 @@ class UpdateConfirmDialog(BaseModalDialog):
         main_layout.setContentsMargins(20, 20, 20, 20)
         main_layout.addWidget(self.container)
         self.setLayout(main_layout)
-
-    def _update_style(self):
-        theme_id = ThemeManagerInstance().current_theme_id
-        if theme_id == "0": # Light
-            bg_color = "#FFFFFF"
-            border_color = "#E6E6E6"
-        else: # Dark
-            bg_color = "#262626"
-            border_color = "#404040"
-            
-        self.container.setStyleSheet(f"""
-            QFrame#updateConfirmContainer {{
-                background-color: {bg_color};
-                border-radius: 8px;
-                border: 1px solid {border_color};
-            }}
-        """)
