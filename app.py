@@ -16,12 +16,16 @@ from modules.main.main_module import MainWindow
 from modules.auth.mvc.auth_model import AuthModel
 from utils.error_messages import get_friendly_error_message
 from utils.app_paths import get_local_data_dir
+from core.updater import UpdateManager
+from utils.file_utils import load_config
 
 
 os.environ.setdefault("QT_ENABLE_HIGHDPI_SCALING", "1")
 os.environ.setdefault("QT_AUTO_SCREEN_SCALE_FACTOR", "1")
 os.environ.setdefault("QT_SCALE_FACTOR_ROUNDING_POLICY", "PassThrough")
 
+
+APP_VERSION = "1.0.0"
 
 class Application:
     """
@@ -69,6 +73,9 @@ class Application:
         self.theme_manager = ThemeManagerInstance()
         self.theme_manager.switch_theme(theme=1)
 
+        # Check for updates
+        self.check_for_updates()
+
         # Check auto login
         self.auth_model = AuthModel()
         if self.auth_model.get_auto_login_state():
@@ -77,6 +84,13 @@ class Application:
             # NotificationService is initialized in AuthWindow
             self.show_auth_window()
 
+    def check_for_updates(self):
+        """Checks for updates using the GitHub repository specified in config."""
+        config = load_config()
+        github_repo = config.get("github_repo")
+        if github_repo:
+            self.update_manager = UpdateManager(APP_VERSION, github_repo)
+            self.update_manager.check_for_updates(silent=True)
 
     def attempt_auto_login(self):
         """Attempts to automatically log in the user using stored tokens."""
