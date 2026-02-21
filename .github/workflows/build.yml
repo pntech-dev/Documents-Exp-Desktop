@@ -4,20 +4,43 @@ on:
     push:
         branches:
             - main
-            - development
         tags:
             - "v*"
     pull_request:
         branches:
             - main
+            - development
     workflow_dispatch:
 
 jobs:
+    # Job 1: Tests
+    test:
+        runs-on: windows-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.12"
+                  cache: "pip"
+
+            - name: Install dependencies
+              run: |
+                  python -m pip install --upgrade pip
+                  pip install -r requirements.txt
+                  pip install pytest
+
+            - name: Run Tests
+              run: pytest tests/
+
+    # Job 2: Build
     build:
+        needs: test
         runs-on: windows-latest
         permissions:
             contents: write
-            actions: read
 
         steps:
             - name: Checkout code
@@ -31,18 +54,11 @@ jobs:
                   python-version: "3.12"
                   cache: "pip"
 
-            - name: Install dependencies
+            - name: Install build dependencies
               run: |
                   python -m pip install --upgrade pip
                   pip install -r requirements.txt
-                  pip install pyinstaller pytest
-
-            - name: Run Tests
-              run: pytest tests/
-
-            - name: Clean build folders
-              run: |
-                  if (Test-Path dist) { Remove-Item -Recurse -Force dist }
+                  pip install pyinstaller
 
             - name: Create Config
               run: Copy-Item config.example.yaml config.yaml -ErrorAction Ignore
@@ -55,7 +71,7 @@ jobs:
               id: versioning
               shell: bash
               run: |
-                  APP_VER=$(python -c "import re; content = open('app.py').read(); match = re.search(r'APP_VERSION\s*=\s*[\"\']([^\"\']+)[\"\']', content); print(match.group(1)) if match else print('0.0.0')")
+                  APP_VER=$(python -c "import re; content = open('app.py', encoding='utf-8').read(); match = re.search(r'APP_VERSION\s*=\s*[\"\']([^\"\']+)[\"\']', content); print(match.group(1)) if match else print('0.0.0')")
 
                   if [[ $GITHUB_REF == refs/tags/v* ]]; then
                     VERSION=${GITHUB_REF#refs/tags/v}
