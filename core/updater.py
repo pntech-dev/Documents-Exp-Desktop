@@ -48,6 +48,11 @@ class GitHubUpdateChecker(QThread):
                 self.no_update.emit()
                 return
 
+            # Version comparison
+            if version.parse(remote_version_str) <= version.parse(self.current_version):
+                self.no_update.emit()
+                return
+
             # Looking for .exe file in release assets
             download_url = None
             file_size = 0
@@ -62,11 +67,7 @@ class GitHubUpdateChecker(QThread):
                 self.error.emit("Новая версия найдена, но установщик (.exe) отсутствует в релизе.")
                 return
 
-            # Version comparison
-            if version.parse(remote_version_str) > version.parse(self.current_version):
-                self.update_available.emit(remote_version_str, download_url, changelog, file_size)
-            else:
-                self.no_update.emit()
+            self.update_available.emit(remote_version_str, download_url, changelog, file_size)
 
         except Exception as e:
             logger.error(f"GitHub update check failed: {e}")
