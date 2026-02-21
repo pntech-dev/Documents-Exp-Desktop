@@ -1,23 +1,11 @@
-import sys
 import pytest
 from unittest.mock import Mock, patch
-from PyQt5.QtWidgets import QApplication
 
 from utils.delete_info_modal import DeleteInfoDialog
 from utils.email_confirm_modal import EmailConfirmDialog
 from utils.update_confirm_modal import UpdateConfirmDialog
 from utils.install_confirm_modal import InstallConfirmDialog
 from utils.update_progress_modal import UpdateProgressDialog
-
-
-
-# Fixture for creating QApplication (required for widgets)
-@pytest.fixture(scope="session")
-def qapp():
-    app = QApplication.instance()
-    if app is None:
-        app = QApplication(sys.argv)
-    yield app
 
 
 
