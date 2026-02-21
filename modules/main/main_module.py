@@ -3,6 +3,7 @@ from utils import ThemeManagerInstance
 from .mvc import MainModel, MainView, MainController
 
 from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMainWindow
 
 
@@ -11,6 +12,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self, mode: str = "guest") -> None:
         super().__init__()
+        self.setAttribute(Qt.WA_DeleteOnClose)
 
         # Application work mode ('guest' - Guest mode, 'auth' - Authorized mode)
         self.mode = mode

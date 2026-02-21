@@ -315,32 +315,12 @@ class APIClient:
     
 
     def get_document(self, document_id: int) -> dict:
-        """Retrieves a specific document by ID.
-
-        Since direct GET /documents/{id} might be 405, we try fallbacks.
         """
-        # Strategy 1: Try filtering the list by ID
-        try:
-            response = self._request("GET",
-                url=self.base_url + "/app/documents", 
-                params={"id": document_id}
-            )
-            documents = response.get("documents", [])
-            for doc in documents:
-                if doc.get("id") == document_id:
-                    return doc
-        except Exception:
-            pass
-
-        # Strategy 2: Try getting pages, maybe document metadata is included there
-        try:
-            response = self.get_document_pages(document_id)
-            if "document" in response:
-                return response["document"]
-        except Exception:
-            pass
-            
-        return {}
+        Retrieves a specific document by its ID using a direct API call.
+        """
+        url = self.base_url + f"/app/documents/{document_id}"
+        response = self._request("GET", url)
+        return response
 
 
     def get_document_pages(self, document_id: int) -> dict:

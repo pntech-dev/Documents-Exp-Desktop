@@ -8,6 +8,12 @@ __pycache__/
 build/
 dist/
 _internal/
+Output/
+
+# Logs and local settings
+*.log
+*.user
+config.yaml
 
 # Virtual environment
 venv/

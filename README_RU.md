@@ -166,30 +166,19 @@
 
 ## 🔧 Установка
 
-1. Клонируйте репозиторий:
+1. Скачайте последний установщик (`.exe`) со страницы релизов (Releases).
 
-    ```bash
-    git clone https://github.com/your-repo/documents-exp-desktop.git
-    cd documents-exp-desktop
-    ```
-
-2. Установите зависимости:
-
-    ```bash
-    pip install -r requirements.txt
-    ```
+2. Запустите установщик и следуйте инструкциям.
 
 3. Настройка:
+   Перейдите в папку установки (обычно `%LOCALAPPDATA%\Programs\Documents Exp`).
    Отредактируйте `config.yaml`, указав URL вашего API:
 
     ```yaml
     base_url: "http://127.0.0.1:8000"
     ```
 
-4. Запуск:
-    ```bash
-    python app.py
-    ```
+4. Запустите приложение, используя ярлык на рабочем столе или в меню "Пуск".
 
 ---
 

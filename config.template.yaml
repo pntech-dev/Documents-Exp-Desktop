@@ -1,0 +1,5 @@
+base_url: 'https://api.your-organization.com' # Production URL used for builds
+
+ui_config_path: 'ui/ui_config.json' # Path to the UI configuration file
+
+github_repo: 'pntech-dev/Documents-Exp-Desktop' # GitHub repository (owner/repo)

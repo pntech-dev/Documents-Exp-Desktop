@@ -1,0 +1,111 @@
+name: Build and Release
+
+on:
+    push:
+        branches:
+            - main
+        tags:
+            - "v*"
+    pull_request:
+        branches:
+            - main
+            - development
+    workflow_dispatch:
+
+jobs:
+    # Job 1: Tests
+    test:
+        runs-on: windows-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.12"
+                  cache: "pip"
+
+            - name: Install dependencies
+              run: |
+                  python -m pip install --upgrade pip
+                  pip install -r requirements.txt
+                  pip install pytest
+
+            - name: Run Tests
+              run: pytest tests/
+
+    # Job 2: Build
+    build:
+        needs: test
+        runs-on: windows-latest
+        permissions:
+            contents: write
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.12"
+                  cache: "pip"
+
+            - name: Install build dependencies
+              run: |
+                  python -m pip install --upgrade pip
+                  pip install -r requirements.txt
+                  pip install pyinstaller
+
+            - name: Create Config
+              run: Copy-Item config.example.yaml config.yaml -ErrorAction Ignore
+
+            - name: Configure API URL
+              run: |
+                  (Get-Content config.yaml) -replace "base_url: '.*'", "base_url: '${{ secrets.API_BASE_URL }}'" | Set-Content config.yaml
+
+            - name: Determine Version
+              id: versioning
+              shell: bash
+              run: |
+                  APP_VER=$(python -c "import re; content = open('app.py', encoding='utf-8').read(); match = re.search(r'APP_VERSION\s*=\s*[\"\']([^\"\']+)[\"\']', content); print(match.group(1)) if match else print('0.0.0')")
+
+                  if [[ $GITHUB_REF == refs/tags/v* ]]; then
+                    VERSION=${GITHUB_REF#refs/tags/v}
+                  else
+                    VERSION="${APP_VER}_dev.${{ github.run_number }}"
+                  fi
+                  echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+            - name: Clean build folders
+              run: |
+                  if (Test-Path dist) { Remove-Item -Recurse -Force dist }
+                  if (Test-Path build) { Remove-Item -Recurse -Force build }
+
+            - name: Build Executable
+              run: pyinstaller --noconfirm "Documents Exp.spec"
+
+            - name: Compile Installer (Inno Setup)
+              shell: pwsh
+              run: |
+                  & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /DMyAppVersion="${{ steps.versioning.outputs.VERSION }}" setup_script.iss
+
+            - name: Upload Artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: DocumentsExp-Setup-${{ steps.versioning.outputs.VERSION }}
+                  path: Output/*.exe
+
+            - name: Create Release
+              if: startsWith(github.ref, 'refs/tags/v')
+              uses: softprops/action-gh-release@v2
+              with:
+                  tag_name: v${{ steps.versioning.outputs.VERSION }}
+                  name: Release v${{ steps.versioning.outputs.VERSION }}
+                  files: Output/DocumentsExp_Setup_${{ steps.versioning.outputs.VERSION }}.exe
+                  generate_release_notes: true
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
