@@ -123,6 +123,11 @@ class DocumentEditorModel:
         doc.save(str(full_path))
 
 
+    def download_file(self, file_id: int, save_path: str) -> None:
+        """Downloads a file."""
+        self._make_authorized_request(self.api.download_file, file_id=file_id, destination_path=save_path)
+
+
     def upload_file(self, file_path: str) -> dict:
         """Uploads a file to the current document."""
         doc_id = self.document_data.get("id")

@@ -326,6 +326,8 @@ class FileWidget(QWidget):
 class FileListWidget(QWidget):
     """Container for file widgets using FlowLayout."""
     fileDeleted = pyqtSignal(object)
+    fileDownloadRequested = pyqtSignal(object)
+    fileOpenRequested = pyqtSignal(object)
 
     def __init__(self, parent=None):
         """Initializes the FileListWidget."""
@@ -376,6 +378,8 @@ class FileListWidget(QWidget):
         """
         widget = FileWidget(file_data, width=self.item_width)
         widget.deleteClicked.connect(lambda: self._on_widget_delete_clicked(widget))
+        widget.downloadClicked.connect(self.fileDownloadRequested.emit)
+        widget.openClicked.connect(self.fileOpenRequested.emit)
         self.layout.addWidget(widget)
 
     def _on_widget_delete_clicked(self, widget: FileWidget):

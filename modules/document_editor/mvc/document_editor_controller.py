@@ -1,5 +1,6 @@
 import re
 import logging
+import shutil
 from pathlib import Path
 from PyQt5.QtGui import QTextDocument
 from PyQt5.QtWidgets import QFileDialog, QDialog, QMessageBox
@@ -8,6 +9,7 @@ from PyQt5.QtPrintSupport import QPrinter, QPrintDialog
 from utils import NotificationService
 from utils.error_messages import get_friendly_error_message
 from utils.delete_info_modal import DeleteInfoDialog
+from core.worker import APIWorker
 
 
 
@@ -33,6 +35,7 @@ class DocumentEditorController:
         self.model = model
         self.view = view
         self.window = window
+        self.active_workers = set()
 
         # Setup Notification Service
         NotificationService().set_main_window(self.window)
@@ -309,6 +312,70 @@ class DocumentEditorController:
         if files:
             self._on_files_dropped(files)
 
+    def _on_file_download_requested(self, file_identifier: object) -> None:
+        """Handles file download request."""
+        if isinstance(file_identifier, int):
+            # Remote file (ID)
+            filename = "downloaded_file"
+            # Try to find filename in document_data
+            files = self.model.document_data.get("files", [])
+            for f in files:
+                if f.get("id") == file_identifier:
+                    filename = f.get("filename", filename)
+                    break
+            
+            save_path, _ = QFileDialog.getSaveFileName(
+                self.window,
+                "Сохранить файл",
+                str(Path.home() / filename),
+                "All Files (*)"
+            )
+            
+            if save_path:
+                self.window.setEnabled(False)
+                
+                worker = APIWorker(
+                    self.model.download_file, 
+                    file_id=file_identifier, 
+                    save_path=save_path
+                )
+                worker.finished.connect(lambda _: self._on_download_finished(worker))
+                worker.error.connect(lambda e: self._on_download_error(e, worker))
+                self.active_workers.add(worker)
+                worker.start()
+        
+        elif isinstance(file_identifier, str):
+            # Local file (path string) - pending upload
+            src_path = Path(file_identifier)
+            if src_path.exists():
+                save_path, _ = QFileDialog.getSaveFileName(
+                    self.window,
+                    "Сохранить файл",
+                    str(Path.home() / src_path.name),
+                    "All Files (*)"
+                )
+                if save_path:
+                    try:
+                        shutil.copy2(src_path, save_path)
+                        NotificationService().show_toast("success", "Скачивание", "Файл сохранен.")
+                    except Exception as e:
+                        NotificationService().show_toast("error", "Ошибка сохранения", str(e))
+            else:
+                 NotificationService().show_toast("error", "Ошибка", "Файл не найден на диске.")
+
+    def _on_download_finished(self, worker):
+        if worker in self.active_workers:
+            self.active_workers.discard(worker)
+        self.window.setEnabled(True)
+        NotificationService().show_toast("success", "Скачивание", "Файл успешно скачан.")
+
+    def _on_download_error(self, error, worker):
+        if worker in self.active_workers:
+            self.active_workers.discard(worker)
+        self.window.setEnabled(True)
+        msg = get_friendly_error_message(error)
+        NotificationService().show_toast("error", "Ошибка скачивания", msg)
+
     def _on_file_widget_deleted(self, file_identifier: object) -> None:
         """Handles the deletion of a file."""
         if isinstance(file_identifier, int):
@@ -444,6 +511,7 @@ class DocumentEditorController:
         # Files
         self.view.file_drop_widget_clicked(handler=self._on_drag_drop_area_clicked)
         self.view.file_deleted(handler=self._on_file_widget_deleted)
+        self.view.file_download_requested(handler=self._on_file_download_requested)
         self.window.files_dropped.connect(self._on_files_dropped)
         self.window.drag_entered.connect(lambda: self.view.set_file_drop_active(True))
         self.window.drag_left.connect(lambda: self.view.set_file_drop_active(False))

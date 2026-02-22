@@ -446,6 +446,10 @@ class EditorFilesTab:
         """Connects the file deleted signal."""
         self.file_list.fileDeleted.connect(handler)
 
+    def connect_file_download(self, handler) -> None:
+        """Connects the file download requested signal."""
+        self.file_list.fileDownloadRequested.connect(handler)
+
 
     def add_file_widget(self, file_data: object) -> None:
         """Adds a file widget to the list."""
@@ -783,6 +787,10 @@ class DocumentEditorView:
     def file_deleted(self, handler) -> None:
         """Connects the file deleted signal."""
         self.files_tab.connect_file_deleted(handler)
+
+    def file_download_requested(self, handler) -> None:
+        """Connects the file download requested signal."""
+        self.files_tab.connect_file_download(handler)
 
     def add_file_widget(self, file_data: object) -> None:
         self.files_tab.add_file_widget(file_data)
