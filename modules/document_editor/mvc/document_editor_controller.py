@@ -8,6 +8,7 @@ import tempfile
 from pathlib import Path
 from PyQt5.QtGui import QTextDocument
 from PyQt5.QtWidgets import QFileDialog, QDialog, QMessageBox
+from PyQt5.QtCore import QObject
 from PyQt5.QtPrintSupport import QPrinter, QPrintDialog
 
 from utils import NotificationService
@@ -22,7 +23,7 @@ logger.setLevel(logging.INFO)
 
 
 
-class DocumentEditorController:
+class DocumentEditorController(QObject):
     """
     Controller for the document editor window.
 
@@ -35,6 +36,7 @@ class DocumentEditorController:
             view, 
             window,
     ): 
+        super().__init__()
         self.mode = mode
         self.model = model
         self.view = view
@@ -481,45 +483,71 @@ class DocumentEditorController:
     
     def _on_save_button_clicked(self) -> None:
         """Handles the save button click event."""
-        try:
-            data = self.view.get_document_data()
-            is_creation = self.model.document_data.get("id") is None
+        data = self.view.get_document_data()
+        self.window.setEnabled(False)
+        
+        worker = APIWorker(self._save_task, data=data)
+        worker.finished.connect(self._on_save_finished)
+        worker.error.connect(self._on_save_error)
+        self.active_workers.add(worker)
+        worker.start()
 
-            self.model.save_document(data=data)
+    def _save_task(self, data: dict) -> tuple[bool, dict]:
+        """Background task for saving document and uploading files."""
+        is_creation = self.model.document_data.get("id") is None
+        
+        self.model.save_document(data=data)
+        
+        if self.model.pending_files:
+            self.model.upload_pending_files()
             
-            # Upload pending files
-            if self.model.pending_files:
-                self.model.upload_pending_files()
-            
-            doc_name = data.get("name", "")
-            doc_code = data.get("code", "")
-            if is_creation:
-                logger.info(f"Document created: {doc_name} ({doc_code})")
-            else:
-                logger.info(f"Document updated: {doc_name} ({doc_code})")
+        return is_creation, data
 
-            self.window.document_saved.emit()
+    def _on_save_finished(self, result: tuple[bool, dict]) -> None:
+        is_creation, data = result
+        
+        worker = self.sender()
+        if worker in self.active_workers:
+            self.active_workers.discard(worker)
             
-            if self.window.parent():
-                NotificationService().set_main_window(self.window.parent())
+        self.window.setEnabled(True)
+        
+        doc_name = data.get("name", "")
+        doc_code = data.get("code", "")
+        
+        if is_creation:
+            logger.info(f"Document created: {doc_name} ({doc_code})")
+        else:
+            logger.info(f"Document updated: {doc_name} ({doc_code})")
 
-            self.window.close()
+        self.window.document_saved.emit()
+        
+        if self.window.parent():
+            NotificationService().set_main_window(self.window.parent())
+
+        self.window.close()
+        
+        if is_creation:
+            NotificationService().show_toast(
+                notification_type="success",
+                title="Создано",
+                message="Документ успешно создан."
+            )
+        else:
+            NotificationService().show_toast(
+                notification_type="success",
+                title="Сохранено",
+                message="Документ успешно сохранен."
+            )
+
+    def _on_save_error(self, error: Exception) -> None:
+        worker = self.sender()
+        if worker in self.active_workers:
+            self.active_workers.discard(worker)
             
-            if is_creation:
-                NotificationService().show_toast(
-                    notification_type="success",
-                    title="Создано",
-                    message="Документ успешно создан."
-                )
-            else:
-                NotificationService().show_toast(
-                    notification_type="success",
-                    title="Сохранено",
-                    message="Документ успешно сохранен."
-                )
-        except Exception as e:
-            msg = get_friendly_error_message(e)
-            NotificationService().show_toast("error", "Ошибка сохранения", msg)
+        self.window.setEnabled(True)
+        msg = get_friendly_error_message(error)
+        NotificationService().show_toast("error", "Ошибка сохранения", msg)
 
 
     def _on_cancel_button_clicked(self) -> None:
