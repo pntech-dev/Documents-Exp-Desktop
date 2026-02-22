@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(740, 488)
+        Dialog.resize(740, 589)
         Dialog.setMaximumSize(QtCore.QSize(16777215, 900))
         self.verticalLayout = QtWidgets.QVBoxLayout(Dialog)
         self.verticalLayout.setContentsMargins(24, 24, 24, 24)
@@ -243,6 +243,10 @@ class Ui_Dialog(object):
         self.tabs_tabWidget.addTab(self.main_tab, "")
         self.files_tab = QtWidgets.QWidget()
         self.files_tab.setObjectName("files_tab")
+        self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.files_tab)
+        self.verticalLayout_4.setContentsMargins(16, 16, 16, 16)
+        self.verticalLayout_4.setSpacing(16)
+        self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.tabs_tabWidget.addTab(self.files_tab, "")
         self.verticalLayout.addWidget(self.tabs_tabWidget)
         self.buttons_frame = QtWidgets.QFrame(Dialog)

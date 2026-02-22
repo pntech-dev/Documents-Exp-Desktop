@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>740</width>
-    <height>488</height>
+    <height>589</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -624,6 +624,23 @@
       <attribute name="title">
        <string>Файлы</string>
       </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <property name="spacing">
+        <number>16</number>
+       </property>
+       <property name="leftMargin">
+        <number>16</number>
+       </property>
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>16</number>
+       </property>
+       <property name="bottomMargin">
+        <number>16</number>
+       </property>
+      </layout>
      </widget>
     </widget>
    </item>

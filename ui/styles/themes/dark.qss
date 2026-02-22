@@ -975,3 +975,16 @@ ProgressBar::chunk {
     background-color: #C43A3A;
     border-radius: 5px;
 }
+
+
+/* File Drop Widget */
+FileDropWidget {
+    qproperty-borderColor: #808080;
+    qproperty-activeColor: #C43A3A;
+}
+
+FileDropWidget QLabel#fileDropLabel {
+    background-color: transparent;
+    color: #808080;
+    font-size: 14px;
+}

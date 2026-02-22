@@ -3,9 +3,10 @@ import json
 from pathlib import Path
 from PyQt5.QtCore import Qt, QItemSelectionModel
 from PyQt5.QtGui import QStandardItem
+from PyQt5.QtWidgets import QTabWidget
 
 from ui.custom_widgets import (
-    NoFrameButton, PrimaryButton, TertiaryButton
+    NoFrameButton, PrimaryButton, TertiaryButton, FileDropWidget
 )
 from utils import ThemeManagerInstance
 from utils.app_paths import get_app_root
@@ -404,6 +405,16 @@ class EditorPagesTable:
         self.table_view.rowMoved.connect(handler)
 
 
+class EditorFilesTab:
+    def __init__(self, tab_widget: QTabWidget) -> None:
+        self.tab_widget = tab_widget
+
+        # Setup Files Tab
+        self.file_drop_widget = FileDropWidget(self.tab_widget)
+        files_layout = self.tab_widget.layout()
+        files_layout.addWidget(self.file_drop_widget)
+
+
 
 class DocumentEditorView:
     def __init__(self, container):
@@ -466,6 +477,10 @@ class DocumentEditorView:
 
         self.pages_table = EditorPagesTable(
             table_view=self.ui.data_tableView
+        )
+
+        self.files_tab = EditorFilesTab(
+            tab_widget=self.ui.files_tab
         )
 
 
@@ -715,3 +730,11 @@ class DocumentEditorView:
     def pages_table_row_moved(self, handler) -> None:
         """Connects the pages table row moved signal to a handler."""
         self.pages_table.connect_row_moved(handler)
+
+    def file_drop_widget_files_dropped(self, handler) -> None:
+        """Connects the files dropped signal."""
+        self.file_drop_widget.filesDropped.connect(handler)
+
+    def file_drop_widget_clicked(self, handler) -> None:
+        """Connects the file drop widget click signal."""
+        self.file_drop_widget.clicked.connect(handler)
