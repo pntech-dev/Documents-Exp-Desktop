@@ -32,6 +32,11 @@ class FileDropWidget(QFrame):
         self.label.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.label)
         
+        self.sub_label = QLabel("Максимальный размер файла — 50 МБ")
+        self.sub_label.setObjectName("fileDropSubLabel")
+        self.sub_label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(self.sub_label)
+        
     def _on_theme_changed(self, theme_id: str) -> None:
         self.style().unpolish(self)
         self.style().polish(self)
@@ -42,6 +47,8 @@ class FileDropWidget(QFrame):
         self.style().polish(self)
         self.label.style().unpolish(self.label)
         self.label.style().polish(self.label)
+        self.sub_label.style().unpolish(self.sub_label)
+        self.sub_label.style().polish(self.sub_label)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:

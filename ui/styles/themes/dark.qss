@@ -1010,6 +1010,22 @@ FileDropWidget[dragActive="true"] QLabel#fileDropLabel {
     background-color: transparent;
 }
 
+FileDropWidget QLabel#fileDropSubLabel {
+	font-size: 12px;
+	color: #666666;
+    background-color: transparent;
+}
+
+FileDropWidget:hover QLabel#fileDropSubLabel {
+    color: #808080;
+}
+
+FileDropWidget[dragActive="true"] QLabel#fileDropSubLabel {
+	font-size: 12px;
+	color: #D65A5A;
+    background-color: transparent;
+}
+
 /* File Widget */
 #FileWidgetContainer {
     background-color: #262626;
