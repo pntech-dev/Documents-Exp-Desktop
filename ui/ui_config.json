@@ -420,16 +420,16 @@
             },
             "trash": {
                 "light": {
-                    "default": ":/icons/light/light/trash_default.svg",
-                    "hover": ":/icons/light/light/trash_hover.svg",
-                    "pressed": ":/icons/light/light/trash_clicked.svg",
-                    "disabled": ":/icons/light/light/trash_disabled.svg"
+                    "default": ":/icons/light/light/trash_tertiary_default.svg",
+                    "hover": ":/icons/light/light/trash_tertiary_hover.svg",
+                    "pressed": ":/icons/light/light/trash_tertiary_clicked.svg",
+                    "disabled": ":/icons/light/light/trash_tertiary_disabled.svg"
                 },
                 "dark": {
-                    "default": ":/icons/dark/dark/trash_default.svg",
-                    "hover": ":/icons/dark/dark/trash_hover.svg",
-                    "pressed": ":/icons/dark/dark/trash_clicked.svg",
-                    "disabled": ":/icons/dark/dark/trash_disabled.svg"
+                    "default": ":/icons/dark/dark/trash_tertiary_default.svg",
+                    "hover": ":/icons/dark/dark/trash_tertiary_hover.svg",
+                    "pressed": ":/icons/dark/dark/trash_tertiary_clicked.svg",
+                    "disabled": ":/icons/dark/dark/trash_tertiary_disabled.svg"
                 }
             }
         },

@@ -3,9 +3,10 @@ import json
 from pathlib import Path
 from PyQt5.QtCore import Qt, QItemSelectionModel
 from PyQt5.QtGui import QStandardItem
+from PyQt5.QtWidgets import QTabWidget, QScrollArea, QFrame
 
 from ui.custom_widgets import (
-    NoFrameButton, PrimaryButton, TertiaryButton
+    NoFrameButton, PrimaryButton, TertiaryButton, FileDropWidget, FileListWidget
 )
 from utils import ThemeManagerInstance
 from utils.app_paths import get_app_root
@@ -404,6 +405,65 @@ class EditorPagesTable:
         self.table_view.rowMoved.connect(handler)
 
 
+class EditorFilesTab:
+    def __init__(self, tab_widget: QTabWidget) -> None:
+        self.tab_widget = tab_widget
+
+        # Setup Files Tab Layout
+        files_layout = self.tab_widget.layout()
+        
+        # 1. Drag & Drop Area
+        self.file_drop_widget = FileDropWidget(self.tab_widget)
+        files_layout.addWidget(self.file_drop_widget)
+        
+        # 2. Scroll Area for File Widgets
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setFrameShape(QFrame.NoFrame)
+        self.scroll_area.viewport().setAutoFillBackground(False)
+        self.scroll_area.setAutoFillBackground(False)
+        self.scroll_area.viewport().setAutoFillBackground(False)
+        self.scroll_area.setAutoFillBackground(False)
+        
+        # Container for FileListWidget to allow centering/alignment if needed
+        self.file_list = FileListWidget()
+        
+        self.scroll_area.setWidget(self.file_list)
+        files_layout.addWidget(self.scroll_area)
+
+
+    def connect_drag_drop_area(self, handler) -> None:
+        """Connects the drag and drop area to a handler."""
+        self.file_drop_widget.clicked.connect(handler)
+
+
+    def connect_files_dropped(self, handler) -> None:
+        """Connects the files dropped signal."""
+        self.file_drop_widget.filesDropped.connect(handler)
+
+
+    def connect_file_deleted(self, handler) -> None:
+        """Connects the file deleted signal."""
+        self.file_list.fileDeleted.connect(handler)
+
+    def connect_file_download(self, handler) -> None:
+        """Connects the file download requested signal."""
+        self.file_list.fileDownloadRequested.connect(handler)
+
+    def connect_file_open(self, handler) -> None:
+        """Connects the file open requested signal."""
+        self.file_list.fileOpenRequested.connect(handler)
+
+
+    def add_file_widget(self, file_data: object) -> None:
+        """Adds a file widget to the list."""
+        self.file_list.add_file(file_data)
+
+
+    def remove_file_widget(self, file_identifier: object) -> None:
+        """Removes a file widget from the list."""
+        self.file_list.remove_file(file_identifier)
+
 
 class DocumentEditorView:
     def __init__(self, container):
@@ -466,6 +526,10 @@ class DocumentEditorView:
 
         self.pages_table = EditorPagesTable(
             table_view=self.ui.data_tableView
+        )
+
+        self.files_tab = EditorFilesTab(
+            tab_widget=self.ui.files_tab
         )
 
 
@@ -715,3 +779,36 @@ class DocumentEditorView:
     def pages_table_row_moved(self, handler) -> None:
         """Connects the pages table row moved signal to a handler."""
         self.pages_table.connect_row_moved(handler)
+
+    def file_drop_widget_files_dropped(self, handler) -> None:
+        """Connects the files dropped signal."""
+        self.files_tab.connect_files_dropped(handler)
+
+    def file_drop_widget_clicked(self, handler) -> None:
+        """Connects the file drop widget click signal."""
+        self.files_tab.connect_drag_drop_area(handler)
+
+    def file_deleted(self, handler) -> None:
+        """Connects the file deleted signal."""
+        self.files_tab.connect_file_deleted(handler)
+
+    def file_download_requested(self, handler) -> None:
+        """Connects the file download requested signal."""
+        self.files_tab.connect_file_download(handler)
+
+    def file_open_requested(self, handler) -> None:
+        """Connects the file open requested signal."""
+        self.files_tab.connect_file_open(handler)
+
+    def add_file_widget(self, file_data: object) -> None:
+        self.files_tab.add_file_widget(file_data)
+
+    def remove_file_widget(self, file_identifier: object) -> None:
+        self.files_tab.remove_file_widget(file_identifier)
+
+    def switch_to_files_tab(self) -> None:
+        """Switches to the files tab."""
+        self.ui.tabs_tabWidget.setCurrentIndex(1)
+
+    def set_file_drop_active(self, active: bool) -> None:
+        self.files_tab.file_drop_widget.setDragActive(active)
