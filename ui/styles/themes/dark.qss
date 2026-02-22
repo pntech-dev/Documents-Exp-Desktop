@@ -988,3 +988,31 @@ FileDropWidget QLabel#fileDropLabel {
     color: #808080;
     font-size: 14px;
 }
+
+/* File Widget */
+FileWidget {
+    background-color: #262626;
+    border: 1px solid #404040;
+    border-radius: 8px;
+}
+
+FileWidget QLabel#fileNameLabel {
+    color: #E6E6E6;
+    font-size: 12pt;
+    font-weight: bold;
+}
+
+FileWidget QLabel#fileIconLabel {
+    font-size: 24pt;
+}
+
+FileWidget QPushButton#fileDeleteButton {
+    background-color: transparent;
+    border: none;
+    color: #808080;
+    font-size: 14pt;
+}
+
+FileWidget QPushButton#fileDeleteButton:hover {
+    color: #8F2C23;
+}

@@ -2,7 +2,7 @@ import re
 import logging
 from pathlib import Path
 from PyQt5.QtGui import QTextDocument
-from PyQt5.QtWidgets import QFileDialog, QDialog
+from PyQt5.QtWidgets import QFileDialog, QDialog, QMessageBox
 from PyQt5.QtPrintSupport import QPrinter, QPrintDialog
 
 from utils import NotificationService
@@ -244,6 +244,42 @@ class DocumentEditorController:
         self._on_table_selection_changed()
 
 
+    def _on_files_dropped(self, files: list) -> None:
+        """Handles the files dropped event."""
+        for file_path in files:
+            self.model.add_pending_file(file_path)
+            self.view.add_file_widget(file_path)
+        
+        self._on_document_data_changed()
+
+
+    def _on_drag_drop_area_clicked(self) -> None:
+        """Handles the drag and drop area click event."""
+        files, _ = QFileDialog.getOpenFileNames(
+            self.window,
+            "Выберите файлы",
+            str(Path.home()),
+            "All Files (*)"
+        )
+        if files:
+            self._on_files_dropped(files)
+
+    def _on_file_widget_deleted(self, file_identifier: object) -> None:
+        """Handles the deletion of a file."""
+        if isinstance(file_identifier, int):
+             # Existing file (ID)
+            try:
+                self.model.delete_file(file_identifier)
+                self.view.remove_file_widget(file_identifier)
+                NotificationService().show_toast("success", "Файл удален", "Файл успешно удален.")
+            except Exception as e:
+                msg = get_friendly_error_message(e)
+                NotificationService().show_toast("error", "Ошибка удаления файла", msg)
+        else:
+            # Pending file (path string)
+            self.model.remove_pending_file(file_identifier)
+            self.view.remove_file_widget(file_identifier)
+
     def _on_delete_document_button_clicked(self) -> None:
         """Handles the delete document button click event."""
         dialog = DeleteInfoDialog(parent=self.window, info_type="document")
@@ -280,6 +316,10 @@ class DocumentEditorController:
             is_creation = self.model.document_data.get("id") is None
 
             self.model.save_document(data=data)
+            
+            # Upload pending files
+            if self.model.pending_files:
+                self.model.upload_pending_files()
             
             doc_name = data.get("name", "")
             doc_code = data.get("code", "")
@@ -331,15 +371,18 @@ class DocumentEditorController:
         self._fill_document_tags()
         self._fill_document_data()
         self._fill_pages_table()
+        self._fill_files_list()
 
 
     def _setup_connections(self) -> None:
         """Sets up signal-slot connections."""
+        # Lineedits
         self.view.code_lineedit_text_changed(handler=self._on_document_data_changed)
         self.view.name_lineedit_text_changed(handler=self._on_document_data_changed)
         self.view.tags_lineedit_text_changed(handler=self._on_document_data_changed)
         self.view.generate_tags_button_clicked(handler=self._generate_tags)
 
+        # Toolbar
         self.view.toolbar_add_page_button_clicked(handler=self._on_add_page_button_clicked)
         self.view.toolbar_duplicate_page_button_clicked(handler=self._on_duplicate_page_button_clicked)
         self.view.toolbar_print_button_clicked(handler=self._on_print_button_clicked)
@@ -347,11 +390,18 @@ class DocumentEditorController:
         self.view.toolbar_export_button_clicked(handler=self._on_export_button_clicked)
         self.view.toolbar_delete_page_button_clicked(handler=self._on_delete_page_button_clicked)
 
+        # Pages table
         self.view.pages_table_item_changed(handler=self._on_document_data_changed)
         self.view.pages_table_row_moved(handler=self._on_document_data_changed)
         self.view.pages_table_selection_changed(handler=self._on_table_selection_changed)
         self.view.pages_table_item_changed(handler=self._on_table_selection_changed)
 
+        # Files
+        self.view.file_drop_widget_files_dropped(handler=self._on_files_dropped)
+        self.view.file_drop_widget_clicked(handler=self._on_drag_drop_area_clicked)
+        self.view.file_deleted(handler=self._on_file_widget_deleted)
+
+        # Buttons
         self.view.delete_document_button_clicked(handler=self._on_delete_document_button_clicked)
         self.view.cancel_button_clicked(handler=self._on_cancel_button_clicked)
         self.view.save_button_clicked(handler=self._on_save_button_clicked)
@@ -394,6 +444,13 @@ class DocumentEditorController:
 
         # Update delete button state
         self._on_table_selection_changed()
+
+
+    def _fill_files_list(self) -> None:
+        """Fills the files list with data."""
+        files = self.model.document_data.get("files", [])
+        for file in files:
+            self.view.add_file_widget(file)
 
 
     def _update_generate_button_state(self):

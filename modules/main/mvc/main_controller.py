@@ -455,12 +455,8 @@ class MainController(QObject):
                 document_id = selected_item.get("document_id")
         
         # Get selected document data
-        # Search in current_documents which contains loaded data
-        document = next((doc for doc in self.current_documents 
-                         if doc.get("id") == document_id), {})
-
-        # If document not found in current list (e.g. search result page), fetch it
-        if not document and document_id:
+        document = {}
+        if document_id:
             try:
                 document = self.model.get_document(document_id)
             except Exception as e:

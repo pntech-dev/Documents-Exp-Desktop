@@ -987,3 +987,31 @@ FileDropWidget QLabel#fileDropLabel {
     color: {{ neutral.neutral_500 }};
     font-size: 14px;
 }
+
+/* File Widget */
+FileWidget {
+    background-color: {{ neutral.neutral_100 }};
+    border: 1px solid {{ neutral.neutral_250 }};
+    border-radius: 8px;
+}
+
+FileWidget QLabel#fileNameLabel {
+    color: {{ neutral.neutral_900 }};
+    font-size: 12pt;
+    font-weight: bold;
+}
+
+FileWidget QLabel#fileIconLabel {
+    font-size: 24pt;
+}
+
+FileWidget QPushButton#fileDeleteButton {
+    background-color: transparent;
+    border: none;
+    color: {{ neutral.neutral_500 }};
+    font-size: 14pt;
+}
+
+FileWidget QPushButton#fileDeleteButton:hover {
+    color: {{ semantic.error.error_500 }};
+}
