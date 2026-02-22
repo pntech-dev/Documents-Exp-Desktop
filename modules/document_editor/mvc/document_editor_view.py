@@ -450,6 +450,10 @@ class EditorFilesTab:
         """Connects the file download requested signal."""
         self.file_list.fileDownloadRequested.connect(handler)
 
+    def connect_file_open(self, handler) -> None:
+        """Connects the file open requested signal."""
+        self.file_list.fileOpenRequested.connect(handler)
+
 
     def add_file_widget(self, file_data: object) -> None:
         """Adds a file widget to the list."""
@@ -791,6 +795,10 @@ class DocumentEditorView:
     def file_download_requested(self, handler) -> None:
         """Connects the file download requested signal."""
         self.files_tab.connect_file_download(handler)
+
+    def file_open_requested(self, handler) -> None:
+        """Connects the file open requested signal."""
+        self.files_tab.connect_file_open(handler)
 
     def add_file_widget(self, file_data: object) -> None:
         self.files_tab.add_file_widget(file_data)

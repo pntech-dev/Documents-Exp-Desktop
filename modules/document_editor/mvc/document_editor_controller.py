@@ -1,6 +1,10 @@
 import re
 import logging
 import shutil
+import os
+import sys
+import subprocess
+import tempfile
 from pathlib import Path
 from PyQt5.QtGui import QTextDocument
 from PyQt5.QtWidgets import QFileDialog, QDialog, QMessageBox
@@ -363,6 +367,60 @@ class DocumentEditorController:
             else:
                  NotificationService().show_toast("error", "Ошибка", "Файл не найден на диске.")
 
+    def _on_file_open_requested(self, file_identifier: object) -> None:
+        """Handles file open request."""
+        if isinstance(file_identifier, int):
+            # Remote file (ID)
+            filename = "downloaded_file"
+            files = self.model.document_data.get("files", [])
+            for f in files:
+                if f.get("id") == file_identifier:
+                    filename = f.get("filename", filename)
+                    break
+            
+            # Create a subdirectory in temp to avoid clutter and collisions
+            temp_dir = Path(tempfile.gettempdir()) / "Documents Exp"
+            temp_dir.mkdir(parents=True, exist_ok=True)
+            save_path = str(Path(temp_dir) / filename)
+            
+            self.window.setEnabled(False)
+            
+            worker = APIWorker(
+                self.model.download_file, 
+                file_id=file_identifier, 
+                save_path=save_path
+            )
+            worker.finished.connect(lambda _: self._on_open_download_finished(save_path, worker))
+            worker.error.connect(lambda e: self._on_download_error(e, worker))
+            self.active_workers.add(worker)
+            worker.start()
+        
+        elif isinstance(file_identifier, str):
+            # Local file (path string)
+            self._open_local_file(file_identifier)
+
+    def _on_open_download_finished(self, file_path: str, worker: APIWorker) -> None:
+        if worker in self.active_workers:
+            self.active_workers.discard(worker)
+        self.window.setEnabled(True)
+        self._open_local_file(file_path)
+
+    def _open_local_file(self, file_path: str) -> None:
+        path = Path(file_path)
+        if not path.exists():
+             NotificationService().show_toast("error", "Ошибка", "Файл не найден на диске.")
+             return
+
+        try:
+            if sys.platform == "win32":
+                os.startfile(file_path)
+            elif sys.platform == "darwin":
+                subprocess.call(["open", file_path])
+            else:
+                subprocess.call(["xdg-open", file_path])
+        except Exception as e:
+            NotificationService().show_toast("error", "Ошибка открытия", f"Не удалось открыть файл: {e}")
+
     def _on_download_finished(self, worker):
         if worker in self.active_workers:
             self.active_workers.discard(worker)
@@ -512,6 +570,7 @@ class DocumentEditorController:
         self.view.file_drop_widget_clicked(handler=self._on_drag_drop_area_clicked)
         self.view.file_deleted(handler=self._on_file_widget_deleted)
         self.view.file_download_requested(handler=self._on_file_download_requested)
+        self.view.file_open_requested(handler=self._on_file_open_requested)
         self.window.files_dropped.connect(self._on_files_dropped)
         self.window.drag_entered.connect(lambda: self.view.set_file_drop_active(True))
         self.window.drag_left.connect(lambda: self.view.set_file_drop_active(False))
