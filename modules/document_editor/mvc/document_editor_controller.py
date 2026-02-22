@@ -246,11 +246,35 @@ class DocumentEditorController:
 
     def _on_files_dropped(self, files: list) -> None:
         """Handles the files dropped event."""
+        blocked_extensions = {
+            "exe", "dll", "bat", "cmd", "sh", "js", "vbs", "scr", 
+            "com", "pif", "jar", "app", "php", "pl", "py", "rb", 
+            "asp", "aspx", "jsp", "cgi", "ps1", "reg", "msi", "wsf",
+            "hta", "cpl", "msc", "lnk", "inf"
+        }
+        
+        blocked_files = []
+        valid_files = []
+
         for file_path in files:
+            ext = Path(file_path).suffix.lower().lstrip('.')
+            if ext in blocked_extensions:
+                blocked_files.append(Path(file_path).name)
+            else:
+                valid_files.append(file_path)
+        
+        if blocked_files:
+            msg = "Файлы с таким расширением нельзя загрузить:\n" + "\n".join(blocked_files[:5])
+            if len(blocked_files) > 5:
+                msg += f"\n...и еще {len(blocked_files) - 5}"
+            NotificationService().show_toast("error", "Ошибка загрузки", msg)
+
+        for file_path in valid_files:
             self.model.add_pending_file(file_path)
             self.view.add_file_widget(file_path)
         
-        self._on_document_data_changed()
+        if valid_files:
+            self._on_document_data_changed()
 
 
     def _on_drag_drop_area_clicked(self) -> None:

@@ -986,20 +986,25 @@ FileDropWidget QLabel#fileDropLabel {
 }
 
 /* File Widget */
-FileWidget {
+#FileWidgetContainer {
     background-color: #FFFFFF;
     border: 1px solid #E6E6E6;
     border-radius: 8px;
 }
 
+#FileWidgetContainer:hover {
+    border: 1px solid #CCCCCC;
+}
+
 FileWidget QLabel#fileNameLabel {
-    color: #1A1A1A;
     font-size: 12pt;
-    font-weight: bold;
+	color: #1A1A1A;
+	background-color: transparent;
 }
 
 FileWidget QLabel#fileIconLabel {
     font-size: 24pt;
+	background-color: transparent;
 }
 
 FileWidget QPushButton#fileDeleteButton {
@@ -1012,31 +1017,9 @@ FileWidget QPushButton#fileDeleteButton {
 FileWidget QPushButton#fileDeleteButton:hover {
     color: #A33329;
 }
-
-/* File Widget */
-FileWidget {
-    background-color: #FFFFFF;
-    border: 1px solid #E6E6E6;
-    border-radius: 8px;
-}
-
-FileWidget QLabel#fileNameLabel {
-    color: #1A1A1A;
-    font-size: 12pt;
-    font-weight: bold;
-}
-
-FileWidget QLabel#fileIconLabel {
-    font-size: 24pt;
-}
-
-FileWidget QPushButton#fileDeleteButton {
-    background-color: transparent;
-    border: none;
-    color: #999999;
-    font-size: 14pt;
-}
-
-FileWidget QPushButton#fileDeleteButton:hover {
-    color: #A33329;
+/* File Actions Frame */
+#fileActionsFrame {
+	border-radius: 8px;
+    border: 1px solid #CCCCCC;
+	background-color: #FFFFFF;
 }

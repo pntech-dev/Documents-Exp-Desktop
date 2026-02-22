@@ -147,7 +147,7 @@ class TagsCellWidget(QWidget):
         super().__init__(parent)
         self.setAttribute(Qt.WA_TranslucentBackground)
         
-        layout = FlowLayout(self, margin=8, spacing=4)
+        layout = FlowLayout(self, margin=8, spacing=4, align_center=True)
         layout.setContentsMargins(8, 2, 8, 2)
 
         active = active_tags or set()

@@ -420,7 +420,10 @@ class EditorFilesTab:
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setFrameShape(QFrame.NoFrame)
-        self.scroll_area.setStyleSheet("background: transparent;")
+        self.scroll_area.viewport().setAutoFillBackground(False)
+        self.scroll_area.setAutoFillBackground(False)
+        self.scroll_area.viewport().setAutoFillBackground(False)
+        self.scroll_area.setAutoFillBackground(False)
         
         # Container for FileListWidget to allow centering/alignment if needed
         self.file_list = FileListWidget()

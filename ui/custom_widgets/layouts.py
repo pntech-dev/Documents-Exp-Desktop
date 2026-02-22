@@ -3,8 +3,9 @@ from PyQt5.QtCore import Qt, QRect, QPoint, QSize
 
 class FlowLayout(QLayout):
     """Layout that arranges items in a flow, wrapping to the next line."""
-    def __init__(self, parent=None, margin=0, spacing=-1) -> None:
+    def __init__(self, parent=None, margin=0, spacing=-1, align_center=False) -> None:
         super().__init__(parent)
+        self.align_center = align_center
         if parent is not None:
             self.setContentsMargins(margin, margin, margin, margin)
         self.setSpacing(spacing)
@@ -63,6 +64,11 @@ class FlowLayout(QLayout):
         y = effective_rect.y()
         lineHeight = 0
         spacing = self.spacing()
+
+        if not testOnly and self.align_center:
+            height = self.doLayout(rect, True)
+            if rect.height() > height:
+                y = effective_rect.y() + (rect.height() - height) // 2
 
         for item in self.itemList:
             spaceX = spacing
