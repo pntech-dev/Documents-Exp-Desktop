@@ -43,13 +43,11 @@ class _IconCustomButton(QPushButton):
             is_danger (bool): True to enable danger style, False otherwise.
         """
         self.setProperty("danger", "true" if is_danger else "false")
+        self.style().unpolish(self)
+        self.style().polish(self)
+        self.update()
 
     def changeEvent(self, event: QEvent) -> None:
-        if event.type() == QEvent.DynamicPropertyChange:
-            if event.propertyName() == b"danger":
-                self.style().unpolish(self)
-                self.style().polish(self)
-                self.update()
         if event.type() == QEvent.EnabledChange:
             self._update_icon()
         super().changeEvent(event)

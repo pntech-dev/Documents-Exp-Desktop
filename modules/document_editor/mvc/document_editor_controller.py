@@ -246,6 +246,8 @@ class DocumentEditorController:
 
     def _on_files_dropped(self, files: list) -> None:
         """Handles the files dropped event."""
+        self.view.switch_to_files_tab()
+        
         blocked_extensions = {
             "exe", "dll", "bat", "cmd", "sh", "js", "vbs", "scr", 
             "com", "pif", "jar", "app", "php", "pl", "py", "rb", 
@@ -253,20 +255,39 @@ class DocumentEditorController:
             "hta", "cpl", "msc", "lnk", "inf"
         }
         
+        max_size = 50 * 1024 * 1024 # 50 MB
+        
         blocked_files = []
+        oversized_files = []
         valid_files = []
 
         for file_path in files:
-            ext = Path(file_path).suffix.lower().lstrip('.')
+            path_obj = Path(file_path)
+            ext = path_obj.suffix.lower().lstrip('.')
+            
             if ext in blocked_extensions:
-                blocked_files.append(Path(file_path).name)
-            else:
-                valid_files.append(file_path)
+                blocked_files.append(path_obj.name)
+                continue
+            
+            try:
+                if path_obj.stat().st_size > max_size:
+                    oversized_files.append(path_obj.name)
+                    continue
+            except OSError:
+                pass
+
+            valid_files.append(file_path)
         
         if blocked_files:
             msg = "Файлы с таким расширением нельзя загрузить:\n" + "\n".join(blocked_files[:5])
             if len(blocked_files) > 5:
                 msg += f"\n...и еще {len(blocked_files) - 5}"
+            NotificationService().show_toast("error", "Ошибка загрузки", msg)
+
+        if oversized_files:
+            msg = "Файлы превышают 50 МБ:\n" + "\n".join(oversized_files[:5])
+            if len(oversized_files) > 5:
+                msg += f"\n...и еще {len(oversized_files) - 5}"
             NotificationService().show_toast("error", "Ошибка загрузки", msg)
 
         for file_path in valid_files:
@@ -421,9 +442,11 @@ class DocumentEditorController:
         self.view.pages_table_item_changed(handler=self._on_table_selection_changed)
 
         # Files
-        self.view.file_drop_widget_files_dropped(handler=self._on_files_dropped)
         self.view.file_drop_widget_clicked(handler=self._on_drag_drop_area_clicked)
         self.view.file_deleted(handler=self._on_file_widget_deleted)
+        self.window.files_dropped.connect(self._on_files_dropped)
+        self.window.drag_entered.connect(lambda: self.view.set_file_drop_active(True))
+        self.window.drag_left.connect(lambda: self.view.set_file_drop_active(False))
 
         # Buttons
         self.view.delete_document_button_clicked(handler=self._on_delete_document_button_clicked)

@@ -235,16 +235,16 @@ class FileWidget(QWidget):
             danger_action=True,
             callback=self.deleteClicked.emit,
             # Light theme
-            light_default=":/icons/light/light/trash_default.svg",
-            light_hover=":/icons/light/light/trash_hover.svg",
-            light_pressed=":/icons/light/light/trash_clicked.svg",
-            light_disabled=":/icons/light/light/trash_disabled.svg",
+            light_default=":/icons/light/light/trash_noframe_default.svg",
+            light_hover=":/icons/light/light/trash_noframe_hover.svg",
+            light_pressed=":/icons/light/light/trash_noframe_clicked.svg",
+            light_disabled=":/icons/light/light/trash_noframe_disabled.svg",
 
             # Dark theme
-            dark_default=":/icons/dark/dark/trash_default.svg",
-            dark_hover=":/icons/dark/dark/trash_hover.svg",
-            dark_pressed=":/icons/dark/dark/trash_clicked.svg",
-            dark_disabled=":/icons/dark/dark/trash_disabled.svg"
+            dark_default=":/icons/dark/dark/trash_noframe_default.svg",
+            dark_hover=":/icons/dark/dark/trash_noframe_hover.svg",
+            dark_pressed=":/icons/dark/dark/trash_noframe_clicked.svg",
+            dark_disabled=":/icons/dark/dark/trash_noframe_disabled.svg"
         )
 
     def _show_menu(self):

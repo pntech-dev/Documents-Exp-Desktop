@@ -978,40 +978,68 @@ ProgressBar::chunk {
 
 /* File Drop Widget */
 FileDropWidget {
-    qproperty-borderColor: {{ neutral.neutral_500 }};
-    qproperty-activeColor: {{ accent.accent_500 }};
+	border-radius: 8px;
+    border: 2px dashed {{ neutral.neutral_200 }};
+    background-color: transparent;
+}
+
+FileDropWidget:hover {
+    border-color: {{ neutral.neutral_300 }};
+    background-color: {{ neutral.neutral_200 }};
+}
+
+FileDropWidget[dragActive="true"] {
+    border-color: {{ accent.accent_100 }};
+    background-color: {{ accent.accent_700 }};
 }
 
 FileDropWidget QLabel#fileDropLabel {
-    background-color: transparent;
+	font-size: 16px;
     color: {{ neutral.neutral_500 }};
-    font-size: 14px;
+    background-color: transparent;
+}
+
+FileDropWidget:hover QLabel#fileDropLabel {
+    color: {{ neutral.neutral_600 }};
+}
+
+FileDropWidget[dragActive="true"] QLabel#fileDropLabel {
+	font-size: 16px;
+	color: {{ accent.accent_300 }};
+    background-color: transparent;
 }
 
 /* File Widget */
-FileWidget {
+#FileWidgetContainer {
     background-color: {{ neutral.neutral_100 }};
-    border: 1px solid {{ neutral.neutral_250 }};
+    border: 1px solid {{ neutral.neutral_200 }};
     border-radius: 8px;
 }
 
-FileWidget QLabel#fileNameLabel {
-    color: {{ neutral.neutral_900 }};
-    font-size: 12pt;
-    font-weight: bold;
+#FileWidgetContainer:hover {
+    border: 1px solid {{ neutral.neutral_250 }};
 }
 
 FileWidget QLabel#fileIconLabel {
     font-size: 24pt;
+	background-color: transparent;
 }
 
-FileWidget QPushButton#fileDeleteButton {
-    background-color: transparent;
-    border: none;
+FileWidget QLabel#fileNameLabel {
+	font-size: 12pt;
+    color: {{ neutral.neutral_700 }};
+	background-color: transparent;
+}
+
+FileWidget QLabel#fileInfoLabel  {
+	font-size: 10pt;
     color: {{ neutral.neutral_500 }};
-    font-size: 14pt;
+	background-color: transparent;
 }
 
-FileWidget QPushButton#fileDeleteButton:hover {
-    color: {{ semantic.error.error_500 }};
+/* File Actions Frame */
+#fileActionsFrame {
+	border-radius: 8px;
+	border: 1px solid {{ neutral.neutral_250 }};
+	background-color: {{ neutral.neutral_100 }};
 }

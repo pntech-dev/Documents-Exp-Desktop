@@ -1,5 +1,5 @@
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal, QPoint
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QColor, QDragEnterEvent, QDropEvent
 
 
 from .mvc import (
@@ -17,6 +17,9 @@ from utils import NotificationService
 class EditorWindow(QDialog):
     document_saved = pyqtSignal()
     document_deleted = pyqtSignal()
+    files_dropped = pyqtSignal(list)
+    drag_entered = pyqtSignal()
+    drag_left = pyqtSignal()
 
     def __init__(
             self, 
@@ -34,6 +37,7 @@ class EditorWindow(QDialog):
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.Dialog)
         self.setWindowModality(Qt.ApplicationModal)
         self.setAttribute(Qt.WA_TranslucentBackground)
+        self.setAcceptDrops(True)
 
         # === Container & Layout ===
         main_layout = QVBoxLayout(self)
@@ -112,3 +116,25 @@ class EditorWindow(QDialog):
             x = screen.center().x() - self.width() // 2
             y = screen.center().y() - self.height() // 2
             self.move(x, y)
+
+    def dragEnterEvent(self, event: QDragEnterEvent):
+        if event.mimeData().hasUrls():
+            event.accept()
+            self.drag_entered.emit()
+        else:
+            event.ignore()
+
+    def dragLeaveEvent(self, event):
+        self.drag_left.emit()
+        super().dragLeaveEvent(event)
+
+    def dropEvent(self, event: QDropEvent):
+        self.drag_left.emit()
+        files = []
+        for url in event.mimeData().urls():
+            file_path = url.toLocalFile()
+            if file_path:
+                files.append(file_path)
+        
+        if files:
+            self.files_dropped.emit(files)

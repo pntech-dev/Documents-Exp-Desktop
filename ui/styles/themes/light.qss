@@ -975,14 +975,35 @@ ProgressBar::chunk {
 
 /* File Drop Widget */
 FileDropWidget {
-    qproperty-borderColor: #808080;
-    qproperty-activeColor: #CC3333;
+	border-radius: 8px;
+    border: 2px dashed #E6E6E6;
+    background-color: transparent;
+}
+
+FileDropWidget:hover {
+    border-color: #CCCCCC;
+    background-color: #FAFAFA;
+}
+
+FileDropWidget[dragActive="true"] {
+    border-color: #CC3333;
+    background-color: #F5D6D6;
 }
 
 FileDropWidget QLabel#fileDropLabel {
+	font-size: 16px;
+	color: #808080;
     background-color: transparent;
-    color: #808080;
-    font-size: 14px;
+}
+
+FileDropWidget:hover QLabel#fileDropLabel {
+    color: #666666;
+}
+
+FileDropWidget[dragActive="true"] QLabel#fileDropLabel {
+	font-size: 16px;
+	color: #7A1F1F;
+    background-color: transparent;
 }
 
 /* File Widget */

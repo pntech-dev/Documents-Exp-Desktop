@@ -789,3 +789,10 @@ class DocumentEditorView:
 
     def remove_file_widget(self, file_identifier: object) -> None:
         self.files_tab.remove_file_widget(file_identifier)
+
+    def switch_to_files_tab(self) -> None:
+        """Switches to the files tab."""
+        self.ui.tabs_tabWidget.setCurrentIndex(1)
+
+    def set_file_drop_active(self, active: bool) -> None:
+        self.files_tab.file_drop_widget.setDragActive(active)
