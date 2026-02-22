@@ -141,13 +141,42 @@ class TestDocumentEditorController:
 
 
     def test_save_button_clicked(self, controller):
-        """Test save button handler."""
+        """Test save button handler initiates background task."""
         controller.view.get_document_data.return_value = {"name": "Doc"}
-        controller.model.document_data = {"id": 1} # Existing doc
         
-        controller._on_save_button_clicked()
+        with patch("modules.document_editor.mvc.document_editor_controller.APIWorker") as MockWorker:
+            controller._on_save_button_clicked()
+            
+            MockWorker.assert_called_once()
+            args, kwargs = MockWorker.call_args
+            assert args[0] == controller._save_task
+            assert kwargs['data'] == {"name": "Doc"}
+            MockWorker.return_value.start.assert_called_once()
+            controller.window.setEnabled.assert_called_with(False)
+
+
+    def test_save_task(self, controller):
+        """Test background save task logic."""
+        controller.model.document_data = {"id": 1}
+        data = {"name": "Doc"}
+        controller.model.pending_files = []
         
-        controller.model.save_document.assert_called_once_with(data={"name": "Doc"})
+        is_creation, result_data = controller._save_task(data)
+        
+        assert is_creation is False
+        assert result_data == data
+        controller.model.save_document.assert_called_once_with(data=data)
+
+
+    def test_on_save_finished(self, controller):
+        """Test save finished handler updates UI."""
+        result = (False, {"name": "Doc", "code": "123"})
+        
+        # Mock sender to avoid issues if called directly
+        with patch.object(controller, "sender", return_value=None):
+            controller._on_save_finished(result)
+        
+        controller.window.setEnabled.assert_called_with(True)
         controller.window.document_saved.emit.assert_called_once()
         controller.window.close.assert_called_once()
 
