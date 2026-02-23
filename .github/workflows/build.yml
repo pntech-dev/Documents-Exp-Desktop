@@ -61,7 +61,7 @@ jobs:
                   pip install pyinstaller
 
             - name: Create Config
-              run: Copy-Item config.example.yaml config.yaml -ErrorAction Ignore
+              run: Copy-Item config.template.yaml config.yaml -ErrorAction Ignore
 
             - name: Configure API URL
               run: |
