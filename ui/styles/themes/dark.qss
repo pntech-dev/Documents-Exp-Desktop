@@ -592,6 +592,27 @@ QFrame#deleteInfoContainer {
     color: #E38282;
 }
 
+/* Update Progress Window */
+#updateProgressContainer {
+    background-color: #262626;
+    border-radius: 8px;
+    border: 1px solid #404040;
+}
+
+/* Update Confirm Window */
+#updateConfirmContainer {
+    background-color: #262626;
+    border-radius: 8px;
+    border: 1px solid #404040;
+}
+
+/* Install Confirm Window */
+#installConfirmContainer {
+    background-color: #262626;
+    border-radius: 8px;
+    border: 1px solid #404040;
+}
+
 
 
 /* MAIN APPLICATION */
@@ -895,4 +916,147 @@ QLabel#passwordHintLabel {
 
 QLabel#passwordHintLabel[valid="true"] {
     color: #33A84F;
+}
+
+
+/* Tab Widget */
+QTabWidget {
+    background-color: transparent;
+}
+
+QTabWidget::pane {
+    background-color: #262626;
+    top: -1px;
+	border: 1px solid #333333;
+    border-radius: 8px;
+	border-top-left-radius: 0px;
+}
+
+QTabWidget QStackedWidget,
+QTabWidget QStackedWidget > QWidget {
+    background-color: transparent;
+}
+
+QTabBar::tab {
+    padding: 8px 16px;
+
+    border: none;
+	border-bottom: 1px solid #333333;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+	
+	color: #808080;
+	background-color: #333333;
+}
+
+QTabBar::tab:hover {
+    color: #999999;
+    background-color: #404040;
+}
+
+QTabBar::tab:selected {
+    color: #B3B3B3;
+    background-color: #262626;
+
+    border: 1px solid #333333;
+    border-bottom: 1px solid #262626;
+}
+
+
+/* Progress Bar */
+ProgressBar {
+    border: 1px solid #404040;
+    border-radius: 6px;
+    text-align: center;
+    background-color: #333333;
+}
+
+ProgressBar::chunk {
+    background-color: #C43A3A;
+    border-radius: 5px;
+}
+
+
+/* File Drop Widget */
+FileDropWidget {
+	border-radius: 8px;
+    border: 2px dashed #333333;
+    background-color: transparent;
+}
+
+FileDropWidget:hover {
+    border-color: #4D4D4D;
+    background-color: #333333;
+}
+
+FileDropWidget[dragActive="true"] {
+    border-color: #F5D6D6;
+    background-color: #5D1717;
+}
+
+FileDropWidget QLabel#fileDropLabel {
+	font-size: 16px;
+	color: #808080;
+    background-color: transparent;
+}
+
+FileDropWidget:hover QLabel#fileDropLabel {
+    color: #999999;
+}
+
+FileDropWidget[dragActive="true"] QLabel#fileDropLabel {
+	font-size: 16px;
+	color: #F5D6D6;
+    background-color: transparent;
+}
+
+FileDropWidget QLabel#fileDropSubLabel {
+	font-size: 12px;
+	color: #666666;
+    background-color: transparent;
+}
+
+FileDropWidget:hover QLabel#fileDropSubLabel {
+    color: #808080;
+}
+
+FileDropWidget[dragActive="true"] QLabel#fileDropSubLabel {
+	font-size: 12px;
+	color: #D65A5A;
+    background-color: transparent;
+}
+
+/* File Widget */
+#FileWidgetContainer {
+    background-color: #262626;
+    border: 1px solid #333333;
+    border-radius: 8px;
+}
+
+#FileWidgetContainer:hover {
+    border: 1px solid #404040;
+}
+
+FileWidget QLabel#fileIconLabel {
+    font-size: 24pt;
+	background-color: transparent;
+}
+
+FileWidget QLabel#fileNameLabel {
+	font-size: 12pt;
+    color: #B3B3B3;
+	background-color: transparent;
+}
+
+FileWidget QLabel#fileInfoLabel  {
+	font-size: 10pt;
+    color: #808080;
+	background-color: transparent;
+}
+
+/* File Actions Frame */
+#fileActionsFrame {
+	border-radius: 8px;
+	border: 1px solid #404040;
+	background-color: #262626;
 }

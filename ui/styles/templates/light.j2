@@ -506,30 +506,35 @@ DeletableTag QPushButton#tagCloseButton:hover {
 QFrame#emailConfirmContainer {
     border-radius: 8px;
     background-color: {{ neutral.neutral_0 }};
+	border: 1px solid {{ neutral.neutral_100 }};
 }
 
 /* Create Department Window */
 QFrame#createDepartmentContainer {
     border-radius: 8px;
     background-color: {{ neutral.neutral_0 }};
+	border: 1px solid {{ neutral.neutral_100 }};
 }
 
 /* Edit Department Window */
 QFrame#editDepartmentContainer {
     border-radius: 8px;
     background-color: {{ neutral.neutral_0 }};
+	border: 1px solid {{ neutral.neutral_100 }};
 }
 
 /* Create Category Window */
 QFrame#createCategoryContainer {
     border-radius: 8px;
     background-color: {{ neutral.neutral_0 }};
+	border: 1px solid {{ neutral.neutral_100 }};
 }
 
 /* Edit Category Window */
 QFrame#editCategoryContainer {
     border-radius: 8px;
     background-color: {{ neutral.neutral_0 }};
+	border: 1px solid {{ neutral.neutral_100 }};
 }
 
 /* Editor Window */
@@ -584,6 +589,28 @@ QFrame#deleteInfoContainer {
 #deleteInfoContainer #text_label {
     color: {{ neutral.neutral_700 }};
 }
+
+/* Update Progress Window */
+#updateProgressContainer {
+    background-color: {{ neutral.neutral_0 }};
+    border-radius: 8px;
+    border: 1px solid {{ neutral.neutral_100 }};
+}
+
+/* Update Confirm Window */
+#updateConfirmContainer {
+    background-color: {{ neutral.neutral_0 }};
+    border-radius: 8px;
+    border: 1px solid {{ neutral.neutral_100 }};
+}
+
+/* Install Confirm Window */
+#installConfirmContainer {
+    background-color: {{ neutral.neutral_0 }};
+    border-radius: 8px;
+    border: 1px solid {{ neutral.neutral_100 }};
+}
+
 
 
 
@@ -887,4 +914,152 @@ QLabel#passwordHintLabel {
 
 QLabel#passwordHintLabel[valid="true"] {
     color: {{ semantic.success.success_500 }};
+}
+
+
+/* Tab Widget */
+QTabWidget {
+    background-color: transparent;
+}
+
+QTabWidget::pane {
+    background-color: {{ neutral.neutral_0 }};
+    top: -1px;
+	border: 1px solid {{ neutral.neutral_100 }};
+    border-radius: 8px;
+	border-top-left-radius: 0px;
+}
+
+QTabWidget QStackedWidget,
+QTabWidget QStackedWidget > QWidget {
+    background-color: transparent;
+}
+
+QTabBar::tab {
+    padding: 8px 16px;
+
+    border: none;
+	border-bottom: 1px solid {{ neutral.neutral_100 }};
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+	
+	color: {{ neutral.neutral_500 }};
+	background-color: {{ neutral.neutral_50 }};
+}
+
+QTabBar::tab:hover {
+    color: {{ neutral.neutral_600 }};
+    background-color: {{ neutral.neutral_100 }};
+}
+
+QTabBar::tab:selected {
+    color: {{ neutral.neutral_700 }};
+    background-color: {{ neutral.neutral_0 }};
+
+    border: 1px solid {{ neutral.neutral_100 }};
+    border-bottom: 1px solid {{ neutral.neutral_0 }};
+}
+
+
+/* Progress Bar */
+ProgressBar {
+    border: 1px solid {{ neutral.neutral_100 }};
+    border-radius: 6px;
+    text-align: center;
+    background-color: {{ neutral.neutral_50 }};
+}
+
+ProgressBar::chunk {
+    background-color: {{ accent.accent_500 }};
+    border-radius: 5px;
+}
+
+
+/* File Drop Widget */
+FileDropWidget {
+	border-radius: 8px;
+    border: 2px dashed {{ neutral.neutral_100 }};
+    background-color: transparent;
+}
+
+FileDropWidget:hover {
+    border-color: {{ neutral.neutral_200 }};
+    background-color: #FAFAFA;
+}
+
+FileDropWidget[dragActive="true"] {
+    border-color: {{ accent.accent_500 }};
+    background-color: {{ accent.accent_100 }};
+}
+
+FileDropWidget QLabel#fileDropLabel {
+	font-size: 16px;
+    color: {{ neutral.neutral_500 }};
+    background-color: transparent;
+}
+
+FileDropWidget:hover QLabel#fileDropLabel {
+    color: {{ neutral.neutral_600 }};
+}
+
+FileDropWidget[dragActive="true"] QLabel#fileDropLabel {
+	font-size: 16px;
+	color: {{ accent.accent_700 }};
+    background-color: transparent;
+}
+
+FileDropWidget QLabel#fileDropSubLabel {
+	font-size: 12px;
+	color: {{ neutral.neutral_400 }};
+    background-color: transparent;
+}
+
+FileDropWidget:hover QLabel#fileDropSubLabel {
+    color: {{ neutral.neutral_500 }};
+}
+
+FileDropWidget[dragActive="true"] QLabel#fileDropSubLabel {
+	font-size: 12px;
+	color: {{ accent.accent_600 }};
+    background-color: transparent;
+}
+
+/* File Widget */
+#FileWidgetContainer {
+    background-color: {{ neutral.neutral_0 }};
+    border: 1px solid {{ neutral.neutral_100 }};
+    border-radius: 8px;
+}
+
+#FileWidgetContainer:hover {
+    border: 1px solid {{ neutral.neutral_200 }};
+}
+
+FileWidget QLabel#fileNameLabel {
+    font-size: 12pt;
+	color: {{ neutral.neutral_900 }};
+	background-color: transparent;
+}
+
+FileWidget QLabel#fileIconLabel {
+    font-size: 24pt;
+	background-color: transparent;
+}
+
+FileWidget QPushButton#fileDeleteButton {
+    background-color: transparent;
+    border: none;
+    color: {{ neutral.neutral_400 }};
+    font-size: 14pt;
+}
+
+FileWidget QPushButton#fileDeleteButton:hover {
+    color: {{ semantic.error.error_500 }};
+}
+
+/* File Actions Frame */
+#fileActionsFrame {
+	border-radius: 8px;
+    border: 1px solid {{ neutral.neutral_200 }};
+	background-color: {{ neutral.neutral_0 }};
 }

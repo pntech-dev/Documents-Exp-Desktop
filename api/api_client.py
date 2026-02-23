@@ -448,6 +448,68 @@ class APIClient:
 
 
     # ====================
+    # Files
+    # ====================
+
+
+    def download_file(self, file_id: int, destination_path: str, token: str) -> None:
+        """Downloads a file.
+
+        Args:
+            file_id (int): The ID of the file.
+            destination_path (str): The local path to save the file.
+            token (str): The access token.
+        """
+        headers = {"Authorization": f"Bearer {token}"}
+        url = self.base_url + f"/app/files/{file_id}/download"
+
+        with self.session.get(url, headers=headers, stream=True) as response:
+            response.raise_for_status()
+            with open(destination_path, "wb") as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    f.write(chunk)
+
+
+    def upload_file(self, document_id: int, file_path: str, token: str) -> dict:
+        """Uploads a file to the server.
+
+        Args:
+            document_id (int): The ID of the document.
+            file_path (str): The path to the file.
+            token (str): The access token.
+
+        Returns:
+            dict: The JSON response containing the file details.
+        """
+        headers = {"Authorization": f"Bearer {token}"}
+
+        with open(file_path, "rb") as f:
+            files = {"file": f}
+            return self._request("POST",
+                url=self.base_url + f"/app/documents/{document_id}/files",
+                headers=headers,
+                files=files
+            )
+
+
+    def delete_file(self, file_id: int, token: str) -> dict:
+        """Deletes a file.
+
+        Args:
+            file_id (int): The ID of the file.
+            token (str): The access token.
+
+        Returns:
+            dict: The JSON response confirming the deletion.
+        """
+        headers = {"Authorization": f"Bearer {token}"}
+        return self._request("DELETE",
+            url=self.base_url + f"/app/files/{file_id}",
+            headers=headers
+        )
+
+
+    # ====================
     # API Client Methods
     # ====================
 

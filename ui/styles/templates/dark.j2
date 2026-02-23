@@ -592,6 +592,27 @@ QFrame#deleteInfoContainer {
     color: {{ accent.accent_300 }};
 }
 
+/* Update Progress Window */
+#updateProgressContainer {
+    background-color: {{ neutral.neutral_100 }};
+    border-radius: 8px;
+    border: 1px solid {{ neutral.neutral_250 }};
+}
+
+/* Update Confirm Window */
+#updateConfirmContainer {
+    background-color: {{ neutral.neutral_100 }};
+    border-radius: 8px;
+    border: 1px solid {{ neutral.neutral_250 }};
+}
+
+/* Install Confirm Window */
+#installConfirmContainer {
+    background-color: {{ neutral.neutral_100 }};
+    border-radius: 8px;
+    border: 1px solid {{ neutral.neutral_250 }};
+}
+
 
 
 /* MAIN APPLICATION */
@@ -895,4 +916,146 @@ QLabel#passwordHintLabel {
 
 QLabel#passwordHintLabel[valid="true"] {
     color: {{ semantic.success.success_500 }};
+}
+
+
+/* Tab Widget */
+QTabWidget {
+    background-color: transparent;
+}
+
+QTabWidget::pane {
+    background-color: {{ neutral.neutral_100 }};
+    top: -1px;
+	border: 1px solid {{ neutral.neutral_200 }};
+    border-radius: 8px;
+	border-top-left-radius: 0px;
+}
+
+QTabWidget QStackedWidget,
+QTabWidget QStackedWidget > QWidget {
+    background-color: transparent;
+}
+
+QTabBar::tab {
+    padding: 8px 16px;
+
+    border: none;
+	border-bottom: 1px solid {{ neutral.neutral_200 }};
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+	
+	color: {{ neutral.neutral_500 }};
+	background-color: {{ neutral.neutral_200 }};
+}
+
+QTabBar::tab:hover {
+    color: {{ neutral.neutral_600 }};
+    background-color: {{ neutral.neutral_250 }};
+}
+
+QTabBar::tab:selected {
+    color: {{ neutral.neutral_700 }};
+    background-color: {{ neutral.neutral_100 }};
+
+    border: 1px solid {{ neutral.neutral_200 }};
+    border-bottom: 1px solid {{ neutral.neutral_100 }};
+}
+
+/* Progress Bar */
+ProgressBar {
+    border: 1px solid {{ neutral.neutral_250 }};
+    border-radius: 6px;
+    text-align: center;
+    background-color: {{ neutral.neutral_200 }};
+}
+
+ProgressBar::chunk {
+    background-color: {{ accent.accent_500 }};
+    border-radius: 5px;
+}
+
+
+/* File Drop Widget */
+FileDropWidget {
+	border-radius: 8px;
+    border: 2px dashed {{ neutral.neutral_200 }};
+    background-color: transparent;
+}
+
+FileDropWidget:hover {
+    border-color: {{ neutral.neutral_300 }};
+    background-color: {{ neutral.neutral_200 }};
+}
+
+FileDropWidget[dragActive="true"] {
+    border-color: {{ accent.accent_100 }};
+    background-color: {{ accent.accent_700 }};
+}
+
+FileDropWidget QLabel#fileDropLabel {
+	font-size: 16px;
+    color: {{ neutral.neutral_500 }};
+    background-color: transparent;
+}
+
+FileDropWidget:hover QLabel#fileDropLabel {
+    color: {{ neutral.neutral_600 }};
+}
+
+FileDropWidget[dragActive="true"] QLabel#fileDropLabel {
+	font-size: 16px;
+	color: {{ accent.accent_300 }};
+    background-color: transparent;
+}
+
+FileDropWidget QLabel#fileDropSubLabel {
+	font-size: 12px;
+	color: {{ neutral.neutral_400 }};
+    background-color: transparent;
+}
+
+FileDropWidget:hover QLabel#fileDropSubLabel {
+    color: {{ neutral.neutral_500 }};
+}
+
+FileDropWidget[dragActive="true"] QLabel#fileDropSubLabel {
+	font-size: 12px;
+	color: {{ accent.accent_400 }};
+    background-color: transparent;
+}
+
+/* File Widget */
+#FileWidgetContainer {
+    background-color: {{ neutral.neutral_100 }};
+    border: 1px solid {{ neutral.neutral_200 }};
+    border-radius: 8px;
+}
+
+#FileWidgetContainer:hover {
+    border: 1px solid {{ neutral.neutral_250 }};
+}
+
+FileWidget QLabel#fileIconLabel {
+    font-size: 24pt;
+	background-color: transparent;
+}
+
+FileWidget QLabel#fileNameLabel {
+	font-size: 12pt;
+    color: {{ neutral.neutral_700 }};
+	background-color: transparent;
+}
+
+FileWidget QLabel#fileInfoLabel  {
+	font-size: 10pt;
+    color: {{ neutral.neutral_500 }};
+	background-color: transparent;
+}
+
+/* File Actions Frame */
+#fileActionsFrame {
+	border-radius: 8px;
+	border: 1px solid {{ neutral.neutral_250 }};
+	background-color: {{ neutral.neutral_100 }};
 }

@@ -7,6 +7,11 @@
     <file>light/arrow_create.svg</file>
     <file>light/arrow_default.svg</file>
     <file>light/arrow_hover.svg</file>
+    <file>light/attachment_blue.svg</file>
+    <file>light/attachment_gray.svg</file>
+    <file>light/attachment_green.svg</file>
+    <file>light/attachment_red.svg</file>
+    <file>light/attachment_yellow.svg</file>
     <file>light/back_clicked.svg</file>
     <file>light/back_default.svg</file>
     <file>light/back_disabled.svg</file>
@@ -37,6 +42,11 @@
     <file>light/document_default.svg</file>
     <file>light/document_disabled.svg</file>
     <file>light/document_hover.svg</file>
+    <file>light/download_clicked.svg</file>
+    <file>light/download_default.svg</file>
+    <file>light/download_disabled.svg</file>
+    <file>light/download_hover.svg</file>
+    <file>light/download_primary_default.svg</file>
     <file>light/duplicate_clicked.svg</file>
     <file>light/duplicate_default.svg</file>
     <file>light/duplicate_disabled.svg</file>
@@ -64,11 +74,19 @@
     <file>light/mail_default.svg</file>
     <file>light/mail_disabled.svg</file>
     <file>light/mail_hover.svg</file>
+    <file>light/menu_clicked.svg</file>
+    <file>light/menu_default.svg</file>
+    <file>light/menu_disabled.svg</file>
+    <file>light/menu_hover.svg</file>
     <file>light/notification_error.svg</file>
     <file>light/notification_info.svg</file>
     <file>light/notification_success.svg</file>
     <file>light/notification_warning.svg</file>
     <file>light/notification_warning_red.svg</file>
+    <file>light/open_clicked.svg</file>
+    <file>light/open_default.svg</file>
+    <file>light/open_disabled.svg</file>
+    <file>light/open_hover.svg</file>
     <file>light/pages_clicked.svg</file>
     <file>light/pages_default.svg</file>
     <file>light/pages_disabled.svg</file>
@@ -114,10 +132,14 @@
     <file>light/theme_default.svg</file>
     <file>light/theme_disabled.svg</file>
     <file>light/theme_hover.svg</file>
-    <file>light/trash_clicked.svg</file>
-    <file>light/trash_default.svg</file>
-    <file>light/trash_disabled.svg</file>
-    <file>light/trash_hover.svg</file>
+    <file>light/trash_noframe_clicked.svg</file>
+    <file>light/trash_noframe_default.svg</file>
+    <file>light/trash_noframe_disabled.svg</file>
+    <file>light/trash_noframe_hover.svg</file>
+    <file>light/trash_tertiary_clicked.svg</file>
+    <file>light/trash_tertiary_default.svg</file>
+    <file>light/trash_tertiary_disabled.svg</file>
+    <file>light/trash_tertiary_hover.svg</file>
     <file>light/update_clicked.svg</file>
     <file>light/update_default.svg</file>
     <file>light/update_disabled.svg</file>
@@ -137,6 +159,11 @@
     <file>dark/arrow_create.svg</file>
     <file>dark/arrow_default.svg</file>
     <file>dark/arrow_hover.svg</file>
+    <file>dark/attachment_blue.svg</file>
+    <file>dark/attachment_gray.svg</file>
+    <file>dark/attachment_green.svg</file>
+    <file>dark/attachment_red.svg</file>
+    <file>dark/attachment_yellow.svg</file>
     <file>dark/back_clicked.svg</file>
     <file>dark/back_default.svg</file>
     <file>dark/back_disabled.svg</file>
@@ -168,6 +195,12 @@
     <file>dark/document_default.svg</file>
     <file>dark/document_disabled.svg</file>
     <file>dark/document_hover.svg</file>
+    <file>dark/download_clicked.svg</file>
+    <file>dark/download_default.svg</file>
+    <file>dark/download_disabled.svg</file>
+    <file>dark/download_hover.svg</file>
+    <file>dark/download_primary_default.svg</file>
+    <file>dark/download_primary_disabled.svg</file>
     <file>dark/duplicate_clicked.svg</file>
     <file>dark/duplicate_default.svg</file>
     <file>dark/duplicate_disabled.svg</file>
@@ -195,11 +228,19 @@
     <file>dark/mail_default.svg</file>
     <file>dark/mail_disabled.svg</file>
     <file>dark/mail_hover.svg</file>
+    <file>dark/menu_clicked.svg</file>
+    <file>dark/menu_default.svg</file>
+    <file>dark/menu_disabled.svg</file>
+    <file>dark/menu_hover.svg</file>
     <file>dark/notification_error.svg</file>
     <file>dark/notification_info.svg</file>
     <file>dark/notification_success.svg</file>
     <file>dark/notification_warning.svg</file>
     <file>dark/notification_warning_red.svg</file>
+    <file>dark/open_clicked.svg</file>
+    <file>dark/open_default.svg</file>
+    <file>dark/open_disabled.svg</file>
+    <file>dark/open_hover.svg</file>
     <file>dark/pages_clicked.svg</file>
     <file>dark/pages_default.svg</file>
     <file>dark/pages_disabled.svg</file>
@@ -245,10 +286,14 @@
     <file>dark/theme_default.svg</file>
     <file>dark/theme_disabled.svg</file>
     <file>dark/theme_hover.svg</file>
-    <file>dark/trash_clicked.svg</file>
-    <file>dark/trash_default.svg</file>
-    <file>dark/trash_disabled.svg</file>
-    <file>dark/trash_hover.svg</file>
+    <file>dark/trash_noframe_clicked.svg</file>
+    <file>dark/trash_noframe_default.svg</file>
+    <file>dark/trash_noframe_disabled.svg</file>
+    <file>dark/trash_noframe_hover.svg</file>
+    <file>dark/trash_tertiary_clicked.svg</file>
+    <file>dark/trash_tertiary_default.svg</file>
+    <file>dark/trash_tertiary_disabled.svg</file>
+    <file>dark/trash_tertiary_hover.svg</file>
     <file>dark/update_clicked.svg</file>
     <file>dark/update_default.svg</file>
     <file>dark/update_disabled.svg</file>

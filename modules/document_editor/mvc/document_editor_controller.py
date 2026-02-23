@@ -1,13 +1,20 @@
 import re
 import logging
+import shutil
+import os
+import sys
+import subprocess
+import tempfile
 from pathlib import Path
 from PyQt5.QtGui import QTextDocument
-from PyQt5.QtWidgets import QFileDialog, QDialog
+from PyQt5.QtWidgets import QFileDialog, QDialog, QMessageBox
+from PyQt5.QtCore import QObject
 from PyQt5.QtPrintSupport import QPrinter, QPrintDialog
 
 from utils import NotificationService
 from utils.error_messages import get_friendly_error_message
 from utils.delete_info_modal import DeleteInfoDialog
+from core.worker import APIWorker
 
 
 
@@ -16,7 +23,7 @@ logger.setLevel(logging.INFO)
 
 
 
-class DocumentEditorController:
+class DocumentEditorController(QObject):
     """
     Controller for the document editor window.
 
@@ -29,10 +36,12 @@ class DocumentEditorController:
             view, 
             window,
     ): 
+        super().__init__()
         self.mode = mode
         self.model = model
         self.view = view
         self.window = window
+        self.active_workers = set()
 
         # Setup Notification Service
         NotificationService().set_main_window(self.window)
@@ -244,6 +253,205 @@ class DocumentEditorController:
         self._on_table_selection_changed()
 
 
+    def _on_files_dropped(self, files: list) -> None:
+        """Handles the files dropped event."""
+        self.view.switch_to_files_tab()
+        
+        blocked_extensions = {
+            "exe", "dll", "bat", "cmd", "sh", "js", "vbs", "scr", 
+            "com", "pif", "jar", "app", "php", "pl", "py", "rb", 
+            "asp", "aspx", "jsp", "cgi", "ps1", "reg", "msi", "wsf",
+            "hta", "cpl", "msc", "lnk", "inf"
+        }
+        
+        max_size = 50 * 1024 * 1024 # 50 MB
+        
+        blocked_files = []
+        oversized_files = []
+        valid_files = []
+
+        for file_path in files:
+            path_obj = Path(file_path)
+            ext = path_obj.suffix.lower().lstrip('.')
+            
+            if ext in blocked_extensions:
+                blocked_files.append(path_obj.name)
+                continue
+            
+            try:
+                if path_obj.stat().st_size > max_size:
+                    oversized_files.append(path_obj.name)
+                    continue
+            except OSError:
+                pass
+
+            valid_files.append(file_path)
+        
+        if blocked_files:
+            msg = "Файлы с таким расширением нельзя загрузить:\n" + "\n".join(blocked_files[:5])
+            if len(blocked_files) > 5:
+                msg += f"\n...и еще {len(blocked_files) - 5}"
+            NotificationService().show_toast("error", "Ошибка загрузки", msg)
+
+        if oversized_files:
+            msg = "Файлы превышают 50 МБ:\n" + "\n".join(oversized_files[:5])
+            if len(oversized_files) > 5:
+                msg += f"\n...и еще {len(oversized_files) - 5}"
+            NotificationService().show_toast("error", "Ошибка загрузки", msg)
+
+        for file_path in valid_files:
+            self.model.add_pending_file(file_path)
+            self.view.add_file_widget(file_path)
+        
+        if valid_files:
+            self._on_document_data_changed()
+
+
+    def _on_drag_drop_area_clicked(self) -> None:
+        """Handles the drag and drop area click event."""
+        files, _ = QFileDialog.getOpenFileNames(
+            self.window,
+            "Выберите файлы",
+            str(Path.home()),
+            "All Files (*)"
+        )
+        if files:
+            self._on_files_dropped(files)
+
+    def _on_file_download_requested(self, file_identifier: object) -> None:
+        """Handles file download request."""
+        if isinstance(file_identifier, int):
+            # Remote file (ID)
+            filename = "downloaded_file"
+            # Try to find filename in document_data
+            files = self.model.document_data.get("files", [])
+            for f in files:
+                if f.get("id") == file_identifier:
+                    filename = f.get("filename", filename)
+                    break
+            
+            save_path, _ = QFileDialog.getSaveFileName(
+                self.window,
+                "Сохранить файл",
+                str(Path.home() / filename),
+                "All Files (*)"
+            )
+            
+            if save_path:
+                self.window.setEnabled(False)
+                
+                worker = APIWorker(
+                    self.model.download_file, 
+                    file_id=file_identifier, 
+                    save_path=save_path
+                )
+                worker.finished.connect(lambda _: self._on_download_finished(worker))
+                worker.error.connect(lambda e: self._on_download_error(e, worker))
+                self.active_workers.add(worker)
+                worker.start()
+        
+        elif isinstance(file_identifier, str):
+            # Local file (path string) - pending upload
+            src_path = Path(file_identifier)
+            if src_path.exists():
+                save_path, _ = QFileDialog.getSaveFileName(
+                    self.window,
+                    "Сохранить файл",
+                    str(Path.home() / src_path.name),
+                    "All Files (*)"
+                )
+                if save_path:
+                    try:
+                        shutil.copy2(src_path, save_path)
+                        NotificationService().show_toast("success", "Скачивание", "Файл сохранен.")
+                    except Exception as e:
+                        NotificationService().show_toast("error", "Ошибка сохранения", str(e))
+            else:
+                 NotificationService().show_toast("error", "Ошибка", "Файл не найден на диске.")
+
+    def _on_file_open_requested(self, file_identifier: object) -> None:
+        """Handles file open request."""
+        if isinstance(file_identifier, int):
+            # Remote file (ID)
+            filename = "downloaded_file"
+            files = self.model.document_data.get("files", [])
+            for f in files:
+                if f.get("id") == file_identifier:
+                    filename = f.get("filename", filename)
+                    break
+            
+            # Create a subdirectory in temp to avoid clutter and collisions
+            temp_dir = Path(tempfile.gettempdir()) / "Documents Exp"
+            temp_dir.mkdir(parents=True, exist_ok=True)
+            save_path = str(Path(temp_dir) / filename)
+            
+            self.window.setEnabled(False)
+            
+            worker = APIWorker(
+                self.model.download_file, 
+                file_id=file_identifier, 
+                save_path=save_path
+            )
+            worker.finished.connect(lambda _: self._on_open_download_finished(save_path, worker))
+            worker.error.connect(lambda e: self._on_download_error(e, worker))
+            self.active_workers.add(worker)
+            worker.start()
+        
+        elif isinstance(file_identifier, str):
+            # Local file (path string)
+            self._open_local_file(file_identifier)
+
+    def _on_open_download_finished(self, file_path: str, worker: APIWorker) -> None:
+        if worker in self.active_workers:
+            self.active_workers.discard(worker)
+        self.window.setEnabled(True)
+        self._open_local_file(file_path)
+
+    def _open_local_file(self, file_path: str) -> None:
+        path = Path(file_path)
+        if not path.exists():
+             NotificationService().show_toast("error", "Ошибка", "Файл не найден на диске.")
+             return
+
+        try:
+            if sys.platform == "win32":
+                os.startfile(file_path)
+            elif sys.platform == "darwin":
+                subprocess.call(["open", file_path])
+            else:
+                subprocess.call(["xdg-open", file_path])
+        except Exception as e:
+            NotificationService().show_toast("error", "Ошибка открытия", f"Не удалось открыть файл: {e}")
+
+    def _on_download_finished(self, worker):
+        if worker in self.active_workers:
+            self.active_workers.discard(worker)
+        self.window.setEnabled(True)
+        NotificationService().show_toast("success", "Скачивание", "Файл успешно скачан.")
+
+    def _on_download_error(self, error, worker):
+        if worker in self.active_workers:
+            self.active_workers.discard(worker)
+        self.window.setEnabled(True)
+        msg = get_friendly_error_message(error)
+        NotificationService().show_toast("error", "Ошибка скачивания", msg)
+
+    def _on_file_widget_deleted(self, file_identifier: object) -> None:
+        """Handles the deletion of a file."""
+        if isinstance(file_identifier, int):
+             # Existing file (ID)
+            try:
+                self.model.delete_file(file_identifier)
+                self.view.remove_file_widget(file_identifier)
+                NotificationService().show_toast("success", "Файл удален", "Файл успешно удален.")
+            except Exception as e:
+                msg = get_friendly_error_message(e)
+                NotificationService().show_toast("error", "Ошибка удаления файла", msg)
+        else:
+            # Pending file (path string)
+            self.model.remove_pending_file(file_identifier)
+            self.view.remove_file_widget(file_identifier)
+
     def _on_delete_document_button_clicked(self) -> None:
         """Handles the delete document button click event."""
         dialog = DeleteInfoDialog(parent=self.window, info_type="document")
@@ -275,41 +483,71 @@ class DocumentEditorController:
     
     def _on_save_button_clicked(self) -> None:
         """Handles the save button click event."""
-        try:
-            data = self.view.get_document_data()
-            is_creation = self.model.document_data.get("id") is None
+        data = self.view.get_document_data()
+        self.window.setEnabled(False)
+        
+        worker = APIWorker(self._save_task, data=data)
+        worker.finished.connect(self._on_save_finished)
+        worker.error.connect(self._on_save_error)
+        self.active_workers.add(worker)
+        worker.start()
 
-            self.model.save_document(data=data)
+    def _save_task(self, data: dict) -> tuple[bool, dict]:
+        """Background task for saving document and uploading files."""
+        is_creation = self.model.document_data.get("id") is None
+        
+        self.model.save_document(data=data)
+        
+        if self.model.pending_files:
+            self.model.upload_pending_files()
             
-            doc_name = data.get("name", "")
-            doc_code = data.get("code", "")
-            if is_creation:
-                logger.info(f"Document created: {doc_name} ({doc_code})")
-            else:
-                logger.info(f"Document updated: {doc_name} ({doc_code})")
+        return is_creation, data
 
-            self.window.document_saved.emit()
+    def _on_save_finished(self, result: tuple[bool, dict]) -> None:
+        is_creation, data = result
+        
+        worker = self.sender()
+        if worker in self.active_workers:
+            self.active_workers.discard(worker)
             
-            if self.window.parent():
-                NotificationService().set_main_window(self.window.parent())
+        self.window.setEnabled(True)
+        
+        doc_name = data.get("name", "")
+        doc_code = data.get("code", "")
+        
+        if is_creation:
+            logger.info(f"Document created: {doc_name} ({doc_code})")
+        else:
+            logger.info(f"Document updated: {doc_name} ({doc_code})")
 
-            self.window.close()
+        self.window.document_saved.emit()
+        
+        if self.window.parent():
+            NotificationService().set_main_window(self.window.parent())
+
+        self.window.close()
+        
+        if is_creation:
+            NotificationService().show_toast(
+                notification_type="success",
+                title="Создано",
+                message="Документ успешно создан."
+            )
+        else:
+            NotificationService().show_toast(
+                notification_type="success",
+                title="Сохранено",
+                message="Документ успешно сохранен."
+            )
+
+    def _on_save_error(self, error: Exception) -> None:
+        worker = self.sender()
+        if worker in self.active_workers:
+            self.active_workers.discard(worker)
             
-            if is_creation:
-                NotificationService().show_toast(
-                    notification_type="success",
-                    title="Создано",
-                    message="Документ успешно создан."
-                )
-            else:
-                NotificationService().show_toast(
-                    notification_type="success",
-                    title="Сохранено",
-                    message="Документ успешно сохранен."
-                )
-        except Exception as e:
-            msg = get_friendly_error_message(e)
-            NotificationService().show_toast("error", "Ошибка сохранения", msg)
+        self.window.setEnabled(True)
+        msg = get_friendly_error_message(error)
+        NotificationService().show_toast("error", "Ошибка сохранения", msg)
 
 
     def _on_cancel_button_clicked(self) -> None:
@@ -331,15 +569,18 @@ class DocumentEditorController:
         self._fill_document_tags()
         self._fill_document_data()
         self._fill_pages_table()
+        self._fill_files_list()
 
 
     def _setup_connections(self) -> None:
         """Sets up signal-slot connections."""
+        # Lineedits
         self.view.code_lineedit_text_changed(handler=self._on_document_data_changed)
         self.view.name_lineedit_text_changed(handler=self._on_document_data_changed)
         self.view.tags_lineedit_text_changed(handler=self._on_document_data_changed)
         self.view.generate_tags_button_clicked(handler=self._generate_tags)
 
+        # Toolbar
         self.view.toolbar_add_page_button_clicked(handler=self._on_add_page_button_clicked)
         self.view.toolbar_duplicate_page_button_clicked(handler=self._on_duplicate_page_button_clicked)
         self.view.toolbar_print_button_clicked(handler=self._on_print_button_clicked)
@@ -347,11 +588,22 @@ class DocumentEditorController:
         self.view.toolbar_export_button_clicked(handler=self._on_export_button_clicked)
         self.view.toolbar_delete_page_button_clicked(handler=self._on_delete_page_button_clicked)
 
+        # Pages table
         self.view.pages_table_item_changed(handler=self._on_document_data_changed)
         self.view.pages_table_row_moved(handler=self._on_document_data_changed)
         self.view.pages_table_selection_changed(handler=self._on_table_selection_changed)
         self.view.pages_table_item_changed(handler=self._on_table_selection_changed)
 
+        # Files
+        self.view.file_drop_widget_clicked(handler=self._on_drag_drop_area_clicked)
+        self.view.file_deleted(handler=self._on_file_widget_deleted)
+        self.view.file_download_requested(handler=self._on_file_download_requested)
+        self.view.file_open_requested(handler=self._on_file_open_requested)
+        self.window.files_dropped.connect(self._on_files_dropped)
+        self.window.drag_entered.connect(lambda: self.view.set_file_drop_active(True))
+        self.window.drag_left.connect(lambda: self.view.set_file_drop_active(False))
+
+        # Buttons
         self.view.delete_document_button_clicked(handler=self._on_delete_document_button_clicked)
         self.view.cancel_button_clicked(handler=self._on_cancel_button_clicked)
         self.view.save_button_clicked(handler=self._on_save_button_clicked)
@@ -394,6 +646,13 @@ class DocumentEditorController:
 
         # Update delete button state
         self._on_table_selection_changed()
+
+
+    def _fill_files_list(self) -> None:
+        """Fills the files list with data."""
+        files = self.model.document_data.get("files", [])
+        for file in files:
+            self.view.add_file_widget(file)
 
 
     def _update_generate_button_state(self):

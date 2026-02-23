@@ -14,3 +14,6 @@ from .menu import MenuItemWidget, ThemeAwareMenu
 from .treeview import SidebarBlock, SidebarItem, ROLE_ID
 from .tags import DeletableTag, Tag, FilterTag
 from .hints import PasswordHint
+from .progress_bar import ProgressBar
+from .file_drop import FileDropWidget
+from .files import FileWidget, FileListWidget

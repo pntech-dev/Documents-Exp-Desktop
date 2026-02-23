@@ -21,6 +21,7 @@ class DocumentEditorModel:
         self.category_id = category_id
         self.document_data = document_data if document_data is not None else {}
         self.pages = pages if pages is not None else []
+        self.pending_files = []
 
         self.config_data = load_config()
 
@@ -122,6 +123,49 @@ class DocumentEditorModel:
         doc.save(str(full_path))
 
 
+    def download_file(self, file_id: int, save_path: str) -> None:
+        """Downloads a file."""
+        self._make_authorized_request(self.api.download_file, file_id=file_id, destination_path=save_path)
+
+
+    def upload_file(self, file_path: str) -> dict:
+        """Uploads a file to the current document."""
+        doc_id = self.document_data.get("id")
+        if doc_id is None:
+            raise ValueError("Сначала сохраните документ перед загрузкой файлов.")
+            
+        return self._make_authorized_request(self.api.upload_file, document_id=doc_id, file_path=file_path)
+
+
+    def add_pending_file(self, file_path: str) -> None:
+        """Adds a file to the pending upload list."""
+        if file_path not in self.pending_files:
+            self.pending_files.append(file_path)
+
+    def remove_pending_file(self, file_path: str) -> None:
+        """Removes a file from the pending upload list."""
+        if file_path in self.pending_files:
+            self.pending_files.remove(file_path)
+
+
+    def upload_pending_files(self) -> None:
+        """Uploads all pending files."""
+        errors = []
+        for file_path in list(self.pending_files):
+            try:
+                self.upload_file(file_path)
+                self.pending_files.remove(file_path)
+            except Exception as e:
+                errors.append(f"Не удалось загрузить {Path(file_path).name}: {e}")
+        
+        if errors:
+            raise Exception("\n".join(errors))
+
+    def delete_file(self, file_id: int) -> None:
+        """Deletes a file from the document."""
+        self._make_authorized_request(self.api.delete_file, file_id=file_id)
+
+
     def delete_document(self) -> None:
         self._make_authorized_request(
             self.api.delete_document,
@@ -133,7 +177,8 @@ class DocumentEditorModel:
         doc_id = self.document_data.get("id")
         if doc_id is None:
             data["category_id"] = self.category_id
-            self._make_authorized_request(self.api.create_document, data=data)
+            response = self._make_authorized_request(self.api.create_document, data=data)
+            self.document_data = response
         else:
             self._make_authorized_request(self.api.update_document, document_id=doc_id, data=data)
 

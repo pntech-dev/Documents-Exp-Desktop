@@ -506,30 +506,35 @@ DeletableTag QPushButton#tagCloseButton:hover {
 QFrame#emailConfirmContainer {
     border-radius: 8px;
     background-color: #FFFFFF;
+	border: 1px solid #E6E6E6;
 }
 
 /* Create Department Window */
 QFrame#createDepartmentContainer {
     border-radius: 8px;
     background-color: #FFFFFF;
+	border: 1px solid #E6E6E6;
 }
 
 /* Edit Department Window */
 QFrame#editDepartmentContainer {
     border-radius: 8px;
     background-color: #FFFFFF;
+	border: 1px solid #E6E6E6;
 }
 
 /* Create Category Window */
 QFrame#createCategoryContainer {
     border-radius: 8px;
     background-color: #FFFFFF;
+	border: 1px solid #E6E6E6;
 }
 
 /* Edit Category Window */
 QFrame#editCategoryContainer {
     border-radius: 8px;
     background-color: #FFFFFF;
+	border: 1px solid #E6E6E6;
 }
 
 /* Editor Window */
@@ -583,6 +588,27 @@ QFrame#deleteInfoContainer {
 
 #deleteInfoContainer #text_label {
     color: #4D4D4D;
+}
+
+/* Update Progress Window */
+#updateProgressContainer {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    border: 1px solid #E6E6E6;
+}
+
+/* Update Confirm Window */
+#updateConfirmContainer {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    border: 1px solid #E6E6E6;
+}
+
+/* Install Confirm Window */
+#installConfirmContainer {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    border: 1px solid #E6E6E6;
 }
 
 
@@ -886,4 +912,151 @@ QLabel#passwordHintLabel {
 
 QLabel#passwordHintLabel[valid="true"] {
     color: #40BF60;
+}
+
+
+/* Tab Widget */
+QTabWidget {
+    background-color: transparent;
+}
+
+QTabWidget::pane {
+    background-color: #FFFFFF;
+    top: -1px;
+	border: 1px solid #E6E6E6;
+    border-radius: 8px;
+	border-top-left-radius: 0px;
+}
+
+QTabWidget QStackedWidget,
+QTabWidget QStackedWidget > QWidget {
+    background-color: transparent;
+}
+
+QTabBar::tab {
+    padding: 8px 16px;
+
+    border: none;
+	border-bottom: 1px solid #E6E6E6;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+	
+	color: #808080;
+	background-color: #F2F2F2;
+}
+
+QTabBar::tab:hover {
+    color: #666666;
+    background-color: #E6E6E6;
+}
+
+QTabBar::tab:selected {
+    color: #4D4D4D;
+    background-color: #FFFFFF;
+
+    border: 1px solid #E6E6E6;
+    border-bottom: 1px solid #FFFFFF;
+}
+
+
+/* Progress Bar */
+ProgressBar {
+    border: 1px solid #E6E6E6;
+    border-radius: 6px;
+    text-align: center;
+    background-color: #F2F2F2;
+}
+
+ProgressBar::chunk {
+    background-color: #CC3333;
+    border-radius: 5px;
+}
+
+
+/* File Drop Widget */
+FileDropWidget {
+	border-radius: 8px;
+    border: 2px dashed #E6E6E6;
+    background-color: transparent;
+}
+
+FileDropWidget:hover {
+    border-color: #CCCCCC;
+    background-color: #FAFAFA;
+}
+
+FileDropWidget[dragActive="true"] {
+    border-color: #CC3333;
+    background-color: #F5D6D6;
+}
+
+FileDropWidget QLabel#fileDropLabel {
+	font-size: 16px;
+	color: #808080;
+    background-color: transparent;
+}
+
+FileDropWidget:hover QLabel#fileDropLabel {
+    color: #666666;
+}
+
+FileDropWidget[dragActive="true"] QLabel#fileDropLabel {
+	font-size: 16px;
+	color: #7A1F1F;
+    background-color: transparent;
+}
+
+FileDropWidget QLabel#fileDropSubLabel {
+	font-size: 12px;
+	color: #999999;
+    background-color: transparent;
+}
+
+FileDropWidget:hover QLabel#fileDropSubLabel {
+    color: #808080;
+}
+
+FileDropWidget[dragActive="true"] QLabel#fileDropSubLabel {
+	font-size: 12px;
+	color: #A32929;
+    background-color: transparent;
+}
+
+/* File Widget */
+#FileWidgetContainer {
+    background-color: #FFFFFF;
+    border: 1px solid #E6E6E6;
+    border-radius: 8px;
+}
+
+#FileWidgetContainer:hover {
+    border: 1px solid #CCCCCC;
+}
+
+FileWidget QLabel#fileNameLabel {
+    font-size: 12pt;
+	color: #1A1A1A;
+	background-color: transparent;
+}
+
+FileWidget QLabel#fileIconLabel {
+    font-size: 24pt;
+	background-color: transparent;
+}
+
+FileWidget QPushButton#fileDeleteButton {
+    background-color: transparent;
+    border: none;
+    color: #999999;
+    font-size: 14pt;
+}
+
+FileWidget QPushButton#fileDeleteButton:hover {
+    color: #A33329;
+}
+/* File Actions Frame */
+#fileActionsFrame {
+	border-radius: 8px;
+    border: 1px solid #CCCCCC;
+	background-color: #FFFFFF;
 }
