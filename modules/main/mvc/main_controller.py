@@ -99,6 +99,8 @@ class MainController(QObject):
         # If empty, update immediately without delay
         if not search_text:
             self.search_timer.stop()
+            # Invalidate any in-flight search worker so that if it finishes
+            # after _update_documents_list it won't overwrite the table.
             self.current_search_worker = None
             self.search_results_all = []
             self._update_documents_list()
@@ -691,8 +693,13 @@ class MainController(QObject):
         # Ignore results from stale workers (if a new search started)
         if self.sender() != self.current_search_worker:
             return
-            
+
+        # If the user cleared the search field while the worker was running,
+        # discard the result — _update_documents_list already took over.
         search_text = self.view.get_search_text()
+        if not search_text:
+            return
+
         tags = re.findall(r'@([^\s]+)', search_text)
         self.view.set_active_search_tags(tags)
 
@@ -915,6 +922,7 @@ class MainController(QObject):
             return
 
         self.is_loading = False
+        self.current_load_worker = None
 
         # Prevent updating UI if search is active (stale request)
         if self.view.get_search_text():
