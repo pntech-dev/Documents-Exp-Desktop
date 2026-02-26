@@ -65,10 +65,14 @@ class MainController(QObject):
         self.is_updating_data = False
 
         # Pagination state
-        self.limit = 100
+        self.limit = 5000
         self.offset = 0
         self.is_loading = False
         self.has_more = True
+        self.search_results_all: list = []  # Full search results for client-side pagination
+
+        # Chunk loading for large lists to prevent UI freezing.
+        self.pending_documents_to_add = []
 
         # Search debounce timer
         self.search_timer = QTimer()
@@ -95,7 +99,10 @@ class MainController(QObject):
         # If empty, update immediately without delay
         if not search_text:
             self.search_timer.stop()
+            # Invalidate any in-flight search worker so that if it finishes
+            # after _update_documents_list it won't overwrite the table.
             self.current_search_worker = None
+            self.search_results_all = []
             self._update_documents_list()
             return
         
@@ -604,17 +611,30 @@ class MainController(QObject):
     
     def _on_table_scroll(self, value: int) -> None:
         """Handles table scroll to load more data."""
-        # Prevent double load on clear, if list is empty, or if searching
-        # (Search results are not paginated via infinite scroll in this implementation)
-        if len(self.current_documents) == 0 or self.view.get_search_text():
+        if len(self.current_documents) == 0:
             return
 
         scrollbar = self.view.ui.tableView.verticalScrollBar()
+        at_bottom = value >= scrollbar.maximum() - 20
 
-        # Load more if scrolled to bottom (within 20px)
-        # Using a pixel threshold is safer than percentage for large lists
-        if value >= scrollbar.maximum() - 20 and not self.is_loading and self.has_more:
-             self._load_more_documents()
+        if not at_bottom:
+            return
+
+        if self.view.get_search_text():
+            # Search results are held fully in memory — paginate client-side
+            self._load_more_search_results()
+        elif not self.is_loading and self.has_more:
+            self._load_more_documents()
+
+    def _load_more_search_results(self) -> None:
+        """Appends the next batch of search results from the in-memory cache."""
+        already_shown = len(self.current_documents)
+        remaining = self.search_results_all[already_shown:]
+        if not remaining:
+            return
+        batch = remaining[:100]
+        self.current_documents.extend(batch)
+        self.view.append_documents_table(batch)
 
     
     def _search_data_task(
@@ -643,60 +663,27 @@ class MainController(QObject):
             filters=filters
         )
 
-        # Optimization: Create a lookup map for documents
-        docs_map = {
-            doc["id"]: doc 
-            for doc in current_docs 
-            if not doc.get("is_page")
-        } 
-        
         # Handle API response (list or dict)
         results_list = search_result if isinstance(
             search_result, list
         ) else search_result.get("result", [])
 
-        # Identify and fetch missing parent documents
-        missing_doc_ids = set()
-        for result in results_list:
-            if not result.get("category_id"): # It's a page
-                doc_id = result.get("document_id")
-                if doc_id and doc_id not in docs_map:
-                    missing_doc_ids.add(doc_id)
-        
-        for doc_id in missing_doc_ids:
-            try:
-                doc = self.model.get_document(doc_id)
-                if doc: docs_map[doc_id] = doc
-            except Exception: pass
-
+        # API now returns document_code directly in each page result —
+        # no need to fetch parent documents separately.
         data = []
         for result in results_list:
             if result.get("category_id") is not None:
+                # Regular document
                 data.append(result)
             else:
-                # Fast lookup
-                document = docs_map.get(result.get("document_id"), {})
-                
-                # Try to get code from loaded documents, or fallback to result data
-                code = document.get("code")
-                if not code:
-                    code = result.get("document_code")
-                
-                if not code:
-                    doc_obj = result.get("document")
-                    if isinstance(doc_obj, dict):
-                        code = doc_obj.get("code")
-                
-                result["code"] = code if code else ""
-                
-                name = result.get('name') or ""
-                designation = result.get('designation') or ""
+                # Page — API provides document_code directly
+                result["code"] = result.get("document_code") or ""
+                name = result.get("name") or ""
+                designation = result.get("designation") or ""
                 result["name"] = f"{name} ({designation})"
                 result["is_page"] = True
-                
                 data.append(result)
-        
-        # Natural sort
+
         data.sort(key=self._get_natural_sort_key)
         return data
 
@@ -706,21 +693,32 @@ class MainController(QObject):
         # Ignore results from stale workers (if a new search started)
         if self.sender() != self.current_search_worker:
             return
-            
+
+        # If the user cleared the search field while the worker was running,
+        # discard the result — _update_documents_list already took over.
         search_text = self.view.get_search_text()
+        if not search_text:
+            return
+
         tags = re.findall(r'@([^\s]+)', search_text)
         self.view.set_active_search_tags(tags)
 
-        # Limit results to prevent UI freeze on large datasets
         total_count = len(data)
-        if total_count > 100:
-            data = data[:100]
 
-        self.current_documents = data
-        self.view.update_documents_table(documents=data)
+        # Store full results for client-side pagination on scroll
+        self.search_results_all = data
+
+        # Render only the first batch to keep the UI responsive,
+        # using the same chunked approach as _on_load_more_finished
+        # to avoid UI freezing and visual flicker.
+        first_batch = data[:100]
+        self.current_documents = list(first_batch)
+        self.view.clear_documents_table()
+        self.pending_documents_to_add = list(first_batch)
+        QTimer.singleShot(0, self._add_document_chunk)
         self.view.set_finded_counter(total_count)
         self._add_popular_tags()
-        self.view.set_export_print_enabled(len(self.current_documents) > 0)
+        self.view.set_export_print_enabled(total_count > 0)
 
 
     def _on_search_error(self, error: Exception) -> None:
@@ -918,45 +916,53 @@ class MainController(QObject):
             self.is_loading = False
             logger.error(f"Failed to start load worker: {e}", exc_info=True)
             self._handle_error(e, "Ошибка загрузки")
-
+    
     def _on_load_more_finished(self, docs: list) -> None:
         if self.sender() != self.current_load_worker:
             return
 
         self.is_loading = False
-        
+        self.current_load_worker = None
+
         # Prevent updating UI if search is active (stale request)
         if self.view.get_search_text():
             return
 
-        if not docs:
-            self.has_more = False
-            return
+        # With a large limit, we assume we've fetched all documents.
+        # This allows for correct client-side natural sorting.
+        self.has_more = False
 
-        # Advance offset regardless of duplicates to avoid getting stuck on the same page
-        self.offset += self.limit
+        # We are replacing the list, not extending it.
+        self.current_documents = docs
+        self.current_documents.sort(key=self._get_natural_sort_key)
 
-        if len(docs) < self.limit:
-            self.has_more = False
+        # Instead of one large, blocking update, we add the data in chunks
+        # to keep the UI responsive.
+        self.view.clear_documents_table()
+        self.pending_documents_to_add = list(self.current_documents)
+        # Start the chunked update. Use a single shot timer to yield to the event loop.
+        QTimer.singleShot(0, self._add_document_chunk)
 
-        existing_ids = {doc["id"] for doc in self.current_documents}
-        new_docs = [doc for doc in docs if doc["id"] not in existing_ids]
-        new_docs.sort(key=self._get_natural_sort_key)
-
-        if not new_docs:
-            # If we received data but it was all duplicates, try loading more if needed
-            if self.has_more and self.view.ui.tableView.verticalScrollBar().maximum() <= 0:
-                QTimer.singleShot(0, self._load_more_documents)
-            return
-        
-        self.current_documents.extend(new_docs)
-        self.view.append_documents_table(new_docs)
         self.view.set_finded_counter(len(self.current_documents))
         self._add_popular_tags()
         self.view.set_export_print_enabled(len(self.current_documents) > 0)
 
-        if self.has_more and self.view.ui.tableView.verticalScrollBar().maximum() <= 0:
-            QTimer.singleShot(0, self._load_more_documents)
+    def _add_document_chunk(self):
+        """Adds a chunk of documents to the table view to avoid freezing the UI."""
+        if not self.pending_documents_to_add:
+            return
+            
+        chunk_size = 100
+        chunk = self.pending_documents_to_add[:chunk_size]
+        self.pending_documents_to_add = self.pending_documents_to_add[chunk_size:]
+        
+        self.view.append_documents_table(chunk)
+        
+        # If there are more documents, schedule the next chunk
+        if self.pending_documents_to_add:
+            # Use a single shot timer with 0ms timeout to yield to the event loop,
+            # allowing the UI to repaint before adding the next chunk.
+            QTimer.singleShot(0, self._add_document_chunk)
 
     def _on_load_more_error(self, error: Exception) -> None:
         if self.sender() != self.current_load_worker:
@@ -1020,28 +1026,36 @@ class MainController(QObject):
 
     def _get_natural_sort_key(self, doc: dict) -> list:
         """
-        Generates a sort key for natural sorting.
+        Generates a sort key for natural (human-friendly) sorting.
+
+        Correctly handles codes like '03/1КД', '01КД-03КД', '05КД' by
+        splitting on both digits and non-digit characters (including
+        separators such as '/', '-', '.') so that numeric segments are
+        compared numerically and text segments lexicographically.
 
         Args:
             doc (dict): The document dictionary.
 
         Returns:
-            list: A list representing the sort key.
+            list: A list of tuples representing the sort key.
         """
         code = str(doc.get("code") or "").strip()
-        
-        # Empty codes at the end
+
+        # Empty codes are sorted to the end
         if not code:
-            return [1]
-            
-        # Split into text and number parts
-        parts = [
-            int(c) if c.isdigit() else c.lower() 
-            for c in re.split(r'(\d+)', code)
-        ]
-        
-        # Non-empty codes start with 0
-        return [0] + parts
+            return [(1, 0, "")]
+
+        parts = []
+        for part in re.findall(r'\d+|[^\d]+', code):
+            if part.isdigit():
+                # (type=0 → numbers first, numeric value, empty string as tiebreaker)
+                parts.append((0, int(part), ""))
+            else:
+                # (type=1 → strings after numbers, 0 as tiebreaker, lowercased value)
+                parts.append((1, 0, part.lower()))
+
+        # Prepend marker so non-empty codes sort before empty ones
+        return [(0, 0, "")] + parts
     
     def _add_popular_tags(self) -> None:
         """Calculates and updates tag statistics for current documents."""

@@ -6,12 +6,8 @@ APP_NAME = "Documents Exp"
 def get_app_root() -> Path:
     """Returns the root directory of the application."""
     if getattr(sys, 'frozen', False):
-        # Running as compiled exe
-        if hasattr(sys, '_MEIPASS'):
-            return Path(sys._MEIPASS)
         return Path(sys.executable).parent
     else:
-        # Running from source: utils/.. -> root
         return Path(__file__).resolve().parent.parent
 
 def get_app_data_dir() -> Path:

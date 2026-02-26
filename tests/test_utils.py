@@ -23,12 +23,12 @@ class TestAppPaths:
 
 
     def test_get_app_root_frozen_meipass(self):
-        """Test get_app_root when running as PyInstaller onefile."""
-        fake_path = "/tmp/fake_meipass"
+        """Test get_app_root when running as compiled exe (onedir mode)."""
+        fake_executable = "/tmp/fake_app/Documents Exp.exe"
         with patch("utils.app_paths.sys") as mock_sys:
             mock_sys.frozen = True
-            mock_sys._MEIPASS = fake_path
-            assert get_app_root() == Path(fake_path)
+            mock_sys.executable = fake_executable
+            assert get_app_root() == Path(fake_executable).parent
 
 
     def test_get_app_root_frozen_onedir(self):
