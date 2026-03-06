@@ -133,6 +133,7 @@ class TestAuthController:
         """Test login success callback saves user and emits signal."""
         data = {"user": {"id": 1}}
         controller.view.login_page.get_auto_login_state.return_value = True
+        controller.model.save_user.return_value = 1
         
         # Mock signal
         mock_signal = Mock()
@@ -142,7 +143,7 @@ class TestAuthController:
         
         controller.model.save_user.assert_called_once_with(user_data=data, auto_login=True)
         controller.view.login_page.clear_lineedits.assert_called_once()
-        mock_signal.assert_called_once_with("auth")
+        mock_signal.assert_called_once_with("auth", 1)
 
 
     def test_signup_flow(self, controller):
