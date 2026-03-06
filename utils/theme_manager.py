@@ -37,6 +37,7 @@ class ThemeManager(QObject):
         """
         super().__init__()
 
+        self.settings_manager = None
         self.ui_config = self._load_ui_config()
 
         # If the config is empty, we don't do anything.
@@ -52,6 +53,10 @@ class ThemeManager(QObject):
         }
 
         self.current_theme_id = "0"  # The topic ID as a string
+
+    def set_settings_manager(self, manager) -> None:
+        """Sets the settings manager instance for saving theme settings."""
+        self.settings_manager = manager
 
     @property
     def notification_config(self) -> dict:
@@ -84,6 +89,10 @@ class ThemeManager(QObject):
                     return
 
             self._apply_theme()
+
+            # Save the theme setting if a settings manager is available
+            if self.settings_manager:
+                self.settings_manager.set_setting("theme", int(self.current_theme_id))
             
             self.themeChanged.emit(self.current_theme_id)
 
@@ -260,8 +269,4 @@ class ThemeManager(QObject):
             return False
         
 
-theme_manager_singleton = ThemeManager()
-
-
-def ThemeManagerInstance():
-    return theme_manager_singleton
+ThemeManagerInstance = ThemeManager()

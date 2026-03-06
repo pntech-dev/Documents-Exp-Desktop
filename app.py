@@ -18,6 +18,7 @@ from utils.error_messages import get_friendly_error_message
 from utils.app_paths import get_local_data_dir
 from core.updater import UpdateManager
 from utils.file_utils import load_config
+from utils.settings_manager import SettingsManager
 
 
 os.environ.setdefault("QT_ENABLE_HIGHDPI_SCALING", "1")
@@ -49,6 +50,8 @@ class Application:
 
         self.main_window = None
         self.auth_window = None
+        self.settings_manager = None
+        self.current_user_id = None
 
         # Setup logging
         log_dir = get_local_data_dir()
@@ -70,7 +73,7 @@ class Application:
         self.logger = logging.getLogger("App")
 
         # Set theme
-        self.theme_manager = ThemeManagerInstance()
+        self.theme_manager = ThemeManagerInstance
         self.theme_manager.switch_theme(theme=1)
 
         # Check for updates
@@ -84,6 +87,22 @@ class Application:
             # NotificationService is initialized in AuthWindow
             self.show_auth_window()
 
+    def init_user_services(self, user_id: int):
+        """Initializes user-specific services like SettingsManager."""
+        if not user_id or user_id == -1:
+            self.logger.warning("Cannot initialize user services: invalid user_id.")
+            # For guests or invalid IDs, we proceed without personalization.
+            self.theme_manager.switch_theme(theme=1) # Default to dark theme
+            return
+
+        self.current_user_id = user_id
+        self.settings_manager = SettingsManager(user_id=self.current_user_id)
+        self.theme_manager.set_settings_manager(self.settings_manager)
+        
+        # Apply theme from settings
+        theme_id = self.settings_manager.get_setting("theme", 1) # Default to dark
+        self.theme_manager.switch_theme(theme=theme_id)
+
     def check_for_updates(self):
         """Checks for updates using the GitHub repository specified in config."""
         config = load_config()
@@ -94,6 +113,12 @@ class Application:
 
     def attempt_auto_login(self):
         """Attempts to automatically log in the user using stored tokens."""
+        user_id = self.auth_model.get_last_logged_user_id()
+        if not user_id:
+            self.show_auth_window()
+            return
+        
+        self.current_user_id = user_id
         self.worker = APIWorker(self.auth_model.verify_token)
         self.worker.finished.connect(self.on_token_verified)
         self.worker.error.connect(self.on_token_verification_failed)
@@ -107,6 +132,8 @@ class Application:
         Args:
             data (dict): The data returned from the verification API.
         """
+        # Initialize user-specific services (settings, etc.)
+        self.init_user_services(self.current_user_id)
         # Token is valid, show the main window
         self.show_main_window(mode="auth")
 
@@ -167,7 +194,10 @@ class Application:
             mode (str): The mode to open the window in ('auth' or 'guest').
         """
         try:
-            self.main_window = MainWindow(mode=mode)
+            self.main_window = MainWindow(
+                mode=mode, 
+                settings_manager=self.settings_manager
+            )
             self.main_window.logout_requested.connect(self.on_logout_requested)
             self.main_window.showMaximized()
 
@@ -188,15 +218,15 @@ class Application:
             )
 
 
-    def on_login_successful(self, mode: str):
+    def on_login_successful(self, mode: str, user_id: int):
         """
         Handles successful login event from AuthWindow.
 
         Args:
             mode (str): The mode of login ('auth' or 'guest').
+            user_id (int): The ID of the logged-in user (-1 for guest).
         """
-        # Guest mode doesn't need verification.
-        # Auth mode just came from a successful login, so it's already verified.
+        self.init_user_services(user_id=user_id)
         self.show_main_window(mode=mode)
 
 
@@ -205,8 +235,11 @@ class Application:
         if self.main_window:
             self.main_window.close()
             self.main_window = None
-        # On logout, clear the stored user data
+        
+        # On logout, clear the stored user data and settings
         self.auth_model.logout()
+        self.current_user_id = None
+        self.settings_manager = None
         self.show_auth_window()
 
 

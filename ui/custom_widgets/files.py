@@ -190,7 +190,7 @@ class FileWidget(QWidget):
         actions_layout.addWidget(self.open_btn)
         actions_layout.addWidget(self.download_btn)
         
-        ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
+        ThemeManagerInstance.themeChanged.connect(self._on_theme_changed)
         self._update_icon()
 
     def _setup_menu(self):
@@ -307,7 +307,7 @@ class FileWidget(QWidget):
             return "attachment_gray"
 
     def _update_icon(self):
-        theme_id = ThemeManagerInstance().current_theme_id
+        theme_id = ThemeManagerInstance.current_theme_id
         theme = "light" if theme_id == "0" else "dark"
         
         icon_name = self._get_icon_name()

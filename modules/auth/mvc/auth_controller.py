@@ -37,7 +37,7 @@ class AuthController(QObject):
     """
 
     # Successful login signal
-    login_successful = pyqtSignal(str)
+    login_successful = pyqtSignal(str, int)
 
     def __init__(
             self, 
@@ -95,13 +95,13 @@ class AuthController(QObject):
         """
         # Save user data
         auto_login = self.view.login_page.get_auto_login_state()
-        self.model.save_user(user_data=data, auto_login=auto_login)
+        user_id = self.model.save_user(user_data=data, auto_login=auto_login)
 
         # Clear lineedits
         self.view.login_page.clear_lineedits()
 
         # Switch to main window
-        self.login_successful.emit("auth")
+        self.login_successful.emit("auth", user_id)
 
 
 
@@ -119,7 +119,7 @@ class AuthController(QObject):
         """
         # Save user data
         auto_login = self.view.signup_page.get_auto_login_state()
-        self.model.save_user(user_data=user_data, auto_login=auto_login)
+        user_id = self.model.save_user(user_data=user_data, auto_login=auto_login)
 
         # Clear lineedits
         self.view.signup_page.clear_lineedits()
@@ -130,7 +130,7 @@ class AuthController(QObject):
             message="Аккаунт создан. Добро пожаловать!"
         )
         # Switch to main window
-        self.login_successful.emit("auth")
+        self.login_successful.emit("auth", user_id)
     
 
     def signup(self, data: dict, email: str, password: str) -> None:
@@ -285,7 +285,7 @@ class AuthController(QObject):
         Emits the `login_successful` signal with 'guest' as the login type,
         allowing guest access to the application.
         """
-        self.login_successful.emit("guest")
+        self.login_successful.emit("guest", -1)
 
 
     def on_login_page_create_button_clicked(self) -> None:

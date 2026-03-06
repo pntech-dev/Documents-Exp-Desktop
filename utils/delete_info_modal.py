@@ -77,10 +77,10 @@ class DeleteInfoDialog(BaseModalDialog):
 
         # === Icon setup ===
         self._update_icon()
-        ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
+        ThemeManagerInstance.themeChanged.connect(self._on_theme_changed)
 
     def _update_icon(self):
-        theme_id = ThemeManagerInstance().current_theme_id
+        theme_id = ThemeManagerInstance.current_theme_id
         if theme_id == "0":
             icon_path = ":/icons/light/light/notification_warning_red.svg"
         else:

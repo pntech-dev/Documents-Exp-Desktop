@@ -22,7 +22,7 @@ class _IconCustomButton(QPushButton):
         """Initializes the button with icon support."""
         super().__init__(parent=parent)
         self.setAttribute(Qt.WA_StyledBackground, True)
-        ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
+        ThemeManagerInstance.themeChanged.connect(self._on_theme_changed)
 
         self.icons = {
             "light": {"default": None, "hover": None, 
@@ -77,7 +77,7 @@ class _IconCustomButton(QPushButton):
 
     def _update_icon(self) -> None:
         """Updates the icon based on the current state and theme."""
-        theme_id = ThemeManagerInstance().current_theme_id
+        theme_id = ThemeManagerInstance.current_theme_id
         theme = "light" if theme_id == "0" else "dark"
 
         state = "default"
@@ -157,7 +157,7 @@ class _IconCustomButton(QPushButton):
             # Determine mode/state for icon
             mode = QIcon.Normal
             if not self.isEnabled():
-                theme_id = ThemeManagerInstance().current_theme_id
+                theme_id = ThemeManagerInstance.current_theme_id
                 theme = "light" if theme_id == "0" else "dark"
                 
                 disabled_icon = self.icons[theme].get("disabled")

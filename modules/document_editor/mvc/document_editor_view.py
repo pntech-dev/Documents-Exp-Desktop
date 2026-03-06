@@ -473,7 +473,7 @@ class DocumentEditorView:
         self.ui.setupUi(container)
         container.setObjectName("editorContainer")
 
-        self.theme_manager = ThemeManagerInstance()
+        self.theme_manager = ThemeManagerInstance
         self.ui_config = self._load_ui_config()
 
         icons_config = self.ui_config.get("icons", {})
