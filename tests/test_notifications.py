@@ -15,7 +15,7 @@ class TestNotificationService:
     def test_initialization(self, mock_tm):
         """Test service initialization and config loading."""
         # Setup config mock
-        mock_tm.return_value.notification_config = {"spacing": 15, "toast_duration": 3000}
+        mock_tm.notification_config = {"spacing": 15, "toast_duration": 3000}
         
         service = NotificationService()
         

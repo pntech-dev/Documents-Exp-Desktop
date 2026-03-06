@@ -25,7 +25,7 @@ class MenuItemWidget(QWidget):
             parent: QWidget | None = None
     ) -> None:
         super().__init__(parent)
-        ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
+        ThemeManagerInstance.themeChanged.connect(self._on_theme_changed)
         self.action = action
         self.checkable = checkable
         self.setMouseTracking(True)
@@ -102,7 +102,7 @@ class MenuItemWidget(QWidget):
         if self.checkable:
             return
 
-        theme_id = ThemeManagerInstance().current_theme_id
+        theme_id = ThemeManagerInstance.current_theme_id
         theme = "light" if theme_id == "0" else "dark"
 
         state = "default"

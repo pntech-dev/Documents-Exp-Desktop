@@ -349,6 +349,13 @@ class Navbar:
             "exact_match": self.action_exact_match.isChecked()
         }
 
+    def set_search_filters(self, filters: dict) -> None:
+        """Sets the state of search filters from a dictionary."""
+        self.action_search_pages.setChecked(filters.get("include_pages", True))
+        self.action_search_name.setChecked(filters.get("search_by_name", True))
+        self.action_search_code.setChecked(filters.get("search_by_code", True))
+        self.action_exact_match.setChecked(filters.get("exact_match", False))
+
 
     def _setup_filter_menu(self) -> None:
         """Configures the search filter menu."""
@@ -806,7 +813,7 @@ class MainView(QObject):
         """
         super().__init__()
         self.ui = ui
-        self.theme_manager = ThemeManagerInstance()
+        self.theme_manager = ThemeManagerInstance
         self.ui_config = self._load_ui_config()
         self.current_mode = "guest"
 
@@ -1082,6 +1089,10 @@ class MainView(QObject):
     def get_search_filters(self) -> dict:
         """Returns the current search filters."""
         return self.navbar.get_search_filters()
+    
+    def set_search_filters(self, filters: dict) -> None:
+        """Sets the search filters in the navbar."""
+        self.navbar.set_search_filters(filters)
     
 
     def get_search_text(self) -> str:

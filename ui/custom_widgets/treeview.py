@@ -357,7 +357,7 @@ class SidebarBlock(QTreeView):
         self._edit_pressed_idx = QPersistentModelIndex()
 
         self.clicked.connect(self._on_clicked)
-        ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
+        ThemeManagerInstance.themeChanged.connect(self._on_theme_changed)
         # Initialization of private attributes for properties
         self._badge_background_color = QColor()
         self._badge_text_color = QColor()
@@ -538,7 +538,7 @@ class SidebarBlock(QTreeView):
 
     def get_edit_icon(self, index: QModelIndex) -> QIcon:
         """Returns the edit icon for the given index based on state."""
-        theme_id = ThemeManagerInstance().current_theme_id
+        theme_id = ThemeManagerInstance.current_theme_id
         theme = "light" if theme_id == "0" else "dark"
         
         state = "default"

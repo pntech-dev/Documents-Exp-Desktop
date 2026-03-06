@@ -12,7 +12,7 @@ class ProgressBar(QProgressBar):
         self.setTextVisible(False)
         self.setFixedHeight(12)
 
-        ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
+        ThemeManagerInstance.themeChanged.connect(self._on_theme_changed)
 
     def setProgressValue(self, value: int) -> None:
         """

@@ -24,6 +24,8 @@ from utils.error_messages import get_friendly_error_message
 
 
 
+from utils.settings_manager import SettingsManager
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
@@ -42,7 +44,8 @@ class MainController(QObject):
             model: MainModel, 
             view: MainView, 
             window: QMainWindow, 
-            mode: str = "guest"
+            mode: str = "guest",
+            settings_manager: SettingsManager | None = None
     ) -> None:
         """Initializes the MainController.
 
@@ -51,12 +54,14 @@ class MainController(QObject):
             view: The main UI view.
             window: The main QMainWindow instance.
             mode: The application mode ('guest' or 'auth').
+            settings_manager: The manager for user-specific settings.
         """
         super().__init__()
         self.model = model
         self.view = view
         self.window = window
         self.mode = mode
+        self.settings_manager = settings_manager
         self.editor_window = None
         self.current_documents = []
         self.current_search_worker = None
@@ -111,7 +116,11 @@ class MainController(QObject):
 
 
     def _on_search_filters_changed(self, checked: bool) -> None:
-        """Handles search filter changes."""
+        """Handles search filter changes and saves them."""
+        filters = self.view.get_search_filters()
+        if self.settings_manager:
+            self.settings_manager.set_setting("search_filters", filters)
+
         if self.view.get_search_text():
             self._on_search_lineedit_text_changed()
 
@@ -743,6 +752,12 @@ class MainController(QObject):
         """Initializes the UI with default data."""
         self._load_sidebar_data()
         self.view.set_profile_mode(self.mode)
+
+        # Load and apply settings
+        if self.settings_manager:
+            search_filters = self.settings_manager.get_setting("search_filters")
+            if search_filters:
+                self.view.set_search_filters(search_filters)
 
         # Set user data
         if self.mode == "auth":

@@ -355,7 +355,7 @@ class AuthView:
             ui (AuthWindow_UI): The UI object generated from Qt Designer.
         """
         self.ui = ui
-        self.theme_manager = ThemeManagerInstance()
+        self.theme_manager = ThemeManagerInstance
 
         # Setting icon for logo label
         self.ui.logo_label.set_icon_paths(

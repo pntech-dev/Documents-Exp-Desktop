@@ -75,7 +75,10 @@ class TestApplication:
         app.on_token_verified({})
         
         # Should create and show main window
-        mock_dependencies["MainWindow"].assert_called_with(mode="auth")
+        mock_dependencies["MainWindow"].assert_called_with(
+            mode="auth",
+            settings_manager=app.settings_manager
+        )
         mock_dependencies["MainWindow"].return_value.showMaximized.assert_called_once()
         # Should close auth window
         auth_window_mock.close.assert_called_once()

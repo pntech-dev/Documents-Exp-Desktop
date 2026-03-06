@@ -42,7 +42,7 @@ class NotificationService(metaclass=Singleton):
         
         Loads configuration from the ThemeManager and prepares the service.
         """
-        config = ThemeManagerInstance().notification_config
+        config = ThemeManagerInstance.notification_config
         self.SPACING = config.get("spacing", 10)
         self.TOAST_DURATION = config.get("toast_duration", 5000)
 

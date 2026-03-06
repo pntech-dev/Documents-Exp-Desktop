@@ -19,7 +19,7 @@ class FileDropWidget(QFrame):
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.setAttribute(Qt.WA_Hover, True)
 
-        ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
+        ThemeManagerInstance.themeChanged.connect(self._on_theme_changed)
         
         # Layout
         layout = QVBoxLayout(self)

@@ -125,7 +125,7 @@ class AuthModel:
 
 
     """=== User ==="""
-    def save_user(self, user_data: dict, auto_login: bool) -> None:
+    def save_user(self, user_data: dict, auto_login: bool) -> int | None:
         """Saves user data and tokens to local files and keyring.
 
         Args:
@@ -135,7 +135,7 @@ class AuthModel:
         # Get user data
         user = user_data.get("user", None)
         if not user:
-            return
+            return None
 
         user_id = user.get("id", None)
 
@@ -177,6 +177,8 @@ class AuthModel:
 
             with open(self.LOCAL_DIR_LAST_LOGGED, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=4, ensure_ascii=False)
+        
+        return user_id
 
 
     """=== Login ==="""
@@ -228,6 +230,22 @@ class AuthModel:
             user_data_file_path = app_dir / f"user_data_{user_id}.json"
             
             return get_flag(path=user_data_file_path)
+
+
+    def get_last_logged_user_id(self) -> int | None:
+        """
+        Retrieves the user ID of the last successfully logged-in user.
+
+        Returns:
+            The user ID as an integer, or None if not found.
+        """
+        last_logged_data = read_json(self.LOCAL_DIR_LAST_LOGGED)
+        if not last_logged_data:
+            return None
+        
+        user_id = last_logged_data.get("user_id")
+
+        return user_id if isinstance(user_id, int) else None
 
 
     def logout(self) -> None:
