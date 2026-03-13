@@ -32,7 +32,6 @@ class APIClient:
             url=self.base_url + "/auth/user", 
             headers=headers
         )
-        print(res)
         return res
     
     
@@ -59,7 +58,6 @@ class APIClient:
         Returns:
             dict: The JSON response from the API containing user data.
         """
-        print(data)
         headers = {"Authorization": f"Bearer {token}"}
         return self._request("PATCH",
             url=self.base_url + f"/auth/user/{user_id}", 

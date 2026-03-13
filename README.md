@@ -28,36 +28,31 @@ Displays the hierarchy of Departments and Categories. Features a document table 
 
 ### Document Editor:
 
-Allows authorized users to create, edit, and manage document pages. Supports drag-and-drop reordering.
+Allows authorized users to create, edit, and manage document pages. Support for adding and working with electronic document files. Supports drag-and-drop reordering.
 
 ![editor_window](screenshots/document_editor.png)
+![editor_window_files](screenshots/document_editor_files.png)
 
 ---
 
-## 💡 What's New (v1.1.0) - Tags & Filters
+## 💡 What's New (v0.2.0) - Profile & Settings
 
-This update brings powerful new ways to organize and find your documents.
+This update focuses on personalization and user experience.
 
-### 🏷️ Tags System
+### 👤 Profile Editing
 
-- **Document Tags:** You can now assign tags to documents for better categorization.
-- **Auto-generation:** Automatically generate relevant tags based on document content.
-- **Search by Tags:** Quickly find documents by clicking on tags or typing `@tagname` in the search bar.
+- **Personal Info:** You can now edit your user information (First Name, Last Name, Department) directly within the application.
+- **Access:** The profile dialog is accessible from the main application menu.
 
-### 🔍 Search Filters
+### ⚙️ Settings Persistence
 
-A new search filter menu has been added to refine your search results:
-
-- **Search Targets:** Option to include or exclude document pages from search results.
-- **Search Fields:** Filter by Name or Code.
-- **Match Mode:** Toggle exact match for precise queries.
+- **Personalization:** The application now remembers your preferences on a per-user basis.
+- **Theme:** Your selected theme (Light/Dark) is saved between sessions.
+- **Filters:** Your most recently used search filters are also saved, speeding up repeated searches.
 
 ### ⚡ Also in this update
 
-- **"All Documents" Category:** Option to create a virtual category that aggregates all documents within a department.
-- **Guest Visibility:** Granular control over the visibility of departments and categories for guest users.
-- **Password Hints:** New interactive password strength hint widget during registration and password change.
-- **UI Improvements:** Minor visual enhancements and bug fixes.
+- Minor UI improvements and bug fixes for a more stable experience.
 
 ---
 

@@ -26,7 +26,7 @@ os.environ.setdefault("QT_AUTO_SCREEN_SCALE_FACTOR", "1")
 os.environ.setdefault("QT_SCALE_FACTOR_ROUNDING_POLICY", "PassThrough")
 
 
-APP_VERSION = "0.1.1"
+APP_VERSION = "0.2.0"
 
 class Application:
     """
