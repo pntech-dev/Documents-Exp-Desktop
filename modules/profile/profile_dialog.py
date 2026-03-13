@@ -112,12 +112,20 @@ class ProfileDialog(BaseModalDialog):
         if self.ui.lastname_lineEdit.text() != original_last_name:
             is_changed = True
         
-        # Check department (type-insensitive comparison)
+        # Check department with explicit None checks
         selected_dept_id = self.ui.department_comboBox.currentData()
         original_dept_id = self._get_original_department_id()
         
-        # Compare strings to handle None and type differences gracefully
-        if str(selected_dept_id) != str(original_dept_id):
+        department_changed = False
+        if selected_dept_id is None and original_dept_id is not None:
+            department_changed = True
+        elif selected_dept_id is not None and original_dept_id is None:
+            department_changed = True
+        elif selected_dept_id is not None and original_dept_id is not None:
+            if str(selected_dept_id) != str(original_dept_id):
+                department_changed = True
+        
+        if department_changed:
             is_changed = True
 
         self.ui.accept_pushButton.setEnabled(is_changed)

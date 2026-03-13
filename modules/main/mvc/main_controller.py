@@ -837,6 +837,11 @@ class MainController(QObject):
                     # This will trigger the _on_department_selected slot,
                     # which will then update the model and load the data.
                     QTimer.singleShot(50, lambda: self.view.select_department(user_dept_id))
+                # If user has no department, select the first one in the list
+                elif self.model.departments:
+                    first_dept_id = self.model.departments[0].get("id")
+                    if first_dept_id:
+                        QTimer.singleShot(50, lambda: self.view.select_department(first_dept_id))
 
         else:
             self.view.set_username("Гость")

@@ -32,6 +32,7 @@ class APIClient:
             url=self.base_url + "/auth/user", 
             headers=headers
         )
+        print(res)
         return res
     
     
