@@ -19,6 +19,7 @@ from modules.departments_editings import (
 from modules.categories_editings import (
     CreateCategory, EditCategory
 )
+from modules.profile.profile_dialog import ProfileDialog
 from utils import NotificationService
 from utils.error_messages import get_friendly_error_message
 
@@ -376,6 +377,59 @@ class MainController(QObject):
     def _on_logout_clicked(self) -> None:
         """Handles the logout action."""
         self.logout_requested.emit()
+
+
+    def _show_profile_dialog(self) -> None:
+        """Handles showing the user profile dialog."""
+        if self.mode != "auth":
+            return
+
+        try:
+            user_data = self.model.get_full_user_data()
+            if not user_data:
+                logger.warning("Could not retrieve user data for profile.")
+                return
+
+            departments = self.model.departments
+            
+            updated_data = ProfileDialog.show_dialog(
+                parent=self.window,
+                user_data=user_data,
+                departments=departments
+            )
+
+            if updated_data:
+                worker = APIWorker(
+                    self.model.update_user_profile,
+                    user_id=user_data['id'],
+                    data=updated_data
+                )
+                self.active_workers.add(worker)
+                worker.finished.connect(self._on_profile_update_finished)
+                worker.error.connect(lambda e: self._handle_error(e, "Ошибка обновления профиля"))
+                worker.finished.connect(self._cleanup_worker)
+                worker.error.connect(self._cleanup_worker)
+                worker.start()
+
+        except Exception as e:
+            self._handle_error(e, "Ошибка профиля")
+
+
+    def _on_profile_update_finished(self, new_data: dict):
+        """Handles successful profile update."""
+        logger.info(f"User profile updated successfully for user ID: {new_data.get('id')}")
+        
+        # Refresh all data to ensure consistency
+        self.model.refresh_data()
+        
+        # Update the UI with new user data
+        self._init_ui()
+
+        NotificationService().show_toast(
+            notification_type="success",
+            title="Профиль обновлен",
+            message="Ваши данные были успешно сохранены."
+        )
 
 
     def _on_department_selected(self, selected, deselected) -> None:
@@ -782,6 +836,7 @@ class MainController(QObject):
         """Sets up signal-slot connections."""      
         # Sidebar
         self.view.connect_logout(self._on_logout_clicked)
+        self.view.connect_profile_action(self._show_profile_dialog)
         self.view.connect_departments_selection(self._on_department_selected)
         self.view.connect_categories_selection(self._on_category_selected)
         self.view.connect_department_edit(self._on_edit_department_clicked)
