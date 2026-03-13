@@ -539,6 +539,13 @@ QFrame#editCategoryContainer {
 	border: 1px solid #404040;
 }
 
+/* Profile Dialog Window */
+QFrame#profileDialogContainer {
+    border-radius: 8px;
+    background-color: #262626;
+	border: 1px solid #404040;
+}
+
 /* Editor Window */
 QFrame#editorContainer {
 	border: 1px solid #404040;
@@ -1060,3 +1067,70 @@ FileWidget QLabel#fileInfoLabel  {
 	border: 1px solid #404040;
 	background-color: #262626;
 }
+
+
+/* ComboBox */
+ComboBox {
+    border-radius: 8px;
+	border: 1px solid #404040;
+	background-color: #262626;
+}
+ComboBox[hovered="true"] {
+    border: 1px solid #4D4D4D;
+}
+ComboBox[open="true"], ComboBox:focus {
+    border: 1px solid #C43A3A;
+}
+ComboBox[disabled="true"] {
+    border: 1px solid #333333;
+	background-color: #262626;
+}
+
+QLabel#comboTextLabel {
+    color: #666666;
+    background-color: transparent;
+    font-size: 12pt;
+}
+ComboBox[hovered="true"] QLabel#comboTextLabel {
+	color: #B3B3B3;
+}
+ComboBox[empty="false"] QLabel#comboTextLabel {
+    color: #E6E6E6;
+}
+ComboBox[disabled="true"] QLabel#comboTextLabel {
+    color: #333333;
+}
+
+/* Popup styles */
+QFrame#ComboBoxPopup {
+    border: none;
+}
+QFrame#comboPopupContainer {
+    border: 1px solid #404040;
+    border-radius: 8px;
+    background-color: #262626;
+}
+QScrollArea#comboPopupScroll {
+    border: none;
+}
+QWidget#comboPopupList {
+    background-color: transparent;
+}
+
+/* Item styles */
+_ComboBoxItem {
+    background-color: transparent;
+}
+_ComboBoxItem[hovered="true"] {
+    background-color: #333333;
+	border-radius: 8px;
+}
+_ComboBoxItem QLabel#comboItemLabel {
+    color: #CCCCCC;
+    background-color: transparent;
+    font-size: 12pt;
+}
+_ComboBoxItem[hovered="true"] QLabel#comboItemLabel {
+    color: #E6E6E6;
+}
+

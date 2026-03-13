@@ -820,8 +820,7 @@ class MainView(QObject):
 
         # Disabled until the next update
         for ui_element in[
-            self.ui.change_view_pushButton,
-            self.ui.profile_info_label
+            self.ui.change_view_pushButton
         ]:
             ui_element.setVisible(False)
 
@@ -930,7 +929,6 @@ class MainView(QObject):
         )
 
         # Disable unimplemented actions
-        self.user_profile_action.setVisible(False)
         self.settings_action.setVisible(False)
 
 
@@ -1294,6 +1292,16 @@ class MainView(QObject):
         """
         if self.profile_menu:
             self.logout_action.triggered.connect(handler)
+
+
+    def connect_profile_action(self, handler) -> None:
+        """Connects the user profile action to a handler.
+
+        Args:
+            handler: The callback function.
+        """
+        if self.user_profile_action:
+            self.user_profile_action.triggered.connect(handler)
 
 
     def connect_departments_selection(self, handler) -> None:

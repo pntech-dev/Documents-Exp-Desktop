@@ -539,6 +539,13 @@ QFrame#editCategoryContainer {
 	border: 1px solid {{ neutral.neutral_250 }};
 }
 
+/* Profile Dialog Window */
+QFrame#profileDialogContainer {
+    border-radius: 8px;
+    background-color: {{ neutral.neutral_100 }};
+	border: 1px solid {{ neutral.neutral_250 }};
+}
+
 /* Editor Window */
 QFrame#editorContainer {
 	border: 1px solid {{ neutral.neutral_250 }};
@@ -1059,3 +1066,70 @@ FileWidget QLabel#fileInfoLabel  {
 	border: 1px solid {{ neutral.neutral_250 }};
 	background-color: {{ neutral.neutral_100 }};
 }
+
+
+/* ComboBox */
+ComboBox {
+    border-radius: 8px;
+	border: 1px solid {{ neutral.neutral_250 }};
+	background-color: {{ neutral.neutral_100 }};
+}
+ComboBox[hovered="true"] {
+    border: 1px solid {{ neutral.neutral_300 }};
+}
+ComboBox[open="true"], ComboBox:focus {
+    border: 1px solid {{ accent.accent_500 }};
+}
+ComboBox[disabled="true"] {
+    border: 1px solid {{ neutral.neutral_200 }};
+	background-color: {{ neutral.neutral_100 }};
+}
+
+QLabel#comboTextLabel {
+    color: {{ neutral.neutral_400 }};
+    background-color: transparent;
+    font-size: 12pt;
+}
+ComboBox[hovered="true"] QLabel#comboTextLabel {
+	color: {{ neutral.neutral_700 }};
+}
+ComboBox[empty="false"] QLabel#comboTextLabel {
+    color: {{ neutral.neutral_900 }};
+}
+ComboBox[disabled="true"] QLabel#comboTextLabel {
+    color: {{ neutral.neutral_200 }};
+}
+
+/* Popup styles */
+QFrame#ComboBoxPopup {
+    border: none;
+}
+QFrame#comboPopupContainer {
+    border: 1px solid {{ neutral.neutral_250 }};
+    border-radius: 8px;
+    background-color: {{ neutral.neutral_100 }};
+}
+QScrollArea#comboPopupScroll {
+    border: none;
+}
+QWidget#comboPopupList {
+    background-color: transparent;
+}
+
+/* Item styles */
+_ComboBoxItem {
+    background-color: transparent;
+}
+_ComboBoxItem[hovered="true"] {
+    background-color: {{ neutral.neutral_200 }};
+	border-radius: 8px;
+}
+_ComboBoxItem QLabel#comboItemLabel {
+    color: {{ neutral.neutral_800 }};
+    background-color: transparent;
+    font-size: 12pt;
+}
+_ComboBoxItem[hovered="true"] QLabel#comboItemLabel {
+    color: {{ neutral.neutral_900 }};
+}
+
