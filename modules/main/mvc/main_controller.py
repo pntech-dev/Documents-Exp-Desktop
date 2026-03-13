@@ -819,9 +819,24 @@ class MainController(QObject):
 
             if user_data:
                 username = user_data.get("username")
-                department = user_data.get("department")
+                department_name = user_data.get("department")
                 self.view.set_username(name=username if username else user_data.get("email"))
-                self.view.set_user_department(dept=department if department else "Отдел не выбран")
+                self.view.set_user_department(dept=department_name if department_name else "Отдел не выбран")
+
+                # Find the user's department ID from the name
+                user_dept_id = None
+                if department_name:
+                    for dept in self.model.departments:
+                        if dept.get("name") == department_name:
+                            user_dept_id = dept.get("id")
+                            break
+                
+                # If a department is found, set it as current by triggering selection
+                if user_dept_id:
+                    # Use a timer to ensure the UI is ready for selection.
+                    # This will trigger the _on_department_selected slot,
+                    # which will then update the model and load the data.
+                    QTimer.singleShot(50, lambda: self.view.select_department(user_dept_id))
 
         else:
             self.view.set_username("Гость")
