@@ -70,12 +70,16 @@ class TestAuthModel:
         # Configure the mock path object to simulate file existence
         model.LOCAL_DIR_LAST_LOGGED.exists.return_value = True
 
-        with patch("modules.auth.mvc.auth_model.read_json", return_value={"user_id": 1}), \
+        with patch("modules.auth.mvc.auth_model.read_json", side_effect=[{"user_id": 1}, {"auto_login": True}]), \
              patch("modules.auth.mvc.auth_model.keyring.delete_password") as mock_keyring_del:
             
-            model.logout()
+            with patch("builtins.open", new_callable=MagicMock) as mock_open, \
+                 patch("json.dump") as mock_json_dump:
+                model.logout()
             
             assert mock_keyring_del.call_count == 2
+            assert mock_open.call_count >= 1
+            mock_json_dump.assert_called()
             model.LOCAL_DIR_LAST_LOGGED.unlink.assert_called_once()
 
 

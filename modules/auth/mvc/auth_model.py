@@ -259,6 +259,16 @@ class AuthModel:
             if file_path.exists():
                 file_path.unlink()
 
+        def disable_auto_login(user_id: int) -> None:
+            profile_path = self.APP_DIR / "Profiles" / f"user_data_{user_id}.json"
+            profile_data = read_json(profile_path)
+            if not isinstance(profile_data, dict):
+                return
+
+            profile_data["auto_login"] = False
+            with open(profile_path, "w", encoding="utf-8") as f:
+                json.dump(profile_data, f, indent=4, ensure_ascii=False)
+
         # Get last user id
         last_logged_data = read_json(self.LOCAL_DIR_LAST_LOGGED)
         if not last_logged_data:
@@ -275,6 +285,8 @@ class AuthModel:
                 logging.info(f"Tokens for user_id {user_id} deleted from keyring.")
             except keyring_errors.PasswordDeleteError:
                 logging.info(f"Tokens for user_id {user_id} not found in keyring, skipping deletion.")
+
+            disable_auto_login(user_id)
 
         # Delete the last logged user file to disable auto-login on next start
         delete_file(self.LOCAL_DIR_LAST_LOGGED)
