@@ -93,15 +93,15 @@ class AuthController(QObject):
         Args:
             data (dict): The user data received from the API upon login.
         """
-        # Save user data
-        auto_login = self.view.login_page.get_auto_login_state()
-        user_id = self.model.save_user(user_data=data, auto_login=auto_login)
+        try:
+            auto_login = self.view.login_page.get_auto_login_state()
+            user_id = self.model.save_user(user_data=data, auto_login=auto_login)
 
-        # Clear lineedits
-        self.view.login_page.clear_lineedits()
-
-        # Switch to main window
-        self.login_successful.emit("auth", user_id)
+            self.view.login_page.clear_lineedits()
+            self.login_successful.emit("auth", user_id)
+        except Exception as e:
+            msg = get_friendly_error_message(e)
+            NotificationService().show_toast("error", "Ошибка входа", msg)
 
 
 
@@ -117,20 +117,21 @@ class AuthController(QObject):
         Args:
             user_data (dict): The user data received from the API upon signup.
         """
-        # Save user data
-        auto_login = self.view.signup_page.get_auto_login_state()
-        user_id = self.model.save_user(user_data=user_data, auto_login=auto_login)
+        try:
+            auto_login = self.view.signup_page.get_auto_login_state()
+            user_id = self.model.save_user(user_data=user_data, auto_login=auto_login)
 
-        # Clear lineedits
-        self.view.signup_page.clear_lineedits()
+            self.view.signup_page.clear_lineedits()
 
-        NotificationService().show_toast(
-            notification_type="success",
-            title="Регистрация успешна",
-            message="Аккаунт создан. Добро пожаловать!"
-        )
-        # Switch to main window
-        self.login_successful.emit("auth", user_id)
+            NotificationService().show_toast(
+                notification_type="success",
+                title="Регистрация успешна",
+                message="Аккаунт создан. Добро пожаловать!"
+            )
+            self.login_successful.emit("auth", user_id)
+        except Exception as e:
+            msg = get_friendly_error_message(e)
+            NotificationService().show_toast("error", "Ошибка регистрации", msg)
     
 
     def signup(self, data: dict, email: str, password: str) -> None:
@@ -203,13 +204,15 @@ class AuthController(QObject):
         Args:
             data (dict): Data containing the reset token from the API.
         """
-        # Save token
-        self.model.save_token(token_name="reset_token", token="reset_token", data=data)
+        try:
+            self.model.save_token(token_name="reset_token", token="reset_token", data=data)
 
-        # Switch to change password page
-        page = self.view.pages.get("change_password_change_page", None)
-        if page:
-            self.view.switch_page(page=page)
+            page = self.view.pages.get("change_password_change_page", None)
+            if page:
+                self.view.switch_page(page=page)
+        except Exception as e:
+            msg = get_friendly_error_message(e)
+            NotificationService().show_toast("error", "Ошибка восстановления", msg)
 
     
     def open_email_confirm_modal_window(self, data, email: str) -> None:

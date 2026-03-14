@@ -376,7 +376,9 @@ class AuthModel:
                 password=data.get(token, None)
             )
         
-        except keyring_errors.PasswordSetError:
+        except keyring_errors.PasswordSetError as e:
             logging.error(msg="PasswordSetError", exc_info=True)
+            raise RuntimeError("Не удалось сохранить данные сессии в системное хранилище.") from e
         except Exception as e:
             logging.error(msg=e, exc_info=True)
+            raise RuntimeError("Не удалось сохранить данные сессии в системное хранилище.") from e
