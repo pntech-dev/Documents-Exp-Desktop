@@ -146,6 +146,30 @@ class TestAPIClient:
                 headers={"Authorization": f"Bearer {token}"}
             )
 
+    def test_request_returns_empty_dict_for_204(self, client):
+        with patch.object(client.session, "request") as mock_request:
+            mock_response = Mock()
+            mock_response.status_code = 204
+            mock_response.content = b""
+            mock_response.raise_for_status = Mock()
+            mock_request.return_value = mock_response
+
+            result = client.delete_document(123, "auth_token")
+
+            assert result == {}
+
+    def test_request_returns_empty_dict_for_empty_body(self, client):
+        with patch.object(client.session, "request") as mock_request:
+            mock_response = Mock()
+            mock_response.status_code = 200
+            mock_response.content = b""
+            mock_response.raise_for_status = Mock()
+            mock_request.return_value = mock_response
+
+            result = client._request("DELETE", f"{self.BASE_URL}/app/files/1")
+
+            assert result == {}
+
     def test_search_data(self, client):
         token = "auth_token"
         query = "test query"
