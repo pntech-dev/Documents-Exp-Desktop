@@ -333,7 +333,7 @@ class Ui_MainWindow(object):
         self.profile_name_label.setText(_translate("MainWindow", "Гость"))
         self.profile_info_label.setText(_translate("MainWindow", "Войдите в аккаунт"))
         self.search_lineEdit.setPlaceholderText(_translate("MainWindow", "Поиск..."))
-        self.theme_pushButton.setText(_translate("MainWindow", "theme"))
+        self.theme_pushButton.setText(_translate("MainWindow", ""))
         self.create_pushButton.setText(_translate("MainWindow", "Создать"))
         self.finded_label.setText(_translate("MainWindow", "Найдено:"))
         self.tags_label.setText(_translate("MainWindow", "Популярные теги:"))

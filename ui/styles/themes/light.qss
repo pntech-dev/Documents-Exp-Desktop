@@ -618,6 +618,110 @@ QFrame#deleteInfoContainer {
     border: 1px solid #E6E6E6;
 }
 
+/* What's New Window */
+#whatsNewContainer {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    border: 1px solid #E6E6E6;
+}
+
+#whatsNewHeader {
+    background-color: #F5D6D6;
+    border-radius: 10px;
+}
+
+#whatsNewBadge {
+    background-color: #FFFFFF;
+    color: #CC3333;
+    border: 1px solid #E08585;
+    border-radius: 12px;
+    padding: 4px 10px;
+    font-size: 10pt;
+    font-weight: bold;
+}
+
+#whatsNewTitle {
+    background-color: transparent;
+    color: #CC3333;
+    font-size: 18pt;
+    font-weight: bold;
+}
+
+#whatsNewSubtitle {
+    background-color: transparent;
+    color: #4D4D4D;
+    font-size: 11pt;
+}
+
+/* The outer frame provides rounding and clipping */
+QFrame#whatsNewContentFrame {
+    background-color: #F2F2F2;
+    border-radius: 10px;
+}
+
+/* QScrollArea is transparent, without borders, and without a native scrollbar */
+QScrollArea#whatsNewContentScroll {
+    background-color: transparent;
+    border: none;
+}
+
+QWidget#whatsNewContentViewport {
+    background-color: #F2F2F2;
+}
+
+QWidget#whatsNewContentWidget {
+    background-color: transparent;
+}
+
+/* Overlay-scrollbar on top of the content */
+QScrollBar#whatsNewScrollBar {
+    background: transparent;
+    width: 12px;
+    border-radius: 6px;
+}
+
+QScrollBar#whatsNewScrollBar::handle {
+    background-color: #CC3333;
+    min-height: 36px;
+    border-radius: 3px;
+}
+
+QScrollBar#whatsNewScrollBar::add-line,
+QScrollBar#whatsNewScrollBar::sub-line {
+    border: none;
+    background: none;
+    height: 0px;
+}
+
+QScrollBar#whatsNewScrollBar::add-page,
+QScrollBar#whatsNewScrollBar::sub-page {
+    background: transparent;
+}
+
+#whatsNewItem,
+#whatsNewItemText,
+#whatsNewBullet {
+    background-color: transparent;
+}
+
+#whatsNewSectionTitle {
+    background-color: transparent;
+    color: #1A1A1A;
+    font-size: 13pt;
+    font-weight: bold;
+}
+
+#whatsNewBullet {
+    color: #CC3333;
+    font-size: 16pt;
+    font-weight: bold;
+}
+
+#whatsNewItemText {
+    color: #333333;
+    font-size: 11pt;
+}
+
 
 
 /* MAIN APPLICATION */

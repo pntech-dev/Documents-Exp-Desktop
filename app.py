@@ -19,6 +19,7 @@ from utils.app_paths import get_local_data_dir
 from core.updater import UpdateManager
 from utils.file_utils import load_config
 from utils.settings_manager import SettingsManager
+from utils.whats_new_modal import WhatsNewDialog
 
 
 os.environ.setdefault("QT_ENABLE_HIGHDPI_SCALING", "1")
@@ -205,6 +206,8 @@ class Application:
                 self.auth_window.close()
                 self.auth_window = None
 
+            self.maybe_show_whats_new(mode=mode)
+
         except Exception as e:
             self.logger.critical(f"Error initializing MainWindow: {e}", exc_info=True)
             if not self.auth_window:
@@ -216,6 +219,19 @@ class Application:
                 title="Ошибка запуска",
                 message=msg
             )
+
+    def maybe_show_whats_new(self, mode: str) -> None:
+        """Shows the release notes once per app version for authorized users."""
+        if mode != "auth" or not self.settings_manager or not self.main_window:
+            return
+
+        last_seen_version = self.settings_manager.get_setting("last_seen_whats_new_version", "")
+        if last_seen_version == APP_VERSION:
+            return
+
+        dialog = WhatsNewDialog(parent=self.main_window, version=APP_VERSION)
+        dialog.exec_()
+        self.settings_manager.set_setting("last_seen_whats_new_version", APP_VERSION)
 
 
     def on_login_successful(self, mode: str, user_id: int):

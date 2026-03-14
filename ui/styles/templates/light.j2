@@ -618,6 +618,110 @@ QFrame#deleteInfoContainer {
     border: 1px solid {{ neutral.neutral_100 }};
 }
 
+/* What's New Window */
+#whatsNewContainer {
+    background-color: {{ neutral.neutral_0 }};
+    border-radius: 12px;
+    border: 1px solid {{ neutral.neutral_100 }};
+}
+
+#whatsNewHeader {
+    background-color: {{ accent.accent_100 }};
+    border-radius: 10px;
+}
+
+#whatsNewBadge {
+    background-color: {{ neutral.neutral_0 }};
+    color: {{ accent.accent_500 }};
+    border: 1px solid {{ accent.accent_300 }};
+    border-radius: 12px;
+    padding: 4px 10px;
+    font-size: 10pt;
+    font-weight: bold;
+}
+
+#whatsNewTitle {
+    background-color: transparent;
+    color: {{ accent.accent_500 }};
+    font-size: 18pt;
+    font-weight: bold;
+}
+
+#whatsNewSubtitle {
+    background-color: transparent;
+    color: {{ neutral.neutral_700 }};
+    font-size: 11pt;
+}
+
+/* Внешний фрейм — он даёт скругления и клиппинг */
+QFrame#whatsNewContentFrame {
+    background-color: {{ neutral.neutral_50 }};
+    border-radius: 10px;
+}
+
+/* QScrollArea прозрачная, без рамок, без нативного скроллбара */
+QScrollArea#whatsNewContentScroll {
+    background-color: transparent;
+    border: none;
+}
+
+QWidget#whatsNewContentViewport {
+    background-color: {{ neutral.neutral_50 }};
+}
+
+QWidget#whatsNewContentWidget {
+    background-color: transparent;
+}
+
+/* Overlay-скроллбар поверх контента */
+QScrollBar#whatsNewScrollBar {
+    background: transparent;
+    width: 12px;
+    border-radius: 6px;
+}
+
+QScrollBar#whatsNewScrollBar::handle {
+    background-color: {{ accent.accent_500 }};
+    min-height: 36px;
+    border-radius: 3px;
+}
+
+QScrollBar#whatsNewScrollBar::add-line,
+QScrollBar#whatsNewScrollBar::sub-line {
+    border: none;
+    background: none;
+    height: 0px;
+}
+
+QScrollBar#whatsNewScrollBar::add-page,
+QScrollBar#whatsNewScrollBar::sub-page {
+    background: transparent;
+}
+
+#whatsNewItem,
+#whatsNewItemText,
+#whatsNewBullet {
+    background-color: transparent;
+}
+
+#whatsNewSectionTitle {
+    background-color: transparent;
+    color: {{ neutral.neutral_900 }};
+    font-size: 13pt;
+    font-weight: bold;
+}
+
+#whatsNewBullet {
+    color: {{ accent.accent_500 }};
+    font-size: 16pt;
+    font-weight: bold;
+}
+
+#whatsNewItemText {
+    color: {{ neutral.neutral_800 }};
+    font-size: 11pt;
+}
+
 
 
 
@@ -909,7 +1013,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
 
 /* Password Hint */
 QWidget#passwordHintContainer {
-    border-radius: 8px;
+	border-radius: 8px;
     border: 1px solid {{ neutral.neutral_100 }};
     background-color: {{ neutral.neutral_0 }};
 }

@@ -153,3 +153,20 @@ class TestThemeManager:
                 assert light_qss.exists()
                 content = light_qss.read_text(encoding="utf-8")
                 assert "background: #FFFFFF;" in content
+
+    def test_compile_whats_new_styles(self, mock_configs):
+        templates_dir = mock_configs / "ui/styles/templates"
+        templates_dir.mkdir(parents=True)
+        (templates_dir / "light.j2").write_text("#whatsNewContainer { background: {{ color }}; }", encoding="utf-8")
+
+        themes_dir = mock_configs / "ui/styles/themes"
+        themes_dir.mkdir(parents=True, exist_ok=True)
+
+        with patch("utils.theme_manager.get_app_root", return_value=mock_configs):
+            tm = ThemeManager()
+            success = tm._compile_all_themes()
+
+            assert success is True
+            light_qss = themes_dir / "light.qss"
+            assert light_qss.exists()
+            assert "#whatsNewContainer" in light_qss.read_text(encoding="utf-8")
