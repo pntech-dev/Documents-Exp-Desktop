@@ -53,6 +53,11 @@ This update focuses on personalization and user experience.
 ### ⚡ Also in this update
 
 - Minor UI improvements and bug fixes for a more stable experience.
+- Improved session stability after idle time: document lists and search results no longer disappear if a reload or search request fails.
+- Main window startup loading was moved off the UI thread to reduce freezes during the initial data fetch.
+- Authentication flows now fail safely if the system keyring or session storage is unavailable.
+- API client now correctly handles empty successful responses such as `204 No Content`.
+- Logging out now explicitly disables auto-login for the current profile.
 
 ---
 
