@@ -1,7 +1,7 @@
 import json
 
 from pathlib import Path
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QFrame, QHBoxLayout, QAction
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QFrame, QHBoxLayout, QAction, QPushButton
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QEvent, Qt, QObject, QPoint, QItemSelectionModel
 
@@ -1015,29 +1015,31 @@ class MainView(QObject):
         This method removes the placeholder button from the layout and inserts
         the custom ThemeSwitch widget in its place, preserving the layout index.
         """
-        # Getting the parent container and its layout
         parent = self.ui.navbar_actions_frame
         layout = parent.layout()
-        
-        # We find the old button and its position
-        old_button = self.ui.theme_pushButton
-        if old_button:
-            index = layout.indexOf(old_button)
-            layout.removeWidget(old_button)
-            old_button.deleteLater()
-            
-            # Creating and inserting a new switcher in the same place
-            self.ui.theme_pushButton = ThemeSwitch(parent)
+        if not layout:
+            return
 
-            # Copying properties from the old button if needed, or setting defaults
-            self.ui.theme_pushButton.setMinimumSize(125, 42)
-            self.ui.theme_pushButton.setObjectName("themeSwitch")
-            
-            # Setting the initial state
-            is_dark = self.theme_manager.current_theme_id != "0"
-            self.ui.theme_pushButton.setChecked(is_dark)
-            
-            layout.insertWidget(index, self.ui.theme_pushButton)
+        old_button = self.ui.theme_pushButton
+        index = layout.indexOf(old_button) if old_button else -1
+        if index < 0:
+            index = 1  # Between search block and create block in navbar_actions_frame.
+
+        # Remove any leftover placeholder buttons from .ui to avoid "theme" rectangle artifacts.
+        for placeholder in parent.findChildren(QPushButton, "theme_pushButton"):
+            layout.removeWidget(placeholder)
+            placeholder.hide()
+            placeholder.setParent(None)
+            placeholder.deleteLater()
+
+        self.ui.theme_pushButton = ThemeSwitch(parent)
+        self.ui.theme_pushButton.setMinimumSize(125, 42)
+        self.ui.theme_pushButton.setObjectName("themeSwitch")
+
+        is_dark = self.theme_manager.current_theme_id != "0"
+        self.ui.theme_pushButton.setChecked(is_dark)
+
+        layout.insertWidget(index, self.ui.theme_pushButton)
 
 
     def _replace_profile_icon_label(self) -> None:

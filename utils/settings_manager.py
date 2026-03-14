@@ -30,6 +30,7 @@ class SettingsManager:
         """
         return {
             "theme": 1,  # 0 for light, 1 for dark
+            "last_seen_whats_new_version": "",
             "search_filters": {
                 "search_in_pages": True,
                 "search_field": "name",

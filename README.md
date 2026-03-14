@@ -52,6 +52,7 @@ This update focuses on personalization and user experience.
 
 ### ⚡ Also in this update
 
+- Added a dedicated "What's New" changelog window that opens after updates and shows version changes.
 - Minor UI improvements and bug fixes for a more stable experience.
 - Improved session stability after idle time: document lists and search results no longer disappear if a reload or search request fails.
 - Main window startup loading was moved off the UI thread to reduce freezes during the initial data fetch.
