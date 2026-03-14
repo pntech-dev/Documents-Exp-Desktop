@@ -21,7 +21,7 @@ class LogoLabel(QLabel):
     def __init__(self, parent: QWidget | None = None) -> None:
         """Initializes the logo label."""
         super().__init__(parent=parent)
-        ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
+        ThemeManagerInstance.themeChanged.connect(self._on_theme_changed)
 
         self.icons = {"light": None, "dark": None}
 
@@ -42,7 +42,7 @@ class LogoLabel(QLabel):
     def paintEvent(self, event: QPaintEvent) -> None:
         """Paints the logo icon."""
         super().paintEvent(event)
-        theme_id = ThemeManagerInstance().current_theme_id
+        theme_id = ThemeManagerInstance.current_theme_id
         theme = "light" if theme_id == "0" else "dark"
 
         icon = self.icons.get(theme)
@@ -187,7 +187,7 @@ class ProfileIconLabel(IconLabel):
     def __init__(self, parent: QWidget | None = None) -> None:
         """Initializes the profile icon label."""
         super().__init__(parent)
-        ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
+        ThemeManagerInstance.themeChanged.connect(self._on_theme_changed)
         
         self.icons = {
             "guest": {"light": None, "dark": None},
@@ -223,7 +223,7 @@ class ProfileIconLabel(IconLabel):
         self._update_icon()
 
     def _update_icon(self) -> None:
-        theme_id = ThemeManagerInstance().current_theme_id
+        theme_id = ThemeManagerInstance.current_theme_id
         theme = "light" if theme_id == "0" else "dark"
         
         if self._mode == "auth" and self._custom_avatar and not self._custom_avatar.isNull():
@@ -243,7 +243,7 @@ class SlideLabel(QLabel):
         """Initializes the slide label."""
         super().__init__(parent=parent)
         self._renderer = QSvgRenderer()
-        ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
+        ThemeManagerInstance.themeChanged.connect(self._on_theme_changed)
         self.svg_paths = {"light": None, "dark": None}
 
     def set_svg_paths(self, light: str | None = None, dark: str | None = None) -> None:
@@ -253,7 +253,7 @@ class SlideLabel(QLabel):
         self._update_image()
 
     def _update_image(self) -> None:
-        theme_id = ThemeManagerInstance().current_theme_id
+        theme_id = ThemeManagerInstance.current_theme_id
         theme = "light" if theme_id == "0" else "dark"
         
         path = self.svg_paths.get(theme)

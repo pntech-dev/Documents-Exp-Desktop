@@ -11,6 +11,7 @@ class TestApplication:
              patch("app.AuthWindow") as MockAuthWindow, \
              patch("app.MainWindow") as MockMainWindow, \
              patch("app.AuthModel") as MockAuthModel, \
+             patch("app.WhatsNewDialog") as MockWhatsNewDialog, \
              patch("app.ThemeManagerInstance"), \
              patch("app.NotificationService"), \
              patch("app.UpdateManager") as MockUpdateManager, \
@@ -35,7 +36,8 @@ class TestApplication:
                 "MainWindow": MockMainWindow,
                 "AuthModel": auth_model,
                 "APIWorker": MockAPIWorker,
-                "UpdateManager": MockUpdateManager
+                "UpdateManager": MockUpdateManager,
+                "WhatsNewDialog": MockWhatsNewDialog,
             }
 
     def test_init_no_auto_login(self, mock_dependencies):
@@ -75,7 +77,10 @@ class TestApplication:
         app.on_token_verified({})
         
         # Should create and show main window
-        mock_dependencies["MainWindow"].assert_called_with(mode="auth")
+        mock_dependencies["MainWindow"].assert_called_with(
+            mode="auth",
+            settings_manager=app.settings_manager
+        )
         mock_dependencies["MainWindow"].return_value.showMaximized.assert_called_once()
         # Should close auth window
         auth_window_mock.close.assert_called_once()
@@ -136,3 +141,35 @@ class TestApplication:
         assert app.main_window is None
         app.auth_model.logout.assert_called_once()
         mock_dependencies["AuthWindow"].return_value.show.assert_called()
+
+    def test_show_main_window_displays_whats_new_once_for_authorized_user(self, mock_dependencies):
+        app = Application()
+        app.settings_manager = Mock()
+        app.settings_manager.get_setting.return_value = ""
+
+        app.show_main_window(mode="auth")
+
+        mock_dependencies["WhatsNewDialog"].assert_called_once_with(
+            parent=app.main_window,
+            version=APP_VERSION
+        )
+        mock_dependencies["WhatsNewDialog"].return_value.exec_.assert_called_once()
+        app.settings_manager.set_setting.assert_called_once_with("last_seen_whats_new_version", APP_VERSION)
+
+    def test_show_main_window_skips_whats_new_if_already_seen(self, mock_dependencies):
+        app = Application()
+        app.settings_manager = Mock()
+        app.settings_manager.get_setting.return_value = APP_VERSION
+
+        app.show_main_window(mode="auth")
+
+        mock_dependencies["WhatsNewDialog"].assert_not_called()
+        app.settings_manager.set_setting.assert_not_called()
+
+    def test_show_main_window_skips_whats_new_for_guest(self, mock_dependencies):
+        app = Application()
+        app.settings_manager = Mock()
+
+        app.show_main_window(mode="guest")
+
+        mock_dependencies["WhatsNewDialog"].assert_not_called()

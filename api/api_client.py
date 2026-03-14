@@ -28,10 +28,11 @@ class APIClient:
             dict: The JSON response from the API containing user data.
         """
         headers = {"Authorization": f"Bearer {token}"}
-        return self._request("GET",
+        res = self._request("GET",
             url=self.base_url + "/auth/user", 
             headers=headers
         )
+        return res
     
     
     def get_user_data(self, token: str) -> dict:
@@ -44,6 +45,25 @@ class APIClient:
             dict: The JSON response containing user data.
         """
         return self.verify(token)
+
+
+    def update_user_data(self, token: str, user_id: int, data: dict) -> dict:
+        """Updates user data.
+
+        Args:
+            token (str): The access token.
+            user_id (int): The ID of the user to update.
+            data (dict): The user data to update.
+
+        Returns:
+            dict: The JSON response from the API containing user data.
+        """
+        headers = {"Authorization": f"Bearer {token}"}
+        return self._request("PATCH",
+            url=self.base_url + f"/auth/user/{user_id}", 
+            headers=headers,
+            json=data
+        )
         
 
     # === Login ===
@@ -517,4 +537,6 @@ class APIClient:
         """Generic method for making API requests."""
         request = self.session.request(method, url, timeout=timeout, **kwargs)
         request.raise_for_status()
+        if request.status_code == 204 or not request.content:
+            return {}
         return request.json()

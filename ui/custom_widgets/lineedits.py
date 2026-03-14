@@ -20,7 +20,7 @@ class IconLineEdit(QLineEdit):
         """Initializes the icon line edit."""
         super().__init__(parent)
 
-        ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
+        ThemeManagerInstance.themeChanged.connect(self._on_theme_changed)
 
         # icon settings
         self.icon_size = 20
@@ -146,7 +146,7 @@ class IconLineEdit(QLineEdit):
     # State priority + theme-based icon selection
     def _update_icon(self) -> None:
         """Updates the icon based on the current state and theme."""
-        theme_id = ThemeManagerInstance().current_theme_id
+        theme_id = ThemeManagerInstance.current_theme_id
         theme = "light" if theme_id == "0" else "dark"
 
         if self._disabled:

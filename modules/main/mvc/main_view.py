@@ -1,7 +1,7 @@
 import json
 
 from pathlib import Path
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QFrame, QHBoxLayout, QAction
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QFrame, QHBoxLayout, QAction, QPushButton
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QEvent, Qt, QObject, QPoint, QItemSelectionModel
 
@@ -348,6 +348,13 @@ class Navbar:
             "search_by_code": self.action_search_code.isChecked(),
             "exact_match": self.action_exact_match.isChecked()
         }
+
+    def set_search_filters(self, filters: dict) -> None:
+        """Sets the state of search filters from a dictionary."""
+        self.action_search_pages.setChecked(filters.get("include_pages", True))
+        self.action_search_name.setChecked(filters.get("search_by_name", True))
+        self.action_search_code.setChecked(filters.get("search_by_code", True))
+        self.action_exact_match.setChecked(filters.get("exact_match", False))
 
 
     def _setup_filter_menu(self) -> None:
@@ -806,15 +813,14 @@ class MainView(QObject):
         """
         super().__init__()
         self.ui = ui
-        self.theme_manager = ThemeManagerInstance()
+        self.theme_manager = ThemeManagerInstance
         self.ui_config = self._load_ui_config()
         self.current_mode = "guest"
 
 
         # Disabled until the next update
         for ui_element in[
-            self.ui.change_view_pushButton,
-            self.ui.profile_info_label
+            self.ui.change_view_pushButton
         ]:
             ui_element.setVisible(False)
 
@@ -923,7 +929,6 @@ class MainView(QObject):
         )
 
         # Disable unimplemented actions
-        self.user_profile_action.setVisible(False)
         self.settings_action.setVisible(False)
 
 
@@ -1010,29 +1015,31 @@ class MainView(QObject):
         This method removes the placeholder button from the layout and inserts
         the custom ThemeSwitch widget in its place, preserving the layout index.
         """
-        # Getting the parent container and its layout
         parent = self.ui.navbar_actions_frame
         layout = parent.layout()
-        
-        # We find the old button and its position
-        old_button = self.ui.theme_pushButton
-        if old_button:
-            index = layout.indexOf(old_button)
-            layout.removeWidget(old_button)
-            old_button.deleteLater()
-            
-            # Creating and inserting a new switcher in the same place
-            self.ui.theme_pushButton = ThemeSwitch(parent)
+        if not layout:
+            return
 
-            # Copying properties from the old button if needed, or setting defaults
-            self.ui.theme_pushButton.setMinimumSize(125, 42)
-            self.ui.theme_pushButton.setObjectName("themeSwitch")
-            
-            # Setting the initial state
-            is_dark = self.theme_manager.current_theme_id != "0"
-            self.ui.theme_pushButton.setChecked(is_dark)
-            
-            layout.insertWidget(index, self.ui.theme_pushButton)
+        old_button = self.ui.theme_pushButton
+        index = layout.indexOf(old_button) if old_button else -1
+        if index < 0:
+            index = 1  # Between search block and create block in navbar_actions_frame.
+
+        # Remove any leftover placeholder buttons from .ui to avoid "theme" rectangle artifacts.
+        for placeholder in parent.findChildren(QPushButton, "theme_pushButton"):
+            layout.removeWidget(placeholder)
+            placeholder.hide()
+            placeholder.setParent(None)
+            placeholder.deleteLater()
+
+        self.ui.theme_pushButton = ThemeSwitch(parent)
+        self.ui.theme_pushButton.setMinimumSize(125, 42)
+        self.ui.theme_pushButton.setObjectName("themeSwitch")
+
+        is_dark = self.theme_manager.current_theme_id != "0"
+        self.ui.theme_pushButton.setChecked(is_dark)
+
+        layout.insertWidget(index, self.ui.theme_pushButton)
 
 
     def _replace_profile_icon_label(self) -> None:
@@ -1082,6 +1089,10 @@ class MainView(QObject):
     def get_search_filters(self) -> dict:
         """Returns the current search filters."""
         return self.navbar.get_search_filters()
+    
+    def set_search_filters(self, filters: dict) -> None:
+        """Sets the search filters in the navbar."""
+        self.navbar.set_search_filters(filters)
     
 
     def get_search_text(self) -> str:
@@ -1283,6 +1294,16 @@ class MainView(QObject):
         """
         if self.profile_menu:
             self.logout_action.triggered.connect(handler)
+
+
+    def connect_profile_action(self, handler) -> None:
+        """Connects the user profile action to a handler.
+
+        Args:
+            handler: The callback function.
+        """
+        if self.user_profile_action:
+            self.user_profile_action.triggered.connect(handler)
 
 
     def connect_departments_selection(self, handler) -> None:

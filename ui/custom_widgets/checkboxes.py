@@ -22,7 +22,7 @@ class ViewPasswordCheckbox(QCheckBox):
             "QCheckBox::indicator { width: 0px; height: 0px; border: none; background: transparent; }"
         )
         
-        ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
+        ThemeManagerInstance.themeChanged.connect(self._on_theme_changed)
         self.stateChanged.connect(self._on_state_changed)
 
         # Structure: theme -> status (checked/unchecked) -> mode (default/hover/pressed)
@@ -111,7 +111,7 @@ class ViewPasswordCheckbox(QCheckBox):
 
     def _update_icon(self) -> None:
         """Updates the icon based on the current state and theme."""
-        theme_id = ThemeManagerInstance().current_theme_id
+        theme_id = ThemeManagerInstance.current_theme_id
         theme = "light" if theme_id == "0" else "dark"
         
         state = "checked" if self.isChecked() else "unchecked"

@@ -24,10 +24,10 @@ class MainModel:
         self.LOCAL_DIR_LAST_LOGGED = self.LOCAL_DIR / "last_logged.json"
 
         # Sidebar data
-        self.departments = self._get_departments()
-        self.current_department_id = self.departments[0]["id"] if self.departments else None
-        self.categories = self._get_categories()
-        
+        self.departments = []
+        self.current_department_id = None
+        self.categories = []
+
         self.current_category_id = None
 
         # Table data
@@ -46,6 +46,17 @@ class MainModel:
         data = self.api.get_user_data(token)
         
         return data
+
+    def load_initial_data(self) -> dict:
+        """Loads the sidebar data and current user profile for the startup flow."""
+        departments = self._get_departments()
+        categories = self._get_categories()
+        user_data = self.get_user_data() if self.mode == "auth" else None
+        return {
+            "departments": departments,
+            "categories": categories,
+            "user_data": user_data,
+        }
     
 
     def get_document(self, document_id: int) -> dict:
@@ -59,6 +70,26 @@ class MainModel:
     ) -> list[dict]:
         pages = self.api.get_document_pages(document_id)
         return pages["pages"]
+
+
+    def get_full_user_data(self) -> dict | None:
+        """Retrieves full user data for the profile dialog."""
+        token = self._get_user_token()
+        if not token:
+            return None
+        
+        # This might be the same as get_user_data, but let's assume it could be different
+        return self.api.get_user_data(token)
+
+
+    def update_user_profile(self, user_id: int, data: dict) -> dict:
+        """Updates the user's profile data."""
+        # The data dict should contain 'username', 'department' (ID)
+        return self._make_authorized_request(
+            self.api.update_user_data,
+            user_id=user_id,
+            data=data
+        )
     
 
     def create_department(
@@ -141,6 +172,7 @@ class MainModel:
     def refresh_data(self) -> None:
         """Refreshes the data from the API."""
         self.departments = self._get_departments()
+        self.current_department_id = self.departments[0]["id"] if self.departments else None
         self.categories = self._get_categories()
 
 

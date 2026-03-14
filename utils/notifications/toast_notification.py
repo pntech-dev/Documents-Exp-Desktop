@@ -3,7 +3,7 @@ from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtCore import QPropertyAnimation, QEasingCurve, QRect, Qt, QSize, QEvent
 
 from ui.ui_converted.toast_notification import Ui_ToastNotification
-from utils.theme_manager import theme_manager_singleton
+from utils.theme_manager import ThemeManagerInstance
 
 
 class ToastNotification(QFrame, Ui_ToastNotification):
@@ -49,7 +49,7 @@ class ToastNotification(QFrame, Ui_ToastNotification):
         self.description.setText(message)
 
         # Programmatically set the icon to avoid SVG scaling issues with stylesheets
-        theme_name = theme_manager_singleton.themes.get(theme_manager_singleton.current_theme_id, 'light')
+        theme_name = ThemeManagerInstance.themes.get(ThemeManagerInstance.current_theme_id, 'light')
         icon_path = f":/icons/{theme_name}/{theme_name}/notification_{notification_type}.svg"
         
         icon = QIcon(icon_path)

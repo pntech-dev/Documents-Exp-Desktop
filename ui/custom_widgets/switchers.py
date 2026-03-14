@@ -19,7 +19,7 @@ class ThemeSwitch(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        ThemeManagerInstance().themeChanged.connect(self._on_theme_changed)
+        ThemeManagerInstance.themeChanged.connect(self._on_theme_changed)
         self.setCursor(Qt.PointingHandCursor)
         self.setObjectName("themeSwitch")
 

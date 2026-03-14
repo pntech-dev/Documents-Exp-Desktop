@@ -125,7 +125,7 @@ class AuthModel:
 
 
     """=== User ==="""
-    def save_user(self, user_data: dict, auto_login: bool) -> None:
+    def save_user(self, user_data: dict, auto_login: bool) -> int | None:
         """Saves user data and tokens to local files and keyring.
 
         Args:
@@ -135,7 +135,7 @@ class AuthModel:
         # Get user data
         user = user_data.get("user", None)
         if not user:
-            return
+            return None
 
         user_id = user.get("id", None)
 
@@ -177,6 +177,8 @@ class AuthModel:
 
             with open(self.LOCAL_DIR_LAST_LOGGED, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=4, ensure_ascii=False)
+        
+        return user_id
 
 
     """=== Login ==="""
@@ -230,6 +232,22 @@ class AuthModel:
             return get_flag(path=user_data_file_path)
 
 
+    def get_last_logged_user_id(self) -> int | None:
+        """
+        Retrieves the user ID of the last successfully logged-in user.
+
+        Returns:
+            The user ID as an integer, or None if not found.
+        """
+        last_logged_data = read_json(self.LOCAL_DIR_LAST_LOGGED)
+        if not last_logged_data:
+            return None
+        
+        user_id = last_logged_data.get("user_id")
+
+        return user_id if isinstance(user_id, int) else None
+
+
     def logout(self) -> None:
         """Logs out the current user.
 
@@ -240,6 +258,16 @@ class AuthModel:
         def delete_file(file_path: Path) -> None:
             if file_path.exists():
                 file_path.unlink()
+
+        def disable_auto_login(user_id: int) -> None:
+            profile_path = self.APP_DIR / "Profiles" / f"user_data_{user_id}.json"
+            profile_data = read_json(profile_path)
+            if not isinstance(profile_data, dict):
+                return
+
+            profile_data["auto_login"] = False
+            with open(profile_path, "w", encoding="utf-8") as f:
+                json.dump(profile_data, f, indent=4, ensure_ascii=False)
 
         # Get last user id
         last_logged_data = read_json(self.LOCAL_DIR_LAST_LOGGED)
@@ -257,6 +285,8 @@ class AuthModel:
                 logging.info(f"Tokens for user_id {user_id} deleted from keyring.")
             except keyring_errors.PasswordDeleteError:
                 logging.info(f"Tokens for user_id {user_id} not found in keyring, skipping deletion.")
+
+            disable_auto_login(user_id)
 
         # Delete the last logged user file to disable auto-login on next start
         delete_file(self.LOCAL_DIR_LAST_LOGGED)
@@ -358,7 +388,9 @@ class AuthModel:
                 password=data.get(token, None)
             )
         
-        except keyring_errors.PasswordSetError:
+        except keyring_errors.PasswordSetError as e:
             logging.error(msg="PasswordSetError", exc_info=True)
+            raise RuntimeError("Не удалось сохранить данные сессии в системное хранилище.") from e
         except Exception as e:
             logging.error(msg=e, exc_info=True)
+            raise RuntimeError("Не удалось сохранить данные сессии в системное хранилище.") from e

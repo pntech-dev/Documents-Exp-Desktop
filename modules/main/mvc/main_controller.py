@@ -19,10 +19,13 @@ from modules.departments_editings import (
 from modules.categories_editings import (
     CreateCategory, EditCategory
 )
+from modules.profile.profile_dialog import ProfileDialog
 from utils import NotificationService
 from utils.error_messages import get_friendly_error_message
 
 
+
+from utils.settings_manager import SettingsManager
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -42,7 +45,8 @@ class MainController(QObject):
             model: MainModel, 
             view: MainView, 
             window: QMainWindow, 
-            mode: str = "guest"
+            mode: str = "guest",
+            settings_manager: SettingsManager | None = None
     ) -> None:
         """Initializes the MainController.
 
@@ -51,16 +55,19 @@ class MainController(QObject):
             view: The main UI view.
             window: The main QMainWindow instance.
             mode: The application mode ('guest' or 'auth').
+            settings_manager: The manager for user-specific settings.
         """
         super().__init__()
         self.model = model
         self.view = view
         self.window = window
         self.mode = mode
+        self.settings_manager = settings_manager
         self.editor_window = None
         self.current_documents = []
         self.current_search_worker = None
         self.current_load_worker = None
+        self.initial_load_worker = None
         self.active_workers = set()
         self.is_updating_data = False
 
@@ -111,7 +118,11 @@ class MainController(QObject):
 
 
     def _on_search_filters_changed(self, checked: bool) -> None:
-        """Handles search filter changes."""
+        """Handles search filter changes and saves them."""
+        filters = self.view.get_search_filters()
+        if self.settings_manager:
+            self.settings_manager.set_setting("search_filters", filters)
+
         if self.view.get_search_text():
             self._on_search_lineedit_text_changed()
 
@@ -367,6 +378,59 @@ class MainController(QObject):
     def _on_logout_clicked(self) -> None:
         """Handles the logout action."""
         self.logout_requested.emit()
+
+
+    def _show_profile_dialog(self) -> None:
+        """Handles showing the user profile dialog."""
+        if self.mode != "auth":
+            return
+
+        try:
+            user_data = self.model.get_full_user_data()
+            if not user_data:
+                logger.warning("Could not retrieve user data for profile.")
+                return
+
+            departments = self.model.departments
+            
+            updated_data = ProfileDialog.show_dialog(
+                parent=self.window,
+                user_data=user_data,
+                departments=departments
+            )
+
+            if updated_data:
+                worker = APIWorker(
+                    self.model.update_user_profile,
+                    user_id=user_data['id'],
+                    data=updated_data
+                )
+                self.active_workers.add(worker)
+                worker.finished.connect(self._on_profile_update_finished)
+                worker.error.connect(lambda e: self._handle_error(e, "Ошибка обновления профиля"))
+                worker.finished.connect(self._cleanup_worker)
+                worker.error.connect(self._cleanup_worker)
+                worker.start()
+
+        except Exception as e:
+            self._handle_error(e, "Ошибка профиля")
+
+
+    def _on_profile_update_finished(self, new_data: dict):
+        """Handles successful profile update."""
+        logger.info(f"User profile updated successfully for user ID: {new_data.get('id')}")
+        
+        # Refresh all data to ensure consistency
+        self.model.refresh_data()
+        
+        # Update the UI with new user data
+        self._init_ui()
+
+        NotificationService().show_toast(
+            notification_type="success",
+            title="Профиль обновлен",
+            message="Ваши данные были успешно сохранены."
+        )
 
 
     def _on_department_selected(self, selected, deselected) -> None:
@@ -725,6 +789,7 @@ class MainController(QObject):
         """Handles search errors."""
         if self.sender() != self.current_search_worker:
             return
+        self.current_search_worker = None
         self._handle_error(error, "Ошибка поиска")
 
     def _cleanup_worker(self) -> None:
@@ -741,32 +806,92 @@ class MainController(QObject):
 
     def _init_ui(self) -> None:
         """Initializes the UI with default data."""
-        self._load_sidebar_data()
         self.view.set_profile_mode(self.mode)
 
-        # Set user data
+        # Load and apply settings
+        if self.settings_manager:
+            search_filters = self.settings_manager.get_setting("search_filters")
+            if search_filters:
+                self.view.set_search_filters(search_filters)
+        self._load_initial_data()
+
+    def _load_initial_data(self) -> None:
+        """Loads the initial sidebar and profile data without blocking the UI thread."""
+        worker = APIWorker(self.model.load_initial_data)
+        self.initial_load_worker = worker
+        self.active_workers.add(worker)
+        worker.finished.connect(self._on_initial_data_loaded)
+        worker.error.connect(self._on_initial_data_error)
+        worker.finished.connect(self._cleanup_worker)
+        worker.error.connect(self._cleanup_worker)
+        worker.start()
+
+    def _on_initial_data_loaded(self, data: dict) -> None:
+        if self.sender() != self.initial_load_worker:
+            return
+
+        self.initial_load_worker = None
+        self.model.departments = data.get("departments", [])
+        self.model.categories = data.get("categories", [])
+        self.model.current_department_id = self.model.departments[0]["id"] if self.model.departments else None
+        self._load_sidebar_data()
+
         if self.mode == "auth":
-            user_data = self.model.get_user_data()
-
-            if user_data:
-                username = user_data.get("username")
-                department = user_data.get("department")
-                self.view.set_username(name=username if username else user_data.get("email"))
-                self.view.set_user_department(dept=department if department else "Отдел не выбран")
-
+            self._apply_user_data(data.get("user_data"))
         else:
             self.view.set_username("Гость")
             self.view.set_user_department("Войдите в аккаунт")
+            if self.model.departments:
+                first_dept_id = self.model.departments[0].get("id")
+                if first_dept_id:
+                    QTimer.singleShot(50, lambda: self.view.select_department(first_dept_id))
 
-        # Set documents data
         self._update_create_category_state()
         self._update_create_document_state()
+
+    def _on_initial_data_error(self, error: Exception) -> None:
+        if self.sender() != self.initial_load_worker:
+            return
+
+        self.initial_load_worker = None
+        if self.mode == "auth":
+            self.view.set_username("Пользователь")
+            self.view.set_user_department("Не удалось загрузить данные")
+        else:
+            self.view.set_username("Гость")
+            self.view.set_user_department("Войдите в аккаунт")
+        self._handle_error(error, "Ошибка загрузки данных")
+
+    def _apply_user_data(self, user_data: dict | None) -> None:
+        """Applies the loaded user data to the UI and restores sidebar selection."""
+        if not user_data:
+            return
+
+        username = user_data.get("username")
+        department_name = user_data.get("department")
+        self.view.set_username(name=username if username else user_data.get("email"))
+        self.view.set_user_department(dept=department_name if department_name else "Отдел не выбран")
+
+        user_dept_id = None
+        if department_name:
+            for dept in self.model.departments:
+                if dept.get("name") == department_name:
+                    user_dept_id = dept.get("id")
+                    break
+
+        if user_dept_id:
+            QTimer.singleShot(50, lambda: self.view.select_department(user_dept_id))
+        elif self.model.departments:
+            first_dept_id = self.model.departments[0].get("id")
+            if first_dept_id:
+                QTimer.singleShot(50, lambda: self.view.select_department(first_dept_id))
 
 
     def _setup_connections(self) -> None:
         """Sets up signal-slot connections."""      
         # Sidebar
         self.view.connect_logout(self._on_logout_clicked)
+        self.view.connect_profile_action(self._show_profile_dialog)
         self.view.connect_departments_selection(self._on_department_selected)
         self.view.connect_categories_selection(self._on_category_selected)
         self.view.connect_department_edit(self._on_edit_department_clicked)
@@ -864,20 +989,26 @@ class MainController(QObject):
     def _update_documents_list(self) -> None:
         """Updates the documents list based on the current category."""
         self.model.current_document_id = None
-        
-        # Reset pagination
+
+        if self.model.current_category_id is None:
+            self.offset = 0
+            self.has_more = False
+            self.current_documents = []
+            self.search_results_all = []
+            self.pending_documents_to_add = []
+            self.view.clear_documents_table()
+            self.view.set_finded_counter(0)
+            self.view.set_active_search_tags([])
+            self.view.set_export_print_enabled(False)
+            return
+
         self.offset = 0
         self.has_more = True
-        self.current_documents = []
-        self.view.clear_documents_table()
-        self.view.set_finded_counter(0)
-        self.view.set_active_search_tags([])
-        self.view.set_export_print_enabled(False)
-        
-        # Reset loading state to ensure we can load new data
+
         self.is_loading = False
         self.current_load_worker = None
-        
+        self.pending_documents_to_add = []
+
         self._load_more_documents()
 
 
@@ -923,6 +1054,7 @@ class MainController(QObject):
 
         self.is_loading = False
         self.current_load_worker = None
+        self.search_results_all = []
 
         # Prevent updating UI if search is active (stale request)
         if self.view.get_search_text():
@@ -939,6 +1071,7 @@ class MainController(QObject):
         # Instead of one large, blocking update, we add the data in chunks
         # to keep the UI responsive.
         self.view.clear_documents_table()
+        self.view.set_active_search_tags([])
         self.pending_documents_to_add = list(self.current_documents)
         # Start the chunked update. Use a single shot timer to yield to the event loop.
         QTimer.singleShot(0, self._add_document_chunk)
@@ -969,6 +1102,7 @@ class MainController(QObject):
             return
 
         self.is_loading = False
+        self.current_load_worker = None
         self._handle_error(error, "Ошибка загрузки документов")
 
     

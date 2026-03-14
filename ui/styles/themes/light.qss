@@ -537,6 +537,13 @@ QFrame#editCategoryContainer {
 	border: 1px solid #E6E6E6;
 }
 
+/* Profile Dialog Window */
+QFrame#profileDialogContainer {
+    border-radius: 8px;
+    background-color: #FFFFFF;
+	border: 1px solid #E6E6E6;
+}
+
 /* Editor Window */
 QFrame#editorContainer {
 	border: 1px solid #E6E6E6;
@@ -609,6 +616,110 @@ QFrame#deleteInfoContainer {
     background-color: #FFFFFF;
     border-radius: 8px;
     border: 1px solid #E6E6E6;
+}
+
+/* What's New Window */
+#whatsNewContainer {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    border: 1px solid #E6E6E6;
+}
+
+#whatsNewHeader {
+    background-color: #F5D6D6;
+    border-radius: 10px;
+}
+
+#whatsNewBadge {
+    background-color: #FFFFFF;
+    color: #CC3333;
+    border: 1px solid #E08585;
+    border-radius: 12px;
+    padding: 4px 10px;
+    font-size: 10pt;
+    font-weight: bold;
+}
+
+#whatsNewTitle {
+    background-color: transparent;
+    color: #CC3333;
+    font-size: 18pt;
+    font-weight: bold;
+}
+
+#whatsNewSubtitle {
+    background-color: transparent;
+    color: #4D4D4D;
+    font-size: 11pt;
+}
+
+/* The outer frame provides rounding and clipping */
+QFrame#whatsNewContentFrame {
+    background-color: #F2F2F2;
+    border-radius: 10px;
+}
+
+/* QScrollArea is transparent, without borders, and without a native scrollbar */
+QScrollArea#whatsNewContentScroll {
+    background-color: transparent;
+    border: none;
+}
+
+QWidget#whatsNewContentViewport {
+    background-color: #F2F2F2;
+}
+
+QWidget#whatsNewContentWidget {
+    background-color: transparent;
+}
+
+/* Overlay-scrollbar on top of the content */
+QScrollBar#whatsNewScrollBar {
+    background: transparent;
+    width: 12px;
+    border-radius: 6px;
+}
+
+QScrollBar#whatsNewScrollBar::handle {
+    background-color: #CC3333;
+    min-height: 36px;
+    border-radius: 3px;
+}
+
+QScrollBar#whatsNewScrollBar::add-line,
+QScrollBar#whatsNewScrollBar::sub-line {
+    border: none;
+    background: none;
+    height: 0px;
+}
+
+QScrollBar#whatsNewScrollBar::add-page,
+QScrollBar#whatsNewScrollBar::sub-page {
+    background: transparent;
+}
+
+#whatsNewItem,
+#whatsNewItemText,
+#whatsNewBullet {
+    background-color: transparent;
+}
+
+#whatsNewSectionTitle {
+    background-color: transparent;
+    color: #1A1A1A;
+    font-size: 13pt;
+    font-weight: bold;
+}
+
+#whatsNewBullet {
+    color: #CC3333;
+    font-size: 16pt;
+    font-weight: bold;
+}
+
+#whatsNewItemText {
+    color: #333333;
+    font-size: 11pt;
 }
 
 
@@ -1060,3 +1171,70 @@ FileWidget QPushButton#fileDeleteButton:hover {
     border: 1px solid #CCCCCC;
 	background-color: #FFFFFF;
 }
+
+
+/* ComboBox */
+ComboBox {
+    border-radius: 8px;
+	border: 1px solid #E6E6E6;
+	background-color: #FFFFFF;
+}
+ComboBox[hovered="true"] {
+    border: 1px solid #D9D9D9;
+}
+ComboBox[open="true"], ComboBox:focus {
+    border: 1px solid #CC3333;
+}
+ComboBox[disabled="true"] {
+    border: 1px solid #F2F2F2;
+	background-color: #FFFFFF;
+}
+
+QLabel#comboTextLabel {
+    color: #808080;
+    background-color: transparent;
+    font-size: 12pt;
+}
+ComboBox[hovered="true"] QLabel#comboTextLabel {
+	color: #4D4D4D;
+}
+ComboBox[empty="false"] QLabel#comboTextLabel {
+    color: #1A1A1A;
+}
+ComboBox[disabled="true"] QLabel#comboTextLabel {
+    color: #E6E6E6;
+}
+
+/* Popup styles */
+QFrame#ComboBoxPopup {
+    border: none;
+}
+QFrame#comboPopupContainer {
+    border: 1px solid #E6E6E6;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+}
+QScrollArea#comboPopupScroll {
+    border: none;
+}
+QWidget#comboPopupList {
+    background-color: transparent;
+}
+
+/* Item styles */
+_ComboBoxItem {
+    background-color: transparent;
+}
+_ComboBoxItem[hovered="true"] {
+    background-color: #F2F2F2;
+	border-radius: 8px;
+}
+_ComboBoxItem QLabel#comboItemLabel {
+    color: #333333;
+    background-color: transparent;
+    font-size: 12pt;
+}
+_ComboBoxItem[hovered="true"] QLabel#comboItemLabel {
+    color: #1A1A1A;
+}
+
