@@ -59,18 +59,27 @@ class TestAuthModel:
             # Check file writing (user data and last logged)
             assert mock_open.call_count >= 2
 
+    def test_save_token_raises_when_keyring_write_fails(self, model):
+        with patch("modules.auth.mvc.auth_model.keyring.set_password", side_effect=Exception("keyring fail")):
+            with pytest.raises(RuntimeError):
+                model.save_token("access_token_1", "access_token", {"access_token": "acc"})
+
 
     def test_logout(self, model):
         """Test logout clears keyring and deletes last logged file."""
         # Configure the mock path object to simulate file existence
         model.LOCAL_DIR_LAST_LOGGED.exists.return_value = True
 
-        with patch("modules.auth.mvc.auth_model.read_json", return_value={"user_id": 1}), \
+        with patch("modules.auth.mvc.auth_model.read_json", side_effect=[{"user_id": 1}, {"auto_login": True}]), \
              patch("modules.auth.mvc.auth_model.keyring.delete_password") as mock_keyring_del:
             
-            model.logout()
+            with patch("builtins.open", new_callable=MagicMock) as mock_open, \
+                 patch("json.dump") as mock_json_dump:
+                model.logout()
             
             assert mock_keyring_del.call_count == 2
+            assert mock_open.call_count >= 1
+            mock_json_dump.assert_called()
             model.LOCAL_DIR_LAST_LOGGED.unlink.assert_called_once()
 
 
@@ -144,6 +153,31 @@ class TestAuthController:
         controller.model.save_user.assert_called_once_with(user_data=data, auto_login=True)
         controller.view.login_page.clear_lineedits.assert_called_once()
         mock_signal.assert_called_once_with("auth", 1)
+
+    def test_login_success_callback_handles_save_error(self, controller):
+        data = {"user": {"id": 1}}
+        controller.view.login_page.get_auto_login_state.return_value = True
+        controller.model.save_user.side_effect = RuntimeError("keyring fail")
+
+        mock_signal = Mock()
+        controller.login_successful.connect(mock_signal)
+
+        with patch("modules.auth.mvc.auth_controller.NotificationService") as MockNotify:
+            controller.login_user(data)
+
+        mock_signal.assert_not_called()
+        controller.view.login_page.clear_lineedits.assert_not_called()
+        MockNotify.return_value.show_toast.assert_called_once()
+
+    def test_reset_password_page_switch_handles_save_error(self, controller):
+        controller.view.pages = {"change_password_change_page": Mock()}
+        controller.model.save_token.side_effect = RuntimeError("keyring fail")
+
+        with patch("modules.auth.mvc.auth_controller.NotificationService") as MockNotify:
+            controller.switch_to_reset_password_page({"reset_token": "token"})
+
+        controller.view.switch_page.assert_not_called()
+        MockNotify.return_value.show_toast.assert_called_once()
 
 
     def test_signup_flow(self, controller):

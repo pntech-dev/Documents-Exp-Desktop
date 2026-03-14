@@ -24,10 +24,10 @@ class MainModel:
         self.LOCAL_DIR_LAST_LOGGED = self.LOCAL_DIR / "last_logged.json"
 
         # Sidebar data
-        self.departments = self._get_departments()
-        self.current_department_id = self.departments[0]["id"] if self.departments else None
-        self.categories = self._get_categories()
-        
+        self.departments = []
+        self.current_department_id = None
+        self.categories = []
+
         self.current_category_id = None
 
         # Table data
@@ -46,6 +46,17 @@ class MainModel:
         data = self.api.get_user_data(token)
         
         return data
+
+    def load_initial_data(self) -> dict:
+        """Loads the sidebar data and current user profile for the startup flow."""
+        departments = self._get_departments()
+        categories = self._get_categories()
+        user_data = self.get_user_data() if self.mode == "auth" else None
+        return {
+            "departments": departments,
+            "categories": categories,
+            "user_data": user_data,
+        }
     
 
     def get_document(self, document_id: int) -> dict:
@@ -161,6 +172,7 @@ class MainModel:
     def refresh_data(self) -> None:
         """Refreshes the data from the API."""
         self.departments = self._get_departments()
+        self.current_department_id = self.departments[0]["id"] if self.departments else None
         self.categories = self._get_categories()
 
 

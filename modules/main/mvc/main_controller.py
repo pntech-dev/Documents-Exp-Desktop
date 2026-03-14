@@ -67,6 +67,7 @@ class MainController(QObject):
         self.current_documents = []
         self.current_search_worker = None
         self.current_load_worker = None
+        self.initial_load_worker = None
         self.active_workers = set()
         self.is_updating_data = False
 
@@ -788,6 +789,7 @@ class MainController(QObject):
         """Handles search errors."""
         if self.sender() != self.current_search_worker:
             return
+        self.current_search_worker = None
         self._handle_error(error, "Ошибка поиска")
 
     def _cleanup_worker(self) -> None:
@@ -804,7 +806,6 @@ class MainController(QObject):
 
     def _init_ui(self) -> None:
         """Initializes the UI with default data."""
-        self._load_sidebar_data()
         self.view.set_profile_mode(self.mode)
 
         # Load and apply settings
@@ -812,44 +813,78 @@ class MainController(QObject):
             search_filters = self.settings_manager.get_setting("search_filters")
             if search_filters:
                 self.view.set_search_filters(search_filters)
+        self._load_initial_data()
 
-        # Set user data
+    def _load_initial_data(self) -> None:
+        """Loads the initial sidebar and profile data without blocking the UI thread."""
+        worker = APIWorker(self.model.load_initial_data)
+        self.initial_load_worker = worker
+        self.active_workers.add(worker)
+        worker.finished.connect(self._on_initial_data_loaded)
+        worker.error.connect(self._on_initial_data_error)
+        worker.finished.connect(self._cleanup_worker)
+        worker.error.connect(self._cleanup_worker)
+        worker.start()
+
+    def _on_initial_data_loaded(self, data: dict) -> None:
+        if self.sender() != self.initial_load_worker:
+            return
+
+        self.initial_load_worker = None
+        self.model.departments = data.get("departments", [])
+        self.model.categories = data.get("categories", [])
+        self.model.current_department_id = self.model.departments[0]["id"] if self.model.departments else None
+        self._load_sidebar_data()
+
         if self.mode == "auth":
-            user_data = self.model.get_user_data()
-
-            if user_data:
-                username = user_data.get("username")
-                department_name = user_data.get("department")
-                self.view.set_username(name=username if username else user_data.get("email"))
-                self.view.set_user_department(dept=department_name if department_name else "Отдел не выбран")
-
-                # Find the user's department ID from the name
-                user_dept_id = None
-                if department_name:
-                    for dept in self.model.departments:
-                        if dept.get("name") == department_name:
-                            user_dept_id = dept.get("id")
-                            break
-                
-                # If a department is found, set it as current by triggering selection
-                if user_dept_id:
-                    # Use a timer to ensure the UI is ready for selection.
-                    # This will trigger the _on_department_selected slot,
-                    # which will then update the model and load the data.
-                    QTimer.singleShot(50, lambda: self.view.select_department(user_dept_id))
-                # If user has no department, select the first one in the list
-                elif self.model.departments:
-                    first_dept_id = self.model.departments[0].get("id")
-                    if first_dept_id:
-                        QTimer.singleShot(50, lambda: self.view.select_department(first_dept_id))
-
+            self._apply_user_data(data.get("user_data"))
         else:
             self.view.set_username("Гость")
             self.view.set_user_department("Войдите в аккаунт")
+            if self.model.departments:
+                first_dept_id = self.model.departments[0].get("id")
+                if first_dept_id:
+                    QTimer.singleShot(50, lambda: self.view.select_department(first_dept_id))
 
-        # Set documents data
         self._update_create_category_state()
         self._update_create_document_state()
+
+    def _on_initial_data_error(self, error: Exception) -> None:
+        if self.sender() != self.initial_load_worker:
+            return
+
+        self.initial_load_worker = None
+        if self.mode == "auth":
+            self.view.set_username("Пользователь")
+            self.view.set_user_department("Не удалось загрузить данные")
+        else:
+            self.view.set_username("Гость")
+            self.view.set_user_department("Войдите в аккаунт")
+        self._handle_error(error, "Ошибка загрузки данных")
+
+    def _apply_user_data(self, user_data: dict | None) -> None:
+        """Applies the loaded user data to the UI and restores sidebar selection."""
+        if not user_data:
+            return
+
+        username = user_data.get("username")
+        department_name = user_data.get("department")
+        self.view.set_username(name=username if username else user_data.get("email"))
+        self.view.set_user_department(dept=department_name if department_name else "Отдел не выбран")
+
+        user_dept_id = None
+        if department_name:
+            for dept in self.model.departments:
+                if dept.get("name") == department_name:
+                    user_dept_id = dept.get("id")
+                    break
+
+        if user_dept_id:
+            QTimer.singleShot(50, lambda: self.view.select_department(user_dept_id))
+        elif self.model.departments:
+            first_dept_id = self.model.departments[0].get("id")
+            if first_dept_id:
+                QTimer.singleShot(50, lambda: self.view.select_department(first_dept_id))
 
 
     def _setup_connections(self) -> None:
@@ -954,20 +989,26 @@ class MainController(QObject):
     def _update_documents_list(self) -> None:
         """Updates the documents list based on the current category."""
         self.model.current_document_id = None
-        
-        # Reset pagination
+
+        if self.model.current_category_id is None:
+            self.offset = 0
+            self.has_more = False
+            self.current_documents = []
+            self.search_results_all = []
+            self.pending_documents_to_add = []
+            self.view.clear_documents_table()
+            self.view.set_finded_counter(0)
+            self.view.set_active_search_tags([])
+            self.view.set_export_print_enabled(False)
+            return
+
         self.offset = 0
         self.has_more = True
-        self.current_documents = []
-        self.view.clear_documents_table()
-        self.view.set_finded_counter(0)
-        self.view.set_active_search_tags([])
-        self.view.set_export_print_enabled(False)
-        
-        # Reset loading state to ensure we can load new data
+
         self.is_loading = False
         self.current_load_worker = None
-        
+        self.pending_documents_to_add = []
+
         self._load_more_documents()
 
 
@@ -1013,6 +1054,7 @@ class MainController(QObject):
 
         self.is_loading = False
         self.current_load_worker = None
+        self.search_results_all = []
 
         # Prevent updating UI if search is active (stale request)
         if self.view.get_search_text():
@@ -1029,6 +1071,7 @@ class MainController(QObject):
         # Instead of one large, blocking update, we add the data in chunks
         # to keep the UI responsive.
         self.view.clear_documents_table()
+        self.view.set_active_search_tags([])
         self.pending_documents_to_add = list(self.current_documents)
         # Start the chunked update. Use a single shot timer to yield to the event loop.
         QTimer.singleShot(0, self._add_document_chunk)
@@ -1059,6 +1102,7 @@ class MainController(QObject):
             return
 
         self.is_loading = False
+        self.current_load_worker = None
         self._handle_error(error, "Ошибка загрузки документов")
 
     

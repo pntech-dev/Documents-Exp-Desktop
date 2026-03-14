@@ -537,4 +537,6 @@ class APIClient:
         """Generic method for making API requests."""
         request = self.session.request(method, url, timeout=timeout, **kwargs)
         request.raise_for_status()
+        if request.status_code == 204 or not request.content:
+            return {}
         return request.json()

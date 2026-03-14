@@ -20,20 +20,44 @@ class TestMainController:
         
         # Mock NotificationService and QTimer to avoid side effects
         with patch("modules.main.mvc.main_controller.NotificationService"), \
-             patch("modules.main.mvc.main_controller.QTimer"):
+             patch("modules.main.mvc.main_controller.QTimer"), \
+             patch("modules.main.mvc.main_controller.APIWorker"):
             ctrl = MainController(model, view, window, mode="auth")
             yield ctrl
 
 
     def test_init_ui(self, controller):
-        """Test UI initialization loads sidebar and user data."""
-        controller.model.get_user_data.return_value = {"username": "User", "department": "IT"}
-        
-        controller._init_ui()
-        
+        """Test UI initialization starts background loading instead of blocking."""
+        with patch("modules.main.mvc.main_controller.APIWorker") as MockWorker:
+            controller._init_ui()
+
+            MockWorker.assert_called_once_with(controller.model.load_initial_data)
+            MockWorker.return_value.start.assert_called_once()
+
+    def test_initial_data_loaded(self, controller):
+        """Test applying startup data after the background worker finishes."""
+        controller.initial_load_worker = Mock()
+        with patch.object(controller, "sender", return_value=controller.initial_load_worker):
+            controller._on_initial_data_loaded({
+                "departments": [{"id": 1, "name": "Dept 1", "documents_count": 5}],
+                "categories": [{"id": 10, "name": "Cat 1", "group_id": 1, "documents_count": 2}],
+                "user_data": {"username": "User", "department": "Dept 1"},
+            })
+
         controller.view.update_departments.assert_called()
         controller.view.update_categories.assert_called()
         controller.view.set_username.assert_called_with(name="User")
+
+    def test_initial_data_error(self, controller):
+        """Test startup error handling leaves the window in a safe state."""
+        controller.initial_load_worker = Mock()
+        with patch.object(controller, "sender", return_value=controller.initial_load_worker), \
+             patch.object(controller, "_handle_error") as mock_handle_error:
+            controller._on_initial_data_error(Exception("boom"))
+
+        controller.view.set_username.assert_called_with("Пользователь")
+        controller.view.set_user_department.assert_called_with("Не удалось загрузить данные")
+        mock_handle_error.assert_called_once()
 
 
     def test_search_trigger(self, controller):
@@ -62,7 +86,6 @@ class TestMainController:
         
         assert controller.model.current_department_id == 2
         assert controller.model.current_category_id is None
-        controller.view.clear_documents_table.assert_called()
         controller.view.update_categories.assert_called()
 
 
@@ -105,6 +128,48 @@ class TestMainController:
             args, kwargs = MockWorker.call_args
             assert kwargs['offset'] == 0
             assert kwargs['limit'] == controller.limit
+
+    def test_update_documents_list_keeps_previous_table_until_success(self, controller):
+        """Reloading the table should not clear the old data before the new response arrives."""
+        controller.model.current_category_id = 10
+        controller.current_documents = [{"id": 1, "name": "Doc"}]
+        controller.view.get_search_text.return_value = ""
+        controller.view.clear_documents_table.reset_mock()
+
+        with patch.object(controller, "_load_more_documents") as mock_load_more:
+            controller._update_documents_list()
+
+        assert controller.current_documents == [{"id": 1, "name": "Doc"}]
+        controller.view.clear_documents_table.assert_not_called()
+        mock_load_more.assert_called_once()
+
+    def test_load_more_error_keeps_existing_documents_visible(self, controller):
+        """A failed reload should not wipe the currently visible documents."""
+        controller.current_documents = [{"id": 1, "name": "Existing"}]
+        controller.current_load_worker = Mock()
+        controller.view.clear_documents_table.reset_mock()
+
+        with patch.object(controller, "sender", return_value=controller.current_load_worker), \
+             patch.object(controller, "_handle_error") as mock_handle_error:
+            controller._on_load_more_error(Exception("boom"))
+
+        assert controller.current_documents == [{"id": 1, "name": "Existing"}]
+        controller.view.clear_documents_table.assert_not_called()
+        mock_handle_error.assert_called_once()
+
+    def test_search_error_keeps_existing_documents_visible(self, controller):
+        """A failed search should leave the previously rendered table intact."""
+        controller.current_documents = [{"id": 1, "name": "Existing"}]
+        controller.current_search_worker = Mock()
+        controller.view.clear_documents_table.reset_mock()
+
+        with patch.object(controller, "sender", return_value=controller.current_search_worker), \
+             patch.object(controller, "_handle_error") as mock_handle_error:
+            controller._on_search_error(Exception("boom"))
+
+        assert controller.current_documents == [{"id": 1, "name": "Existing"}]
+        controller.view.clear_documents_table.assert_not_called()
+        mock_handle_error.assert_called_once()
 
 
     def test_create_department_flow(self, controller):
