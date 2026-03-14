@@ -789,6 +789,7 @@ class MainController(QObject):
         """Handles search errors."""
         if self.sender() != self.current_search_worker:
             return
+        self.current_search_worker = None
         self._handle_error(error, "Ошибка поиска")
 
     def _cleanup_worker(self) -> None:
@@ -988,20 +989,26 @@ class MainController(QObject):
     def _update_documents_list(self) -> None:
         """Updates the documents list based on the current category."""
         self.model.current_document_id = None
-        
-        # Reset pagination
+
+        if self.model.current_category_id is None:
+            self.offset = 0
+            self.has_more = False
+            self.current_documents = []
+            self.search_results_all = []
+            self.pending_documents_to_add = []
+            self.view.clear_documents_table()
+            self.view.set_finded_counter(0)
+            self.view.set_active_search_tags([])
+            self.view.set_export_print_enabled(False)
+            return
+
         self.offset = 0
         self.has_more = True
-        self.current_documents = []
-        self.view.clear_documents_table()
-        self.view.set_finded_counter(0)
-        self.view.set_active_search_tags([])
-        self.view.set_export_print_enabled(False)
-        
-        # Reset loading state to ensure we can load new data
+
         self.is_loading = False
         self.current_load_worker = None
-        
+        self.pending_documents_to_add = []
+
         self._load_more_documents()
 
 
@@ -1047,6 +1054,7 @@ class MainController(QObject):
 
         self.is_loading = False
         self.current_load_worker = None
+        self.search_results_all = []
 
         # Prevent updating UI if search is active (stale request)
         if self.view.get_search_text():
@@ -1063,6 +1071,7 @@ class MainController(QObject):
         # Instead of one large, blocking update, we add the data in chunks
         # to keep the UI responsive.
         self.view.clear_documents_table()
+        self.view.set_active_search_tags([])
         self.pending_documents_to_add = list(self.current_documents)
         # Start the chunked update. Use a single shot timer to yield to the event loop.
         QTimer.singleShot(0, self._add_document_chunk)
@@ -1093,6 +1102,7 @@ class MainController(QObject):
             return
 
         self.is_loading = False
+        self.current_load_worker = None
         self._handle_error(error, "Ошибка загрузки документов")
 
     

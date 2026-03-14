@@ -86,7 +86,6 @@ class TestMainController:
         
         assert controller.model.current_department_id == 2
         assert controller.model.current_category_id is None
-        controller.view.clear_documents_table.assert_called()
         controller.view.update_categories.assert_called()
 
 
@@ -129,6 +128,48 @@ class TestMainController:
             args, kwargs = MockWorker.call_args
             assert kwargs['offset'] == 0
             assert kwargs['limit'] == controller.limit
+
+    def test_update_documents_list_keeps_previous_table_until_success(self, controller):
+        """Reloading the table should not clear the old data before the new response arrives."""
+        controller.model.current_category_id = 10
+        controller.current_documents = [{"id": 1, "name": "Doc"}]
+        controller.view.get_search_text.return_value = ""
+        controller.view.clear_documents_table.reset_mock()
+
+        with patch.object(controller, "_load_more_documents") as mock_load_more:
+            controller._update_documents_list()
+
+        assert controller.current_documents == [{"id": 1, "name": "Doc"}]
+        controller.view.clear_documents_table.assert_not_called()
+        mock_load_more.assert_called_once()
+
+    def test_load_more_error_keeps_existing_documents_visible(self, controller):
+        """A failed reload should not wipe the currently visible documents."""
+        controller.current_documents = [{"id": 1, "name": "Existing"}]
+        controller.current_load_worker = Mock()
+        controller.view.clear_documents_table.reset_mock()
+
+        with patch.object(controller, "sender", return_value=controller.current_load_worker), \
+             patch.object(controller, "_handle_error") as mock_handle_error:
+            controller._on_load_more_error(Exception("boom"))
+
+        assert controller.current_documents == [{"id": 1, "name": "Existing"}]
+        controller.view.clear_documents_table.assert_not_called()
+        mock_handle_error.assert_called_once()
+
+    def test_search_error_keeps_existing_documents_visible(self, controller):
+        """A failed search should leave the previously rendered table intact."""
+        controller.current_documents = [{"id": 1, "name": "Existing"}]
+        controller.current_search_worker = Mock()
+        controller.view.clear_documents_table.reset_mock()
+
+        with patch.object(controller, "sender", return_value=controller.current_search_worker), \
+             patch.object(controller, "_handle_error") as mock_handle_error:
+            controller._on_search_error(Exception("boom"))
+
+        assert controller.current_documents == [{"id": 1, "name": "Existing"}]
+        controller.view.clear_documents_table.assert_not_called()
+        mock_handle_error.assert_called_once()
 
 
     def test_create_department_flow(self, controller):
