@@ -92,6 +92,7 @@ class UpdateDownloader(QThread):
         self._is_running = False
 
     def run(self):
+        path = None
         try:
             # Use requests context manager to ensure connection closure
             with requests.get(self.url, stream=True, timeout=30, allow_redirects=True) as response:
@@ -140,10 +141,24 @@ class UpdateDownloader(QThread):
                                     self.progress.emit(downloaded_size, total_size)
                                     last_emitted_size = downloaded_size
 
-                if self._is_running:
-                    self.finished.emit(path)
+                if not self._is_running:
+                    try:
+                        os.remove(path)
+                    except OSError:
+                        pass
+                    self.canceled.emit()
+                    return
+
+                self.finished.emit(path)
 
         except Exception as e:
+            if path and not self._is_running:
+                try:
+                    os.remove(path)
+                except OSError:
+                    pass
+                self.canceled.emit()
+                return
             logger.error(f"Download failed: {e}")
             self.error.emit(str(e))
 

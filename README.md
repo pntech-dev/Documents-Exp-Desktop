@@ -35,11 +35,11 @@ Allows authorized users to create, edit, and manage document pages. Support for 
 
 ---
 
-## 🛠 What's New (v0.2.10)
+## 🛠 What's New (v0.2.11)
 
-- Improved stability when the server returns an unexpected empty response.
-- The app now handles this case more gracefully instead of interrupting your flow.
-- Reliability of background data loading and refresh operations is improved.
+- Update download cancellation is now handled more reliably.
+- The update window no longer gets stuck in rare cancel-at-finish scenarios.
+- Temporary installer files are cleaned up more consistently after cancellation.
 
 ---
 

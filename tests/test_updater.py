@@ -178,6 +178,36 @@ class TestUpdateDownloader:
         downloader.canceled.emit.assert_called_once()
         downloader.finished.emit.assert_not_called()
 
+    def test_download_canceled_after_last_chunk_still_emits_signal(self, tmp_path):
+        """Cancel at the end of streaming should still emit canceled and clean temp file."""
+        url = "http://test.com/file.exe"
+        downloader = UpdateDownloader(url, 5)
+        downloader.finished = Mock()
+        downloader.progress = Mock()
+        downloader.error = Mock()
+        downloader.canceled = Mock()
+
+        with patch("requests.get") as mock_get:
+            mock_response = Mock()
+            mock_response.headers = {"content-length": "5"}
+
+            def chunks():
+                yield b"12345"
+                downloader.stop()
+
+            mock_response.iter_content.return_value = chunks()
+            mock_response.raise_for_status = Mock()
+            mock_get.return_value.__enter__.return_value = mock_response
+
+            target_file = tmp_path / "update.exe"
+            with patch("core.updater.tempfile.mkstemp", return_value=(123, str(target_file))), \
+                 patch("core.updater.os.close"):
+                downloader.run()
+
+        downloader.canceled.emit.assert_called_once()
+        downloader.finished.emit.assert_not_called()
+        assert not target_file.exists()
+
 
 class TestUpdateManager:
     def test_on_download_canceled_cleans_state(self):
