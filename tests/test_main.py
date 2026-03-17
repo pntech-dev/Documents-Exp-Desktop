@@ -88,6 +88,21 @@ class TestMainController:
         assert controller.model.current_category_id is None
         controller.view.update_categories.assert_called()
 
+    def test_department_selection_with_search_does_not_clear_table(self, controller):
+        """With active search, department switch should not clear table before search response."""
+        mock_index = Mock()
+        mock_index.data.return_value = 2
+        mock_selection = Mock()
+        mock_selection.indexes.return_value = [mock_index]
+        controller.view.get_search_text.return_value = "query"
+
+        with patch.object(controller, "_update_documents_list") as mock_update_docs, \
+             patch.object(controller, "_on_search_lineedit_text_changed") as mock_search_changed:
+            controller._on_department_selected(mock_selection, None)
+
+        mock_update_docs.assert_not_called()
+        mock_search_changed.assert_called_once()
+
 
     def test_category_selection(self, controller):
         """Test selecting a category triggers document loading."""
@@ -244,3 +259,28 @@ class TestMainController:
         controller.logout_requested.connect(mock_slot)
         controller._on_logout_clicked()
         mock_slot.assert_called_once()
+
+    def test_filter_tag_toggle_handles_none_search_text(self, controller):
+        """Filter toggling should handle empty/None search text safely."""
+        controller.view.get_search_text.return_value = None
+        controller.view.set_search_text.reset_mock()
+
+        controller._on_filter_tag_toggled(True, "alpha")
+
+        controller.view.set_search_text.assert_called_once_with("@alpha")
+
+    def test_search_task_handles_invalid_virtual_category_id(self, controller):
+        """Malformed virtual category id should not raise and should skip group filter."""
+        controller.model.current_category_id = "virtual_x"
+        controller.model.search_data.return_value = []
+
+        result = controller._search_data_task("query", {}, [])
+
+        assert result == []
+        controller.model.search_data.assert_called_once_with(
+            query="query",
+            tags=[],
+            category_id=None,
+            group_id=None,
+            filters={},
+        )

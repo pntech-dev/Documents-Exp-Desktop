@@ -44,6 +44,7 @@ class MainModel:
             return None
         
         data = self.api.get_user_data(token)
+        data = self._normalize_user_data(data)
         
         return data
 
@@ -79,15 +80,38 @@ class MainModel:
             return None
         
         # This might be the same as get_user_data, but let's assume it could be different
-        return self.api.get_user_data(token)
+        data = self.api.get_user_data(token)
+        return self._normalize_user_data(data)
+
+    def get_current_user_id(self) -> int | None:
+        """Returns the currently logged-in user id from local session storage."""
+        if self.mode == "guest":
+            return None
+
+        last_logged = read_json(self.LOCAL_DIR_LAST_LOGGED)
+        if not isinstance(last_logged, dict):
+            return None
+
+        user_id = last_logged.get("user_id")
+        if user_id is None:
+            return None
+
+        try:
+            return int(user_id)
+        except (TypeError, ValueError):
+            return None
 
 
-    def update_user_profile(self, user_id: int, data: dict) -> dict:
+    def update_user_profile(self, user_id: int | None, data: dict) -> dict:
         """Updates the user's profile data."""
+        resolved_user_id = user_id if user_id is not None else self.get_current_user_id()
+        if resolved_user_id is None:
+            raise ValueError("Cannot update profile: missing current user id")
+
         # The data dict should contain 'username', 'department' (ID)
         return self._make_authorized_request(
             self.api.update_user_data,
-            user_id=user_id,
+            user_id=resolved_user_id,
             data=data
         )
     
@@ -330,6 +354,18 @@ class MainModel:
         )
 
         return access_token
+
+    @staticmethod
+    def _normalize_user_data(data: dict | None) -> dict | None:
+        """Normalizes API user payload to a flat user dict."""
+        if not isinstance(data, dict):
+            return None
+
+        nested_user = data.get("user")
+        if isinstance(nested_user, dict):
+            return nested_user
+
+        return data
     
 
     def _get_departments(self) -> list[dict]:

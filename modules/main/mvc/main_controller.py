@@ -400,9 +400,13 @@ class MainController(QObject):
             )
 
             if updated_data:
+                current_user_id = user_data.get("id") or user_data.get("user_id")
+                if current_user_id is None:
+                    current_user_id = self.model.get_current_user_id()
+
                 worker = APIWorker(
                     self.model.update_user_profile,
-                    user_id=user_data['id'],
+                    user_id=current_user_id,
                     data=updated_data
                 )
                 self.active_workers.add(worker)
@@ -446,13 +450,16 @@ class MainController(QObject):
             if dept_id is not None and dept_id != self.model.current_department_id:
                 self.model.current_department_id = dept_id
                 self.model.current_category_id = None
-                
-                # Explicitly clear documents to avoid showing stale data from previous department
-                self._update_documents_list()                
+
                 self._update_categories_list()
-                
+
+                # With active search keep previous table until new results arrive.
+                # This avoids a blank table if the first request after idle fails.
                 if self.view.get_search_text():
                     self._on_search_lineedit_text_changed()
+                else:
+                    # No search active: clear stale documents and load current category data.
+                    self._update_documents_list()
 
                 self._update_create_category_state()
                 self._update_create_document_state()
@@ -713,11 +720,7 @@ class MainController(QObject):
         # Remove tags from query to get clean text
         clean_query = re.sub(r'@[^\s]+', '', query).strip()
 
-        cat_id = self.model.current_category_id
-        group_id = None
-        if isinstance(cat_id, str) and cat_id.startswith("virtual_"):
-            group_id = int(cat_id.split("_")[1])
-            cat_id = None
+        cat_id, group_id = self._resolve_category_and_group(self.model.current_category_id)
 
         search_result = self.model.search_data(
             query=clean_query, 
@@ -919,7 +922,7 @@ class MainController(QObject):
     def _on_filter_tag_toggled(self, checked: bool, text: str) -> None:
         """Handles filter tag toggle event."""
         tag_query = f"@{text}"
-        current_text = self.view.get_search_text()
+        current_text = self.view.get_search_text() or ""
         parts = current_text.split()
         
         # Case-insensitive handling
@@ -1021,12 +1024,7 @@ class MainController(QObject):
         self.is_loading = True
         
         try:
-            cat_id = self.model.current_category_id
-            group_id = None
-            
-            if isinstance(cat_id, str) and cat_id.startswith("virtual_"):
-                group_id = int(cat_id.split("_")[1])
-                cat_id = None
+            cat_id, group_id = self._resolve_category_and_group(self.model.current_category_id)
 
             worker = APIWorker(
                 self.model.fetch_documents,
@@ -1047,6 +1045,21 @@ class MainController(QObject):
             self.is_loading = False
             logger.error(f"Failed to start load worker: {e}", exc_info=True)
             self._handle_error(e, "Ошибка загрузки")
+
+    def _resolve_category_and_group(self, category_id):
+        """Converts virtual category IDs to a group_id safely."""
+        group_id = None
+        cat_id = category_id
+
+        if isinstance(category_id, str) and category_id.startswith("virtual_"):
+            suffix = category_id.split("_", 1)[1].strip()
+            if suffix.isdigit():
+                group_id = int(suffix)
+            else:
+                logger.warning(f"Invalid virtual category id format: {category_id}")
+            cat_id = None
+
+        return cat_id, group_id
     
     def _on_load_more_finished(self, docs: list) -> None:
         if self.sender() != self.current_load_worker:

@@ -139,6 +139,21 @@ class TestDocumentEditorController:
         assert "Page" in tags
         assert "Gamma" in tags
 
+    def test_generate_tags_handles_none_names(self, controller):
+        """Tag generation should not crash when name fields are None."""
+        controller.view.get_document_data.return_value = {
+            "name": None,
+            "pages": [
+                {"name": None},
+                {"name": "Valid Tag Name"},
+            ],
+        }
+
+        controller.view.set_document_tags.reset_mock()
+        controller._generate_tags()
+
+        controller.view.set_document_tags.assert_called_once()
+
 
     def test_save_button_clicked(self, controller):
         """Test save button handler initiates background task."""
