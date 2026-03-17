@@ -499,9 +499,13 @@ class MainController(QObject):
     def _on_update_button_clicked(self) -> None:
         """Handles the update button click."""
         try:
+            saved_dept_id = self.model.current_department_id
+            saved_cat_id = self.model.current_category_id
             self.model.refresh_data()
-            self._update_app_data()
-            self._update_documents_list() # Reload list
+            self._update_app_data(
+                preferred_dept_id=saved_dept_id,
+                preferred_cat_id=saved_cat_id
+            )
             NotificationService().show_toast(
                 notification_type="success",
                 title="Обновлено",
@@ -1127,25 +1131,46 @@ class MainController(QObject):
         self._handle_error(error, "Ошибка загрузки документов")
 
     
-    def _update_app_data(self):
+    def _update_app_data(self, preferred_dept_id=None, preferred_cat_id=None):
         """Updates the application data."""
         self.is_updating_data = True
+        dept_exists = False
         
         try:
             # Save current selection to restore it after reload
-            saved_dept_id = self.model.current_department_id
-            saved_cat_id = self.model.current_category_id
-
-            self._load_sidebar_data()
+            saved_dept_id = (
+                preferred_dept_id
+                if preferred_dept_id is not None
+                else self.model.current_department_id
+            )
+            saved_cat_id = (
+                preferred_cat_id
+                if preferred_cat_id is not None
+                else self.model.current_category_id
+            )
             
             # Check if saved department exists
-            dept_exists = any(d["id"] == saved_dept_id for d in self.model.departments)
+            matched_dept = next(
+                (d for d in self.model.departments if str(d.get("id")) == str(saved_dept_id)),
+                None
+            )
+            dept_exists = matched_dept is not None
+            self.model.current_department_id = matched_dept.get("id") if matched_dept else (
+                self.model.departments[0]["id"] if self.model.departments else None
+            )
+
+            # Rebuild sidebar/categories for the resolved current department.
+            self._load_sidebar_data()
 
             if dept_exists:
-                self.view.select_department(saved_dept_id)
+                self.view.select_department(self.model.current_department_id)
                 
                 # Restore category
-                cat_exists = any(c["id"] == saved_cat_id for c in self.model.categories)
+                matched_cat = next(
+                    (c for c in self.model.categories if str(c.get("id")) == str(saved_cat_id)),
+                    None
+                )
+                cat_exists = matched_cat is not None
                 
                 if not cat_exists and isinstance(
                     saved_cat_id, str
@@ -1153,12 +1178,15 @@ class MainController(QObject):
                     cat_exists = True
 
                 if cat_exists:
-                    self.view.select_category(saved_cat_id)
+                    self.model.current_category_id = (
+                        matched_cat.get("id") if matched_cat is not None else saved_cat_id
+                    )
+                    self.view.select_category(self.model.current_category_id)
                 else:
                     # If category was deleted or not selected, select the first one if available
                     # to match SidebarBlock behavior (which selects first item on reset)
                     dept_cats = [c for c in self.model.categories 
-                                 if c.get("group_id") == saved_dept_id]
+                                 if str(c.get("group_id")) == str(self.model.current_department_id)]
                     if dept_cats:
                         self.model.current_category_id = dept_cats[0]["id"]
                         self.view.select_category(self.model.current_category_id)
@@ -1174,6 +1202,9 @@ class MainController(QObject):
                 self._perform_search()
             else:
                 self._update_documents_list()
+        else:
+            self.model.current_category_id = None
+            self._update_documents_list()
 
         self._update_create_category_state()
         self._update_create_document_state()

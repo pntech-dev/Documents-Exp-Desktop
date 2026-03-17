@@ -35,11 +35,11 @@ Allows authorized users to create, edit, and manage document pages. Support for 
 
 ---
 
-## 🛠 What's New (v0.2.14)
+## 🛠 What's New (v0.2.15)
 
-- Improved session-safety checks during login and sign-up completion.
-- The app now prevents continuation if user session data is incomplete.
-- Reduced risk of unstable authorization state after successful sign-in responses.
+- Fixed update behavior in the main toolbar: selected department and category are now preserved.
+- Table data now refreshes correctly for the current selection after pressing `Update`.
+- New departments/categories can appear after update without resetting your current context.
 
 ---
 

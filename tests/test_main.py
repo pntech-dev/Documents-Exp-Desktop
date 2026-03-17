@@ -311,3 +311,45 @@ class TestMainController:
 
         mock_handle_error.assert_called_once()
         MockEditor.assert_not_called()
+
+    def test_update_button_keeps_selected_department_and_category(self, controller):
+        """Update must preserve current dept/category selection when new departments are added."""
+        controller.model.current_department_id = 2
+        controller.model.current_category_id = "20"
+        controller.model.departments = [
+            {"id": 1, "name": "Dept 1", "documents_count": 5},
+            {"id": 2, "name": "Dept 2", "documents_count": 3},
+        ]
+        controller.model.categories = [
+            {"id": 10, "name": "Cat 1", "group_id": 1, "documents_count": 2},
+            {"id": 20, "name": "Cat 2", "group_id": 2, "documents_count": 4},
+        ]
+        controller.view.get_search_text.return_value = ""
+
+        def refresh_side_effect():
+            # Simulate model refresh behavior that resets current department
+            controller.model.departments = [
+                {"id": 1, "name": "Dept 1", "documents_count": 5},
+                {"id": 2, "name": "Dept 2", "documents_count": 3},
+                {"id": 3, "name": "New Dept", "documents_count": 1},
+            ]
+            controller.model.categories = [
+                {"id": 10, "name": "Cat 1", "group_id": 1, "documents_count": 2},
+                {"id": 20, "name": "Cat 2", "group_id": 2, "documents_count": 4},
+                {"id": 30, "name": "Cat 3", "group_id": 3, "documents_count": 1},
+            ]
+            controller.model.current_department_id = 1
+            controller.model.current_category_id = None
+
+        controller.model.refresh_data.side_effect = refresh_side_effect
+
+        with patch.object(controller, "_update_documents_list") as mock_update_docs:
+            controller._on_update_button_clicked()
+
+        assert controller.model.current_department_id == 2
+        assert controller.model.current_category_id == 20
+        categories_payload = controller.view.update_categories.call_args[0][0]
+        assert any(getattr(item, "id", None) == 20 for item in categories_payload)
+        controller.view.select_department.assert_any_call(2)
+        controller.view.select_category.assert_any_call(20)
+        mock_update_docs.assert_called_once()
