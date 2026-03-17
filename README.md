@@ -35,15 +35,15 @@ Allows authorized users to create, edit, and manage document pages. Support for 
 
 ---
 
-## 💡 What's New (v0.2.5) - Settings Compatibility
+## 💡 What's New (v0.2.6) - Error Handling Quality
 
-This patch release improves compatibility and reliability of saved search settings.
+This patch release improves user-facing HTTP error messages and fallback behavior.
 
 ### 🛠 Improved
 
-- Migrated legacy search filter settings to the current format automatically.
-- Unified default search filter schema with the current main window behavior.
-- Added tests for legacy-to-current settings migration and schema consistency.
+- Improved extraction of API error details from different response formats.
+- Added robust fallback for non-JSON HTTP responses.
+- Added tests for list-based validation details and generic HTTP fallback messages.
 
 ---
 

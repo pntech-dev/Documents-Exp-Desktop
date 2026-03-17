@@ -113,6 +113,25 @@ class TestRequestExceptions:
         exception = requests.exceptions.HTTPError(response=mock_response)
         assert expected_part in get_friendly_error_message(exception)
 
+    def test_http_error_detail_list_is_rendered(self):
+        mock_response = Mock(spec=requests.Response)
+        mock_response.status_code = 422
+        mock_response.json.return_value = {"detail": ["field A invalid", "field B required"]}
+
+        exception = requests.exceptions.HTTPError(response=mock_response)
+        message = get_friendly_error_message(exception)
+        assert "field A invalid" in message
+        assert "field B required" in message
+
+    def test_http_error_non_json_response_fallback(self):
+        mock_response = Mock(spec=requests.Response)
+        mock_response.status_code = 418
+        mock_response.json.side_effect = ValueError("not json")
+
+        exception = requests.exceptions.HTTPError(response=mock_response)
+        message = get_friendly_error_message(exception)
+        assert "HTTP 418" in message
+
 
 
 class TestValidators:
