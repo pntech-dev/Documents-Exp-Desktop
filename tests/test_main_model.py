@@ -32,3 +32,17 @@ class TestMainModel:
         flat = {"id": 1, "email": "flat@x.test"}
         assert MainModel._normalize_user_data(flat) == flat
 
+    def test_get_user_token_returns_none_for_non_dict_last_logged(self):
+        model = self._build_model()
+
+        with patch("modules.main.mvc.main_model.read_json", return_value=[]):
+            assert model._get_user_token() is None
+
+    def test_get_user_token_returns_none_for_missing_user_id(self):
+        model = self._build_model()
+
+        with patch("modules.main.mvc.main_model.read_json", return_value={}), \
+             patch("modules.main.mvc.main_model.keyring.get_password") as mock_get_password:
+            assert model._get_user_token() is None
+            mock_get_password.assert_not_called()
+

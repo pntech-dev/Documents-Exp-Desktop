@@ -545,9 +545,13 @@ class MainController(QObject):
                 logger.error(f"Error fetching document details: {e}")
 
         # Get selected document pages list
-        pages = self.model.get_document_pages(
-            document_id=document_id
-        )
+        try:
+            pages = self.model.get_document_pages(
+                document_id=document_id
+            )
+        except Exception as e:
+            self._handle_error(e, "Ошибка загрузки документа")
+            return
 
         # Show document editor window
         self.editor_window = EditorWindow(

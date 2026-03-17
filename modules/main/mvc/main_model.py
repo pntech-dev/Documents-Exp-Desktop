@@ -342,11 +342,12 @@ class MainModel:
             return None
 
         last_logged = read_json(self.LOCAL_DIR_LAST_LOGGED)
-
-        if not last_logged:
+        if not isinstance(last_logged, dict):
             return None
 
-        user_id = last_logged["user_id"]
+        user_id = last_logged.get("user_id")
+        if user_id in (None, ""):
+            return None
 
         access_token = keyring.get_password(
             service_name="Documents Exp",

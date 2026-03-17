@@ -298,3 +298,16 @@ class TestMainController:
             group_id=None,
             filters={},
         )
+
+    def test_edit_button_handles_pages_loading_error(self, controller):
+        """Editor opening should fail safely when pages loading raises."""
+        controller.model.selected_document = (55, False)
+        controller.model.get_document.return_value = {"id": 55}
+        controller.model.get_document_pages.side_effect = RuntimeError("pages failed")
+
+        with patch.object(controller, "_handle_error") as mock_handle_error, \
+             patch("modules.main.mvc.main_controller.EditorWindow") as MockEditor:
+            controller._on_edit_button_clicked()
+
+        mock_handle_error.assert_called_once()
+        MockEditor.assert_not_called()

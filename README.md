@@ -35,15 +35,11 @@ Allows authorized users to create, edit, and manage document pages. Support for 
 
 ---
 
-## 💡 What's New (v0.2.6) - Error Handling Quality
+## 🛠 What's New (v0.2.7)
 
-This patch release improves user-facing HTTP error messages and fallback behavior.
-
-### 🛠 Improved
-
-- Improved extraction of API error details from different response formats.
-- Added robust fallback for non-JSON HTTP responses.
-- Added tests for list-based validation details and generic HTTP fallback messages.
+- Opening a document is now more stable if data loading is temporarily unavailable.
+- Error handling in this flow is now clearer and less disruptive.
+- Session recovery in edge cases is more reliable after restarts.
 
 ---
 
