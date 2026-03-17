@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import Mock, patch
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QItemSelectionModel
 from PyQt5.QtGui import QIcon
 
 from ui.custom_widgets.lineedits import TagsLineEdit
@@ -137,6 +137,95 @@ class TestSidebarBlock:
         
         sidebar.set_selected("B")
         assert sidebar.get_selected_id() == "B"
+
+    @patch("ui.custom_widgets.treeview.ThemeManagerInstance")
+    def test_expand_restores_programmatic_selection_after_transient_clear(self, mock_tm, qapp):
+        """Expanded group should restore last active item even if selection was transiently cleared."""
+        sidebar = SidebarBlock()
+        items = [
+            SidebarItem(id="A", title="A"),
+            SidebarItem(id="B", title="B")
+        ]
+        sidebar.set_items(items, group_title="Departments")
+
+        model = sidebar.model()
+        group_index = model.index(0, 0)
+        b_index = model.index(1, 0, group_index)
+        selection_model = sidebar.selectionModel()
+
+        selection_model.setCurrentIndex(
+            b_index,
+            QItemSelectionModel.ClearAndSelect | QItemSelectionModel.Rows
+        )
+        assert sidebar.get_selected_id() == "B"
+
+        sidebar.collapse(group_index)
+        qapp.processEvents()
+
+        selection_model.clearSelection()
+        selection_model.setCurrentIndex(group_index, QItemSelectionModel.NoUpdate)
+
+        sidebar.expand(group_index)
+        qapp.processEvents()
+
+        assert sidebar.get_selected_id() == "B"
+
+    @patch("ui.custom_widgets.treeview.ThemeManagerInstance")
+    def test_expand_restores_selection_for_numeric_ids(self, mock_tm, qapp):
+        """Expanded group should restore selected item when ids are numeric."""
+        sidebar = SidebarBlock()
+        items = [
+            SidebarItem(id=1, title="Dept 1"),
+            SidebarItem(id=2, title="Dept 2")
+        ]
+        sidebar.set_items(items, group_title="Departments")
+
+        model = sidebar.model()
+        group_index = model.index(0, 0)
+        dept2_index = model.index(1, 0, group_index)
+        selection_model = sidebar.selectionModel()
+
+        selection_model.setCurrentIndex(
+            dept2_index,
+            QItemSelectionModel.ClearAndSelect | QItemSelectionModel.Rows
+        )
+        assert sidebar.get_selected_id() == 2
+
+        sidebar.collapse(group_index)
+        qapp.processEvents()
+
+        selection_model.clearSelection()
+        selection_model.setCurrentIndex(group_index, QItemSelectionModel.NoUpdate)
+
+        sidebar.expand(group_index)
+        qapp.processEvents()
+
+        assert sidebar.get_selected_id() == 2
+
+    @patch("ui.custom_widgets.treeview.ThemeManagerInstance")
+    def test_set_items_preserves_selected_item_on_reload(self, mock_tm, qapp):
+        """Reloading items should keep previously selected item when it still exists."""
+        sidebar = SidebarBlock()
+        initial_items = [
+            SidebarItem(id="A", title="Dept A", count=1),
+            SidebarItem(id="B", title="Dept B", count=2),
+            SidebarItem(id="C", title="Dept C", count=3),
+        ]
+        sidebar.set_items(initial_items, group_title="Departments")
+        sidebar.set_selected("B")
+        assert sidebar.get_selected_id() == "B"
+
+        reloaded_items = [
+            SidebarItem(id="A", title="Dept A", count=10),
+            SidebarItem(id="B", title="Dept B", count=20),
+            SidebarItem(id="C", title="Dept C", count=30),
+        ]
+        sidebar.set_items(reloaded_items, group_title="Departments")
+
+        assert sidebar.get_selected_id() == "B"
+        selected_rows = sidebar.selectionModel().selectedRows(0)
+        assert len(selected_rows) == 1
+        assert selected_rows[0].data(ROLE_ID) == "B"
 
 
 

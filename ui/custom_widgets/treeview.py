@@ -8,7 +8,7 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtCore import (
     Qt, QRect, pyqtSignal, QEvent, QAbstractItemModel,
-    QModelIndex, pyqtProperty, QSize, QPersistentModelIndex, QPoint
+    QModelIndex, pyqtProperty, QSize, QPersistentModelIndex, QPoint, QItemSelectionModel
 )
 from PyQt5.QtWidgets import (
     QTreeView, QWidget, QStyledItemDelegate,
@@ -357,6 +357,10 @@ class SidebarBlock(QTreeView):
         self._edit_pressed_idx = QPersistentModelIndex()
 
         self.clicked.connect(self._on_clicked)
+        if self.selectionModel():
+            self.selectionModel().currentChanged.connect(self._on_current_changed)
+        self.collapsed.connect(self._on_group_collapsed)
+        self.expanded.connect(self._on_group_expanded)
         ThemeManagerInstance.themeChanged.connect(self._on_theme_changed)
         # Initialization of private attributes for properties
         self._badge_background_color = QColor()
@@ -420,6 +424,11 @@ class SidebarBlock(QTreeView):
         self._items_by_id.clear()
         self._active_id = None
 
+    @staticmethod
+    def _normalize_id(value) -> str:
+        """Normalizes item identifiers for consistent internal lookups."""
+        return str(value)
+
     def set_items(
         self,
         items: Iterable[SidebarItem],
@@ -437,6 +446,13 @@ class SidebarBlock(QTreeView):
             group_icon: The icon for the group (optional).
             expand_group: Whether to expand the group by default.
         """
+        previous_active_id = self._active_id
+        current_index = self.currentIndex()
+        if current_index.isValid():
+            current_id = current_index.data(ROLE_ID)
+            if current_id is not None:
+                previous_active_id = self._normalize_id(current_id)
+
         self.clear_items()
 
         parent_item = self._model.invisibleRootItem()
@@ -461,28 +477,41 @@ class SidebarBlock(QTreeView):
                 std.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
 
             parent_item.appendRow(std)
-            self._items_by_id[it.id] = std
+            self._items_by_id[self._normalize_id(it.id)] = std
 
         if group_title is not None and expand_group:
             self.expand(self._model.index(0, 0))
 
-        # Automatic selection of the first item
-        first_index = None
-        if group_title is not None:
-            group_idx = self._model.index(0, 0)
-            if self._model.rowCount(group_idx) > 0:
-                first_index = self._model.index(0, 0, group_idx)
-        else:
-            if self._model.rowCount() > 0:
-                first_index = self._model.index(0, 0)
+        selected_index = None
+        if previous_active_id:
+            selected_item = self._items_by_id.get(previous_active_id)
+            if selected_item:
+                selected_index = selected_item.index()
 
-        if first_index and first_index.isValid():
-            self.setCurrentIndex(first_index)
-            id_ = first_index.data(ROLE_ID)
-            if id_:
-                self._active_id = str(id_)
-                self.itemActivatedById.emit(str(id_))
-            
+        if selected_index is None:
+            # Automatic selection of the first item
+            if group_title is not None:
+                group_idx = self._model.index(0, 0)
+                if self._model.rowCount(group_idx) > 0:
+                    selected_index = self._model.index(0, 0, group_idx)
+            elif self._model.rowCount() > 0:
+                selected_index = self._model.index(0, 0)
+
+        if selected_index and selected_index.isValid():
+            selection_model = self.selectionModel()
+            if selection_model:
+                selection_model.setCurrentIndex(
+                    selected_index,
+                    QItemSelectionModel.ClearAndSelect | QItemSelectionModel.Rows
+                )
+            else:
+                self.setCurrentIndex(selected_index)
+
+            selected_id = selected_index.data(ROLE_ID)
+            if selected_id is not None:
+                self._active_id = self._normalize_id(selected_id)
+                self.itemActivatedById.emit(str(selected_id))
+
             # If there is a group, ensure it is visible (didn't scroll out of view due to scrolling to child)
             if group_title is not None:
                 self.updateGeometry()
@@ -490,7 +519,7 @@ class SidebarBlock(QTreeView):
 
     def update_count(self, id: str, count: int) -> None:
         """Updates the count badge for a specific item."""
-        item = self._items_by_id.get(id)
+        item = self._items_by_id.get(self._normalize_id(id))
         if not item:
             return
         item.setData(int(count), ROLE_COUNT)
@@ -500,11 +529,19 @@ class SidebarBlock(QTreeView):
 
     def set_selected(self, id: str) -> None:
         """Selects an item by its ID."""
-        item = self._items_by_id.get(id)
+        normalized_id = self._normalize_id(id)
+        item = self._items_by_id.get(normalized_id)
         if not item:
             return
-        self.setCurrentIndex(item.index())
-        self._active_id = id
+        selection_model = self.selectionModel()
+        if selection_model:
+            selection_model.setCurrentIndex(
+                item.index(),
+                QItemSelectionModel.ClearAndSelect | QItemSelectionModel.Rows
+            )
+        else:
+            self.setCurrentIndex(item.index())
+        self._active_id = normalized_id
         self.scrollTo(item.index(), QAbstractItemView.PositionAtCenter)
 
     def get_selected_id(self) -> str | None:
@@ -576,6 +613,73 @@ class SidebarBlock(QTreeView):
     def _on_theme_changed(self, theme_id: str) -> None:
         """Handles theme change events."""
         self.viewport().update()
+
+    def _on_current_changed(self, current: QModelIndex, previous: QModelIndex) -> None:
+        """Keeps active item id in sync with selection model changes."""
+        if not current.isValid():
+            return
+        if current.data(ROLE_IS_GROUP):
+            return
+        current_id = current.data(ROLE_ID)
+        if current_id:
+            self._active_id = str(current_id)
+
+    def _remember_active_child_for_group(self, group_index: QModelIndex) -> None:
+        """Stores current child selection before group collapse."""
+        if not group_index.isValid():
+            return
+
+        current_index = self.currentIndex()
+        if current_index.isValid() and current_index.parent() == group_index:
+            current_id = current_index.data(ROLE_ID)
+            if current_id:
+                self._active_id = str(current_id)
+                return
+
+        selection_model = self.selectionModel()
+        if not selection_model:
+            return
+
+        for selected_index in selection_model.selectedRows(0):
+            if selected_index.parent() == group_index:
+                selected_id = selected_index.data(ROLE_ID)
+                if selected_id:
+                    self._active_id = str(selected_id)
+                    return
+
+    def _restore_active_selection_for_group(self, group_index: QModelIndex) -> None:
+        """Restores selected child in the expanded group if it was previously active."""
+        if not group_index.isValid() or not self._active_id:
+            return
+
+        item = self._items_by_id.get(self._normalize_id(self._active_id))
+        if not item:
+            return
+
+        item_index = item.index()
+        if not item_index.isValid() or item_index.parent() != group_index:
+            return
+
+        selection_model = self.selectionModel()
+        if selection_model:
+            selection_model.setCurrentIndex(
+                item_index,
+                QItemSelectionModel.ClearAndSelect | QItemSelectionModel.Rows
+            )
+        else:
+            self.setCurrentIndex(item_index)
+
+    def _on_group_collapsed(self, index: QModelIndex) -> None:
+        """Remembers selected child when a group gets collapsed."""
+        if not index.isValid() or not index.data(ROLE_IS_GROUP):
+            return
+        self._remember_active_child_for_group(index)
+
+    def _on_group_expanded(self, index: QModelIndex) -> None:
+        """Restores selected child when a group gets expanded."""
+        if not index.isValid() or not index.data(ROLE_IS_GROUP):
+            return
+        self._restore_active_selection_for_group(index)
     
     def mousePressEvent(self, event: QMouseEvent) -> None:
         """Handles mouse press events."""
@@ -586,18 +690,12 @@ class SidebarBlock(QTreeView):
                 
                 if is_group:
                     # Intercept click on group: only collapse/expand
+                    self._remember_active_child_for_group(index)
                     self.setUpdatesEnabled(False)
                     if self.isExpanded(index):
                         self.collapse(index)
                     else:
                         self.expand(index)
-                        # Restore selection if the active item is inside this group
-                        if self._active_id:
-                            item = self._items_by_id.get(self._active_id)
-                            if item:
-                                idx = item.index()
-                                if idx.isValid() and idx.parent() == index:
-                                    self.setCurrentIndex(idx)
                     self.setUpdatesEnabled(True)
                     event.accept()
                     return

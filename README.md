@@ -35,11 +35,10 @@ Allows authorized users to create, edit, and manage document pages. Support for 
 
 ---
 
-## 🛠 What's New (v0.2.17)
+## 🛠 What's New (v0.2.18)
 
-- Improved overall stability for sessions, settings, notifications, and updates.
-- Added safer handling for duplicate file drops and incomplete session data edge cases.
-- Reduced risk of UI interruptions in high-frequency actions (toasts, theme switches, update install flow).
+- Fixed an issue where selected Department or Category could occasionally lose visual highlight after collapsing and expanding sidebar groups.
+- Improved sidebar behavior so the previously selected item is restored more reliably after expanding a group.
 
 ---
 
