@@ -32,11 +32,46 @@ class SettingsManager:
             "theme": 1,  # 0 for light, 1 for dark
             "last_seen_whats_new_version": "",
             "search_filters": {
-                "search_in_pages": True,
-                "search_field": "name",
-                "match_mode": "contains"
+                "include_pages": True,
+                "search_by_name": True,
+                "search_by_code": True,
+                "exact_match": False,
             }
         }
+
+    @staticmethod
+    def _normalize_search_filters(filters: Any, default_filters: Dict[str, Any]) -> Dict[str, Any]:
+        """Normalizes legacy and current search filter schemas to the current format."""
+        normalized = dict(default_filters)
+        if not isinstance(filters, dict):
+            return normalized
+
+        # Legacy schema migration.
+        if "search_in_pages" in filters:
+            normalized["include_pages"] = bool(filters.get("search_in_pages", normalized["include_pages"]))
+
+        if "search_field" in filters:
+            field = str(filters.get("search_field", "")).strip().lower()
+            if field == "name":
+                normalized["search_by_name"] = True
+                normalized["search_by_code"] = False
+            elif field == "code":
+                normalized["search_by_name"] = False
+                normalized["search_by_code"] = True
+            elif field == "both":
+                normalized["search_by_name"] = True
+                normalized["search_by_code"] = True
+
+        if "match_mode" in filters:
+            mode = str(filters.get("match_mode", "")).strip().lower()
+            normalized["exact_match"] = mode in {"exact", "equals", "strict"}
+
+        # Current schema overrides.
+        for key in ("include_pages", "search_by_name", "search_by_code", "exact_match"):
+            if key in filters:
+                normalized[key] = bool(filters[key])
+
+        return normalized
 
     def load_settings(self) -> Dict[str, Any]:
         """
@@ -51,10 +86,16 @@ class SettingsManager:
         try:
             with open(self.settings_file, "r", encoding="utf-8") as f:
                 loaded_settings = json.load(f)
-            
+             
             # Merge loaded settings with defaults to ensure all keys are present
             settings = default_settings.copy()
-            settings.update(loaded_settings)
+            if isinstance(loaded_settings, dict):
+                settings.update(loaded_settings)
+
+            settings["search_filters"] = self._normalize_search_filters(
+                settings.get("search_filters"),
+                default_settings.get("search_filters", {}),
+            )
             return settings
 
         except (json.JSONDecodeError, IOError) as e:

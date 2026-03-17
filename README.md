@@ -35,15 +35,15 @@ Allows authorized users to create, edit, and manage document pages. Support for 
 
 ---
 
-## 💡 What's New (v0.2.4) - Update Flow Stability
+## 💡 What's New (v0.2.5) - Settings Compatibility
 
-This patch release improves reliability of the in-app update download flow.
+This patch release improves compatibility and reliability of saved search settings.
 
 ### 🛠 Improved
 
-- Added explicit cancellation handling for update downloads.
-- Fixed update manager state cleanup after canceled or failed download.
-- Added tests for cancellation behavior and manager cleanup logic.
+- Migrated legacy search filter settings to the current format automatically.
+- Unified default search filter schema with the current main window behavior.
+- Added tests for legacy-to-current settings migration and schema consistency.
 
 ---
 
