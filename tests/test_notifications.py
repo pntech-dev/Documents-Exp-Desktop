@@ -39,6 +39,8 @@ class TestNotificationService:
         mock_toast_instance = Mock()
         mock_toast_instance.height.return_value = 100
         mock_toast_instance.width.return_value = 300
+        mock_toast_instance.destroyed = Mock()
+        mock_toast_instance.destroyed.connect = Mock()
         mock_toast_class.return_value = mock_toast_instance
         
         # Call method
@@ -54,7 +56,22 @@ class TestNotificationService:
         
         # Verify that toast is added to list and shown
         assert mock_toast_instance in service.active_toasts
+        mock_toast_instance.destroyed.connect.assert_called_once()
         mock_toast_instance.show_animated.assert_called_once()
+
+    @patch("utils.notifications.notification_service.ThemeManagerInstance")
+    def test_destroyed_toast_is_removed_from_stack(self, mock_tm):
+        service = NotificationService()
+        service.main_window = Mock(spec=QWidget)
+
+        toast = Mock()
+        service.active_toasts = [toast]
+
+        with patch.object(service, "_reposition_toasts") as mock_reposition:
+            service._on_toast_destroyed(toast)
+
+        assert toast not in service.active_toasts
+        mock_reposition.assert_called_once()
 
     def test_singleton_behavior(self):
         """Test Singleton pattern."""

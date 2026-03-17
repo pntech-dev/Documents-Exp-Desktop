@@ -35,11 +35,11 @@ Allows authorized users to create, edit, and manage document pages. Support for 
 
 ---
 
-## 🛠 What's New (v0.2.11)
+## 🛠 What's New (v0.2.12)
 
-- Update download cancellation is now handled more reliably.
-- The update window no longer gets stuck in rare cancel-at-finish scenarios.
-- Temporary installer files are cleaned up more consistently after cancellation.
+- On-screen notifications now disappear more reliably when closed manually.
+- Notification stacking stays consistent during rapid close/show actions.
+- Overall UI responsiveness in notification-heavy flows is improved.
 
 ---
 

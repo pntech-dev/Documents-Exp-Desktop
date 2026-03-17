@@ -63,7 +63,7 @@ class NotificationService(metaclass=Singleton):
             self.main_window.removeEventFilter(self.resize_filter)
 
         # Clear active toasts from the previous window to prevent positioning issues
-        for toast in self.active_toasts:
+        for toast in list(self.active_toasts):
             toast.close()
         self.active_toasts.clear()
 
@@ -108,6 +108,7 @@ class NotificationService(metaclass=Singleton):
             position_y -= active_toast.height() + self.SPACING
 
         self.active_toasts.append(toast)
+        toast.destroyed.connect(lambda *_: self._on_toast_destroyed(toast))
         toast.show_animated(position_y)
 
         # Schedule closing
@@ -121,7 +122,16 @@ class NotificationService(metaclass=Singleton):
         """
         if toast_to_close in self.active_toasts:
             toast_to_close.close_animated()
-            self.active_toasts.remove(toast_to_close)
+            self._remove_toast_from_stack(toast_to_close)
+
+    def _on_toast_destroyed(self, toast: ToastNotification) -> None:
+        """Keeps the stack consistent when a toast is closed manually."""
+        self._remove_toast_from_stack(toast)
+
+    def _remove_toast_from_stack(self, toast: ToastNotification) -> None:
+        """Removes a toast reference from active stack and repositions others."""
+        if toast in self.active_toasts:
+            self.active_toasts.remove(toast)
             self._reposition_toasts()
 
     def _reposition_toasts(self):
