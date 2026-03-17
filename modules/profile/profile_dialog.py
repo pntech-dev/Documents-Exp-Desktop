@@ -71,8 +71,7 @@ class ProfileDialog(BaseModalDialog):
 
     def _populate_initial_data(self):
         """Fills the widgets with the current user data."""
-        username = self.user_data.get("username", "")
-        parts = username.split()
+        parts = self._split_username(self.user_data.get("username"))
         first_name = parts[0] if parts else ""
         last_name = " ".join(parts[1:]) if len(parts) > 1 else ""
         
@@ -101,8 +100,7 @@ class ProfileDialog(BaseModalDialog):
         """Enables the save button only if there are actual changes."""
         is_changed = False
         
-        username = self.user_data.get("username", "")
-        parts = username.split()
+        parts = self._split_username(self.user_data.get("username"))
         original_first_name = parts[0] if parts else ""
         original_last_name = " ".join(parts[1:]) if len(parts) > 1 else ""
 
@@ -129,6 +127,13 @@ class ProfileDialog(BaseModalDialog):
             is_changed = True
 
         self.ui.accept_pushButton.setEnabled(is_changed)
+
+    @staticmethod
+    def _split_username(username) -> list[str]:
+        """Returns username parts safely even when the source value is None."""
+        if username is None:
+            return []
+        return str(username).split()
 
     def get_updated_data(self) -> dict:
         """Returns the updated user data from the form."""

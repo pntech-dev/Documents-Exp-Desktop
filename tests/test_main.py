@@ -244,3 +244,28 @@ class TestMainController:
         controller.logout_requested.connect(mock_slot)
         controller._on_logout_clicked()
         mock_slot.assert_called_once()
+
+    def test_filter_tag_toggle_handles_none_search_text(self, controller):
+        """Filter toggling should handle empty/None search text safely."""
+        controller.view.get_search_text.return_value = None
+        controller.view.set_search_text.reset_mock()
+
+        controller._on_filter_tag_toggled(True, "alpha")
+
+        controller.view.set_search_text.assert_called_once_with("@alpha")
+
+    def test_search_task_handles_invalid_virtual_category_id(self, controller):
+        """Malformed virtual category id should not raise and should skip group filter."""
+        controller.model.current_category_id = "virtual_x"
+        controller.model.search_data.return_value = []
+
+        result = controller._search_data_task("query", {}, [])
+
+        assert result == []
+        controller.model.search_data.assert_called_once_with(
+            query="query",
+            tags=[],
+            category_id=None,
+            group_id=None,
+            filters={},
+        )

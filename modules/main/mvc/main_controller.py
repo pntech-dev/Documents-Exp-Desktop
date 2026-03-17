@@ -713,11 +713,7 @@ class MainController(QObject):
         # Remove tags from query to get clean text
         clean_query = re.sub(r'@[^\s]+', '', query).strip()
 
-        cat_id = self.model.current_category_id
-        group_id = None
-        if isinstance(cat_id, str) and cat_id.startswith("virtual_"):
-            group_id = int(cat_id.split("_")[1])
-            cat_id = None
+        cat_id, group_id = self._resolve_category_and_group(self.model.current_category_id)
 
         search_result = self.model.search_data(
             query=clean_query, 
@@ -919,7 +915,7 @@ class MainController(QObject):
     def _on_filter_tag_toggled(self, checked: bool, text: str) -> None:
         """Handles filter tag toggle event."""
         tag_query = f"@{text}"
-        current_text = self.view.get_search_text()
+        current_text = self.view.get_search_text() or ""
         parts = current_text.split()
         
         # Case-insensitive handling
@@ -1021,12 +1017,7 @@ class MainController(QObject):
         self.is_loading = True
         
         try:
-            cat_id = self.model.current_category_id
-            group_id = None
-            
-            if isinstance(cat_id, str) and cat_id.startswith("virtual_"):
-                group_id = int(cat_id.split("_")[1])
-                cat_id = None
+            cat_id, group_id = self._resolve_category_and_group(self.model.current_category_id)
 
             worker = APIWorker(
                 self.model.fetch_documents,
@@ -1047,6 +1038,21 @@ class MainController(QObject):
             self.is_loading = False
             logger.error(f"Failed to start load worker: {e}", exc_info=True)
             self._handle_error(e, "Ошибка загрузки")
+
+    def _resolve_category_and_group(self, category_id):
+        """Converts virtual category IDs to a group_id safely."""
+        group_id = None
+        cat_id = category_id
+
+        if isinstance(category_id, str) and category_id.startswith("virtual_"):
+            suffix = category_id.split("_", 1)[1].strip()
+            if suffix.isdigit():
+                group_id = int(suffix)
+            else:
+                logger.warning(f"Invalid virtual category id format: {category_id}")
+            cat_id = None
+
+        return cat_id, group_id
     
     def _on_load_more_finished(self, docs: list) -> None:
         if self.sender() != self.current_load_worker:

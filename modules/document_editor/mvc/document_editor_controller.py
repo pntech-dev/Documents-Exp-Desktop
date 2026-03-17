@@ -76,7 +76,8 @@ class DocumentEditorController(QObject):
 
         # Get tags from document name
         document_tags = {}
-        document_name_tags = re.sub(r"[^\w\s]", "", document_data.get("name", "")).split()
+        document_name = str(document_data.get("name") or "")
+        document_name_tags = re.sub(r"[^\w\s]", "", document_name).split()
         
         for tag in document_name_tags:
             if len(tag) < 4: continue
@@ -86,7 +87,8 @@ class DocumentEditorController(QObject):
         # Get tags from document pages
         pages_tags = {}
         for page in document_data.get("pages", []):
-            page_tags = re.sub(r"[^\w\s]", "", page.get("name")).split()
+            page_name = str(page.get("name") or "")
+            page_tags = re.sub(r"[^\w\s]", "", page_name).split()
 
             for tag in page_tags:
                 if len(tag) < 4: continue
