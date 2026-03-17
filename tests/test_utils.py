@@ -197,6 +197,24 @@ class TestFileUtils:
             config = load_config()
             assert config == {}
 
+    def test_load_config_empty_yaml_returns_empty_dict(self, tmp_path):
+        """Empty YAML should not return None to callers."""
+        config_file = tmp_path / "config.yaml"
+        config_file.write_text("", encoding="utf-8")
+
+        with patch("utils.file_utils.get_app_root", return_value=tmp_path):
+            config = load_config()
+            assert config == {}
+
+    def test_load_config_non_mapping_root_returns_empty_dict(self, tmp_path):
+        """Only mapping root is supported for config structure."""
+        config_file = tmp_path / "config.yaml"
+        config_file.write_text("- item1\n- item2\n", encoding="utf-8")
+
+        with patch("utils.file_utils.get_app_root", return_value=tmp_path):
+            config = load_config()
+            assert config == {}
+
 
     def test_read_json_success(self, tmp_path):
         """Test successful reading of a JSON file."""

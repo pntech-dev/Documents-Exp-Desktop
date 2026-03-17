@@ -13,8 +13,17 @@ def load_config() -> dict:
     """
     try:
         config_path = get_app_root() / "config.yaml"
-        with open(config_path, 'r') as file:
-            return yaml.safe_load(file)
+        with open(config_path, "r", encoding="utf-8") as file:
+            data = yaml.safe_load(file)
+            if data is None:
+                return {}
+            if not isinstance(data, dict):
+                logging.error(
+                    "Configuration file has invalid root type: expected mapping, got %s.",
+                    type(data).__name__,
+                )
+                return {}
+            return data
     except FileNotFoundError:
         logging.error("Configuration file not found.", exc_info=True)
         return {}

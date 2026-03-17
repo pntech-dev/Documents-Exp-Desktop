@@ -35,15 +35,15 @@ Allows authorized users to create, edit, and manage document pages. Support for 
 
 ---
 
-## 💡 What's New (v0.2.2) - Search & Table Stability
+## 💡 What's New (v0.2.3) - Configuration Stability
 
-This patch release improves table refresh behavior after search input changes.
+This patch release improves application startup resilience with invalid config files.
 
 ### 🛠 Improved
 
-- Fixed an intermittent issue where clearing the search field did not restore all documents in the selected category.
-- Fixed a state sync issue where switching categories or departments could leave the table empty after clearing search.
-- Improved handling of whitespace-only input in the search field.
+- Hardened `config.yaml` parsing for empty configuration files.
+- Added validation for invalid config root types to prevent startup/runtime crashes.
+- Added test coverage for empty and malformed config structure scenarios.
 
 ---
 
