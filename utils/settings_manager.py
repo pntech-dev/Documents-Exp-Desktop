@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 from pathlib import Path
 from typing import Any, Dict
 
@@ -104,11 +105,18 @@ class SettingsManager:
 
     def save_settings(self) -> None:
         """Saves the current settings to the user's settings file."""
+        temp_path = self.settings_file.with_suffix(self.settings_file.suffix + ".tmp")
         try:
-            with open(self.settings_file, "w", encoding="utf-8") as f:
+            with open(temp_path, "w", encoding="utf-8") as f:
                 json.dump(self.settings, f, indent=4, ensure_ascii=False)
+            os.replace(temp_path, self.settings_file)
         except IOError as e:
             self.logger.error(f"Failed to save settings to {self.settings_file}: {e}")
+            try:
+                if temp_path.exists():
+                    temp_path.unlink()
+            except OSError:
+                pass
 
     def get_setting(self, key: str, default: Any = None) -> Any:
         """

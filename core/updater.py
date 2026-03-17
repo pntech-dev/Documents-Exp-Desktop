@@ -4,6 +4,7 @@ import os
 import tempfile
 import subprocess
 import logging
+from pathlib import Path
 from packaging import version
 from PyQt5.QtCore import QObject, pyqtSignal, QThread, Qt, QTimer
 from PyQt5.QtWidgets import QDialog, QMessageBox
@@ -247,6 +248,14 @@ class UpdateManager(QObject):
             self._install_update(file_path)
 
     def _install_update(self, file_path):
+        installer_path = Path(file_path)
+        if not installer_path.exists() or installer_path.stat().st_size <= 0:
+            NotificationService().show_toast("error", "Ошибка", "Файл обновления поврежден или не найден.")
+            return
+        if sys.platform == "win32" and installer_path.suffix.lower() != ".exe":
+            NotificationService().show_toast("error", "Ошибка", "Некорректный формат установщика обновления.")
+            return
+
         try:
             if sys.platform == "win32":
                 os.startfile(file_path)

@@ -1,5 +1,6 @@
 from PyQt5.QtCore import QTimer, QObject, QEvent
 from PyQt5.QtWidgets import QWidget
+import time
 
 from .toast_notification import ToastNotification
 from .modal_notification import ModalNotification
@@ -49,6 +50,8 @@ class NotificationService(metaclass=Singleton):
         self.main_window: QWidget | None = None
         self.active_toasts = []
         self.resize_filter = WindowResizeFilter(self)
+        self._last_toast_ts_by_key: dict[tuple[str, str, str], float] = {}
+        self.TOAST_DEDUPE_WINDOW_SEC = 0.8
 
     def set_main_window(self, main_window: QWidget):
         """Sets the main window instance for positioning notifications.
@@ -93,6 +96,13 @@ class NotificationService(metaclass=Singleton):
         if not self.main_window:
             print("ERROR: Main window not set for NotificationService.")
             return
+
+        toast_key = (notification_type, title, message)
+        now = time.monotonic()
+        last_ts = self._last_toast_ts_by_key.get(toast_key)
+        if last_ts is not None and (now - last_ts) < self.TOAST_DEDUPE_WINDOW_SEC:
+            return
+        self._last_toast_ts_by_key[toast_key] = now
 
         toast = ToastNotification(
             title=title,

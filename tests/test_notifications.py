@@ -44,7 +44,8 @@ class TestNotificationService:
         mock_toast_class.return_value = mock_toast_instance
         
         # Call method
-        service.show_toast("success", "Title", "Message")
+        with patch("utils.notifications.notification_service.time.monotonic", return_value=100.0):
+            service.show_toast("success", "Title", "Message")
         
         # Verify that ToastNotification was created with correct parameters
         mock_toast_class.assert_called_once_with(
@@ -58,6 +59,28 @@ class TestNotificationService:
         assert mock_toast_instance in service.active_toasts
         mock_toast_instance.destroyed.connect.assert_called_once()
         mock_toast_instance.show_animated.assert_called_once()
+
+    @patch("utils.notifications.notification_service.ThemeManagerInstance")
+    @patch("utils.notifications.notification_service.ToastNotification")
+    def test_show_toast_deduplicates_burst_identical_messages(self, mock_toast_class, mock_tm):
+        service = NotificationService()
+        mock_window = Mock(spec=QWidget)
+        mock_window.height.return_value = 600
+        mock_window.width.return_value = 800
+        service.set_main_window(mock_window)
+
+        toast_instance = Mock()
+        toast_instance.height.return_value = 80
+        toast_instance.width.return_value = 220
+        toast_instance.destroyed = Mock()
+        toast_instance.destroyed.connect = Mock()
+        mock_toast_class.return_value = toast_instance
+
+        with patch("utils.notifications.notification_service.time.monotonic", side_effect=[100.0, 100.2]):
+            service.show_toast("info", "Sync", "Done")
+            service.show_toast("info", "Sync", "Done")
+
+        mock_toast_class.assert_called_once()
 
     @patch("utils.notifications.notification_service.ThemeManagerInstance")
     def test_destroyed_toast_is_removed_from_stack(self, mock_tm):

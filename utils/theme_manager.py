@@ -78,17 +78,21 @@ class ThemeManager(QObject):
                    If None, toggles between the primary themes.
         """
         try:
+            prev_theme_id = self.current_theme_id
             if theme is None:
-                self.current_theme_id = "1" if self.current_theme_id == "0" else "0"
+                target_theme_id = "1" if self.current_theme_id == "0" else "0"
             else:
                 theme_str = str(theme)
                 if theme_str in self.themes:
-                    self.current_theme_id = theme_str
+                    target_theme_id = theme_str
                 else:
                     logger.error(f"Theme {theme} not found in config.")
                     return
 
-            self._apply_theme()
+            self.current_theme_id = target_theme_id
+            if not self._apply_theme():
+                self.current_theme_id = prev_theme_id
+                return
 
             # Save the theme setting if a settings manager is available
             if self.settings_manager:
@@ -143,7 +147,7 @@ class ThemeManager(QObject):
     # THEME APPLY
     # ---------------------------
 
-    def _apply_theme(self) -> None:
+    def _apply_theme(self) -> bool:
         """Applies the current theme's QSS stylesheet to the QApplication.
 
         Ensures the theme is availabel and its QSS file exists, then reads the
@@ -151,7 +155,7 @@ class ThemeManager(QObject):
         """
 
         if not self._validate_theme_availabel():
-            return
+            return False
 
         theme_name = self.themes[self.current_theme_id]
         themes_path = get_app_root() / self.ui_config["paths"]["themes_path"]
@@ -164,13 +168,15 @@ class ThemeManager(QObject):
             app = QApplication.instance()
             if not app:
                 logger.error("QApplication is not running. Stylesheet not applied.")
-                return
+                return False
 
             app.setStyleSheet(style)
             logger.info(f"Theme '{theme_name}' applied successfully.")
+            return True
 
         except Exception as e:
             logger.error(f"Error applying theme: {e}")
+            return False
 
     # ---------------------------
     # VALIDATION

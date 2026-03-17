@@ -224,3 +224,27 @@ class TestUpdateManager:
         manager.progress_dialog.close.assert_called_once()
         assert manager._downloader is None
         service_instance.show_toast.assert_called_once()
+
+    def test_install_update_rejects_missing_file(self):
+        manager = UpdateManager(current_version="0.2.0", repo_name="owner/repo")
+
+        with patch("core.updater.NotificationService") as mock_service, \
+             patch("core.updater.sys.platform", "win32"), \
+             patch("core.updater.os.startfile") as mock_start:
+            manager._install_update("Z:/not-found/setup.exe")
+
+        mock_start.assert_not_called()
+        mock_service.return_value.show_toast.assert_called_once()
+
+    def test_install_update_rejects_invalid_windows_extension(self, tmp_path):
+        manager = UpdateManager(current_version="0.2.0", repo_name="owner/repo")
+        fake_installer = tmp_path / "setup.bin"
+        fake_installer.write_bytes(b"abc")
+
+        with patch("core.updater.NotificationService") as mock_service, \
+             patch("core.updater.sys.platform", "win32"), \
+             patch("core.updater.os.startfile") as mock_start:
+            manager._install_update(str(fake_installer))
+
+        mock_start.assert_not_called()
+        mock_service.return_value.show_toast.assert_called_once()

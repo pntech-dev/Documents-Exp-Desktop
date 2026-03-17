@@ -35,11 +35,11 @@ Allows authorized users to create, edit, and manage document pages. Support for 
 
 ---
 
-## 🛠 What's New (v0.2.16)
+## 🛠 What's New (v0.2.17)
 
-- Improved toolbar behavior in document edit/create windows.
-- `Duplicate` and `Delete` now only mark a document as changed when pages were actually modified.
-- Reduced accidental “unsaved changes” state when pressing toolbar actions with no selected pages.
+- Improved overall stability for sessions, settings, notifications, and updates.
+- Added safer handling for duplicate file drops and incomplete session data edge cases.
+- Reduced risk of UI interruptions in high-frequency actions (toasts, theme switches, update install flow).
 
 ---
 

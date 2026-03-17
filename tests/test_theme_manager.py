@@ -170,3 +170,15 @@ class TestThemeManager:
             light_qss = themes_dir / "light.qss"
             assert light_qss.exists()
             assert "#whatsNewContainer" in light_qss.read_text(encoding="utf-8")
+
+    def test_switch_theme_does_not_commit_state_when_apply_fails(self, mock_configs):
+        with patch("utils.theme_manager.get_app_root", return_value=mock_configs):
+            tm = ThemeManager()
+            tm.current_theme_id = "0"
+            tm.settings_manager = Mock()
+
+            with patch.object(tm, "_apply_theme", return_value=False):
+                tm.switch_theme("1")
+
+            assert tm.current_theme_id == "0"
+            tm.settings_manager.set_setting.assert_not_called()
