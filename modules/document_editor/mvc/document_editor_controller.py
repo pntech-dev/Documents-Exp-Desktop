@@ -129,8 +129,10 @@ class DocumentEditorController(QObject):
 
     def _on_duplicate_page_button_clicked(self) -> None:
         """Handles the duplicate page button click event."""
-        self.view.duplicate_selected_pages()
-        self._on_document_data_changed()
+        changed = self.view.duplicate_selected_pages()
+        if changed:
+            self._on_document_data_changed()
+        self._on_table_selection_changed()
 
 
     def _on_print_button_clicked(self) -> None:
@@ -250,8 +252,9 @@ class DocumentEditorController(QObject):
 
     def _on_delete_page_button_clicked(self) -> None:
         """Handles the delete page button click event."""
-        self.view.delete_selected_pages()
-        self._on_document_data_changed()
+        changed = self.view.delete_selected_pages()
+        if changed:
+            self._on_document_data_changed()
         self._on_table_selection_changed()
 
 

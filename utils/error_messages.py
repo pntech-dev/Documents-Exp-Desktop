@@ -1,5 +1,23 @@
 import requests
 
+
+def _extract_http_detail(response) -> str | None:
+    """Extracts API error detail from JSON response payload."""
+    try:
+        payload = response.json()
+    except ValueError:
+        return None
+
+    detail = payload.get("detail") if isinstance(payload, dict) else payload
+    if detail is None:
+        return None
+    if isinstance(detail, str):
+        return detail
+    if isinstance(detail, list):
+        return "; ".join(str(item) for item in detail if item is not None) or None
+    return str(detail)
+
+
 def get_friendly_error_message(exception: Exception) -> str:
     """
     Translates exceptions into user-friendly Russian messages.
@@ -22,10 +40,7 @@ def get_friendly_error_message(exception: Exception) -> str:
             status_code = exception.response.status_code
             
             # Try to get detail from JSON response
-            try:
-                detail = exception.response.json().get("detail")
-            except:
-                detail = None
+            detail = _extract_http_detail(exception.response)
 
             if status_code == 400:
                 return f"Ошибка запроса: {detail}" if detail else "Некорректный запрос."
@@ -50,5 +65,9 @@ def get_friendly_error_message(exception: Exception) -> str:
             
             if status_code >= 500:
                 return f"Внутренняя ошибка сервера ({status_code}). Попробуйте позже."
+
+            if detail:
+                return f"HTTP {status_code}: {detail}"
+            return f"Ошибка запроса (HTTP {status_code})."
     
     return str(exception)

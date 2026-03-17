@@ -539,4 +539,10 @@ class APIClient:
         request.raise_for_status()
         if request.status_code == 204 or not request.content:
             return {}
-        return request.json()
+        try:
+            return request.json()
+        except ValueError:
+            # Some backends may return 200 with an empty/whitespace body.
+            if not (request.text or "").strip():
+                return {}
+            raise

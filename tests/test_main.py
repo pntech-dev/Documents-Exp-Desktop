@@ -144,6 +144,20 @@ class TestMainController:
             assert kwargs['offset'] == 0
             assert kwargs['limit'] == controller.limit
 
+    def test_load_more_documents_when_search_has_only_whitespace(self, controller):
+        """Whitespace-only search text should be treated as empty and must not block loading."""
+        controller.model.current_category_id = 10
+        controller.is_loading = False
+        controller.has_more = True
+        controller.offset = 0
+        controller.view.get_search_text.return_value = "   "
+
+        with patch("modules.main.mvc.main_controller.APIWorker") as MockWorker:
+            controller._load_more_documents()
+
+            assert controller.is_loading is True
+            MockWorker.assert_called_once()
+
     def test_update_documents_list_keeps_previous_table_until_success(self, controller):
         """Reloading the table should not clear the old data before the new response arrives."""
         controller.model.current_category_id = 10
@@ -284,3 +298,58 @@ class TestMainController:
             group_id=None,
             filters={},
         )
+
+    def test_edit_button_handles_pages_loading_error(self, controller):
+        """Editor opening should fail safely when pages loading raises."""
+        controller.model.selected_document = (55, False)
+        controller.model.get_document.return_value = {"id": 55}
+        controller.model.get_document_pages.side_effect = RuntimeError("pages failed")
+
+        with patch.object(controller, "_handle_error") as mock_handle_error, \
+             patch("modules.main.mvc.main_controller.EditorWindow") as MockEditor:
+            controller._on_edit_button_clicked()
+
+        mock_handle_error.assert_called_once()
+        MockEditor.assert_not_called()
+
+    def test_update_button_keeps_selected_department_and_category(self, controller):
+        """Update must preserve current dept/category selection when new departments are added."""
+        controller.model.current_department_id = 2
+        controller.model.current_category_id = "20"
+        controller.model.departments = [
+            {"id": 1, "name": "Dept 1", "documents_count": 5},
+            {"id": 2, "name": "Dept 2", "documents_count": 3},
+        ]
+        controller.model.categories = [
+            {"id": 10, "name": "Cat 1", "group_id": 1, "documents_count": 2},
+            {"id": 20, "name": "Cat 2", "group_id": 2, "documents_count": 4},
+        ]
+        controller.view.get_search_text.return_value = ""
+
+        def refresh_side_effect():
+            # Simulate model refresh behavior that resets current department
+            controller.model.departments = [
+                {"id": 1, "name": "Dept 1", "documents_count": 5},
+                {"id": 2, "name": "Dept 2", "documents_count": 3},
+                {"id": 3, "name": "New Dept", "documents_count": 1},
+            ]
+            controller.model.categories = [
+                {"id": 10, "name": "Cat 1", "group_id": 1, "documents_count": 2},
+                {"id": 20, "name": "Cat 2", "group_id": 2, "documents_count": 4},
+                {"id": 30, "name": "Cat 3", "group_id": 3, "documents_count": 1},
+            ]
+            controller.model.current_department_id = 1
+            controller.model.current_category_id = None
+
+        controller.model.refresh_data.side_effect = refresh_side_effect
+
+        with patch.object(controller, "_update_documents_list") as mock_update_docs:
+            controller._on_update_button_clicked()
+
+        assert controller.model.current_department_id == 2
+        assert controller.model.current_category_id == 20
+        categories_payload = controller.view.update_categories.call_args[0][0]
+        assert any(getattr(item, "id", None) == 20 for item in categories_payload)
+        controller.view.select_department.assert_any_call(2)
+        controller.view.select_category.assert_any_call(20)
+        mock_update_docs.assert_called_once()

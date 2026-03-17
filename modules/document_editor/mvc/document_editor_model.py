@@ -190,11 +190,12 @@ class DocumentEditorModel:
     
     def _get_user_token(self) -> str | None:
         last_logged = read_json(self.LOCAL_DIR_LAST_LOGGED)
-
-        if not last_logged:
+        if not isinstance(last_logged, dict):
             return None
 
-        user_id = last_logged["user_id"]
+        user_id = last_logged.get("user_id")
+        if user_id in (None, ""):
+            return None
 
         access_token = keyring.get_password(
             service_name="Documents Exp",
@@ -222,10 +223,12 @@ class DocumentEditorModel:
         """Refreshes tokens using the stored refresh token."""
         try:
             last_logged = read_json(self.LOCAL_DIR_LAST_LOGGED)
-            if not last_logged:
+            if not isinstance(last_logged, dict):
                 return False
             
             user_id = last_logged.get("user_id")
+            if user_id in (None, ""):
+                return False
             refresh_token = keyring.get_password("Documents Exp", f"refresh_token_{user_id}")
             
             if not refresh_token:

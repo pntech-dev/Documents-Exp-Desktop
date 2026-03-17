@@ -35,16 +35,11 @@ Allows authorized users to create, edit, and manage document pages. Support for 
 
 ---
 
-## 💡 What's New (v0.2.1) - Stability & Profile Improvements
+## 🛠 What's New (v0.2.16)
 
-This patch release improves reliability and profile editing behavior.
-
-### 🛠 Improved
-
-- Fixed a crash when opening the profile window for accounts without a filled display name.
-- Improved reliability of profile data updates after backend deployment updates.
-- Improved handling of empty values in document and page names.
-- Improved stability of search and document loading in edge cases.
+- Improved toolbar behavior in document edit/create windows.
+- `Duplicate` and `Delete` now only mark a document as changed when pages were actually modified.
+- Reduced accidental “unsaved changes” state when pressing toolbar actions with no selected pages.
 
 ---
 

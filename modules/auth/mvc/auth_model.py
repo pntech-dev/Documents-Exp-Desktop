@@ -138,6 +138,9 @@ class AuthModel:
             return None
 
         user_id = user.get("id", None)
+        if not isinstance(user_id, int):
+            logging.error("Cannot save user session: invalid or missing user id.")
+            return None
 
         # Save access and refresh tokens
         self.save_token(token_name=f"access_token_{user_id}", token="access_token", data=user_data)

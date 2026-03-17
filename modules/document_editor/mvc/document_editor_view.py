@@ -292,8 +292,12 @@ class EditorPagesTable:
         self.table_view.edit(index)
 
 
-    def delete_selected_pages(self) -> None:
-        """Deletes selected or checked pages from the table."""
+    def delete_selected_pages(self) -> bool:
+        """Deletes selected or checked pages from the table.
+
+        Returns:
+            bool: True if any page was deleted, otherwise False.
+        """
         model = self.table_view.model()
         rows_to_delete = set()
 
@@ -313,10 +317,15 @@ class EditorPagesTable:
             model.removeRow(row)
         
         self.table_view.clearSelection()
+        return bool(rows_to_delete)
 
 
-    def duplicate_selected_pages(self) -> None:
-        """Duplicates selected or checked pages."""
+    def duplicate_selected_pages(self) -> bool:
+        """Duplicates selected or checked pages.
+
+        Returns:
+            bool: True if any page was duplicated, otherwise False.
+        """
         model = self.table_view.model()
         rows_to_duplicate = set()
 
@@ -375,6 +384,7 @@ class EditorPagesTable:
                 model.index(insert_row, 0), 
                 QItemSelectionModel.Select | QItemSelectionModel.Rows
             )
+        return bool(rows_to_duplicate)
 
 
     def has_selection_or_checks(self) -> bool:
@@ -561,14 +571,22 @@ class DocumentEditorView:
         return self.pages_table.has_selection_or_checks()
 
 
-    def delete_selected_pages(self) -> None:
-        """Deletes selected or checked pages."""
-        self.pages_table.delete_selected_pages()
+    def delete_selected_pages(self) -> bool:
+        """Deletes selected or checked pages.
+
+        Returns:
+            bool: True if any page was deleted, otherwise False.
+        """
+        return self.pages_table.delete_selected_pages()
 
     
-    def duplicate_selected_pages(self) -> None:
-        """Duplicates selected or checked pages."""
-        self.pages_table.duplicate_selected_pages()
+    def duplicate_selected_pages(self) -> bool:
+        """Duplicates selected or checked pages.
+
+        Returns:
+            bool: True if any page was duplicated, otherwise False.
+        """
+        return self.pages_table.duplicate_selected_pages()
 
 
     def get_document_data(self) -> dict:

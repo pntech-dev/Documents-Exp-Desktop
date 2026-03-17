@@ -113,6 +113,25 @@ class TestRequestExceptions:
         exception = requests.exceptions.HTTPError(response=mock_response)
         assert expected_part in get_friendly_error_message(exception)
 
+    def test_http_error_detail_list_is_rendered(self):
+        mock_response = Mock(spec=requests.Response)
+        mock_response.status_code = 422
+        mock_response.json.return_value = {"detail": ["field A invalid", "field B required"]}
+
+        exception = requests.exceptions.HTTPError(response=mock_response)
+        message = get_friendly_error_message(exception)
+        assert "field A invalid" in message
+        assert "field B required" in message
+
+    def test_http_error_non_json_response_fallback(self):
+        mock_response = Mock(spec=requests.Response)
+        mock_response.status_code = 418
+        mock_response.json.side_effect = ValueError("not json")
+
+        exception = requests.exceptions.HTTPError(response=mock_response)
+        message = get_friendly_error_message(exception)
+        assert "HTTP 418" in message
+
 
 
 class TestValidators:
@@ -193,6 +212,24 @@ class TestFileUtils:
         config_file = tmp_path / "config.yaml"
         config_file.write_text("invalid: [", encoding="utf-8")
         
+        with patch("utils.file_utils.get_app_root", return_value=tmp_path):
+            config = load_config()
+            assert config == {}
+
+    def test_load_config_empty_yaml_returns_empty_dict(self, tmp_path):
+        """Empty YAML should not return None to callers."""
+        config_file = tmp_path / "config.yaml"
+        config_file.write_text("", encoding="utf-8")
+
+        with patch("utils.file_utils.get_app_root", return_value=tmp_path):
+            config = load_config()
+            assert config == {}
+
+    def test_load_config_non_mapping_root_returns_empty_dict(self, tmp_path):
+        """Only mapping root is supported for config structure."""
+        config_file = tmp_path / "config.yaml"
+        config_file.write_text("- item1\n- item2\n", encoding="utf-8")
+
         with patch("utils.file_utils.get_app_root", return_value=tmp_path):
             config = load_config()
             assert config == {}

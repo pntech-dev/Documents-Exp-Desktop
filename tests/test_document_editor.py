@@ -92,6 +92,22 @@ class TestDocumentEditorModel:
             mock_doc.add_table.assert_called()
             mock_doc.save.assert_called_with(str(tmp_path / "export.docx"))
 
+    def test_get_user_token_returns_none_for_non_dict_last_logged(self, model):
+        with patch("modules.document_editor.mvc.document_editor_model.read_json", return_value=[]):
+            assert model._get_user_token() is None
+
+    def test_get_user_token_returns_none_for_missing_user_id(self, model):
+        with patch("modules.document_editor.mvc.document_editor_model.read_json", return_value={}), \
+             patch("modules.document_editor.mvc.document_editor_model.keyring.get_password") as mock_get_password:
+            assert model._get_user_token() is None
+            mock_get_password.assert_not_called()
+
+    def test_refresh_tokens_returns_false_for_missing_user_id(self, model):
+        with patch("modules.document_editor.mvc.document_editor_model.read_json", return_value={}), \
+             patch("modules.document_editor.mvc.document_editor_model.keyring.get_password") as mock_get_password:
+            assert model._refresh_tokens() is False
+            mock_get_password.assert_not_called()
+
 
 
 class TestDocumentEditorController:
@@ -207,3 +223,23 @@ class TestDocumentEditorController:
             controller.model.delete_document.assert_called_once()
             controller.window.document_deleted.emit.assert_called_once()
             controller.window.close.assert_called_once()
+
+    def test_duplicate_without_selection_does_not_mark_document_edited(self, controller):
+        controller.model.is_document_edited = False
+        controller.view.duplicate_selected_pages.return_value = False
+
+        with patch.object(controller, "_on_document_data_changed") as mock_changed:
+            controller._on_duplicate_page_button_clicked()
+
+        mock_changed.assert_not_called()
+        controller.view.update_delete_page_button_state.assert_called()
+
+    def test_delete_without_selection_does_not_mark_document_edited(self, controller):
+        controller.model.is_document_edited = False
+        controller.view.delete_selected_pages.return_value = False
+
+        with patch.object(controller, "_on_document_data_changed") as mock_changed:
+            controller._on_delete_page_button_clicked()
+
+        mock_changed.assert_not_called()
+        controller.view.update_delete_page_button_state.assert_called()

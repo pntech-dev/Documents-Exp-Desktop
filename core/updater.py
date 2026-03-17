@@ -78,6 +78,7 @@ class UpdateDownloader(QThread):
     """Thread for downloading the update file."""
     progress = pyqtSignal(int, int) # downloaded_bytes, total_bytes
     finished = pyqtSignal(str)  # путь к скачанному файлу
+    canceled = pyqtSignal()
     error = pyqtSignal(str)
 
     def __init__(self, url: str, expected_size: int = 0):
@@ -91,6 +92,7 @@ class UpdateDownloader(QThread):
         self._is_running = False
 
     def run(self):
+        path = None
         try:
             # Use requests context manager to ensure connection closure
             with requests.get(self.url, stream=True, timeout=30, allow_redirects=True) as response:
@@ -121,6 +123,7 @@ class UpdateDownloader(QThread):
                                 os.remove(path)
                             except OSError:
                                 pass
+                            self.canceled.emit()
                             return
 
                         if chunk:
@@ -138,10 +141,24 @@ class UpdateDownloader(QThread):
                                     self.progress.emit(downloaded_size, total_size)
                                     last_emitted_size = downloaded_size
 
-                if self._is_running:
-                    self.finished.emit(path)
+                if not self._is_running:
+                    try:
+                        os.remove(path)
+                    except OSError:
+                        pass
+                    self.canceled.emit()
+                    return
+
+                self.finished.emit(path)
 
         except Exception as e:
+            if path and not self._is_running:
+                try:
+                    os.remove(path)
+                except OSError:
+                    pass
+                self.canceled.emit()
+                return
             logger.error(f"Download failed: {e}")
             self.error.emit(str(e))
 
@@ -193,6 +210,7 @@ class UpdateManager(QObject):
         self._downloader = UpdateDownloader(url, size)
         self._downloader.progress.connect(self.progress_dialog.set_progress)
         self._downloader.finished.connect(self._on_download_finished)
+        self._downloader.canceled.connect(self._on_download_canceled)
         self._downloader.error.connect(self._on_download_error)
         
         self.progress_dialog.canceled.connect(self._downloader.stop)
@@ -201,12 +219,19 @@ class UpdateManager(QObject):
 
     def _on_download_error(self, error_msg):
         self.progress_dialog.close()
+        self._downloader = None
         # If main window is not created yet (check on startup), NotificationService won't work
         if NotificationService().main_window:
             NotificationService().show_toast("error", "Ошибка", f"Ошибка скачивания: {error_msg}")
         else:
             # Use standard QMessageBox as a fallback
             QMessageBox.critical(self.parent_widget, "Ошибка", f"Ошибка скачивания:\n{error_msg}")
+
+    def _on_download_canceled(self):
+        self.progress_dialog.close()
+        self._downloader = None
+        if NotificationService().main_window:
+            NotificationService().show_toast("info", "Обновление", "Скачивание обновления отменено.")
 
     def _on_download_finished(self, file_path):
         # Force set 100% so user sees completion
@@ -216,6 +241,7 @@ class UpdateManager(QObject):
 
     def _show_install_confirmation(self, file_path):
         self.progress_dialog.close()
+        self._downloader = None
         dialog = InstallConfirmDialog(self.parent_widget)
         if dialog.exec_() == QDialog.Accepted:
             self._install_update(file_path)

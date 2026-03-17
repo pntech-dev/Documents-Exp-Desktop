@@ -39,6 +39,8 @@ class TestNotificationService:
         mock_toast_instance = Mock()
         mock_toast_instance.height.return_value = 100
         mock_toast_instance.width.return_value = 300
+        mock_toast_instance.destroyed = Mock()
+        mock_toast_instance.destroyed.connect = Mock()
         mock_toast_class.return_value = mock_toast_instance
         
         # Call method
@@ -54,7 +56,22 @@ class TestNotificationService:
         
         # Verify that toast is added to list and shown
         assert mock_toast_instance in service.active_toasts
+        mock_toast_instance.destroyed.connect.assert_called_once()
         mock_toast_instance.show_animated.assert_called_once()
+
+    @patch("utils.notifications.notification_service.ThemeManagerInstance")
+    def test_destroyed_toast_is_removed_from_stack(self, mock_tm):
+        service = NotificationService()
+        service.main_window = Mock(spec=QWidget)
+
+        toast = Mock()
+        service.active_toasts = [toast]
+
+        with patch.object(service, "_reposition_toasts") as mock_reposition:
+            service._on_toast_destroyed(toast)
+
+        assert toast not in service.active_toasts
+        mock_reposition.assert_called_once()
 
     def test_singleton_behavior(self):
         """Test Singleton pattern."""
@@ -62,3 +79,18 @@ class TestNotificationService:
             s1 = NotificationService()
             s2 = NotificationService()
             assert s1 is s2
+
+    @patch("utils.notifications.notification_service.ThemeManagerInstance")
+    def test_set_main_window_accepts_none_without_crash(self, mock_tm):
+        service = NotificationService()
+        old_window = Mock(spec=QWidget)
+        old_toast = Mock()
+        service.main_window = old_window
+        service.active_toasts = [old_toast]
+
+        service.set_main_window(None)
+
+        old_window.removeEventFilter.assert_called_once()
+        old_toast.close.assert_called_once()
+        assert service.main_window is None
+        assert service.active_toasts == []
