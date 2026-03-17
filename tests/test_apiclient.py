@@ -170,6 +170,33 @@ class TestAPIClient:
 
             assert result == {}
 
+    def test_request_returns_empty_dict_for_whitespace_json_body(self, client):
+        with patch.object(client.session, "request") as mock_request:
+            mock_response = Mock()
+            mock_response.status_code = 200
+            mock_response.content = b"   \n\t  "
+            mock_response.text = "   \n\t  "
+            mock_response.raise_for_status = Mock()
+            mock_response.json.side_effect = ValueError("No JSON object could be decoded")
+            mock_request.return_value = mock_response
+
+            result = client._request("GET", f"{self.BASE_URL}/app/search")
+
+            assert result == {}
+
+    def test_request_raises_for_non_json_non_empty_body(self, client):
+        with patch.object(client.session, "request") as mock_request:
+            mock_response = Mock()
+            mock_response.status_code = 200
+            mock_response.content = b"<html>error</html>"
+            mock_response.text = "<html>error</html>"
+            mock_response.raise_for_status = Mock()
+            mock_response.json.side_effect = ValueError("No JSON object could be decoded")
+            mock_request.return_value = mock_response
+
+            with pytest.raises(ValueError):
+                client._request("GET", f"{self.BASE_URL}/app/search")
+
     def test_search_data(self, client):
         token = "auth_token"
         query = "test query"

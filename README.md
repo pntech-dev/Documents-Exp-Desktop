@@ -35,11 +35,11 @@ Allows authorized users to create, edit, and manage document pages. Support for 
 
 ---
 
-## 🛠 What's New (v0.2.9)
+## 🛠 What's New (v0.2.10)
 
-- Document editor now handles rare session-data issues more safely.
-- In problematic cases, background document actions fail gracefully instead of breaking the flow.
-- Overall reliability of save/upload operations after app restarts is improved.
+- Improved stability when the server returns an unexpected empty response.
+- The app now handles this case more gracefully instead of interrupting your flow.
+- Reliability of background data loading and refresh operations is improved.
 
 ---
 
