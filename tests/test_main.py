@@ -144,6 +144,20 @@ class TestMainController:
             assert kwargs['offset'] == 0
             assert kwargs['limit'] == controller.limit
 
+    def test_load_more_documents_when_search_has_only_whitespace(self, controller):
+        """Whitespace-only search text should be treated as empty and must not block loading."""
+        controller.model.current_category_id = 10
+        controller.is_loading = False
+        controller.has_more = True
+        controller.offset = 0
+        controller.view.get_search_text.return_value = "   "
+
+        with patch("modules.main.mvc.main_controller.APIWorker") as MockWorker:
+            controller._load_more_documents()
+
+            assert controller.is_loading is True
+            MockWorker.assert_called_once()
+
     def test_update_documents_list_keeps_previous_table_until_success(self, controller):
         """Reloading the table should not clear the old data before the new response arrives."""
         controller.model.current_category_id = 10

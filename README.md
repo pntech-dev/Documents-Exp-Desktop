@@ -35,16 +35,15 @@ Allows authorized users to create, edit, and manage document pages. Support for 
 
 ---
 
-## 💡 What's New (v0.2.1) - Stability & Profile Improvements
+## 💡 What's New (v0.2.2) - Search & Table Stability
 
-This patch release improves reliability and profile editing behavior.
+This patch release improves table refresh behavior after search input changes.
 
 ### 🛠 Improved
 
-- Fixed a crash when opening the profile window for accounts without a filled display name.
-- Improved reliability of profile data updates after backend deployment updates.
-- Improved handling of empty values in document and page names.
-- Improved stability of search and document loading in edge cases.
+- Fixed an intermittent issue where clearing the search field did not restore all documents in the selected category.
+- Fixed a state sync issue where switching categories or departments could leave the table empty after clearing search.
+- Improved handling of whitespace-only input in the search field.
 
 ---
 

@@ -98,10 +98,14 @@ class MainController(QObject):
     # Controller Handlers
     # ====================
 
+    def _normalized_search_text(self) -> str:
+        """Returns trimmed search text to avoid treating whitespace as active search."""
+        return (self.view.get_search_text() or "").strip()
+
 
     def _on_search_lineedit_text_changed(self) -> None:
         """Handles the search line edit text change."""
-        search_text = self.view.get_search_text()
+        search_text = self._normalized_search_text()
         
         # If empty, update immediately without delay
         if not search_text:
@@ -129,7 +133,7 @@ class MainController(QObject):
 
     def _perform_search(self) -> None:
         """Executes the search request after delay."""
-        search_text = self.view.get_search_text()
+        search_text = self._normalized_search_text()
         filters = self.view.get_search_filters()
         if not search_text:
             return
@@ -455,7 +459,7 @@ class MainController(QObject):
 
                 # With active search keep previous table until new results arrive.
                 # This avoids a blank table if the first request after idle fails.
-                if self.view.get_search_text():
+                if self._normalized_search_text():
                     self._on_search_lineedit_text_changed()
                 else:
                     # No search active: clear stale documents and load current category data.
@@ -477,13 +481,13 @@ class MainController(QObject):
 
             if cat_id is not None and cat_id != self.model.current_category_id:
                 self.model.current_category_id = cat_id
-                if self.view.get_search_text():
+                if self._normalized_search_text():
                     self._on_search_lineedit_text_changed()
                 else:
                     self._update_documents_list()
         else:
             self.model.current_category_id = None
-            if self.view.get_search_text():
+            if self._normalized_search_text():
                 self._on_search_lineedit_text_changed()
             else:
                 self._update_documents_list()
@@ -691,7 +695,7 @@ class MainController(QObject):
         if not at_bottom:
             return
 
-        if self.view.get_search_text():
+        if self._normalized_search_text():
             # Search results are held fully in memory — paginate client-side
             self._load_more_search_results()
         elif not self.is_loading and self.has_more:
@@ -763,7 +767,7 @@ class MainController(QObject):
 
         # If the user cleared the search field while the worker was running,
         # discard the result — _update_documents_list already took over.
-        search_text = self.view.get_search_text()
+        search_text = self._normalized_search_text()
         if not search_text:
             return
 
@@ -1018,7 +1022,7 @@ class MainController(QObject):
     def _load_more_documents(self) -> None:
         """Loads the next page of documents."""
         # Do not load more if loading, no category selected, or SEARCH IS ACTIVE
-        if self.is_loading or self.model.current_category_id is None or self.view.get_search_text():
+        if self.is_loading or self.model.current_category_id is None or self._normalized_search_text():
             return
 
         self.is_loading = True
@@ -1070,7 +1074,7 @@ class MainController(QObject):
         self.search_results_all = []
 
         # Prevent updating UI if search is active (stale request)
-        if self.view.get_search_text():
+        if self._normalized_search_text():
             return
 
         # With a large limit, we assume we've fetched all documents.
@@ -1161,7 +1165,7 @@ class MainController(QObject):
 
         # Trigger update manually after state is restored
         if dept_exists:
-            if self.view.get_search_text():
+            if self._normalized_search_text():
                 # Perform search immediately, bypassing debounce timer
                 self._perform_search()
             else:
