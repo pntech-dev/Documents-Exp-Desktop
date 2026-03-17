@@ -79,3 +79,18 @@ class TestNotificationService:
             s1 = NotificationService()
             s2 = NotificationService()
             assert s1 is s2
+
+    @patch("utils.notifications.notification_service.ThemeManagerInstance")
+    def test_set_main_window_accepts_none_without_crash(self, mock_tm):
+        service = NotificationService()
+        old_window = Mock(spec=QWidget)
+        old_toast = Mock()
+        service.main_window = old_window
+        service.active_toasts = [old_toast]
+
+        service.set_main_window(None)
+
+        old_window.removeEventFilter.assert_called_once()
+        old_toast.close.assert_called_once()
+        assert service.main_window is None
+        assert service.active_toasts == []

@@ -35,11 +35,11 @@ Allows authorized users to create, edit, and manage document pages. Support for 
 
 ---
 
-## 🛠 What's New (v0.2.12)
+## 🛠 What's New (v0.2.13)
 
-- On-screen notifications now disappear more reliably when closed manually.
-- Notification stacking stays consistent during rapid close/show actions.
-- Overall UI responsiveness in notification-heavy flows is improved.
+- Improved stability of the notification system during window transitions.
+- In rare cases with no active main window, notifications now reset safely.
+- Reduced risk of UI interruptions when reopening or switching screens.
 
 ---
 

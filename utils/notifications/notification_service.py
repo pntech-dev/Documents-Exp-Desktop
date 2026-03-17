@@ -68,6 +68,8 @@ class NotificationService(metaclass=Singleton):
         self.active_toasts.clear()
 
         self.main_window = main_window
+        if not self.main_window:
+            return
         self.main_window.installEventFilter(self.resize_filter)
 
     def show_toast(
