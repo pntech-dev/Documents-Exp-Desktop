@@ -35,11 +35,11 @@ Allows authorized users to create, edit, and manage document pages. Support for 
 
 ---
 
-## 🛠 What's New (v0.2.8)
+## 🛠 What's New (v0.2.9)
 
-- Login and account recovery forms now react more reliably to invalid input.
-- Action buttons are disabled immediately when entered data is not valid.
-- If email-code confirmation is canceled, the flow now stops safely without extra error popups.
+- Document editor now handles rare session-data issues more safely.
+- In problematic cases, background document actions fail gracefully instead of breaking the flow.
+- Overall reliability of save/upload operations after app restarts is improved.
 
 ---
 

@@ -92,6 +92,22 @@ class TestDocumentEditorModel:
             mock_doc.add_table.assert_called()
             mock_doc.save.assert_called_with(str(tmp_path / "export.docx"))
 
+    def test_get_user_token_returns_none_for_non_dict_last_logged(self, model):
+        with patch("modules.document_editor.mvc.document_editor_model.read_json", return_value=[]):
+            assert model._get_user_token() is None
+
+    def test_get_user_token_returns_none_for_missing_user_id(self, model):
+        with patch("modules.document_editor.mvc.document_editor_model.read_json", return_value={}), \
+             patch("modules.document_editor.mvc.document_editor_model.keyring.get_password") as mock_get_password:
+            assert model._get_user_token() is None
+            mock_get_password.assert_not_called()
+
+    def test_refresh_tokens_returns_false_for_missing_user_id(self, model):
+        with patch("modules.document_editor.mvc.document_editor_model.read_json", return_value={}), \
+             patch("modules.document_editor.mvc.document_editor_model.keyring.get_password") as mock_get_password:
+            assert model._refresh_tokens() is False
+            mock_get_password.assert_not_called()
+
 
 
 class TestDocumentEditorController:
