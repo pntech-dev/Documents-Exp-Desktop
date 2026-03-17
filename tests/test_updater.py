@@ -1,7 +1,7 @@
 import pytest
 import requests
 from unittest.mock import Mock, patch, MagicMock
-from core.updater import GitHubUpdateChecker, UpdateDownloader
+from core.updater import GitHubUpdateChecker, UpdateDownloader, UpdateManager
 
 
 
@@ -147,3 +147,50 @@ class TestUpdateDownloader:
             
             downloader.error.emit.assert_called_once()
             assert "Fail" in downloader.error.emit.call_args[0][0]
+
+    def test_download_canceled_emits_signal(self, tmp_path):
+        """Stopping download should emit canceled and not emit finished."""
+        url = "http://test.com/file.exe"
+        downloader = UpdateDownloader(url, 10)
+        downloader.finished = Mock()
+        downloader.progress = Mock()
+        downloader.error = Mock()
+        downloader.canceled = Mock()
+
+        with patch("requests.get") as mock_get:
+            mock_response = Mock()
+            mock_response.headers = {"content-length": "10"}
+
+            def chunks():
+                yield b"12345"
+                downloader.stop()
+                yield b"67890"
+
+            mock_response.iter_content.return_value = chunks()
+            mock_response.raise_for_status = Mock()
+            mock_get.return_value.__enter__.return_value = mock_response
+
+            target_file = tmp_path / "update.exe"
+            with patch("core.updater.tempfile.mkstemp", return_value=(123, str(target_file))), \
+                 patch("core.updater.os.close"):
+                downloader.run()
+
+        downloader.canceled.emit.assert_called_once()
+        downloader.finished.emit.assert_not_called()
+
+
+class TestUpdateManager:
+    def test_on_download_canceled_cleans_state(self):
+        manager = UpdateManager(current_version="0.2.0", repo_name="owner/repo")
+        manager.progress_dialog = Mock()
+        manager._downloader = Mock()
+
+        with patch("core.updater.NotificationService") as mock_notification_service:
+            service_instance = mock_notification_service.return_value
+            service_instance.main_window = Mock()
+
+            manager._on_download_canceled()
+
+        manager.progress_dialog.close.assert_called_once()
+        assert manager._downloader is None
+        service_instance.show_toast.assert_called_once()

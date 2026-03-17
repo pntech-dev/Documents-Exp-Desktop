@@ -35,15 +35,15 @@ Allows authorized users to create, edit, and manage document pages. Support for 
 
 ---
 
-## 💡 What's New (v0.2.3) - Configuration Stability
+## 💡 What's New (v0.2.4) - Update Flow Stability
 
-This patch release improves application startup resilience with invalid config files.
+This patch release improves reliability of the in-app update download flow.
 
 ### 🛠 Improved
 
-- Hardened `config.yaml` parsing for empty configuration files.
-- Added validation for invalid config root types to prevent startup/runtime crashes.
-- Added test coverage for empty and malformed config structure scenarios.
+- Added explicit cancellation handling for update downloads.
+- Fixed update manager state cleanup after canceled or failed download.
+- Added tests for cancellation behavior and manager cleanup logic.
 
 ---
 
