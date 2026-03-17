@@ -35,15 +35,16 @@ Allows authorized users to create, edit, and manage document pages. Support for 
 
 ---
 
-## 💡 What's New (v0.2.1) - Stability Fixes
+## 💡 What's New (v0.2.1) - Stability & Profile Improvements
 
-This patch release focuses on reliability fixes.
+This patch release improves reliability and profile editing behavior.
 
-### 🛠 Fixed
+### 🛠 Improved
 
-- Fixed a crash when opening the profile dialog if `username` is empty/null (`NoneType` error on `split`).
-- Hardened tag generation in the document editor for cases where document/page names are empty or null.
-- Added safer handling for malformed virtual category IDs in search/loading flows.
+- Fixed a crash when opening the profile window for accounts without a filled display name.
+- Improved reliability of profile data updates after backend deployment updates.
+- Improved handling of empty values in document and page names.
+- Improved stability of search and document loading in edge cases.
 
 ---
 

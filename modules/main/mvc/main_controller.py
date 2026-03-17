@@ -400,9 +400,13 @@ class MainController(QObject):
             )
 
             if updated_data:
+                current_user_id = user_data.get("id") or user_data.get("user_id")
+                if current_user_id is None:
+                    current_user_id = self.model.get_current_user_id()
+
                 worker = APIWorker(
                     self.model.update_user_profile,
-                    user_id=user_data['id'],
+                    user_id=current_user_id,
                     data=updated_data
                 )
                 self.active_workers.add(worker)
@@ -446,13 +450,16 @@ class MainController(QObject):
             if dept_id is not None and dept_id != self.model.current_department_id:
                 self.model.current_department_id = dept_id
                 self.model.current_category_id = None
-                
-                # Explicitly clear documents to avoid showing stale data from previous department
-                self._update_documents_list()                
+
                 self._update_categories_list()
-                
+
+                # With active search keep previous table until new results arrive.
+                # This avoids a blank table if the first request after idle fails.
                 if self.view.get_search_text():
                     self._on_search_lineedit_text_changed()
+                else:
+                    # No search active: clear stale documents and load current category data.
+                    self._update_documents_list()
 
                 self._update_create_category_state()
                 self._update_create_document_state()
