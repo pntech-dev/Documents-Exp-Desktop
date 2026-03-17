@@ -35,11 +35,11 @@ Allows authorized users to create, edit, and manage document pages. Support for 
 
 ---
 
-## 🛠 What's New (v0.2.13)
+## 🛠 What's New (v0.2.14)
 
-- Improved stability of the notification system during window transitions.
-- In rare cases with no active main window, notifications now reset safely.
-- Reduced risk of UI interruptions when reopening or switching screens.
+- Improved session-safety checks during login and sign-up completion.
+- The app now prevents continuation if user session data is incomplete.
+- Reduced risk of unstable authorization state after successful sign-in responses.
 
 ---
 

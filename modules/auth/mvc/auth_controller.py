@@ -96,6 +96,13 @@ class AuthController(QObject):
         try:
             auto_login = self.view.login_page.get_auto_login_state()
             user_id = self.model.save_user(user_data=data, auto_login=auto_login)
+            if not isinstance(user_id, int):
+                NotificationService().show_toast(
+                    "error",
+                    "Ошибка входа",
+                    "Не удалось сохранить сессию. Попробуйте войти снова."
+                )
+                return
 
             self.view.login_page.clear_lineedits()
             self.login_successful.emit("auth", user_id)
@@ -120,6 +127,13 @@ class AuthController(QObject):
         try:
             auto_login = self.view.signup_page.get_auto_login_state()
             user_id = self.model.save_user(user_data=user_data, auto_login=auto_login)
+            if not isinstance(user_id, int):
+                NotificationService().show_toast(
+                    "error",
+                    "Ошибка регистрации",
+                    "Не удалось сохранить сессию. Попробуйте войти снова."
+                )
+                return
 
             self.view.signup_page.clear_lineedits()
 

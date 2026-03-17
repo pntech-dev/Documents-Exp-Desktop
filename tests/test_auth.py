@@ -59,6 +59,21 @@ class TestAuthModel:
             # Check file writing (user data and last logged)
             assert mock_open.call_count >= 2
 
+    def test_save_user_returns_none_for_invalid_user_id(self, model):
+        user_data = {
+            "user": {"id": None, "email": "test@test.com"},
+            "access_token": "acc",
+            "refresh_token": "ref",
+        }
+
+        with patch("modules.auth.mvc.auth_model.keyring.set_password") as mock_keyring, \
+             patch("builtins.open", new_callable=MagicMock) as mock_open:
+            result = model.save_user(user_data, True)
+
+        assert result is None
+        mock_keyring.assert_not_called()
+        mock_open.assert_not_called()
+
     def test_save_token_raises_when_keyring_write_fails(self, model):
         with patch("modules.auth.mvc.auth_model.keyring.set_password", side_effect=Exception("keyring fail")):
             with pytest.raises(RuntimeError):
@@ -169,6 +184,21 @@ class TestAuthController:
         controller.view.login_page.clear_lineedits.assert_not_called()
         MockNotify.return_value.show_toast.assert_called_once()
 
+    def test_login_success_callback_handles_invalid_user_id(self, controller):
+        data = {"user": {"id": None}}
+        controller.view.login_page.get_auto_login_state.return_value = True
+        controller.model.save_user.return_value = None
+
+        mock_signal = Mock()
+        controller.login_successful.connect(mock_signal)
+
+        with patch("modules.auth.mvc.auth_controller.NotificationService") as MockNotify:
+            controller.login_user(data)
+
+        mock_signal.assert_not_called()
+        controller.view.login_page.clear_lineedits.assert_not_called()
+        MockNotify.return_value.show_toast.assert_called_once()
+
     def test_reset_password_page_switch_handles_save_error(self, controller):
         controller.view.pages = {"change_password_change_page": Mock()}
         controller.model.save_token.side_effect = RuntimeError("keyring fail")
@@ -264,4 +294,19 @@ class TestAuthController:
             controller.open_email_confirm_modal_window(data={}, email="new@test.com")
 
         mock_create_worker.assert_not_called()
+        MockNotify.return_value.show_toast.assert_called_once()
+
+    def test_signup_success_callback_handles_invalid_user_id(self, controller):
+        data = {"user": {"id": None}}
+        controller.view.signup_page.get_auto_login_state.return_value = True
+        controller.model.save_user.return_value = None
+
+        mock_signal = Mock()
+        controller.login_successful.connect(mock_signal)
+
+        with patch("modules.auth.mvc.auth_controller.NotificationService") as MockNotify:
+            controller.signup_user(data)
+
+        mock_signal.assert_not_called()
+        controller.view.signup_page.clear_lineedits.assert_not_called()
         MockNotify.return_value.show_toast.assert_called_once()
