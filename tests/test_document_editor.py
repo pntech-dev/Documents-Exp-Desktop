@@ -223,3 +223,23 @@ class TestDocumentEditorController:
             controller.model.delete_document.assert_called_once()
             controller.window.document_deleted.emit.assert_called_once()
             controller.window.close.assert_called_once()
+
+    def test_duplicate_without_selection_does_not_mark_document_edited(self, controller):
+        controller.model.is_document_edited = False
+        controller.view.duplicate_selected_pages.return_value = False
+
+        with patch.object(controller, "_on_document_data_changed") as mock_changed:
+            controller._on_duplicate_page_button_clicked()
+
+        mock_changed.assert_not_called()
+        controller.view.update_delete_page_button_state.assert_called()
+
+    def test_delete_without_selection_does_not_mark_document_edited(self, controller):
+        controller.model.is_document_edited = False
+        controller.view.delete_selected_pages.return_value = False
+
+        with patch.object(controller, "_on_document_data_changed") as mock_changed:
+            controller._on_delete_page_button_clicked()
+
+        mock_changed.assert_not_called()
+        controller.view.update_delete_page_button_state.assert_called()
