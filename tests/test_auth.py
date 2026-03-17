@@ -215,4 +215,53 @@ class TestAuthController:
         controller.view.login_page.get_email.return_value = "invalid"
         controller.on_login_page_lineedits_changed()
         
-        controller.view.login_page.update_submit_button_state.assert_not_called()
+        controller.view.login_page.update_submit_button_state.assert_called_once_with(state=False)
+
+    def test_validation_login_invalid_password_disables_submit(self, controller):
+        controller.field_validator.validate_email.return_value = True
+        controller.field_validator.validate_password.return_value = False
+        controller.view.login_page.get_email.return_value = "valid@test.com"
+        controller.view.login_page.get_password.return_value = "short"
+
+        controller.on_login_page_lineedits_changed()
+
+        controller.view.login_page.update_submit_button_state.assert_called_once_with(state=False)
+
+    def test_validation_signup_invalid_email_disables_submit(self, controller):
+        controller.field_validator.validate_email.return_value = False
+        controller.view.signup_page.get_email.return_value = "invalid"
+
+        controller.on_signup_page_lineedits_changed()
+
+        controller.view.signup_page.update_submit_button_state.assert_called_once_with(state=False)
+
+    def test_validation_reset_password_invalid_disables_submit(self, controller):
+        controller.field_validator.validate_password.return_value = False
+        controller.view.forgot_page_reset_password.get_password.return_value = "123"
+        controller.view.forgot_page_reset_password.get_confirm_password.return_value = "123"
+
+        controller.on_reset_password_page_lineedits_changed()
+
+        controller.view.forgot_page_reset_password.update_submit_button_state.assert_called_once_with(state=False)
+
+    def test_signup_skips_worker_when_confirmation_code_cancelled(self, controller):
+        with patch("modules.auth.mvc.auth_controller.EmailConfirmDialog.get_code", return_value=None), \
+             patch.object(controller, "_create_worker") as mock_create_worker, \
+             patch("modules.auth.mvc.auth_controller.NotificationService") as MockNotify:
+            controller.signup(data={}, email="new@test.com", password="StrongPass123")
+
+        mock_create_worker.assert_not_called()
+        MockNotify.return_value.show_toast.assert_any_call(
+            notification_type="info",
+            title="Подтверждение отменено",
+            message="Регистрация не завершена: код подтверждения не введён."
+        )
+
+    def test_reset_confirm_skips_worker_when_confirmation_code_cancelled(self, controller):
+        with patch("modules.auth.mvc.auth_controller.EmailConfirmDialog.get_code", return_value=""), \
+             patch.object(controller, "_create_worker") as mock_create_worker, \
+             patch("modules.auth.mvc.auth_controller.NotificationService") as MockNotify:
+            controller.open_email_confirm_modal_window(data={}, email="new@test.com")
+
+        mock_create_worker.assert_not_called()
+        MockNotify.return_value.show_toast.assert_called_once()

@@ -154,6 +154,13 @@ class AuthController(QObject):
             message=f"Код подтверждения отправлен на {email}"
         )
         code = EmailConfirmDialog.get_code(parent=self.auth_window)
+        if not code:
+            NotificationService().show_toast(
+                notification_type="info",
+                title="Подтверждение отменено",
+                message="Регистрация не завершена: код подтверждения не введён."
+            )
+            return
 
         # Create success callback
         success_cb = lambda data: self.signup_user(user_data=data)
@@ -228,6 +235,13 @@ class AuthController(QObject):
         """
         logging.info(f"Reset password data received: {data}")
         code = EmailConfirmDialog.get_code(parent=self.auth_window)
+        if not code:
+            NotificationService().show_toast(
+                notification_type="info",
+                title="Подтверждение отменено",
+                message="Сброс пароля не завершён: код подтверждения не введён."
+            )
+            return
 
         # Create success callback
         success_cb = lambda data: self.switch_to_reset_password_page(data=data)
@@ -328,10 +342,12 @@ class AuthController(QObject):
 
         # Validate email
         if not self.field_validator.validate_email(email=email):
+            self.view.login_page.update_submit_button_state(state=False)
             return
         
         # Validate password
         if not self.field_validator.validate_password(password=password):
+            self.view.login_page.update_submit_button_state(state=False)
             return
 
         # Defining login button state (True if both lineedits has text, else False)
@@ -400,10 +416,12 @@ class AuthController(QObject):
         
         # Validate email
         if not self.field_validator.validate_email(email=email):
+            self.view.signup_page.update_submit_button_state(state=False)
             return
         
         # Validate password
         if not self.field_validator.validate_password(password=password):
+            self.view.signup_page.update_submit_button_state(state=False)
             return
 
         # Check password matching
@@ -491,6 +509,7 @@ class AuthController(QObject):
         
         # Validate password
         if not self.field_validator.validate_password(password=password):
+            self.view.forgot_page_reset_password.update_submit_button_state(state=False)
             return
         
         # Check password matching

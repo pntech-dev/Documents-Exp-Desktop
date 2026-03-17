@@ -35,11 +35,11 @@ Allows authorized users to create, edit, and manage document pages. Support for 
 
 ---
 
-## 🛠 What's New (v0.2.7)
+## 🛠 What's New (v0.2.8)
 
-- Opening a document is now more stable if data loading is temporarily unavailable.
-- Error handling in this flow is now clearer and less disruptive.
-- Session recovery in edge cases is more reliable after restarts.
+- Login and account recovery forms now react more reliably to invalid input.
+- Action buttons are disabled immediately when entered data is not valid.
+- If email-code confirmation is canceled, the flow now stops safely without extra error popups.
 
 ---
 
