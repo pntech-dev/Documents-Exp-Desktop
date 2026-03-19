@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 from unittest.mock import MagicMock, patch
 
@@ -76,3 +77,13 @@ class TestSettingsManager:
                 "search_by_code": False,
                 "exact_match": True,
             }
+
+    def test_set_setting_persists_json_atomically(self, tmp_path):
+        with patch("utils.settings_manager.get_app_data_dir", return_value=tmp_path):
+            manager = SettingsManager(user_id=1)
+            manager.set_setting("theme", 0)
+
+            saved = json.loads(manager.settings_file.read_text(encoding="utf-8"))
+            assert saved["theme"] == 0
+            temp_file = Path(str(manager.settings_file) + ".tmp")
+            assert not temp_file.exists()

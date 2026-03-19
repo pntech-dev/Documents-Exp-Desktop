@@ -304,11 +304,13 @@ class DocumentEditorController(QObject):
                 msg += f"\n...и еще {len(oversized_files) - 5}"
             NotificationService().show_toast("error", "Ошибка загрузки", msg)
 
+        added_any = False
         for file_path in valid_files:
-            self.model.add_pending_file(file_path)
-            self.view.add_file_widget(file_path)
+            if self.model.add_pending_file(file_path):
+                self.view.add_file_widget(file_path)
+                added_any = True
         
-        if valid_files:
+        if added_any:
             self._on_document_data_changed()
 
 

@@ -97,6 +97,17 @@ class TestAuthModel:
             mock_json_dump.assert_called()
             model.LOCAL_DIR_LAST_LOGGED.unlink.assert_called_once()
 
+    def test_logout_handles_file_delete_errors_gracefully(self, model):
+        model.LOCAL_DIR_LAST_LOGGED.exists.return_value = True
+        model.LOCAL_DIR_LAST_LOGGED.unlink.side_effect = OSError("locked")
+
+        with patch("modules.auth.mvc.auth_model.read_json", side_effect=[{"user_id": 1}, {"auto_login": True}]), \
+             patch("modules.auth.mvc.auth_model.keyring.delete_password"), \
+             patch("builtins.open", new_callable=MagicMock), \
+             patch("json.dump"):
+            # Should not raise even if unlink fails.
+            model.logout()
+
 
     def test_verify_token(self, model):
         """Test token verification logic."""

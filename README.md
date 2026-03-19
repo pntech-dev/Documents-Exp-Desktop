@@ -35,11 +35,10 @@ Allows authorized users to create, edit, and manage document pages. Support for 
 
 ---
 
-## 🛠 What's New (v0.2.16)
+## 🛠 What's New (v0.2.18)
 
-- Improved toolbar behavior in document edit/create windows.
-- `Duplicate` and `Delete` now only mark a document as changed when pages were actually modified.
-- Reduced accidental “unsaved changes” state when pressing toolbar actions with no selected pages.
+- Fixed an issue where selected Department or Category could occasionally lose visual highlight after collapsing and expanding sidebar groups.
+- Improved sidebar behavior so the previously selected item is restored more reliably after expanding a group.
 
 ---
 

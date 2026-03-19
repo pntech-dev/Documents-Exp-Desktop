@@ -2,6 +2,7 @@ import docx
 import logging
 import keyring
 import requests
+import os
 
 from pathlib import Path
 
@@ -22,6 +23,7 @@ class DocumentEditorModel:
         self.document_data = document_data if document_data is not None else {}
         self.pages = pages if pages is not None else []
         self.pending_files = []
+        self._pending_file_keys = set()
 
         self.config_data = load_config()
 
@@ -137,24 +139,55 @@ class DocumentEditorModel:
         return self._make_authorized_request(self.api.upload_file, document_id=doc_id, file_path=file_path)
 
 
-    def add_pending_file(self, file_path: str) -> None:
-        """Adds a file to the pending upload list."""
-        if file_path not in self.pending_files:
-            self.pending_files.append(file_path)
+    @staticmethod
+    def _pending_file_key(file_path: str) -> str:
+        """Normalizes file path for duplicate detection."""
+        try:
+            normalized = str(Path(file_path).expanduser().resolve(strict=False))
+        except Exception:
+            normalized = str(file_path)
+        return normalized.lower() if os.name == "nt" else normalized
+
+    def _rebuild_pending_file_keys(self) -> None:
+        self._pending_file_keys = {self._pending_file_key(path) for path in self.pending_files}
+
+    def add_pending_file(self, file_path: str) -> bool:
+        """Adds a file to the pending upload list.
+
+        Returns:
+            bool: True if file added, False if duplicate.
+        """
+        self._rebuild_pending_file_keys()
+        key = self._pending_file_key(file_path)
+        if key in self._pending_file_keys:
+            return False
+        self.pending_files.append(file_path)
+        self._pending_file_keys.add(key)
+        return True
 
     def remove_pending_file(self, file_path: str) -> None:
         """Removes a file from the pending upload list."""
-        if file_path in self.pending_files:
-            self.pending_files.remove(file_path)
+        self._rebuild_pending_file_keys()
+        remove_key = self._pending_file_key(file_path)
+        to_remove = None
+        for path in self.pending_files:
+            if self._pending_file_key(path) == remove_key:
+                to_remove = path
+                break
+        if to_remove is not None:
+            self.pending_files.remove(to_remove)
+            self._pending_file_keys.discard(remove_key)
 
 
     def upload_pending_files(self) -> None:
         """Uploads all pending files."""
+        self._rebuild_pending_file_keys()
         errors = []
         for file_path in list(self.pending_files):
             try:
                 self.upload_file(file_path)
                 self.pending_files.remove(file_path)
+                self._pending_file_keys.discard(self._pending_file_key(file_path))
             except Exception as e:
                 errors.append(f"Не удалось загрузить {Path(file_path).name}: {e}")
         

@@ -56,6 +56,27 @@ class TestDocumentEditorFiles:
             # Since model is a Mock, we check if the attribute was set
             assert controller.model.is_document_edited is True
 
+    def test_files_dropped_duplicate_paths_are_ignored(self, controller):
+        files = ["/tmp/doc1.pdf", "/tmp/doc1.pdf"]
+
+        with patch("modules.document_editor.mvc.document_editor_controller.Path") as mock_path:
+            def path_side_effect(arg):
+                p = MagicMock()
+                p.name = str(arg).split("/")[-1]
+                p.suffix = "." + str(arg).split(".")[-1]
+                p.stat.return_value.st_size = 1024
+                return p
+
+            mock_path.side_effect = path_side_effect
+            controller.model.add_pending_file.side_effect = [True, False]
+            controller.model.is_document_edited = False
+
+            controller._on_files_dropped(files)
+
+            # Only first unique file should be shown in UI.
+            assert controller.view.add_file_widget.call_count == 1
+            assert controller.model.is_document_edited is True
+
 
     def test_files_dropped_blocked_extension(self, controller):
         """Test dropping files with blocked extensions."""
@@ -201,6 +222,11 @@ class TestDocumentEditorModelFiles:
         with patch("builtins.open", MagicMock()):
             model.upload_file(file_path)
             model.api.upload_file.assert_called_once()
+
+    def test_add_pending_file_deduplicates_paths(self, model):
+        assert model.add_pending_file("C:/Temp/test.pdf") is True
+        assert model.add_pending_file("C:/Temp/test.pdf") is False
+        assert len(model.pending_files) == 1
 
 
     def test_upload_pending_files_success(self, model):
