@@ -137,11 +137,12 @@ class ProfileDialog(BaseModalDialog):
 
     def get_updated_data(self) -> dict:
         """Returns the updated user data from the form."""
+        first_name = self.ui.firstname_lineEdit.text().strip()
+        last_name = self.ui.lastname_lineEdit.text().strip()
+        username = " ".join(part for part in (first_name, last_name) if part)
+
         return {
-            "username": " ".join([
-                self.ui.firstname_lineEdit.text(), 
-                self.ui.lastname_lineEdit.text()
-            ]),
+            "username": username,
             "department_id": self.ui.department_comboBox.currentData()
         }
 

@@ -390,7 +390,7 @@ class MainController(QObject):
             return
 
         try:
-            user_data = self.model.get_full_user_data()
+            user_data = self._sanitize_profile_user_data(self.model.get_full_user_data())
             if not user_data:
                 logger.warning("Could not retrieve user data for profile.")
                 return
@@ -422,6 +422,17 @@ class MainController(QObject):
 
         except Exception as e:
             self._handle_error(e, "Ошибка профиля")
+
+    @staticmethod
+    def _sanitize_profile_user_data(user_data: dict | None) -> dict | None:
+        """Normalizes profile payload to prevent UI errors on malformed values."""
+        if not isinstance(user_data, dict):
+            return None
+
+        sanitized = dict(user_data)
+        username = sanitized.get("username")
+        sanitized["username"] = "" if username is None else str(username).strip()
+        return sanitized
 
 
     def _on_profile_update_finished(self, new_data: dict):
@@ -1284,7 +1295,10 @@ class MainController(QObject):
                 message="Срок действия сессии истек. Пожалуйста, войдите снова."
             )
         else:
-            logger.error(f"{title}: {e}")
+            logger.error(
+                f"{title}: {e}",
+                exc_info=(type(e), e, e.__traceback__)
+            )
             msg = get_friendly_error_message(e)
             NotificationService().show_toast(
                 notification_type="error",
