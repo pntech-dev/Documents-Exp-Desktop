@@ -369,10 +369,12 @@ class MainModel:
             normalized = dict(data)
 
         # Defensive normalization for UI code paths expecting string fields.
-        username = normalized.get("username")
-        normalized["username"] = "" if username is None else str(username).strip()
+        # Keep payload shape unchanged: do not add new keys.
+        if "username" in normalized:
+            username = normalized.get("username")
+            normalized["username"] = "" if username is None else str(username).strip()
 
-        if normalized.get("department") is None:
+        if "department" in normalized and normalized.get("department") is None:
             normalized["department"] = ""
 
         return normalized
