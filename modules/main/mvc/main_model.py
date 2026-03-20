@@ -364,9 +364,18 @@ class MainModel:
 
         nested_user = data.get("user")
         if isinstance(nested_user, dict):
-            return nested_user
+            normalized = dict(nested_user)
+        else:
+            normalized = dict(data)
 
-        return data
+        # Defensive normalization for UI code paths expecting string fields.
+        username = normalized.get("username")
+        normalized["username"] = "" if username is None else str(username).strip()
+
+        if normalized.get("department") is None:
+            normalized["department"] = ""
+
+        return normalized
     
 
     def _get_departments(self) -> list[dict]:

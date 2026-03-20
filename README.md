@@ -35,10 +35,11 @@ Allows authorized users to create, edit, and manage document pages. Support for 
 
 ---
 
-## 🛠 What's New (v0.2.18)
+## 🛠 What's New (v0.2.19)
 
-- Fixed an issue where selected Department or Category could occasionally lose visual highlight after collapsing and expanding sidebar groups.
-- Improved sidebar behavior so the previously selected item is restored more reliably after expanding a group.
+- Fixed a profile crash path where malformed user data could trigger `'NoneType' object has no attribute 'split'`.
+- Hardened profile data normalization so missing `username` values are safely handled as empty strings.
+- Improved profile update payload formatting to avoid extra spaces and unstable name parsing.
 
 ---
 
