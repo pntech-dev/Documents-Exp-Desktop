@@ -35,11 +35,9 @@ Allows authorized users to create, edit, and manage document pages. Support for 
 
 ---
 
-## 🛠 What's New (v0.2.19)
+## 🛠 What's New (v0.2.20)
 
-- Fixed a profile crash path where malformed user data could trigger `'NoneType' object has no attribute 'split'`.
-- Hardened profile data normalization so missing `username` values are safely handled as empty strings.
-- Improved profile update payload formatting to avoid extra spaces and unstable name parsing.
+- Fixed the bug of the program update
 
 ---
 
